@@ -1,0 +1,122 @@
+/* My Header Styles */
+
+@use "../abstracts/breakpoints";
+@use "../abstracts/variables";
+
+
+.header {
+    width: 100%;
+    height: auto;
+    display: flex;
+    flex-wrap:wrap;
+    border-bottom: 1px solid #efefef;
+    margin-bottom: 2.5rem;
+    &__container {
+        display: flex;
+        flex-wrap:wrap;
+        justify-content: space-between;
+    }
+    &__main-container {
+        display: flex;
+        padding: 1.7rem 0;
+    }
+    &__menu-right {
+        margin: 0;
+    }
+    &__menu-right li {
+        display: inline;
+        margin: 0 0 0 0.7rem;
+    }
+    &__menu-right li a {
+        color: variables.$secondary-color;
+    }
+    &__top {
+        background: #ededed;
+        width: 100%;
+        display: block;
+        padding: 0.5rem 0;
+        font-size: 0.83rem;
+        font-weight: 400;
+    }
+    &__contact-details {
+        list-style-type: none;
+        margin: 0;
+    }
+    &__phone, &__mail {
+        display: inline;
+    }
+    &__icon-link {
+        color: #bababa;
+    }
+    &__icon-phone, &__icon-email {
+        color: #bababa;
+    }
+    &__left {
+        width: 200px;
+        margin-right: 70px;
+    }
+    &__left .custom-logo-link {
+        display: block;
+    }
+    &__right {
+        width: calc(100% - 270px);
+        margin-right: 0;
+        margin-left: auto;
+        position: relative;
+    }
+    &__icon-phone {
+        margin-right: 7px;
+        margin-left: 0px;
+    }
+    &__icon-email {
+        margin-right: 7px;
+        margin-left: 8px;
+    }
+    &__main-menu {
+        margin: 0;
+        padding: 0;
+    }
+    &__main-menu li {
+        display: inline-block;
+        padding: 0 1.9vw 14px 0;
+    }
+    &__main-menu li a {
+        color: variables.$secondary-color;
+    }
+    &__cart-wrapper {
+        position: absolute;
+        margin-right: 0.5rem;
+        right: 0;
+        top:0;
+    }
+    &__cart-count {
+        background: variables.$secondary-color;
+        color: white;
+        padding: .05rem .35rem;
+        font-size: 0.8rem;
+        font-weight: 300;
+        border-radius: 50%;
+        margin-left: -7px;
+        position: absolute;
+        width: 18px;
+        height: 18px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        bottom: -4px;
+        right: -9px;
+    }
+    &__cart-icon {
+        width: 23px;
+        height: auto;
+    }
+}
+
+.is-search-icon {
+    color: white;
+    background: variables.$primary-color;
+}
+.is-form-style .is-search-submit path {
+  fill: white;
+}
+

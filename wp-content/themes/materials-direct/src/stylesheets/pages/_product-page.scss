@@ -1,0 +1,179 @@
+@use "../abstracts/breakpoints";
+@use "../abstracts/variables";
+
+.product-page {
+    &__title {
+        font-size: 2.1rem;
+        color: variables.$secondary-color;
+        padding: 0;
+        line-height: 2.4rem;
+    }
+    &__grey-panel {
+        background: #efefef;
+        padding: 1.1rem;
+        margin: 1.5rem 0;
+    }
+    &__calculate-price {
+        padding: .25rem 1rem;
+        border-radius: 2.2rem;
+        background: variables.$primary-color;
+        margin: .5rem .5rem .75rem 0;
+    }
+    &__input-wrap {
+        color: variables.$secondary-color;
+        width: 32.6%;
+        display: inline-block;
+        font-weight: 600;
+        font-size: 0.9rem;
+    }
+    &__input {
+        width: 100%;
+        display: block;
+        padding: .1rem 0.5rem;
+        font-weight: 400;
+    }
+    &__generate-price {
+        color: white;
+        padding: .25rem 1rem;
+        border-radius: 2.2rem;
+        background: variables.$primary-color;
+        margin: .5rem .5rem .75rem 0;
+        border: 0;
+        padding: 0.5rem 1rem;
+    }
+    &__label {
+        font-weight: 600;
+        color: variables.$secondary-color;
+        line-height: 1.5rem;
+    }
+    &__label-small-text {
+        font-style: italic;
+        font-weight: 400;
+        font-size: 0.76rem;
+        display: block;
+    }
+    &__calc-input {
+        margin: 0 0 0.85rem 0;
+        padding: .5rem;
+        font-weight: 400;
+        font-size: 0.9rem;
+        background: white;
+        border: 1px solid #dedede;
+        width: 100%;
+    }
+    &__calc-input-small {
+        width: 48%;
+        margin-right: 1.6%;
+    }
+    &__subheading {
+        color: variables.$secondary-color;
+        font-weight: 600;
+        font-size: 1rem;
+    }
+    &__display-price-outer {
+        border: 2px solid variables.$primary-color;
+        margin-top: 0.6rem;
+    }
+    &__display-price-inner {
+        padding: 0.5rem;
+    }
+    &__display-price {
+        padding: 0.3rem;
+        color: variables.$primary-color;
+        font-weight: 700;
+    }
+    &__display-price-text {
+        color: variables.$secondary-color;
+    }
+    &__display-price-heading {
+        color: white;
+        margin: 0;
+        padding: 2px 19px;
+        font-size: 16.5px;
+        font-weight: 700;
+        background: variables.$primary-color
+    }
+    &__discount-table {
+        width: 100%;
+        margin-bottom: 2rem;
+    }
+    &__discount-table-heading {
+        font-weight: 700;
+        background: #f19000 !important;
+        color: #fff !important;
+        font-size: 80%;
+        padding: 0.5rem;
+    }
+    &__discount-table-content {
+        background: #eee !important;
+        color: #2d3e4f !important;
+        font-size: 80%;
+        padding: 0.5rem;
+        padding-left: 0px;
+        text-align:center;
+        border: 1px solid #ddd;
+        border-width: 0 1px 1px 0;
+    }
+    &__backorder-message {
+        background-color: #f8d7da; 
+        color: #721c24; 
+        padding: 10px; 
+        margin: 1rem 0 0 0; 
+        border: 1px solid #f5c6cb; 
+        border-radius: 4px;
+    }
+    &__backorder-message-text {
+        padding: 0;
+    }
+    &__qty-label {
+        color: variables.$secondary-color;
+        font-weight: 600;
+    }
+    &__stock-sheet-size {
+        margin: 0;
+        padding: 0;
+    }
+}
+.single-product div.product .stock.out-of-stock {
+    margin-bottom: 1.5rem;
+}
+
+.woocommerce div.product form.cart .button {
+    background: variables.$secondary-color;
+    padding: 0.9rem 1.5rem;
+    border-radius: 0;
+    font-weight: 400;
+}
+
+.woocommerce-page div.product div.summary {
+  width: 56%;
+}
+.woocommerce-page div.product div.images {
+  width: 40%;
+}
+.custom-price-calc {
+	margin-bottom: 2rem;
+}
+.custom-price-calc__input {
+	padding: 0.5rem;
+}
+.single .wp-block-woocommerce-product-price {
+	display: none;
+}
+.woocommerce div.product form.cart div.quantity {
+	display: none;
+}
+.woocommerce-product-gallery__wrapper {
+    border: 1px solid #efefef;
+}
+.woocommerce div.product p.price {
+    color: variables.$primary-color;
+    font-weight: 700;
+    padding: 0.2rem 0;
+}
+
+.woocommerce div.product .qty {
+    border: 1px solid #efefef;
+    padding: 0.3rem 0.5rem;
+    margin: 1rem 0;
+}

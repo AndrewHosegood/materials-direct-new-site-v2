@@ -1,0 +1,138 @@
+@use "../abstracts/breakpoints";
+@use "../abstracts/variables";
+
+.footer {
+    width: 100%;
+    height: auto;
+    background: variables.$secondary-color;
+    padding: 6.5rem 0 0 0;
+    color: white;
+    font-size: 0.9rem;
+    &__container {
+        display: flex;
+        flex-wrap: wrap;
+        width: 100%;
+        height: auto;
+    }
+    &__col:nth-child(1) {
+        width: 24%;
+        margin-right: 2%;
+    }
+    &__col:nth-child(2) {
+        width: 21%;
+        margin-right: 2%;
+    }
+    &__col:nth-child(3) {
+        width: 21%;
+        margin-right: 2%;
+    }
+    &__col:nth-child(4) {
+        width: 28%;
+        margin-right: 0%;
+    }
+    &__logo {
+        width: 99px;
+        margin-bottom: 0.8rem;
+    }
+    &__strapline {
+        font-size: 0.88rem;
+        line-height:1.45rem;
+        color: variables.$primary-color;
+        font-weight: 600;
+        padding: 0.7rem 0 0.3rem 0;
+    }
+    &__content {
+        font-size: 0.88rem;
+        font-weight: 400;
+        padding: 0 0 0.8rem 0;
+    }
+    &__logos {
+        display: flex;
+        flex-wrap: wrap;
+        margin-right: 2.5rem;
+        justify-content: space-between;
+    }
+    &__pay-options-logo {
+        width: 100%;
+        margin-bottom: 2.5rem;
+        margin-top: 2rem;
+    }
+    &__iso-logo {
+        width: 50%;
+    }
+    &__cyber-logo {
+        width: 30%;
+    }
+    &__link {
+        color: variables.$primary-color;
+        margin-bottom: 1.2rem;
+    }
+    &__menu {
+        margin: 0;
+        padding: 0;
+        height: 222px;
+    }
+    &__menu li {
+        display: inline-block;
+        width: 100%;
+    }
+    &__menu li a {
+        color: white;
+    }
+    &__subheading {
+        color: variables.$primary-color;
+        font-size: 1.05rem;
+        line-height: 1.3rem;
+    }
+    &__form-label {
+        color: white;
+        font-size: 0.9rem;
+        font-weight: 500;
+    }
+    &__form-input {
+        width: 100%;
+        padding: 0.25rem;
+        margin-bottom: 1.3rem;
+    }
+    &__submit {
+        background: variables.$primary-color;
+        padding: .3rem 1.7rem;
+        color: #fff;
+        margin-top: 1rem;
+    }
+    &__underline {
+        border-top: 1px solid #40586f;
+        border-bottom: 1px solid transparent;
+        border-left: 1px solid transparent;
+        border-right: 1px solid transparent;
+    }
+    &__baseline {
+        background: #07141f;
+        margin-top: 4rem;
+    }
+    &__baseline-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.95rem 0;
+    }
+    &__button {
+        background: variables.$primary-color;
+        padding: 1rem;
+        width: 45px;
+        height: 45px;
+        margin-left: 1.7rem;
+    }
+    &__baseline-right {
+        width: auto;
+        margin: 0 0 0 auto;
+    }
+    & a .footer__baseline-icon {
+        margin-left: 0.75rem;
+        margin-right: 0;
+    }
+    &__copyright {
+        opacity: 0.8;
+        font-size: 0.85rem;
+    }
+}
