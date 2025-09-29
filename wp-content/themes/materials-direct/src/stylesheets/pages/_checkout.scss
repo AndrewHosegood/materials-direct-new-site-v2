@@ -9,11 +9,11 @@
         color: variables.$primary-color;
         font-weight: bold;
     }
-    & .product-name .variation .variation-Width p {
+    & .product-name .variation .variation-WidthMM p {
         display: inline;
         padding: 0;
     }
-    & .product-name .variation .variation-Length p {
+    & .product-name .variation .variation-LengthMM p {
         display: inline;
         padding: 0;
     }
@@ -73,6 +73,35 @@
     }
     & .shop_table .coupon-2-order-value-discount .woocommerce-remove-coupon {
         display: none;
+    }
+    & .product-quantity {
+        display: none;
+    }
+    & #payment ul.payment_methods {
+        padding: 1em 0;
+    }
+    & #payment div.form-row {
+        padding: 1em 0;
+    }
+    & .dap-delivery-notice p {
+        font-size: 0.9rem;
+        letter-spacing: -0.01rem;
+    }
+    & .custom-shipping-address p {
+        font-size: 0.9rem;
+        letter-spacing: -0.01rem;
+    }
+    & .cart_totals__shipment {
+        font-size: 0.9rem;
+        letter-spacing: -0.01rem;
+    }
+    & .cart_totals__shipment-details {
+        font-size: 0.9rem;
+        letter-spacing: -0.01rem;
+    }
+    & .woocommerce-terms-and-conditions-checkbox-text {
+        font-size: 0.9rem;
+        letter-spacing: -0.01rem;
     }
 }
 

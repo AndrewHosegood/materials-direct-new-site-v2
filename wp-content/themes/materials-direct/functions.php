@@ -148,6 +148,7 @@ function materials_direct_scripts() {
 	wp_style_add_data( 'materials-direct-style', 'rtl', 'replace' );
 
 	wp_enqueue_script( 'materials-direct-navigation', get_template_directory_uri() . '/js/navigation.js', array(), _S_VERSION, true );
+	wp_enqueue_script( 'materials-direct-scripts', get_template_directory_uri() . '/js/scripts.js', array(), _S_VERSION, true );
 
 	if ( is_singular() && comments_open() && get_option( 'thread_comments' ) ) {
 		wp_enqueue_script( 'comment-reply' );
@@ -291,9 +292,17 @@ require_once('includes/change-shop-grid-to-3-columns.php');
 require_once('includes/validation-for-product-width-and-length.php');
 // validation for product width and length
 
+// Fix for VAT exclusion on checkout page if country is not GB
+require_once('includes/ensure-vat-is-not-included-on-checkout-page.php');
+// Fix for VAT exclusion on checkout page if country is not GB
+
+// Add additional custom PO and VAT input fields to checkout form
+require_once('includes/add-po-and-vat-fields-to-checkout-form.php');
+// Add additional custom PO and VAT input fields to checkout form
+
 
 // validation for product width and length
-//require_once('includes/display-order-object-on-thankyou-page.php');
+// require_once('includes/display-order-object-on-thankyou-page.php');
 // validation for product width and length
 
 /* END CUSTOM FUNCTIONS */

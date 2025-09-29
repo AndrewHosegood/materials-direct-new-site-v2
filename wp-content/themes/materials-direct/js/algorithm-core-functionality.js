@@ -11,7 +11,7 @@ jQuery(document).ready(function($) {
         const country = $('#input_country').val();
         
         if (!street_address || !city || !county_state || !zip_postal || !country) {
-            $('#custom_price_display').html('Please fill in all required shipping address fields.');
+            $('#custom_price_display').html('<span class="product-page__backorder-message">Please fill in all required shipping address fields.</span>');
             return false;
         }
         return {
@@ -74,12 +74,12 @@ jQuery(document).ready(function($) {
                         const isBackorder = response.data.is_backorder || false;
                         const sheet_width_mm = response.data.sheet_width_mm;
                         const sheet_length_mm = response.data.sheet_length_mm;
-                        const border = 2;
+                        //const border = 2;
+                        const border = parseFloat(response.data.border_around || 0.2) * 10;
                         const stock_quantity = response.data.stock_quantity;
                         const qty = response.data.entered_quantity;
                         const backorder_adjustedPrice = adjustedPrice * 0.05;
                         const discount_rate = response.data.discount_rate;
-                        
 
                         // Compile the schedules using discounr_rate
                         let discount_display;

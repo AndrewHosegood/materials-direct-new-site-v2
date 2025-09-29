@@ -124,6 +124,7 @@
     }
     &__backorder-message-text {
         padding: 0;
+        line-height: 1.7rem;
     }
     &__qty-label {
         color: variables.$secondary-color;
@@ -176,4 +177,9 @@
     border: 1px solid #efefef;
     padding: 0.3rem 0.5rem;
     margin: 1rem 0;
+}
+
+#custom_price_display .product-page__backorder-message {
+    margin: 0.8rem 0 0.1rem 0;
+    display: block;
 }

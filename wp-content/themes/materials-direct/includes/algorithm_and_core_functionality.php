@@ -132,21 +132,7 @@ function custom_price_input_fields_prefill() {
     $stock_quantity = $product->get_stock_quantity();
     $is_full_backorder = $stock_quantity <= 0;
 
-    // if($is_full_backorder == "1"){
-    //     echo "Its on backorder";
-    // }
 
-    // if($is_full_backorder !== 1){
-    //     echo "Lets show the select menu";
-    // }
-
-    // if(!$is_full_backorder){
-    //     echo "Lets show the select menu";
-    // }
-
-    // if (!$is_full_backorder) {
-    //     echo "Its on backorder!!!";
-    // }
 
 
 
@@ -240,7 +226,8 @@ function calculate_secure_price() {
             'per_part' => round($price, 2), // No per-part calculation needed
             'sheets_required' => 1, // Default to 1 sheet for single products
             'stock_quantity' => $product->get_stock_quantity(),
-            'is_backorder' => false // Single products don't use sheets, so no backorder
+            'is_backorder' => false, // Single products don't use sheets, so no backorder
+            'border_around' => 0.2 // Default for single products (not used, but included for consistency)
         ]);
         return;
     }
@@ -263,6 +250,7 @@ function calculate_secure_price() {
     $sheet_length_mm = $product->get_length() * 10; // Convert cm to mm
     $sheet_width_mm = $product->get_width() * 10;   // Convert cm to mm
     $stock_quantity = $product->get_stock_quantity();
+    $border_around = function_exists('get_field') ? floatval(get_field('border_around', $product_id) ?: 0.2) : 0.2;
 
     if ($sheet_length_mm <= 0 || $sheet_width_mm <= 0) {
         wp_send_json_error(['message' => 'Invalid sheet dimensions for this product.']);
@@ -310,6 +298,7 @@ function calculate_secure_price() {
         error_log("Stock check: sheets_required=$sheets_required, stock_quantity=$stock_quantity, is_backorder=" . ($is_backorder ? 'true' : 'false'));
         error_log("Quantity entered=$qty");
         error_log("Per part price=$per_part_price");
+        error_log("Border around fixed=$border_around");
     }
 
     // SEND DATA TO algorith-core-functionality.js
@@ -322,7 +311,8 @@ function calculate_secure_price() {
         'sheet_width_mm' => $sheet_width_mm,
         'sheet_length_mm' => $sheet_length_mm,
         'entered_quantity' => $qty,
-        'discount_rate' => $discount_rate
+        'discount_rate' => $discount_rate,
+        'border_around' => $border_around
     ]);
 }
 // 3. SECURE PRICE CALCULATION IN PHP
@@ -357,7 +347,7 @@ function save_single_product_shipping() {
         WC()->session->set('custom_shipping_address', $shipping_address);
         wp_send_json_success(['message' => 'Shipping address saved successfully.']);
     } else {
-        wp_send_json_error(['message' => 'Please fill in all required shipping address fields.']);
+        wp_send_json_error(['message' => '<span>Please fill in all required shipping address fields.</span>']);
     }
 }
 // 3b NEW AJAX HANDLER FOR SAVING SHIPPING ADDRESS FOR SINGLE PRODUCTS
@@ -444,37 +434,6 @@ function group_shipping_by_date($cart) {
 
     return $shipping_by_date;
 }
-/*
-function group_shipping_by_date($cart) {
-    $shipping_by_date = [];
-
-    foreach ($cart->get_cart() as $cart_item) {
-        if (isset($cart_item['custom_inputs']['shipments'], $cart_item['custom_inputs']['total_del_weight'], $cart_item['custom_inputs']['shipping_address']['country'])) {
-            $date = $cart_item['custom_inputs']['shipments'];
-            $total_del_weight = floatval($cart_item['custom_inputs']['total_del_weight']);
-            $country = $cart_item['custom_inputs']['shipping_address']['country'];
-
-            // If the date already exists, increment quantity and add to total_del_weight
-            if (isset($shipping_by_date[$date])) {
-                $shipping_by_date[$date]['quantity'] += 1;
-                $shipping_by_date[$date]['total_del_weight'] += $total_del_weight;
-            } else {
-                // Initialize new date entry with quantity 1
-                $shipping_by_date[$date] = [
-                    'quantity' => 1,
-                    'total_del_weight' => $total_del_weight,
-                    'country' => $country,
-                ];
-            }
-
-            // Calculate final shipping cost based on total weight for the date
-            $shipping_by_date[$date]['final_shipping'] = calculate_shipping_cost($shipping_by_date[$date]['total_del_weight'], $country);
-        }
-    }
-
-    return $shipping_by_date;
-}
-    */
 // HELPER FUNCTION TO GROUP SHIPPING DATA BY DISPATCH DATE
 
 
@@ -732,7 +691,9 @@ function add_custom_price_cart_item_data_secure($cart_item_data, $product_id) {
             'parts_per_sheet' => intval($_POST['custom_parts_per_sheet']),
         ];
         // Validate backorder data server-side
-        $border = 2; // Match JS border value
+        //$border = 2; // Match JS border value
+        $border = floatval(get_field('border_around', $product_id) * 10);
+        error_log("Border value in secure add custom price: " . $border);
         $v1 = $part_width_mm + (2 * $border);
         $v2 = $part_length_mm + (2 * $border);
         $parts_per_row = floor($sheet_width_mm / $v1);
@@ -756,7 +717,7 @@ function add_custom_price_cart_item_data_secure($cart_item_data, $product_id) {
         } else {
             // Update despatch notes for backorder
             $despatch_notes = sprintf(
-                '%d parts to be despatched in %s, %d parts on backorder (35 days)',
+                '%d parts to be despatched in %s, %d parts to be despatched in 35 days (5%% discount)',
                 $able_to_dispatch,
                 $delivery_time,
                 $parts_backorder
@@ -816,7 +777,7 @@ function add_custom_price_cart_item_data_secure($cart_item_data, $product_id) {
         error_log("add_custom_price_cart_item_data_secure (Non-Single Product ID: {$product_id}):");
         error_log("  total_del_weight: {$total_del_weight}");
         error_log("  final_shipping: {$final_shipping}");
-        error_log("  shipments: {$shipments}");
+        error_log("  shipments: " . (is_array($shipments) ? print_r($shipments, true) : $shipments));
         if ($is_backorder) {
             error_log("  backorder_data: " . print_r($backorder_data, true));
         }
@@ -1049,6 +1010,11 @@ function save_sheets_required_to_order_item($item, $cart_item_key, $values, $ord
         $item->add_meta_data('able_to_dispatch', $backorder_data['able_to_dispatch'], true);
         $item->add_meta_data('parts_per_sheet', $backorder_data['parts_per_sheet'], true);
     }
+    // Handle shipments explicitly
+    if (isset($values['custom_inputs']['shipments'])) {
+        $shipments = $values['custom_inputs']['shipments'];
+        $item->add_meta_data('shipments', is_array($shipments) ? implode(', ', $shipments) : $shipments, true);
+    }
 }
 // SAVE ALL RELEVANT DATA TO ORDER ITEM META
 
@@ -1068,7 +1034,7 @@ function show_custom_input_details_in_cart($item_data, $cart_item) {
         // Width
         if (isset($cart_item['custom_inputs']['width'])) {
             $item_data[] = [
-                'name' => 'Width',
+                'name' => 'Width (MM)',
                 'value' => $cart_item['custom_inputs']['width'] . ' mm'
             ];
         }
@@ -1076,7 +1042,7 @@ function show_custom_input_details_in_cart($item_data, $cart_item) {
         // Length
         if (isset($cart_item['custom_inputs']['length'])) {
             $item_data[] = [
-                'name' => 'Length',
+                'name' => 'Length (MM)',
                 'value' => $cart_item['custom_inputs']['length'] . ' mm'
             ];
         }
@@ -1093,7 +1059,7 @@ function show_custom_input_details_in_cart($item_data, $cart_item) {
         if (isset($cart_item['custom_inputs']['despatch_notes'])) {
             $item_data[] = [
                 'name' => 'Despatch Notes',
-                'value' => $cart_item['custom_inputs']['despatch_notes']
+                'value' => '<br>' . $cart_item['custom_inputs']['despatch_notes']
             ];
         }
 
@@ -1106,6 +1072,7 @@ function show_custom_input_details_in_cart($item_data, $cart_item) {
         }
 
         // Backorder Details
+        /*
         if (isset($cart_item['custom_inputs']['is_backorder']) && $cart_item['custom_inputs']['is_backorder']) {
             $backorder_data = $cart_item['custom_inputs']['backorder_data'];
             $item_data[] = [
@@ -1118,6 +1085,7 @@ function show_custom_input_details_in_cart($item_data, $cart_item) {
                 )
             ];
         }
+        */
 
     }
     return $item_data;
@@ -1140,6 +1108,12 @@ add_action('woocommerce_before_calculate_totals', 'apply_secure_custom_price');
 function apply_secure_custom_price($cart) {
     if (is_admin() && !defined('DOING_AJAX')) return;
 
+    // Log the current shipping country and tax rate
+    if (defined('WP_DEBUG') && WP_DEBUG) {
+        $shipping_country = WC()->customer->get_shipping_country();
+        $tax_rates = WC_Tax::find_rates(['country' => $shipping_country]);
+        error_log("apply_secure_custom_price: Shipping country = {$shipping_country}, Tax rates = " . print_r($tax_rates, true));
+    }
 
     foreach ($cart->get_cart() as $cart_item_key => $cart_item) {
         $product_id = $cart_item['product_id'];
@@ -1586,6 +1560,9 @@ add_action('template_redirect', 'set_custom_shipping_country_for_tax_calculation
 function set_custom_shipping_country_for_tax_calculation() {
     if (is_cart() || is_checkout()) {
         $shipping_address = WC()->session->get('custom_shipping_address');
+        if (defined('WP_DEBUG') && WP_DEBUG) {
+            error_log("set_custom_shipping_country_for_tax_calculation: custom_shipping_address = " . print_r($shipping_address, true));
+        }
         if ($shipping_address && isset($shipping_address['country'])) {
             $custom_country = $shipping_address['country'];
             // Map full country names to ISO country codes for WooCommerce
@@ -1604,7 +1581,19 @@ function set_custom_shipping_country_for_tax_calculation() {
                 WC()->customer->set_shipping_city($shipping_address['city']);
                 WC()->customer->set_shipping_state($shipping_address['county_state']);
                 WC()->customer->set_shipping_postcode($shipping_address['zip_postal']);
+                // Log for debugging
+                if (defined('WP_DEBUG') && WP_DEBUG) {
+                    error_log("set_custom_shipping_country_for_tax_calculation: Set shipping country to {$country_code}");
+                }
             }
+        } else {
+                // Fallback to store base country only if no session data
+                $store_country = WC()->countries->get_base_country();
+                WC()->customer->set_shipping_country($store_country);
+                if (defined('WP_DEBUG') && WP_DEBUG) {
+                    error_log("set_custom_shipping_country_for_tax_calculation: No custom_shipping_address, falling back to store base country {$store_country}");
+                }
         }
     }
 }
+

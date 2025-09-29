@@ -19,7 +19,7 @@
     "gulp-sass": "^6.0.1",
     "gulp-sourcemaps": "^3.0.0",
     "gulp-uglify": "^3.0.2",
-    "sass": "^1.92.1"
+    "sass": "^1.93.2"
   },
   "dependencies": {
     "ansi-colors": "^1.1.0",

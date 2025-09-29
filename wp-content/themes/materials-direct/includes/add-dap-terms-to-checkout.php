@@ -1,5 +1,5 @@
 <?php
-add_action('woocommerce_review_order_before_payment', 'add_dap_notice_below_order_table');
+add_action('woocommerce_review_order_before_payment', 'add_dap_notice_below_order_table', 0);
 
 function add_dap_notice_below_order_table() {
     echo '<div class="dap-delivery-notice" style="margin-top:-10px; margin-bottom: 35px; font-size:14px; color:#333;">

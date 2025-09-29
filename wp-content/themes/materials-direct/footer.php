@@ -97,7 +97,7 @@
 					<a href="#"><i class="fa-solid fa-play footer__baseline-icon"></i></a>
 					<a href="#"><i class="fa-brands fa-linkedin-in footer__baseline-icon"></i></a>
 
-					<a id="back_to_top" class="footer__button" href=""><i class="fa-solid fa-chevron-up"></i></a>
+					<a id="back_to_top" class="footer__button" href=""><i class="fa-solid fa-chevron-up footer__button-icon"></i></a>
 				</span>
 			</div>
 		</div>
