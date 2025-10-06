@@ -40,6 +40,10 @@
         margin: .5rem .5rem .75rem 0;
         border: 0;
         padding: 0.5rem 1rem;
+        font-size: 0.92rem;
+    }
+    &__generate-price.hide {
+        display: none;
     }
     &__label {
         font-weight: 600;
@@ -97,6 +101,15 @@
         width: 100%;
         margin-bottom: 2rem;
     }
+    &__discount-table-2 {
+        width: 100%;
+        margin-bottom: 0.6rem;
+    }
+    &__discount-table-title {
+        font-size: 1.15rem;
+        font-weight: 600;
+        padding: 0;
+    }
     &__discount-table-heading {
         font-weight: 700;
         background: #f19000 !important;
@@ -113,6 +126,27 @@
         text-align:center;
         border: 1px solid #ddd;
         border-width: 0 1px 1px 0;
+    }
+    &__discount-table-content-2 {
+        background: white !important;
+        color: #2d3e4f !important;
+        font-size: 80%;
+        padding: 0.5rem;
+        padding-left: 0px;
+        text-align:center;
+        border: 1px solid #ddd;
+        border-width: 0 1px 1px 0;
+    }
+    &__discount-table-info {
+        font-size: .85rem;
+        font-weight: 600;
+        text-align: right;
+        width: 100%;
+        padding: 0.2rem 0 0.5rem 0;
+        text-decoration: none;
+    }
+    &__discount-table-info:hover {
+        text-decoration:underline;
     }
     &__backorder-message {
         background-color: #f8d7da; 
@@ -134,6 +168,69 @@
         margin: 0;
         padding: 0;
     }
+    &__shipments-btn {
+        //background: variables.$secondary-color;
+        background: #6c7681;
+        color: white;
+        font-weight: 400;
+        padding: 0.85rem 1.3rem;
+        font-size: 0.92rem;
+    }
+    &__shipments-btn.active {
+        background: variables.$primary-color;
+    }
+    &__stages-heading {
+        background: variables.$secondary-color;
+    }
+    &__stages-heading-content {
+        color: white;
+        font-size: 1.1rem;
+        font-weight: 600;
+        padding: 0.4rem 0.8rem;
+        margin-top: 1rem;
+    }
+    &__order_info_box {
+        display: flex;
+        background: #eee;
+        border: 1px solid #ccc;
+        padding: 0 16px;
+        clear: both;
+    }
+    &__stages-heading-content::before {
+        display: inline-block;
+        width: 24px;
+        height: 24px;
+        content: "";
+        vertical-align: middle;
+        margin-right: 5px;
+        margin-top: -1px;
+        margin-left: -3px;
+    }
+    &__stages-heading-content.one::before {
+        background-image: url("/wp-content/uploads/2025/09/one-new.png");
+        background-size: 24px 24px;
+    }
+    &__stages-heading-content.two::before {
+        background-image: url("/wp-content/uploads/2025/09/two-new.png");
+        background-size: 24px 24px;
+    }
+    &__stages-heading-content.three::before {
+        background-image: url("/wp-content/uploads/2025/09/three-new.png");
+        background-size: 24px 24px;
+    }
+    &__order-info-message-1 {
+        width: 100%;
+        font-weight: 600;
+        padding: 0.4rem 0.8rem;
+        background: variables.$secondary-color;
+        color: white;
+    }
+    &__order-info-message-2 {
+        padding: 1rem 0 1rem 0.8rem;
+    }
+    &__order-info-message-3 {
+        padding: 1rem 0 1rem 0.8rem;
+    }
 }
 .single-product div.product .stock.out-of-stock {
     margin-bottom: 1.5rem;
@@ -144,6 +241,7 @@
     padding: 0.9rem 1.5rem;
     border-radius: 0;
     font-weight: 400;
+    font-size: 0.92rem;
 }
 
 .woocommerce-page div.product div.summary {
@@ -182,4 +280,27 @@
 #custom_price_display .product-page__backorder-message {
     margin: 0.8rem 0 0.1rem 0;
     display: block;
+}
+
+.ran-out-of-credits-blue {
+    color: white;
+    background: #40586f;
+    padding: 0.5rem 0.8rem;
+    border-left: 10px solid #1a252f;
+    font-weight: 400;
+    line-height: 1.4rem;
+    font-size: 0.81rem;
+}
+
+div#order_info_box {
+    display: flex;
+    flex-wrap: wrap;
+    background: white;
+    border: 1px solid #ccc;
+    padding: 0;
+    clear: both;
+    margin: 0.5rem 0 0 0;
+}
+div#order_info_box #parts_remaining {
+    margin-left: 0.3rem;
 }

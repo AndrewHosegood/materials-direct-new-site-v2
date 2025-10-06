@@ -264,6 +264,10 @@ require_once('includes/custom-product-tabs.php');
 require_once('includes/display-stock-availability.php');
 // Display stock availability on product page based on stock status
 
+// display and position 1,2,3 banners on product page
+//require_once('includes/display-123-banners-on-product-page.php');
+// display and position 1,2,3 banners on product page
+
 // Display backorder message on product page
 //require_once('includes/display-backorder-message.php');
 // Display backorder message on product page
@@ -300,10 +304,17 @@ require_once('includes/ensure-vat-is-not-included-on-checkout-page.php');
 require_once('includes/add-po-and-vat-fields-to-checkout-form.php');
 // Add additional custom PO and VAT input fields to checkout form
 
+// conditionally display delivery options modal and button on product page
+require_once('includes/delivery-options-modal-and-button.php');
+// conditionally display delivery options modal and button on product page
 
-// validation for product width and length
-// require_once('includes/display-order-object-on-thankyou-page.php');
-// validation for product width and length
+// add creditor user role
+require_once('includes/add-creditor-user-role.php');
+// add creditor user role
+
+// add credit account balance info to product page
+require_once('includes/add-credit-account-fund-status-to-product-page.php');
+// add credit account balance info to product page
 
 /* END CUSTOM FUNCTIONS */
 
@@ -311,9 +322,33 @@ require_once('includes/add-po-and-vat-fields-to-checkout-form.php');
 
 
 
+function add_delivery_options_modal() {
+    include get_template_directory() . '/includes/scheduled-shipments-info-modal.php';
+}
+add_action('wp_footer', 'add_delivery_options_modal');
+
+
+
+
+
+/* TEMPORARY FUNCTIONS */
+
+// validation for product width and length
+// require_once('includes/display-order-object-on-thankyou-page.php');
+// validation for product width and length
+
+// temp function to hide the 'despatch within' select menu on the product page
+require_once('includes/hide-despatch-within-if-credit-account.php');
+// temp function to hide the 'despatch within' select menu on the product page
+
 // Temporary - display acf is_single_product on product page
 //require_once('includes/display-is-single-product-on-product-page.php');
 // Temporary - display acf is_single_product on product page
 
 
+// Temporary - display acf is_single_product on product page
+//require_once('includes/display-is-single-product-on-product-page.php');
+// Temporary - display acf is_single_product on product page
+
+/* TEMPORARY FUNCTIONS */
 
