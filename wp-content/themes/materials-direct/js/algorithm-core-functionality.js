@@ -6,9 +6,166 @@ jQuery(document).ready(function($) {
         maxDate: "+1Y",
         appendTo: '.delivery-options-modal'
     });
+
     // Check if the product is single (via data attribute or AJAX)
     const isProductSingle = $('input[name="is_product_single"]').val() === '1';
-    const allowCredit = $('input[name="allow_credit"]').val() === '1'; // thursday new code
+    const allowCredit = $('input[name="allow_credit"]').val() === '1';
+
+
+    // Disable calculate/add shipments buttons initially if not single product
+    if (!isProductSingle) {
+        if (allowCredit) {
+            $('#add_shipments').prop('disabled', true);
+        } else {
+            $('#generate_price').prop('disabled', true);
+        }
+    }
+
+
+    // Function to toggle PDF upload field visibility, reset price, and clear PDF
+    function togglePdfValidation() {
+        const selectedTab = $('input[name="tabs_input"]:checked').val();
+        if (selectedTab === 'square-rectangle') {
+            $('#pdf_upload_container').addClass('hidden');
+            $('#pdf_path').val(''); // Clear PDF path
+            $('#custom_price_display').html(''); // Reset displayed price
+            $('#uploadPdf').val(''); // Reset file input
+            $('#input_width').val(''); // Reset width
+            $('#input_length').val(''); // Reset length
+            $('#input_qty').val(''); // Reset quantity
+            $('#tabs_status_message').html('Square Rectange'); // dynamically add shape text
+            enableButtons(); // Enable buttons since PDF is not required
+
+            // Delete temporary PDF file from server
+            const pdfPath = $('#pdf_path').data('last-uploaded-path') || '';
+            if (pdfPath) {
+                $.ajax({
+                    url: ajax_params.ajax_url,
+                    type: 'POST',
+                    data: {
+                        action: 'delete_temp_pdf',
+                        pdf_path: pdfPath,
+                        nonce: ajax_params.nonce
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            $('#pdf_path').data('last-uploaded-path', ''); // Clear stored path
+                        } else {
+                            console.log('Failed to delete temporary PDF: ' + (response.data.message || 'Unknown error'));
+                        }
+                    },
+                    error: function() {
+                        console.log('Server error while deleting temporary PDF.');
+                    }
+                });
+            }
+        }
+        else {
+            $('#pdf_upload_container').removeClass('hidden');
+            $('#custom_price_display').html(''); // Reset displayed price
+            $('#input_width').val(''); // Reset width
+            $('#input_length').val(''); // Reset length
+            $('#input_qty').val(''); // Reset quantity
+            $('#tabs_status_message').html('Custom Shape');
+            if (!$('#pdf_path').val().trim()) {
+                disableButtons(); // Disable buttons if no PDF is uploaded
+            }
+        }
+    }
+
+    // Initialize PDF validation state on page load
+    togglePdfValidation();
+
+    // Handle tab changes
+    $('input[name="tabs_input"]').on('change', function() {
+        togglePdfValidation();
+    });
+
+
+    // File upload handlers
+    $('#uploadPdf').on('change', function() {
+        if (this.files.length > 0) {
+            uploadFile(this, 'pdf');
+        } else {
+            $('#pdf_path').val('');
+            if ($('input[name="tabs_input"]:checked').val() === 'custom-shape-drawing') {
+                disableButtons();
+            }
+        }
+    });
+
+    $('#uploadDxf').on('change', function() {
+        if (this.files.length > 0) {
+            uploadFile(this, 'dxf');
+        } else {
+            $('#dxf_path').val('');
+        }
+    });
+
+
+
+    // Function to upload file automatically
+    function uploadFile(input, type) {
+        var formData = new FormData();
+        formData.append('file', input.files[0]);
+        formData.append('action', 'upload_drawing');
+        formData.append('type', type);
+        formData.append('nonce', ajax_params.nonce);
+
+        $('#price-spinner-overlay').fadeIn(200); // Show spinner during upload
+
+        $.ajax({
+            url: ajax_params.ajax_url,
+            type: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function(response) {
+                $('#price-spinner-overlay').fadeOut(200);
+                if (response.success) {
+                    $('#' + type + '_path').val(response.data.path);
+                    if (type === 'pdf') {
+                            $('#pdf_path').data('last-uploaded-path', response.data.path); // Store path for deletion
+                            if ($('input[name="tabs_input"]:checked').val() === 'custom-shape-drawing') {
+                                enableButtons();
+                            }
+                    }
+                } else {
+                    alert('Upload failed: ' + (response.data.message || 'Unknown error.'));
+                    $('#' + type + '_path').val('');
+                    if (type === 'pdf' && $('input[name="tabs_input"]:checked').val() === 'custom-shape-drawing') {
+                        disableButtons();
+                    }
+                }
+            },
+            error: function() {
+                $('#price-spinner-overlay').fadeOut(200);
+                alert('Server error during upload.');
+                $('#' + type + '_path').val('');
+                if (type === 'pdf' && $('input[name="tabs_input"]:checked').val() === 'custom-shape-drawing') {
+                    disableButtons();
+                }
+            }
+        });
+    }
+
+    // Helper to disable buttons
+    function disableButtons() {
+        if (allowCredit) {
+            $('#add_shipments').prop('disabled', true);
+        } else {
+            $('#generate_price').prop('disabled', true);
+        }
+    }
+
+    // Helper to enable buttons
+    function enableButtons() {
+        if (allowCredit) {
+            $('#add_shipments').prop('disabled', false);
+        } else {
+            $('#generate_price').prop('disabled', false);
+        }
+    }
 
     // Common function to validate shipping address
     function validateShippingAddress() {
@@ -32,8 +189,17 @@ jQuery(document).ready(function($) {
         };
     }
     
-    // thursday new code
+     // Calculate the delivery options price
     function calculateScheduledPrice() {
+
+        const selectedTab = $('input[name="tabs_input"]:checked').val();
+        if (selectedTab === 'custom-shape-drawing') {
+            const pdfPath = $('#pdf_path').val().trim();
+            if (!pdfPath) {
+                $('#custom_price_display').html('<span class="product-page__backorder-message"><p class="product-page__backorder-message-text">Please upload a .PDF drawing before calculating the price.</p></span>');
+                return;
+            }
+        }
         const width = parseFloat($('#input_width').val());
         const length = parseFloat($('#input_length').val());
         const qty = parseInt($('#input_qty').val());
@@ -59,7 +225,8 @@ jQuery(document).ready(function($) {
                 length: length,
                 qty: qty,
                 nonce: ajax_params.nonce,
-                ...shipping_address
+                ...shipping_address,
+                shape_type: selectedTab
             },
             success: function(response) {
                 $('#price-spinner-overlay').fadeOut(200);
@@ -81,7 +248,6 @@ jQuery(document).ready(function($) {
 
                     $('input[name="quantity"]').val(sheetsRequired); 
                     
-                    // Remove backorder hidden fields if present
                     $('input[name="custom_backorder_total"], input[name="custom_parts_backorder"], input[name="custom_able_to_dispatch"], input[name="custom_parts_per_sheet"]').remove();
                 } else {
                     $('#custom_price_display').html('Error: ' + (response.data.message || 'Unable to calculate scheduled price.'));
@@ -89,11 +255,11 @@ jQuery(document).ready(function($) {
             },
             error: function() {
                 $('#price-spinner-overlay').fadeOut(200);
-                $('#custom_price_display').html('Error: Server error.');
+                $('#custom_price_display').html('<span class="product-page__backorder-message"><p class="product-page__backorder-message-text">Error: Server error.</p></span>');
             }
         });
     }
-    // thursday new code
+    // Calculate the delivery options price
 
     // NEW CODE FOR DELIVERY OPTIONS
 
@@ -222,10 +388,18 @@ jQuery(document).ready(function($) {
 
         $('#generate_price').on('click', function() {
 
+            const selectedTab = $('input[name="tabs_input"]:checked').val();
+            if (selectedTab === 'custom-shape-drawing') {
+                const pdfPath = $('#pdf_path').val().trim();
+                if (!pdfPath) {
+                    $('#custom_price_display').html('<span class="product-page__backorder-message"><p class="product-page__backorder-message-text">Please upload a .PDF drawing before calculating the price.</p></span>');
+                    return;
+                }
+            }
+
             const width = parseFloat($('#input_width').val());
             const length = parseFloat($('#input_length').val());
             const qty = parseInt($('#input_qty').val());
-            //alert("qty: " + qty);
             const discount_rate = parseFloat($('#input_discount_rate').val());
             const shipping_address = validateShippingAddress();
 
@@ -243,7 +417,7 @@ jQuery(document).ready(function($) {
                 if(allowCredit){
                     $('#custom_price_display').html('');
                 } else {
-                    $('#custom_price_display').html('Please select a valid delivery time.');
+                    $('#custom_price_display').html('<span class="product-page__backorder-message"><p class="product-page__backorder-message-text">Please select a valid delivery time.</p></span>');
                     return;
                 }
 
@@ -262,7 +436,8 @@ jQuery(document).ready(function($) {
                     qty: qty,
                     discount_rate: discount_rate,
                     nonce: ajax_params.nonce,
-                    ...shipping_address
+                    ...shipping_address,
+                    shape_type: selectedTab
                 },
                 success: function(response) {
                     $('#price-spinner-overlay').fadeOut(200);
@@ -273,7 +448,6 @@ jQuery(document).ready(function($) {
                         const isBackorder = response.data.is_backorder || false;
                         const sheet_width_mm = response.data.sheet_width_mm;
                         const sheet_length_mm = response.data.sheet_length_mm;
-                        //const border = 2;
                         const border = parseFloat(response.data.border_around || 0.2) * 10;
                         const stock_quantity = response.data.stock_quantity;
                         const qty = response.data.entered_quantity;
@@ -424,12 +598,12 @@ jQuery(document).ready(function($) {
                         $('input[name="quantity"]').val(sheetsRequired); 
                         
                     } else {
-                        $('#custom_price_display').html('Error: ' + (response.data.message || 'Unable to calculate price.'));
+                        $('#custom_price_display').html('<span class="product-page__backorder-message"><p class="product-page__backorder-message-text">Error: ' + (response.data.message || 'Unable to calculate price.') + '</p></span>');
                     }
                 },
                 error: function() {
                     $('#price-spinner-overlay').fadeOut(200);
-                    $('#custom_price_display').html('Error: Server error.');
+                    $('#custom_price_display').html('<span class="product-page__backorder-message"><p class="product-page__backorder-message-text">Error: Server error.</p></span>');
                 }
             });
         });

@@ -220,9 +220,10 @@ require_once('includes/algorithm_and_core_functionality.php');
 require_once('includes/custom-price-add-to-cart-validation.php');
 // Lets make sure that a product cannot be added to cart if width length and qty is empty
 
-// Display Ajax Page spinner
+// CODE FOR BYPASSING WORDPRESS BLOCK ON DXF/SVG FILES
 require_once('includes/allow-svg-upload.php');
-// Display Ajax Page spinner
+require_once('includes/allow-dxf-upload.php');
+// CODE FOR BYPASSING WORDPRESS BLOCK ON DXF/SVG FILES
 
 // Reposition product title on product page
 require_once('includes/reposition-product-title-on-product-page.php');
@@ -316,16 +317,96 @@ require_once('includes/add-creditor-user-role.php');
 require_once('includes/add-credit-account-fund-status-to-product-page.php');
 // add credit account balance info to product page
 
+// hide the 'despatch within' select menu on the product page
+require_once('includes/hide-despatch-within-if-credit-account.php');
+// hide the 'despatch within' select menu on the product page
+
+/* display scheduled shipments discount rates table on product page */
+require_once('includes/display-shipment-discount-rates-on-product-page.php');
+/* display scheduled shipments discount rates table on product page */
+
 /* END CUSTOM FUNCTIONS */
 
 
+add_filter( 'woocommerce_order_item_get_formatted_meta_data', function( $formatted_meta, $item ) {
+    foreach ( $formatted_meta as $meta_id => $meta ) {
+        if ( $meta->key === 'pdf_path' ) {
+            unset( $formatted_meta[$meta_id] ); // remove pdf
+        }
+		if ( $meta->key === 'dxf_path' ) {
+            unset( $formatted_meta[$meta_id] ); // remove dxf
+        }
+    }
+    return $formatted_meta;
+}, 10, 2 );
+
+add_action( 'woocommerce_order_item_meta_end', function( $item_id, $item, $order ) {
+    $pdf_path = $item->get_meta( 'pdf_path' );
+	$dxf_path = $item->get_meta( 'dxf_path' );
+
+    if ( ! empty( $pdf_path ) ) {
+        $filename_pdf = basename( $pdf_path );
+        echo '<ul class="wc-item-meta"><li><strong class="wc-item-meta-label">Upload .PDF Drawing:</strong> 
+                <p><a href="/wp-content/uploads' . esc_url( $pdf_path ) . '" target="_blank" rel="noopener">' . esc_html( $filename_pdf ) . '</a></p>
+              </li></ul>';
+    }
+	if ( ! empty( $dxf_path ) ) {
+        $filename_dxf = basename( $dxf_path );
+        echo '<ul class="wc-item-meta"><li><strong class="wc-item-meta-label">Upload .DXF Drawing:</strong> 
+                <p><a href="/wp-content/uploads' . esc_url( $dxf_path ) . '" target="_blank" rel="noopener">' . esc_html( $filename_dxf ) . '</a></p>
+              </li></ul>';
+    }
+}, 10, 3 );
 
 
 
-function add_delivery_options_modal() {
-    include get_template_directory() . '/includes/scheduled-shipments-info-modal.php';
+
+
+
+
+
+// DISPLAY PDF/DXF ON THANK YOU PAGE
+/*
+add_action('woocommerce_thankyou', 'display_pdf_dxf_on_thankyou', 0);
+function display_pdf_dxf_on_thankyou($order_id) {
+    $order = wc_get_order($order_id);
+    if (!$order) return;
+
+    echo '<div class="order-drawings" style="margin-top: 20px; padding: 15px; background: #f9f9f9; border: 1px solid #ddd;">';
+    echo '<h3>Drawing Files</h3>';
+
+    foreach ($order->get_items() as $item_id => $item) {
+        $pdf_path = $item->get_meta('pdf_path');
+        $dxf_path = $item->get_meta('dxf_path');
+
+        if ($pdf_path || $dxf_path) {
+            echo '<p><strong>Item: ' . esc_html($item->get_name()) . '</strong></p>';
+            if ($pdf_path) {
+                echo '<p>PDF Drawing: <a href="' . esc_url($pdf_path) . '" target="_blank">' . esc_html(basename($pdf_path)) . '</a></p>';
+            }
+            if ($dxf_path) {
+                echo '<p>DXF Drawing: <a href="' . esc_url($dxf_path) . '" target="_blank">' . esc_html(basename($dxf_path)) . '</a></p>';
+            }
+            echo '<hr>'; // Separator between items
+        }
+    }
+
+    echo '</div>';
 }
-add_action('wp_footer', 'add_delivery_options_modal');
+	*/
+// DISPLAY PDF/DXF ON THANK YOU PAGE
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -337,18 +418,13 @@ add_action('wp_footer', 'add_delivery_options_modal');
 // require_once('includes/display-order-object-on-thankyou-page.php');
 // validation for product width and length
 
-// temp function to hide the 'despatch within' select menu on the product page
-require_once('includes/hide-despatch-within-if-credit-account.php');
-// temp function to hide the 'despatch within' select menu on the product page
-
-// Temporary - display acf is_single_product on product page
-//require_once('includes/display-is-single-product-on-product-page.php');
-// Temporary - display acf is_single_product on product page
 
 
 // Temporary - display acf is_single_product on product page
 //require_once('includes/display-is-single-product-on-product-page.php');
 // Temporary - display acf is_single_product on product page
+
+
 
 /* TEMPORARY FUNCTIONS */
 

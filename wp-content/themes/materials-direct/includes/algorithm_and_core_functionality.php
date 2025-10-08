@@ -19,9 +19,60 @@ function count_working_days($from, $to) {
     }
     return $working_days;
 }
+// Function to count working days (excluding weekends)
+
+
+// AJAX handler for file uploads
+add_action('wp_ajax_upload_drawing', 'upload_drawing');
+add_action('wp_ajax_nopriv_upload_drawing', 'upload_drawing');
+function upload_drawing() {
+    check_ajax_referer('custom_price_nonce', 'nonce');
+
+    if (empty($_FILES['file'])) {
+        wp_send_json_error(['message' => 'No file uploaded.']);
+    }
+
+    $file = $_FILES['file'];
+    $type = sanitize_text_field($_POST['type']);
+
+    $allowed = [];
+    if ($type === 'pdf') {
+        $allowed = ['pdf' => 'application/pdf'];
+    } elseif ($type === 'dxf') {
+        $allowed = ['dxf' => 'application/dxf'];
+    } else {
+        wp_send_json_error(['message' => 'Invalid file type.']);
+    }
+
+    $uploaded = wp_handle_upload($file, ['test_form' => false, 'mimes' => $allowed]);
+
+    if ($uploaded && !isset($uploaded['error'])) {
+        // Move to specific folder
+        $upload_dir = wp_upload_dir();
+        $target_dir = $upload_dir['basedir'] . '/pdf-and-dxf-uploads/';
+        if (!file_exists($target_dir)) {
+            mkdir($target_dir, 0755, true);
+        }
+
+        $filename = wp_unique_filename($target_dir, $file['name']);
+        $target_path = $target_dir . $filename;
+
+        if (rename($uploaded['file'], $target_path)) {
+            $relative_path = '/pdf-and-dxf-uploads/' . $filename;
+            wp_send_json_success(['path' => $relative_path]);
+        } else {
+            wp_send_json_error(['message' => 'Failed to move file.']);
+        }
+    } else {
+        wp_send_json_error(['message' => $uploaded['error'] ?? 'Invalid file type or upload error.']);
+    }
+}
+// AJAX handler for file uploads
+
+
 
 // 1. PRICE CALCULATION FUNCTION
-function calculate_product_price($product_id, $width, $length, $qty, $discount_rate = 0) {
+function calculate_product_price($product_id, $width, $length, $qty, $discount_rate = 0, $shape_type = 'custom-shape-drawing') {
 
     if (!is_numeric($product_id) || !is_numeric($width) || !is_numeric($length) || !is_numeric($qty) || !is_numeric($discount_rate)) {
         return new WP_Error('invalid_input', 'Invalid input data');
@@ -62,7 +113,16 @@ function calculate_product_price($product_id, $width, $length, $qty, $discount_r
 
     $cost_per_cm2 = floatval(get_field('cost_per_cm', $product_id));
     $item_border = floatval(get_field('border_around', $product_id));
-    $globalPriceAdjust = floatval(get_field('global_adjust_square_rectangle', 'options'));
+
+    // NEW: Dynamic global adjust based on shape_type
+    if ($shape_type === 'custom-shape-drawing') {
+        $globalPriceAdjust = 1.0;
+    } else {
+        $globalPriceAdjust = floatval(get_field('global_adjust_square_rectangle', 'options'));
+    }
+    // NEW: Dynamic global adjust based on shape_type
+
+    //$globalPriceAdjust = floatval(get_field('global_adjust_square_rectangle', 'options'));
 
     // Core calculation
     $borderSize = $item_border * 2;
@@ -155,6 +215,10 @@ function custom_price_input_fields_prefill() {
                     <option value="France"' . selected($country, 'France', false) . '>France</option>
                     <option value="Germany"' . selected($country, 'Germany', false) . '>Germany</option>
                     <option value="Monaco"' . selected($country, 'Monaco', false) . '>Monaco</option>
+                    <option value="Poland"' . selected($country, 'Poland', false) . '>Poland</option>
+                    <option value="Spain"' . selected($country, 'Spain', false) . '>Spain</option>
+                    <option value="United States"' . selected($country, 'United States', false) . '>United States</option>
+                    
                 </select>
             </label>
         </div>';
@@ -174,9 +238,43 @@ function custom_price_input_fields_prefill() {
     <!-- 123 stage banner -->
     
         <div id="custom-price-calc" class="custom-price-calc">
-    
+
+        <!-- Tabs -->
+        <ul class="product-page__tabs">
+        <li class="product-page__tabs-list"><label class="product-page__tabs-label">Custom Shape (Drawing)
+        <input class="product-page__tabs-input" name="tabs_input" type="radio" value="custom-shape-drawing" checked="checked" id="custom_drawing" tabindex="1">
+        </label></li>
+        <li class="product-page__tabs-list"><label class="product-page__tabs-label">Square Rectangle
+        <input class="product-page__tabs-input" name="tabs_input" type="radio" value="square-rectangle" id="square_rectangle" tabindex="0">
+        </label></li>
+        </ul>
+        <!-- Tabs -->
+
         <!-- Price Inputs -->
         <div class="product-page__grey-panel">
+
+        <p class="product-page__square-rectangle-message"><i class="fa-solid fa-circle-info product-page__square-rectangle-message-icon"></i> You are asking us to manufacture a <span id="tabs_status_message">custom shape</span>. Enter your values below</p>
+
+        <!-- File Upload Fields -->
+        <div id="pdf_upload_container">
+        <label id="pdf_upload_label" class="product-page__file-upload-label">Upload .PDF Drawing</label>
+        <input class="product-page__file-upload-input" type="file" id="uploadPdf" name="upload-pdf" accept=".pdf">
+        </div>
+
+        <p id="pdf_upload_text" class="product-page__file-upload-pdf-message">Uploading a <strong>.pdf</strong> is required for a custom shape, we also use <strong>.pdf</strong> to verify dimensions and tolerences of your custom parts</p>
+        
+        <label id="dxf_upload_label" class="product-page__file-upload-label">Upload .DXF Drawing</label>
+        <input class="product-page__file-upload-input" type="file" id="uploadDxf" name="upload-dxf" accept=".dxf">
+        
+        <input type="hidden" id="pdf_path" name="pdf_path" value="">
+        <input type="hidden" id="dxf_path" name="dxf_path" value="">
+
+        <div id="drawing_guide" class="product-page__drawing-guide">
+        <a href="/wp-content/uploads/2025/10/DrawinGuide2025.pdf" target="_blank" class="product-page__drawing-guide-btn">Download here</a>
+        <p class="product-page__drawing-guide-text">Download the drawing guide to help you with your pad and gasket design</p>
+        </div>
+        
+
         <label class="product-page__input-wrap">Width (MM): <input class="product-page__input" type="number" id="input_width" name="custom_width" min="0.01" step="0.01" required></label>
         <label class="product-page__input-wrap">Length (MM): <input class="product-page__input" type="number" id="input_length" name="custom_length" min="0.01" step="0.01" required></label>
         <label class="product-page__input-wrap">Total number of parts: <input class="product-page__input" type="number" id="input_qty" name="custom_qty" value="1" min="1" step="1" required></label>
@@ -184,35 +282,29 @@ function custom_price_input_fields_prefill() {
 
 
 
-        //if($allow_credit){
-            //echo "";
-        //} else {
-            if($is_full_backorder != 1){
-                echo ' <label id="despatched_within" class="custom-price-calc__label product-page__label">Despatched Within <span class="product-page__label-small-text">Only applies to available stock</span> 
-                <select class="custom-price-calc__input product-page__calc-input" id="input_discount_rate" name="custom_discount_rate">
-                    <option value="0" selected="selected">24Hrs (working day)</option>
-                    <option value="0.015">48Hrs (working days) (1.5% Discount)</option>
-                    <option value="0.02">5 Days (working days) (2% Discount)</option>
-                    <option value="0.025">7 Days (working days) (2.5% Discount)</option>
-                    <option value="0.03">12 Days (working days) (3% Discount)</option>
-                    <option value="0.035">14 Days (working days) (3.5% Discount)</option>
-                    <option value="0.04">30 Days (working days) (4% Discount)</option>
-                    <option value="0.05">35 Days (working days) (5% Discount)</option>
-                </select>
-            </label>';
-            } else {
-                echo ' <label id="despatched_within" class="custom-price-calc__label product-page__label">Despatched Within <span class="product-page__label-small-text">Please allow 35 Days for complete order fulfillment with a 5% discount applied to the total order</span> 
-                <select class="custom-price-calc__input product-page__calc-input" id="input_discount_rate" name="custom_discount_rate">
-                    <option value="0.05">35 Days (working days) (5% Discount)</option>
-                </select>
-            </label>';
-            }
-        //}
+
+        if($is_full_backorder != 1){
+            echo ' <label id="despatched_within" class="custom-price-calc__label product-page__label">Despatched Within <span class="product-page__label-small-text">Only applies to available stock</span> 
+            <select class="custom-price-calc__input product-page__calc-input" id="input_discount_rate" name="custom_discount_rate">
+                <option value="0" selected="selected">24Hrs (working day)</option>
+                <option value="0.015">48Hrs (working days) (1.5% Discount)</option>
+                <option value="0.02">5 Days (working days) (2% Discount)</option>
+                <option value="0.025">7 Days (working days) (2.5% Discount)</option>
+                <option value="0.03">12 Days (working days) (3% Discount)</option>
+                <option value="0.035">14 Days (working days) (3.5% Discount)</option>
+                <option value="0.04">30 Days (working days) (4% Discount)</option>
+                <option value="0.05">35 Days (working days) (5% Discount)</option>
+            </select>
+        </label>';
+        } else {
+            echo ' <label id="despatched_within" class="custom-price-calc__label product-page__label">Despatched Within <span class="product-page__label-small-text">Please allow 35 Days for complete order fulfillment with a 5% discount applied to the total order</span> 
+            <select class="custom-price-calc__input product-page__calc-input" id="input_discount_rate" name="custom_discount_rate">
+                <option value="0.05">35 Days (working days) (5% Discount)</option>
+            </select>
+        </label>';
+        }
+    
             
-
-
-        
-
 
         // display the is shipment button -  if the user has a credit account
         if (is_user_logged_in() && $allow_credit && !is_admin()) {
@@ -335,7 +427,6 @@ function custom_price_input_fields_prefill() {
 
         <?php
         // add javascript for reset button
-
         echo '<!-- 123 stage banner -->
         <div class="product-page__stages-heading"><h3 class="product-page__stages-heading-content two">Enter your delivery address</h3></div>
         <!-- 123 stage banner -->
@@ -354,6 +445,9 @@ function custom_price_input_fields_prefill() {
                     <option value="France"' . selected($country, 'France', false) . '>France</option>
                     <option value="Germany"' . selected($country, 'Germany', false) . '>Germany</option>
                     <option value="Monaco"' . selected($country, 'Monaco', false) . '>Monaco</option>
+                    <option value="Poland"' . selected($country, 'Poland', false) . '>Poland</option>
+                    <option value="Spain"' . selected($country, 'Spain', false) . '>Spain</option>
+                    <option value="United States"' . selected($country, 'United States', false) . '>United States</option>
                 </select>
             </label>
         </div>
@@ -397,6 +491,7 @@ function calculate_secure_price() {
     $length = floatval($_POST['length']);
     $qty = intval($_POST['qty']);
     $discount_rate = floatval($_POST['discount_rate']);
+    $shape_type = sanitize_text_field($_POST['shape_type'] ?? 'custom-shape-drawing');
 
     if (!is_numeric($product_id) || $width <= 0 || $length <= 0 || $qty < 1 || !is_numeric($discount_rate)) {
         wp_send_json_error(['message' => 'Invalid input values.']);
@@ -436,8 +531,9 @@ function calculate_secure_price() {
         WC()->session->set('custom_shipping_address', $shipping_address);
     }
 
-    //$price = calculate_product_price($product_id, $width, $length, $qty, $discount_rate);
-    $total_price = calculate_product_price($product_id, $width, $length, $qty, $discount_rate);
+    // NEW: Dynamic global adjust based on shape_type
+    $total_price = calculate_product_price($product_id, $width, $length, $qty, $discount_rate, $shape_type);
+    // NEW: Dynamic global adjust based on shape_type
 
     if (is_wp_error($total_price)) {
         wp_send_json_error(['message' => $total_price->get_error_message()]);
@@ -510,9 +606,10 @@ function calculate_scheduled_price_func() {
     if ($total_parts != $qty) {
         wp_send_json_error(['message' => 'Shipments do not cover all parts.']);
     }
+    $shape_type = sanitize_text_field($_POST['shape_type'] ?? 'custom-shape-drawing');
 
     // Calculate base price without any discount
-    $base_total_price = calculate_product_price($product_id, $width, $length, $qty, 0);
+    $base_total_price = calculate_product_price($product_id, $width, $length, $qty, 0, $shape_type);
     if (is_wp_error($base_total_price)) {
         wp_send_json_error(['message' => $base_total_price->get_error_message()]);
         return;
@@ -783,7 +880,7 @@ function calculate_shipping_cost($total_del_weight, $country) {
             [30, 50, 36.50],
             [50, PHP_INT_MAX, 82.50],
         ],
-        'Europe' => [ // Shared tiers for France, Germany, Monaco
+        'Europe_1' => [ // Shared tiers for France, Germany, Monaco
             [0, 1, 54.18],
             [1, 1.5, 61.86],
             [1.5, 2, 65.86],
@@ -801,14 +898,71 @@ function calculate_shipping_cost($total_del_weight, $country) {
             [70, 100, 423.40],
             [100, PHP_INT_MAX, 603.40],
         ],
+        'Europe_2' => [ // Shared tiers for Spain
+            [0, 1, 58.56],
+            [1, 1.5, 67.38],
+            [1.5, 2, 72.70],
+            [2, 2.5, 78.36],
+            [2.5, 3, 83.92],
+            [3, 3.5, 89.12],
+            [3.5, 4, 94.50],
+            [4, 4.5, 99.76],
+            [4.5, 5, 105],
+            [5, 10, 110.40],
+            [10, 26, 160.26],
+            [26, 30, 280.46],
+            [30, 50, 308.68],
+            [50, 70, 486.86],
+            [70, 100, 665.10],
+            [100, PHP_INT_MAX, 950.70],
+        ],
+        'Europe_3' => [ // Shared tiers for Poland
+            [0, 1, 65.48],
+            [1, 1.5, 73.24],
+            [1.5, 2, 80.54],
+            [2, 2.5, 86.92],
+            [2.5, 3, 93.48],
+            [3, 3.5, 97],
+            [3.5, 4, 102.76],
+            [4, 4.5, 108.32],
+            [4.5, 5, 114.08],
+            [5, 10, 119.72],
+            [10, 26, 162.26],
+            [26, 30, 286.88],
+            [30, 50, 316.32],
+            [50, 70, 494.98],
+            [70, 100, 673.54],
+            [100, PHP_INT_MAX, 962.14],
+        ],
+        'America_1' => [ // Shared tiers for USA
+            [0, 1, 84.40],
+            [1, 1.5, 89.12],
+            [1.5, 2, 101.40],
+            [2, 2.5, 106.70],
+            [2.5, 3, 111.92],
+            [3, 3.5, 117.24],
+            [3.5, 4, 122.08],
+            [4, 4.5, 126.96],
+            [4.5, 5, 131.92],
+            [5, 10, 136.76],
+            [10, 26, 173.44],
+            [26, 30, 301.82],
+            [30, 50, 328.26],
+            [50, 70, 496.86],
+            [70, 100, 664.70],
+            [100, PHP_INT_MAX, 935.90],
+        ],
     ];
 
     // Map countries to cost tier groups
     $country_groups = [
         'United Kingdom' => 'United Kingdom',
-        'France' => 'Europe',
-        'Germany' => 'Europe',
-        'Monaco' => 'Europe',
+        'France' => 'Europe_1',
+        'Germany' => 'Europe_1',
+        'Monaco' => 'Europe_1',
+        'Poland' => 'Europe_3',
+        'Spain' => 'Europe_2',
+        'United States' => 'America_1',
     ];
 
     // Get the appropriate cost tier based on country
@@ -817,6 +971,9 @@ function calculate_shipping_cost($total_del_weight, $country) {
         case 'France':
         case 'Germany':
         case 'Monaco':
+        case 'Poland':
+        case 'Spain':
+        case 'United States':
             $tiers = $cost_tiers[$country_groups[$country]];
             break;
         default:
@@ -862,6 +1019,16 @@ function add_custom_price_cart_item_data_secure($cart_item_data, $product_id) {
         ];
         WC()->session->set('custom_shipping_address', $cart_item_data['custom_inputs']['shipping_address']);
     }
+
+
+    // Add file paths to cart data
+    if (isset($_POST['pdf_path']) && !empty($_POST['pdf_path'])) {
+        $cart_item_data['custom_inputs']['pdf_path'] = sanitize_text_field($_POST['pdf_path']);
+    }
+    if (isset($_POST['dxf_path']) && !empty($_POST['dxf_path'])) {
+        $cart_item_data['custom_inputs']['dxf_path'] = sanitize_text_field($_POST['dxf_path']);
+    }
+
 
     $product = wc_get_product($product_id);
     if (!$product) {
@@ -922,6 +1089,9 @@ function add_custom_price_cart_item_data_secure($cart_item_data, $product_id) {
         }
         return $cart_item_data;
     }
+
+    // MODIFIED: Retrieve shape_type from POST (form uses tabs_input, AJAX uses shape_type)
+    $shape_type = sanitize_text_field($_POST['tabs_input'] ?? $_POST['shape_type'] ?? 'custom-shape-drawing');
 
     $sheet_length_mm = $product->get_length() * 10; 
     $sheet_width_mm = $product->get_width() * 10;
@@ -1036,11 +1206,6 @@ function add_custom_price_cart_item_data_secure($cart_item_data, $product_id) {
             $quantity,
             $delivery_time
         );
-        /*
-        if ($stock_quantity <= 0) {
-            $shipments = date('d/m/Y', strtotime('+35 days')); // Full backorder takes 35 days
-        }
-        */
     }
 
     $shipments_session = WC()->session->get('custom_shipments', []);
@@ -1060,12 +1225,12 @@ function add_custom_price_cart_item_data_secure($cart_item_data, $product_id) {
             $despatch_notes .= $s['parts'] . ' parts to be despatched on ' . $s['date'] . "\n";
         }
 
-        $base_total_price = calculate_product_price($product_id, $part_width_mm, $part_length_mm, $quantity, 0);
+        $base_total_price = calculate_product_price($product_id, $part_width_mm, $part_length_mm, $quantity, 0, $shape_type);
         if (!is_wp_error($base_total_price)) {
             $per_part_base = $base_total_price / $quantity;
             $today = date('Y-m-d');
             $server_total = 0;
-            foreach ($scheduled_shipments as $shipment) {
+            foreach ($scheduled_shipments as $index => $shipment) { //here!!!
                 list($dd, $mm, $yyyy) = explode('/', $shipment['date']);
                 $despatch_ymd = "$yyyy-$mm-$dd";
 
@@ -1161,6 +1326,7 @@ function add_custom_price_cart_item_data_secure($cart_item_data, $product_id) {
         error_log("  total_del_weight: {$total_del_weight}");
         error_log("  final_shipping: {$final_shipping}");
         error_log("  shipments: " . (is_array($shipments) ? print_r($shipments, true) : $shipments));
+        error_log("  shape_type: {$shape_type}"); // MODIFIED: Log shape_type for debugging
         if ($is_backorder) {
             error_log("  backorder_data: " . print_r($backorder_data, true));
         }
@@ -1351,6 +1517,9 @@ function add_custom_shipping_to_order($order, $data) {
             'France' => 'FR',
             'Germany' => 'DE',
             'Monaco' => 'MC',
+            'Poland' => 'PL',
+            'Spain' => 'ES',
+            'United States' => 'US',
         ];
         $country_code = isset($country_codes[$shipping_address['country']]) ? $country_codes[$shipping_address['country']] : '';
         if ($country_code) {
@@ -1417,6 +1586,13 @@ function save_sheets_required_to_order_item($item, $cart_item_key, $values, $ord
         }
         $item->add_meta_data('scheduled_shipments', implode("\n", $meta_value), true);
     }
+    // Add file paths to order meta
+    if (isset($values['custom_inputs']['pdf_path'])) {
+        $item->add_meta_data('pdf_path', $values['custom_inputs']['pdf_path'], true);
+    }
+    if (isset($values['custom_inputs']['dxf_path'])) {
+        $item->add_meta_data('dxf_path', $values['custom_inputs']['dxf_path'], true);
+    }
 }
 // SAVE ALL RELEVANT DATA TO ORDER ITEM META
 
@@ -1432,6 +1608,22 @@ function show_custom_input_details_in_cart($item_data, $cart_item) {
     }
 
     if (!empty($cart_item['custom_inputs'])) {
+
+        // PDF Drawing (if present)
+        if (isset($cart_item['custom_inputs']['pdf_path']) && !empty($cart_item['custom_inputs']['pdf_path'])) {
+            $item_data[] = [
+                'name' => 'PDF Drawing',
+                'value' => '<a href="/wp-content/uploads' . esc_url($cart_item['custom_inputs']['pdf_path']) . '" target="_blank">' . esc_html(basename($cart_item['custom_inputs']['pdf_path'])) . '</a>'
+            ];
+        }
+
+        // DXF Drawing (if present, optional)
+        if (isset($cart_item['custom_inputs']['dxf_path']) && !empty($cart_item['custom_inputs']['dxf_path'])) {
+            $item_data[] = [
+                'name' => 'DXF Drawing',
+                'value' => '<a href="/wp-content/uploads' . esc_url($cart_item['custom_inputs']['dxf_path']) . '" target="_blank">' . esc_html(basename($cart_item['custom_inputs']['dxf_path'])) . '</a>'
+            ];
+        }
 
         // Width
         if (isset($cart_item['custom_inputs']['width'])) {
@@ -1538,6 +1730,7 @@ function apply_secure_custom_price($cart) {
             $discount_rate = isset($cart_item['custom_inputs']['discount_rate']) ? $cart_item['custom_inputs']['discount_rate'] : 0;
             $sheets_required = isset($cart_item['custom_inputs']['sheets_required']) ? intval($cart_item['custom_inputs']['sheets_required']) : 1;
             $is_backorder = isset($cart_item['custom_inputs']['is_backorder']) ? $cart_item['custom_inputs']['is_backorder'] : false;
+            $shape_type = $cart_item['custom_inputs']['shape_type'] ?? 'custom-shape-drawing'; 
 
             if ($is_backorder && !empty($cart_item['custom_inputs']['backorder_data'])) {
                 $backorder_data = $cart_item['custom_inputs']['backorder_data'];
@@ -1548,10 +1741,10 @@ function apply_secure_custom_price($cart) {
                     if (defined('WP_DEBUG') && WP_DEBUG) {
                         error_log("apply_secure_custom_price: Invalid backorder_total for cart item key $cart_item_key. Falling back to standard pricing.");
                     }
-                    $total_price = calculate_product_price($product_id, $width, $length, $qty, $discount_rate);
+                    $total_price = calculate_product_price($product_id, $width, $length, $qty, $discount_rate, $shape_type);
                 }
             } else {
-                $total_price = calculate_product_price($product_id, $width, $length, $qty, $discount_rate);
+                $total_price = calculate_product_price($product_id, $width, $length, $qty, $discount_rate, $shape_type);
             }
 
             if (!is_wp_error($total_price)) {
@@ -1978,6 +2171,9 @@ function set_custom_shipping_country_for_tax_calculation() {
                 'France' => 'FR',
                 'Germany' => 'DE',
                 'Monaco' => 'MC',
+                'Poland' => 'PL',
+                'Spain' => 'ES',
+                'United States' => 'US',
             ];
             $country_code = isset($country_codes[$custom_country]) ? $country_codes[$custom_country] : '';
             if ($country_code) {
@@ -2180,6 +2376,36 @@ function delete_shipment() {
 }
 
 // HANDLE DELIVERY OPTIONS DELETE AJAX SHIPPING
+
+
+
+// HANDLE TEMP PDF DELETE
+function delete_temp_pdf() {
+    check_ajax_referer('custom_price_nonce', 'nonce');
+
+    if (empty($_POST['pdf_path'])) {
+        wp_send_json_error(['message' => 'No PDF path provided.']);
+        return;
+    }
+
+    $pdf_path = sanitize_text_field($_POST['pdf_path']);
+    $upload_dir = wp_upload_dir();
+    $full_path = $upload_dir['basedir'] . $pdf_path;
+
+    if (file_exists($full_path)) {
+        if (unlink($full_path)) {
+            wp_send_json_success(['message' => 'Temporary PDF deleted successfully.']);
+        } else {
+            wp_send_json_error(['message' => 'Failed to delete temporary PDF.']);
+        }
+    } else {
+        wp_send_json_success(['message' => 'PDF file does not exist.']);
+    }
+}
+add_action('wp_ajax_delete_temp_pdf', 'delete_temp_pdf');
+// HANDLE TEMP PDF DELETE
+
+
 
 // RESET BUTTON
 

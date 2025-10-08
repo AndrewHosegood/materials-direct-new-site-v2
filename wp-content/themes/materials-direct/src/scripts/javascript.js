@@ -31,6 +31,36 @@ jQuery(document).ready(function($){
         });
         // scheduled shipments info modal
 
+        // display active class for product page tabs
+        $(".product-page__tabs-input").click(function(){
+            $(this).closest(".product-page__tabs-label").toggleClass("active");
+            $('#custom_drawing').closest(".product-page__tabs-label").toggleClass("disable");
+        });
+
+        $("#custom_drawing").click(function(){
+            $('#square_rectangle').closest(".product-page__tabs-label").removeClass("active");
+        });
+        // display active class for product page tabs
+
+        // hide/show file uploads when square rectangle is clicked
+        $("#square_rectangle").click(function(){
+            $('#pdf_upload_label').hide();
+            $('#uploadPdf').hide();
+            $('#pdf_upload_text').hide();
+            $('#dxf_upload_label').hide();
+            $('#uploadDxf').hide();
+            $('#drawing_guide').hide();
+        });
+        $("#custom_drawing").click(function(){
+            $('#pdf_upload_label').show();
+            $('#uploadPdf').show();
+            $('#pdf_upload_text').show();
+            $('#dxf_upload_label').show();
+            $('#uploadDxf').show();
+            $('#drawing_guide').show();
+        });
+        // hide/show file uploads when square rectangle is clicked
+
         jQuery(document).ready(function($) {
             $('#add_shipments').on('click', function(e) {
                 e.preventDefault(); // Prevent default anchor behavior

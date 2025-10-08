@@ -10,6 +10,9 @@ function override_tax_location_with_session($location, $tax_class) {
                 'France' => 'FR',
                 'Germany' => 'DE',
                 'Monaco' => 'MC',
+                'Poland' => 'PL',
+                'Spain' => 'ES',
+                'United States' => 'US',
             ];
             $country_code = isset($country_codes[$shipping_address['country']]) ? $country_codes[$shipping_address['country']] : $location[0];
             $location[0] = $country_code; // Country
@@ -39,6 +42,8 @@ function enqueue_checkout_override_script() {
                 'France' => 'FR',
                 'Germany' => 'DE',
                 'Monaco' => 'MC',
+                'Poland' => 'PL',
+                'Spain' => 'ES',
             ];
             $country_code = isset($country_codes[$shipping_address['country']]) ? $country_codes[$shipping_address['country']] : '';
         }
