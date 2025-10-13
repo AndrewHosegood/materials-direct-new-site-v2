@@ -160,6 +160,8 @@ function calculate_product_price($product_id, $width, $length, $qty, $discount_r
     error_log("  ppp: $ppp");
     error_log("  costFactorResult: $costFactorResult");
     error_log("  finalPppOnAva: $finalPppOnAva");
+    error_log("  GlobalPriceAdjust: $globalPriceAdjust");
+    //error_log("  GlobalPriceAdjust: $shapeType");
 
     $adjustedPrice = $finalPppOnAva * $globalPriceAdjust;
     $total_price = $adjustedPrice * $qty;
@@ -994,6 +996,7 @@ function calculate_shipping_cost($total_del_weight, $country) {
 
 
 
+
 // 5. CREATE CART ITEM DATA AND STORE AS SESSION
 
 add_filter('woocommerce_add_cart_item_data', 'add_custom_price_cart_item_data_secure', 10, 2);
@@ -1020,7 +1023,6 @@ function add_custom_price_cart_item_data_secure($cart_item_data, $product_id) {
         WC()->session->set('custom_shipping_address', $cart_item_data['custom_inputs']['shipping_address']);
     }
 
-
     // Add file paths to cart data
     if (isset($_POST['pdf_path']) && !empty($_POST['pdf_path'])) {
         $cart_item_data['custom_inputs']['pdf_path'] = sanitize_text_field($_POST['pdf_path']);
@@ -1028,7 +1030,6 @@ function add_custom_price_cart_item_data_secure($cart_item_data, $product_id) {
     if (isset($_POST['dxf_path']) && !empty($_POST['dxf_path'])) {
         $cart_item_data['custom_inputs']['dxf_path'] = sanitize_text_field($_POST['dxf_path']);
     }
-
 
     $product = wc_get_product($product_id);
     if (!$product) {
@@ -1081,7 +1082,6 @@ function add_custom_price_cart_item_data_secure($cart_item_data, $product_id) {
         !isset($_POST['custom_qty']) ||
         !isset($_POST['custom_price']) ||
         !isset($_POST['custom_discount_rate'])
-
     ) {
         if (defined('WP_DEBUG') && WP_DEBUG) {
             error_log('add_custom_price_cart_item_data_secure: Missing required POST fields');
@@ -1090,8 +1090,13 @@ function add_custom_price_cart_item_data_secure($cart_item_data, $product_id) {
         return $cart_item_data;
     }
 
-    // MODIFIED: Retrieve shape_type from POST (form uses tabs_input, AJAX uses shape_type)
     $shape_type = sanitize_text_field($_POST['tabs_input'] ?? $_POST['shape_type'] ?? 'custom-shape-drawing');
+    if (!in_array($shape_type, ['custom-shape-drawing', 'square-rectangle'])) {
+        if (defined('WP_DEBUG') && WP_DEBUG) {
+            error_log("add_custom_price_cart_item_data_secure: Invalid shape_type ($shape_type). Defaulting to custom-shape-drawing.");
+        }
+        $shape_type = 'custom-shape-drawing';
+    }
 
     $sheet_length_mm = $product->get_length() * 10; 
     $sheet_width_mm = $product->get_width() * 10;
@@ -1114,23 +1119,22 @@ function add_custom_price_cart_item_data_secure($cart_item_data, $product_id) {
 
     $delivery_time = isset($discount_labels[(string)$discount_rate]) ? $discount_labels[(string)$discount_rate] : 'Unknown';
 
-
     if($delivery_time === "24Hrs (working day)"){
-        $shipments = date('d/m/Y', strtotime(' + 1 days'));
+        $shipments = date('d/m/Y', strtotime('+1 days'));
     } elseif($delivery_time === "48Hrs (working days) (1.5% Discount)"){
-        $shipments = date('d/m/Y', strtotime(' + 2 days'));
+        $shipments = date('d/m/Y', strtotime('+2 days'));
     } elseif($delivery_time === "5 Days (working days) (2% Discount)"){
-        $shipments = date('d/m/Y', strtotime(' + 5 days'));
+        $shipments = date('d/m/Y', strtotime('+5 days'));
     } elseif($delivery_time === "7 Days (working days) (2.5% Discount)"){
-        $shipments = date('d/m/Y', strtotime(' + 7 days'));
+        $shipments = date('d/m/Y', strtotime('+7 days'));
     } elseif($delivery_time === "12 Days (working days) (3% Discount)"){
-        $shipments = date('d/m/Y', strtotime(' + 12 days'));
+        $shipments = date('d/m/Y', strtotime('+12 days'));
     } elseif($delivery_time === "14 Days (working days) (3.5% Discount)"){
-        $shipments = date('d/m/Y', strtotime(' + 14 days'));
+        $shipments = date('d/m/Y', strtotime('+14 days'));
     } elseif($delivery_time === "30 Days (working days) (4% Discount)"){
-        $shipments = date('d/m/Y', strtotime(' + 30 days'));
+        $shipments = date('d/m/Y', strtotime('+30 days'));
     } else {
-        $shipments = date('d/m/Y', strtotime(' + 35 days'));
+        $shipments = date('d/m/Y', strtotime('+35 days'));
     }
 
     if ($part_width_mm <= 0 || $part_length_mm <= 0 || $quantity < 1 || !is_numeric($product_weight)) {
@@ -1154,38 +1158,139 @@ function add_custom_price_cart_item_data_secure($cart_item_data, $product_id) {
     $final_shipping = calculate_shipping_cost($total_del_weight, $country);
 
     $stock_quantity = $product->get_stock_quantity();
-    $is_backorder = isset($_POST['custom_backorder_total']) && $sheet_result['sheets_required'] > $stock_quantity;
+    $sheets_required = $sheet_result['sheets_required'];
+    $is_backorder_raw = $sheets_required > $stock_quantity;
+
+    // Force clear scheduled session if no credit (prevent UI/session artifacts for non-credit users)
+    $user_id = get_current_user_id();
+    $credit_options = get_field('credit_options', 'user_' . $user_id);
+    $allow_credit = $credit_options['allow_user_credit_option'] ?? false;
+    if (!$allow_credit) {
+        WC()->session->set('custom_shipments', []);
+        WC()->session->set('custom_qty', null);
+        if (defined('WP_DEBUG') && WP_DEBUG) {
+            error_log("add_custom_price_cart_item_data_secure: Forced clear custom_shipments for non-credit user on product $product_id");
+        }
+    }
+
+    $shipments_session = WC()->session->get('custom_shipments', []);
+    $is_scheduled = $allow_credit && !empty($shipments_session) && array_sum(array_column($shipments_session, 'parts')) == $quantity;
+
+    $despatch_notes = '';
     $backorder_data = [];
-    if ($is_backorder) {
-        $backorder_data = [
-            'backorder_total' => floatval($_POST['custom_backorder_total']),
-            'parts_backorder' => intval($_POST['custom_parts_backorder']),
-            'able_to_dispatch' => intval($_POST['custom_able_to_dispatch']),
-            'parts_per_sheet' => intval($_POST['custom_parts_per_sheet']),
-        ];
+    $is_backorder = false;
+    $server_total_price = 0;
+
+    // Calculate base price without discount for potential splits
+    $base_total_price_no_disc = calculate_product_price($product_id, $part_width_mm, $part_length_mm, $quantity, 0, $shape_type);
+    if (is_wp_error($base_total_price_no_disc)) {
+        if (defined('WP_DEBUG') && WP_DEBUG) {
+            error_log("add_custom_price_cart_item_data_secure: Error calculating base price for product ID $product_id: " . $base_total_price_no_disc->get_error_message());
+        }
+        return $cart_item_data;
+    }
+
+    if ($is_scheduled) {
+        $despatch_notes = '';
+        $scheduled_shipments = $shipments_session;
+        foreach ($scheduled_shipments as $s) {
+            $despatch_notes .= $s['parts'] . ' parts to be despatched on ' . $s['date'] . "\n";
+        }
+
+        $per_part_base = $base_total_price_no_disc / $quantity;
+        $today = date('Y-m-d');
+        $server_total = 0;
+        foreach ($scheduled_shipments as $index => $shipment) { 
+            list($dd, $mm, $yyyy) = explode('/', $shipment['date']);
+            $despatch_ymd = "$yyyy-$mm-$dd";
+
+            /* new calendar days discounts */ 
+            $today_timestamp = strtotime($today);
+            $despatch_timestamp = strtotime($despatch_ymd);
+            $calendar_days = ($despatch_timestamp - $today_timestamp) / (60 * 60 * 24);
+
+            if ($calendar_days <= 1) $disc = 0; // 24Hr (Next day)
+            elseif ($calendar_days <= 4) $disc = 0.015; // 2–4 days (48Hr)
+            elseif ($calendar_days <= 6) $disc = 0.02; // 5–6 days (5 Days)
+            elseif ($calendar_days <= 12) $disc = 0.025; // 7–12 days (7 Days)
+            elseif ($calendar_days <= 13) $disc = 0.03; // 13 days (12 Days)
+            elseif ($calendar_days <= 29) $disc = 0.035; // 14–29 days (14–15 Days)
+            elseif ($calendar_days <= 35) $disc = 0.04; // 30–35 days (30 Days)
+            else $disc = 0.05; // 36+ days (35 Days)
+            
+            /* new calendar days discounts */ 
+
+            $portion_parts = $shipment['parts'];
+            $portion_price = $per_part_base * $portion_parts;
+            $portion_discount = $portion_price * $disc;
+            $portion_final = $portion_price - $portion_discount;
+            $server_total += $portion_final;
+
+            // Log detailed breakdown for this shipment
+            if (defined('WP_DEBUG') && WP_DEBUG) {
+                error_log("add_custom_price_cart_item_data_secure: Shipment #$index: Date={$shipment['date']}, Parts={$portion_parts}");
+                error_log("  Calendar days: $calendar_days");
+                error_log("  Discount rate: $disc (" . ($disc * 100) . "%)");
+                error_log("  Portion price (before discount): $portion_price");
+                error_log("  Portion discount amount: $portion_discount");
+                error_log("  Portion final (after discount): $portion_final");
+            }
+        }
+        $server_total_price = $server_total;
+
+        $server_price_per_sheet = $sheets_required > 0 ? $server_total_price / $sheets_required : $server_total_price;
+
+        $client_price = floatval($_POST['custom_price']);
+        if (abs($server_price_per_sheet - $client_price) > 0.01) {
+            if (defined('WP_DEBUG') && WP_DEBUG) {
+                error_log("add_custom_price_cart_item_data_secure: Scheduled price mismatch for product ID $product_id. Client price per sheet: $client_price, Server price per sheet: $server_price_per_sheet, Total price: $server_total_price, Shape Type: $shape_type");
+            }
+        }
+
+        $cart_item_data['custom_inputs']['price'] = $server_price_per_sheet;
+        $cart_item_data['custom_inputs']['total_price'] = $server_total_price;
+
+        $is_backorder = false;
+        $backorder_data = [];
+        $shipments = ''; 
+        $despatch_notes = $despatch_notes;
+    } else {
+        // Non-scheduled: Unified handling for backorder and instock
         $border = floatval(get_field('border_around', $product_id) * 10);
-        error_log("Border value in secure add custom price: " . $border);
         $v1 = $part_width_mm + (2 * $border);
         $v2 = $part_length_mm + (2 * $border);
         $parts_per_row = floor($sheet_width_mm / $v1);
         $parts_per_column = floor($sheet_length_mm / $v2);
         $calculated_parts_per_sheet = $parts_per_row * $parts_per_column;
-        $sheets_backorder = $sheet_result['sheets_required'] - $stock_quantity;
-        $parts_from_stock = $stock_quantity * $calculated_parts_per_sheet;
-        $able_to_dispatch = min($parts_from_stock, $quantity);
-        $parts_backorder = $quantity - $able_to_dispatch;
 
-        if (
-            $calculated_parts_per_sheet != $backorder_data['parts_per_sheet'] ||
-            $parts_backorder != $backorder_data['parts_backorder'] ||
-            $able_to_dispatch != $backorder_data['able_to_dispatch']
-        ) {
+        $server_total_price = calculate_product_price($product_id, $part_width_mm, $part_length_mm, $quantity, $discount_rate, $shape_type);
+        if (is_wp_error($server_total_price)) {
             if (defined('WP_DEBUG') && WP_DEBUG) {
-                error_log("add_custom_price_cart_item_data_secure: Backorder data validation failed. Client parts_per_sheet: {$backorder_data['parts_per_sheet']}, Server: $calculated_parts_per_sheet, Client parts_backorder: {$backorder_data['parts_backorder']}, Server: $parts_backorder, Client able_to_dispatch: {$backorder_data['able_to_dispatch']}, Server: $able_to_dispatch");
+                error_log("add_custom_price_cart_item_data_secure: Error calculating price for product ID $product_id: " . $server_total_price->get_error_message());
             }
-            $is_backorder = false;
-            $backorder_data = [];
-        } else {
+            return $cart_item_data;
+        }
+
+        if ($stock_quantity <= 0) {
+            // Full backorder
+            $discount_rate = 0.05;
+            $server_total_price = calculate_product_price($product_id, $part_width_mm, $part_length_mm, $quantity, $discount_rate, $shape_type);
+            $despatch_notes = sprintf('%d parts to be despatched in 35 Days (working days) (5%% Discount)', $quantity);
+            $shipments = date('d/m/Y', strtotime('+35 days'));
+            $is_backorder = true;
+        } elseif ($is_backorder_raw) {
+            // Partial backorder - Recalc with split discounts
+            $sheets_backorder = $sheets_required - $stock_quantity;
+            $parts_from_stock = $stock_quantity * $calculated_parts_per_sheet;
+            $able_to_dispatch = min($parts_from_stock, $quantity);
+            $parts_backorder = $quantity - $able_to_dispatch;
+
+            // Split price: normal discount on dispatch, 5% on backorder
+            $per_part_base = $base_total_price_no_disc / $quantity;
+            $dispatch_price = $able_to_dispatch * $per_part_base * (1 - $discount_rate);
+            $backorder_price = $parts_backorder * $per_part_base * 0.95; // 5% discount
+            $server_total_price = $dispatch_price + $backorder_price;
+
             $despatch_notes = sprintf(
                 '%d parts to be despatched in %s, %d parts to be despatched in 35 days (5%% discount)',
                 $able_to_dispatch,
@@ -1195,116 +1300,63 @@ function add_custom_price_cart_item_data_secure($cart_item_data, $product_id) {
             $shipments_dispatch = $shipments;
             $shipments_backorder = date('d/m/Y', strtotime('+35 days'));
             $shipments = [$shipments_dispatch, $shipments_backorder];
-        }
-    } else {
-        if ($stock_quantity <= 0) {
-            $delivery_time = '35 Days (working days) (5% Discount)';
-            $shipments = date('d/m/Y', strtotime('+35 days'));
-        }
-        $despatch_notes = sprintf(
-            '%d parts to be despatched in %s',
-            $quantity,
-            $delivery_time
-        );
-    }
 
-    $shipments_session = WC()->session->get('custom_shipments', []);
-    $is_scheduled = false;
-    $scheduled_shipments = [];
-    $despatch_notes = sprintf(
-        '%d parts to be despatched in %s',
-        $quantity,
-        $delivery_time
-    ); 
-    if (!empty($shipments_session) && array_sum(array_column($shipments_session, 'parts')) == $quantity) {
-        $is_scheduled = true;
-        $scheduled_shipments = $shipments_session;
+            $backorder_data = [
+                'backorder_total' => $server_total_price,
+                'parts_backorder' => $parts_backorder,
+                'able_to_dispatch' => $able_to_dispatch,
+                'parts_per_sheet' => $calculated_parts_per_sheet,
+            ];
+            $is_backorder = true;
 
-        $despatch_notes = '';
-        foreach ($scheduled_shipments as $s) {
-            $despatch_notes .= $s['parts'] . ' parts to be despatched on ' . $s['date'] . "\n";
-        }
-
-        $base_total_price = calculate_product_price($product_id, $part_width_mm, $part_length_mm, $quantity, 0, $shape_type);
-        if (!is_wp_error($base_total_price)) {
-            $per_part_base = $base_total_price / $quantity;
-            $today = date('Y-m-d');
-            $server_total = 0;
-            foreach ($scheduled_shipments as $index => $shipment) { //here!!!
-                list($dd, $mm, $yyyy) = explode('/', $shipment['date']);
-                $despatch_ymd = "$yyyy-$mm-$dd";
-
-                /* new calendar days discounts */ 
-                
-                $today_timestamp = strtotime($today);
-                $despatch_timestamp = strtotime($despatch_ymd);
-                $calendar_days = ($despatch_timestamp - $today_timestamp) / (60 * 60 * 24);
-
-                if ($calendar_days <= 1) $disc = 0; // 24Hr (Next day)
-                elseif ($calendar_days <= 4) $disc = 0.015; // 2–4 days (48Hr)
-                elseif ($calendar_days <= 6) $disc = 0.02; // 5–6 days (5 Days)
-                elseif ($calendar_days <= 12) $disc = 0.025; // 7–12 days (7 Days)
-                elseif ($calendar_days <= 13) $disc = 0.03; // 13 days (12 Days)
-                elseif ($calendar_days <= 29) $disc = 0.035; // 14–29 days (14–15 Days)
-                elseif ($calendar_days <= 35) $disc = 0.04; // 30–35 days (30 Days)
-                else $disc = 0.05; // 36+ days (35 Days)
-                
-                /* new calendar days discounts */ 
-
-                /* old working days discount */ 
-                /*
-                $days = count_working_days($today, $despatch_ymd);
-
-                if ($days <= 1) $disc = 0;
-                elseif ($days <= 2) $disc = 0.015;
-                elseif ($days <= 5) $disc = 0.02;
-                elseif ($days <= 7) $disc = 0.025;
-                elseif ($days <= 12) $disc = 0.03;
-                elseif ($days <= 14) $disc = 0.035;
-                elseif ($days <= 30) $disc = 0.04;
-                else $disc = 0.05;
-                */
-                /* old working days discount */
-
-
-                $portion_parts = $shipment['parts'];
-                $portion_price = $per_part_base * $portion_parts;
-                $portion_discount = $portion_price * $disc;
-                $portion_final = $portion_price - $portion_discount;
-                $server_total += $portion_final;
-
-                // Log detailed breakdown for this shipment
-                if (defined('WP_DEBUG') && WP_DEBUG) {
-                    error_log("add_custom_price_cart_item_data_secure: Shipment #$index: Date={$shipment['date']}, Parts={$portion_parts}");
-                    error_log("  Calendar days: $calendar_days");
-                    error_log("  Discount rate: $disc (" . ($disc * 100) . "%)");
-                    error_log("  Portion price (before discount): $portion_price");
-                    error_log("  Portion discount amount: $portion_discount");
-                    error_log("  Portion final (after discount): $portion_final");
+            // Validate client-sent backorder data if present
+            if (isset($_POST['custom_parts_per_sheet'])) {
+                $client_parts_per_sheet = intval($_POST['custom_parts_per_sheet']);
+                $client_parts_backorder = intval($_POST['custom_parts_backorder']);
+                $client_able_to_dispatch = intval($_POST['custom_able_to_dispatch']);
+                if (
+                    $calculated_parts_per_sheet != $client_parts_per_sheet ||
+                    $parts_backorder != $client_parts_backorder ||
+                    $able_to_dispatch != $client_able_to_dispatch
+                ) {
+                    if (defined('WP_DEBUG') && WP_DEBUG) {
+                        error_log("add_custom_price_cart_item_data_secure: Backorder data validation failed. Client parts_per_sheet: {$client_parts_per_sheet}, Server: $calculated_parts_per_sheet, etc.");
+                    }
+                    $is_backorder = false;
+                    $backorder_data = [];
+                    $despatch_notes = sprintf('%d parts to be despatched in %s', $quantity, $delivery_time); // Fallback
                 }
             }
-            $server_cart_price = $server_total / $sheet_result['sheets_required'];
-
-            $client_price = floatval($_POST['custom_price']);
-            if (abs($server_cart_price - $client_price) > 0.01) {
-                if (defined('WP_DEBUG') && WP_DEBUG) {
-                    error_log("Scheduled price mismatch: Client $client_price, Server $server_cart_price, Total scheduled price: $server_total");
-                }
+        } else {
+            // Instock
+            if ($stock_quantity <= 0) {
+                $delivery_time = '35 Days (working days) (5% Discount)';
+                $shipments = date('d/m/Y', strtotime('+35 days'));
             }
-            $cart_item_data['custom_inputs']['price'] = $server_cart_price;
-            $cart_item_data['custom_inputs']['total_price'] = $server_total;
-
-            $is_backorder = false;
-            $backorder_data = [];
-            $shipments = ''; 
+            $despatch_notes = sprintf(
+                '%d parts to be despatched in %s',
+                $quantity,
+                $delivery_time
+            );
         }
+
+        // Price per sheet for cart
+        $server_price_per_sheet = $sheets_required > 0 ? $server_total_price / $sheets_required : $server_total_price;
+        $client_price = floatval($_POST['custom_price']);
+        if (abs($server_price_per_sheet - $client_price) > 0.01) {
+            if (defined('WP_DEBUG') && WP_DEBUG) {
+                error_log("add_custom_price_cart_item_data_secure: Price mismatch for product ID $product_id. Client price per sheet: $client_price, Server price per sheet: $server_price_per_sheet, Total price: $server_total_price, Shape Type: $shape_type");
+            }
+        }
+        $cart_item_data['custom_inputs']['price'] = $server_price_per_sheet;
+        $cart_item_data['custom_inputs']['total_price'] = $server_total_price;
     }
 
     $cart_item_data['custom_inputs'] = array_merge($cart_item_data['custom_inputs'], [
         'width' => floatval($_POST['custom_width']),
         'length' => floatval($_POST['custom_length']),
         'qty' => intval($_POST['custom_qty']),
-        'price' => $cart_item_data['custom_inputs']['price'] ?? floatval($_POST['custom_price']),
+        'shape_type' => $shape_type,
         'discount_rate' => floatval($_POST['custom_discount_rate']),
         'sheets_required' => $sheet_result['sheets_required'],
         'final_shipping' => $final_shipping,
@@ -1326,7 +1378,9 @@ function add_custom_price_cart_item_data_secure($cart_item_data, $product_id) {
         error_log("  total_del_weight: {$total_del_weight}");
         error_log("  final_shipping: {$final_shipping}");
         error_log("  shipments: " . (is_array($shipments) ? print_r($shipments, true) : $shipments));
-        error_log("  shape_type: {$shape_type}"); // MODIFIED: Log shape_type for debugging
+        error_log("  shape_type: {$shape_type}");
+        error_log("  price_per_sheet: {$cart_item_data['custom_inputs']['price']}");
+        error_log("  total_price: {$cart_item_data['custom_inputs']['total_price']}");
         if ($is_backorder) {
             error_log("  backorder_data: " . print_r($backorder_data, true));
         }
@@ -1346,7 +1400,8 @@ function add_custom_price_cart_item_data_secure($cart_item_data, $product_id) {
 
     return $cart_item_data;
 }
-// 5.v CREATE CART ITEM DATA AND STORE AS SESSION
+// 5. END CREATE CART ITEM DATA AND STORE AS SESSION
+
 
 
 
@@ -1699,8 +1754,15 @@ add_filter('woocommerce_get_cart_item_from_session', function($item, $values) {
 
 
 add_action('woocommerce_before_calculate_totals', 'apply_secure_custom_price');
+
 function apply_secure_custom_price($cart) {
-    if (is_admin() && !defined('DOING_AJAX')) return;
+    if (is_admin() && !defined('DOING_AJAX')) {
+        return;
+    }
+
+    if (did_action('woocommerce_before_calculate_totals') >= 2) {
+        return;
+    }
 
     // Log the current shipping country and tax rate
     if (defined('WP_DEBUG') && WP_DEBUG) {
@@ -1720,9 +1782,14 @@ function apply_secure_custom_price($cart) {
 
         if (isset($cart_item['custom_inputs'])) {
             if (isset($cart_item['custom_inputs']['is_scheduled']) && $cart_item['custom_inputs']['is_scheduled']) {
-                // For scheduled, use the stored per-sheet price
-                $cart_item['data']->set_price($cart_item['custom_inputs']['price']);
-                continue;
+                $price_per_sheet = floatval($cart_item['custom_inputs']['price']);
+                if ($price_per_sheet > 0) {
+                    $cart_item['data']->set_price($price_per_sheet);
+                    if (defined('WP_DEBUG') && WP_DEBUG) {
+                        error_log("apply_secure_custom_price: Setting scheduled price per sheet for cart item key $cart_item_key: $price_per_sheet");
+                    }
+                    continue;
+                }
             }
             $width = $cart_item['custom_inputs']['width'];
             $length = $cart_item['custom_inputs']['length'];
@@ -1732,35 +1799,43 @@ function apply_secure_custom_price($cart) {
             $is_backorder = isset($cart_item['custom_inputs']['is_backorder']) ? $cart_item['custom_inputs']['is_backorder'] : false;
             $shape_type = $cart_item['custom_inputs']['shape_type'] ?? 'custom-shape-drawing'; 
 
+            if (!in_array($shape_type, ['custom-shape-drawing', 'square-rectangle'])) {
+                if (defined('WP_DEBUG') && WP_DEBUG) {
+                    error_log("apply_secure_custom_price: Invalid shape_type ($shape_type) for cart item key $cart_item_key. Defaulting to custom-shape-drawing.");
+                }
+                $shape_type = 'custom-shape-drawing';
+            }
+
             if ($is_backorder && !empty($cart_item['custom_inputs']['backorder_data'])) {
                 $backorder_data = $cart_item['custom_inputs']['backorder_data'];
                 // Use the backorder total if valid
                 if (isset($backorder_data['backorder_total']) && $backorder_data['backorder_total'] > 0) {
                     $total_price = $backorder_data['backorder_total'];
+                    $price_per_sheet = $sheets_required > 0 ? $total_price / $sheets_required : $total_price;
                 } else {
                     if (defined('WP_DEBUG') && WP_DEBUG) {
                         error_log("apply_secure_custom_price: Invalid backorder_total for cart item key $cart_item_key. Falling back to standard pricing.");
                     }
                     $total_price = calculate_product_price($product_id, $width, $length, $qty, $discount_rate, $shape_type);
+                    $price_per_sheet = $sheets_required > 0 ? $total_price / $sheets_required : $total_price;
                 }
             } else {
-                $total_price = calculate_product_price($product_id, $width, $length, $qty, $discount_rate, $shape_type);
+                // Use stored price per sheet if available, otherwise recalculate
+                $price_per_sheet = isset($cart_item['custom_inputs']['price']) ? floatval($cart_item['custom_inputs']['price']) : 0;
+                if ($price_per_sheet <= 0) {
+                    $total_price = calculate_product_price($product_id, $width, $length, $qty, $discount_rate, $shape_type);
+                    $price_per_sheet = $sheets_required > 0 ? $total_price / $sheets_required : $total_price;
+                }
             }
 
-            if (!is_wp_error($total_price)) {
-                // Prevent division by zero
-                if ($sheets_required <= 0) {
-                    if (defined('WP_DEBUG') && WP_DEBUG) {
-                        error_log("apply_secure_custom_price: Invalid sheets_required ($sheets_required) for cart item key $cart_item_key. Product ID: $product_id, Width: $width, Length: $length, Qty: $qty");
-                    }
-                    $cart_item['data']->set_price($total_price);
-                    continue;
-                }
-                $total_price_2 = $total_price / $sheets_required;
-                $cart_item['data']->set_price($total_price_2);
+          if (!is_wp_error($price_per_sheet)) {
+                $cart_item['data']->set_price($price_per_sheet);
+                // if (defined('WP_DEBUG') && WP_DEBUG) {
+                //     error_log("apply_secure_custom_price: Setting price per sheet for cart item key $cart_item_key: Price=$price_per_sheet, Total Price=$total_price, Shape Type=$shape_type, Width=$width, Length=$length, Qty=$qty, Sheets Required=$sheets_required");
+                // }
             } else {
                 if (defined('WP_DEBUG') && WP_DEBUG) {
-                    error_log("apply_secure_custom_price: Error calculating price for product ID $product_id: " . $total_price->get_error_message());
+                    error_log("apply_secure_custom_price: Error calculating price for product ID $product_id: " . $price_per_sheet->get_error_message());
                 }
             }
         }

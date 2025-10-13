@@ -1,6 +1,6 @@
 <?php
 
-// Add delivery options modal to the product page
+// ADD DELIVERY OPTIONS MODAL TO THE PRODUCT PAGE
 function add_modal_to_product_page_footer() {
     if (!is_product()) {
         return;
@@ -40,4 +40,4 @@ function add_modal_to_product_page_footer() {
     }
 }
 add_action('wp_footer', 'add_modal_to_product_page_footer');
-// Add delivery options modal to the product page
+// ADD DELIVERY OPTIONS MODAL TO THE PRODUCT PAGE
