@@ -325,81 +325,42 @@ require_once('includes/hide-despatch-within-if-credit-account.php');
 require_once('includes/display-shipment-discount-rates-on-product-page.php');
 /* display scheduled shipments discount rates table on product page */
 
+/* display PDF and DXF information correctly on cart and checkout page */
+require_once('includes/display-pdf-dxf-on-cart-checkout-page.php');
+/* display PDF and DXF information correctly on cart and checkout page */
+
+/* Style up product name on checkout page */
+require_once('includes/style-up-product-name-on-checkout-page.php');
+/* Style up product name on checkout page */
+
+/* remove product title from shop/category page */
+require_once('includes/remove-product-title-from-shop-page.php');
+/* remove product title from shop/category page */
+
+/* Add mask div wrapper to shop/category page */
+require_once('includes/add-mask-div-wrapper-to-shop-page.php');
+/* Add mask div wrapper to shop/category page */
+
+/* shop/category page additional content */
+require_once('includes/shop-page-additional-content.php');
+/* shop/category page additional content */
+
 /* END CUSTOM FUNCTIONS */
 
 
-add_filter( 'woocommerce_order_item_get_formatted_meta_data', function( $formatted_meta, $item ) {
-    foreach ( $formatted_meta as $meta_id => $meta ) {
-        if ( $meta->key === 'pdf_path' ) {
-            unset( $formatted_meta[$meta_id] ); // remove pdf
-        }
-		if ( $meta->key === 'dxf_path' ) {
-            unset( $formatted_meta[$meta_id] ); // remove dxf
-        }
-    }
-    return $formatted_meta;
-}, 10, 2 );
-
-add_action( 'woocommerce_order_item_meta_end', function( $item_id, $item, $order ) {
-    $pdf_path = $item->get_meta( 'pdf_path' );
-	$dxf_path = $item->get_meta( 'dxf_path' );
-
-    if ( ! empty( $pdf_path ) ) {
-        $filename_pdf = basename( $pdf_path );
-        echo '<ul class="wc-item-meta"><li><strong class="wc-item-meta-label">Upload .PDF Drawing:</strong> 
-                <p><a href="/wp-content/uploads' . esc_url( $pdf_path ) . '" target="_blank" rel="noopener">' . esc_html( $filename_pdf ) . '</a></p>
-              </li></ul>';
-    }
-	if ( ! empty( $dxf_path ) ) {
-        $filename_dxf = basename( $dxf_path );
-        echo '<ul class="wc-item-meta"><li><strong class="wc-item-meta-label">Upload .DXF Drawing:</strong> 
-                <p><a href="/wp-content/uploads' . esc_url( $dxf_path ) . '" target="_blank" rel="noopener">' . esc_html( $filename_dxf ) . '</a></p>
-              </li></ul>';
-    }
-}, 10, 3 );
 
 
 
 
-
-
-
-
-// DISPLAY PDF/DXF ON THANK YOU PAGE
 /*
-add_action('woocommerce_thankyou', 'display_pdf_dxf_on_thankyou', 0);
-function display_pdf_dxf_on_thankyou($order_id) {
-    $order = wc_get_order($order_id);
-    if (!$order) return;
-
-    echo '<div class="order-drawings" style="margin-top: 20px; padding: 15px; background: #f9f9f9; border: 1px solid #ddd;">';
-    echo '<h3>Drawing Files</h3>';
-
-    foreach ($order->get_items() as $item_id => $item) {
-        $pdf_path = $item->get_meta('pdf_path');
-        $dxf_path = $item->get_meta('dxf_path');
-
-        if ($pdf_path || $dxf_path) {
-            echo '<p><strong>Item: ' . esc_html($item->get_name()) . '</strong></p>';
-            if ($pdf_path) {
-                echo '<p>PDF Drawing: <a href="' . esc_url($pdf_path) . '" target="_blank">' . esc_html(basename($pdf_path)) . '</a></p>';
-            }
-            if ($dxf_path) {
-                echo '<p>DXF Drawing: <a href="' . esc_url($dxf_path) . '" target="_blank">' . esc_html(basename($dxf_path)) . '</a></p>';
-            }
-            echo '<hr>'; // Separator between items
-        }
+function custom_remove_woocommerce_page_titles( $show ) {
+    if ( is_shop() || is_product_category() ) {
+        return false;
     }
-
-    echo '</div>';
+    return $show;
 }
-	*/
-// DISPLAY PDF/DXF ON THANK YOU PAGE
-
-
-
-
-
+add_filter( 'woocommerce_show_page_title', 'custom_remove_woocommerce_page_titles' );
+*/
 
 
 
@@ -418,13 +379,76 @@ function display_pdf_dxf_on_thankyou($order_id) {
 // require_once('includes/display-order-object-on-thankyou-page.php');
 // validation for product width and length
 
-
-
 // Temporary - display acf is_single_product on product page
 //require_once('includes/display-is-single-product-on-product-page.php');
 // Temporary - display acf is_single_product on product page
 
-
-
 /* TEMPORARY FUNCTIONS */
+
+
+
+/*
+add_action('woocommerce_before_single_product', 'display_session_values_at_top_of_product_page');
+function display_session_values_at_top_of_product_page() {
+    if (!is_product()) {
+        return;
+    }
+    $custom_qty = WC()->session->get('custom_qty');
+    $product = wc_get_product(get_the_ID());
+    ?>
+    <div class="product-page__session-info">
+        <p><strong>Custom Quantity:</strong> <?php echo $custom_qty; ?> parts</p>
+    </div>
+    <?php
+}
+*/
+
+
+
+
+/*
+add_action('woocommerce_before_single_product', 'display_wc_session_data_on_product_page');
+
+function display_wc_session_data_on_product_page() {
+    if ( ! function_exists('WC') || ! WC()->session ) {
+        echo '<div style="border:1px solid red; padding:10px; margin-bottom:20px;">WooCommerce session not available.</div>';
+        return;
+    }
+    $session_data = WC()->session->get_session_data();
+    echo '<div style="border:1px solid #0073aa; padding:15px; margin-bottom:20px; background:#f9f9f9;">';
+    echo '<h3>WC Session Data</h3>';
+	echo "<p>Shipping Address</p>";
+	echo "<pre>";
+	print_r(WC()->session->get('custom_shipping_address'));
+	echo "</pre>";
+	echo "<p>Shipments</p>";
+	echo "<pre>";
+	print_r(WC()->session->get('custom_shipments'));
+	echo "</pre>";
+	echo "<p>Quantity</p>";
+	echo "<pre>";
+	print_r(WC()->session->get('custom_qty'));
+	print_r(WC()->session->get('stock_quantity'));
+	echo "</pre>";
+
+    // if ( empty($session_data) ) {
+    //     echo '<p>No session data found.</p>';
+    // } else {
+    //     echo '<ul style="list-style:disc; padding-left:20px;">';
+    //     foreach ( $session_data as $key => $value ) {
+    //         // Handle array or object values nicely
+    //         echo '<li><strong>' . esc_html($key) . ':</strong> ';
+    //         if ( is_array($value) || is_object($value) ) {
+    //             echo '<pre>' . esc_html(print_r($value, true)) . '</pre>';
+    //         } else {
+    //             echo esc_html($value);
+    //         }
+    //         echo '</li>';
+    //     }
+    //     echo '</ul>';
+    // }
+
+    echo '</div>';
+}
+*/
 

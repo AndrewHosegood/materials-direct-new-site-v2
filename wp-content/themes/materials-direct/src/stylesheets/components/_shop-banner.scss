@@ -1,0 +1,106 @@
+@use "../abstracts/breakpoints";
+@use "../abstracts/variables";
+
+.shop-banner {
+    background: #475562;
+    padding: 2rem 4rem;
+    background-image: url("/wp-content/uploads/2025/10/shop-page-banner-bg-4.jpg");
+    opacity: 0.9;
+    background-repeat: no-repeat;
+    background-size: cover;
+    &__heading {
+    color: white;
+    font-size: 3.23rem;
+    padding: 0;
+    line-height: 4rem;
+    font-weight: 500;
+    margin-bottom: 0.4rem;
+    }
+    &__subheading {
+        font-size: 2.13rem;
+        color: variables.$primary-color;
+        font-weight: 400;
+        padding: 0.2rem 0;
+    }
+    &__content {
+        color: white;
+        font-size: 1.28rem;
+    }
+    &__statement-wrapper {
+        width: 100%;
+        height: auto;
+        display: flex;
+        flex-wrap: wrap;
+    }
+    &__statement-list:nth-child(1) {
+        width: 27.333%;
+        color: white;
+        margin-right: 2.5%;
+    }
+    &__statement-list:nth-child(2) {
+        width: 29.1%;
+        color: white;
+        margin-right: 1.2%;
+        letter-spacing:-0.02rem;
+    }
+    &__statement-list:nth-child(3) {
+        width: 37.333%;
+        color: white;
+        margin-right: 2.5%;
+    }
+    &__statement-title {
+        color:white;
+        font-size: 1.48em;
+        line-height: 2.45rem;
+    }
+    &__statement-list:nth-child(1) &__statement-title::before {
+        content: "1";
+        background: variables.$primary-color;
+        padding: 0rem;
+        border-radius: 1.5rem;
+        width: 36px;
+        display: inline-block;
+        text-align: center;
+        height: 36px;
+        margin-right:0.5rem;
+        font-weight: 500;
+        font-size: 1.44rem;
+    }
+    &__statement-list:nth-child(2) &__statement-title::before {
+        content: "2";
+        background: variables.$primary-color;
+        padding: 0rem;
+        border-radius: 1.5rem;
+        width: 36px;
+        display: inline-block;
+        text-align: center;
+        height: 36px;
+        margin-right:0.5rem;
+        font-weight: 500;
+        font-size: 1.44rem;
+    }
+    &__statement-list:nth-child(3) &__statement-title::before {
+        content: "3";
+        background: variables.$primary-color;
+        padding: 0rem;
+        border-radius: 1.5rem;
+        width: 36px;
+        display: inline-block;
+        text-align: center;
+        height: 36px;
+        margin-right:0.5rem;
+        font-weight: 500;
+        font-size: 1.44rem;
+    }
+    // &__statement-list {
+    //     color:white;
+    //     font-size: 1.1rem;
+    //     width: 30.333%;
+    //     margin-right: 3%;
+    // }
+    &__statement-text {
+        font-size: 1.05rem;
+        line-height: 1.65rem;
+        opacity: .7;
+    }
+}

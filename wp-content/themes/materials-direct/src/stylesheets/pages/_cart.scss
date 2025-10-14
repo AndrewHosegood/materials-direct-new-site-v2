@@ -51,6 +51,14 @@
         display: inline;
         padding: 0;
     }
+    & .cart .product-name .variation .variation-Partshape p {
+        display: inline;
+        padding: 0;
+    }
+    & .cart .product-name .variation .variation-RadiusMM p {
+        display: inline;
+        padding: 0;
+    }
     & .cart .product-name .variation dt {
         margin-right: 0.5rem;
         font-weight: bold;
@@ -108,6 +116,7 @@
     background: variables.$secondary-color;
     font-weight: 400;
     transition: background 0.15s ease-in;
+    border-radius: 0.3rem;
 }
 .woocommerce-cart .wc-proceed-to-checkout a.checkout-button:hover {
     background: #1a2631;

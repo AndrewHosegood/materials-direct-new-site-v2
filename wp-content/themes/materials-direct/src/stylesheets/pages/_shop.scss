@@ -1,11 +1,69 @@
 @use "../abstracts/breakpoints";
 @use "../abstracts/variables";
 
-.woocommerce-shop .woocommerce a.button {
-    background: variables.$primary-color;
-    color: white;
-    font-weight: 400;
-    text-align: center;
-    display:block;
-    width: 100%;
+.woocommerce-shop {
+    &__info-card {
+        background-color: #f5f5f4;
+        padding: 15px;
+        position: relative;
+        z-index: 999;
+        text-align:center;
+        width: 100%;
+    }
+    &__card-title {
+        padding: 0;
+        min-height: 4rem;
+    }
+    &__card-link {
+        font-size: 1.22rem;
+        color: variables.$secondary-color;
+        line-height: 1.77rem;
+    }
+    & .woocommerce a.button {
+        background: variables.$primary-color;
+        color: white;
+        font-weight: 400;
+        text-align: center;
+        display:block;
+        width: 100%;
+    }
+    &__i-sku {
+        font-size: 0.82rem;
+    }
+    & .products li:nth-child(even) &__info-card {
+        background-color: #e2e2e2;
+    }
+    &__short-description {
+        text-align: center;
+        margin: 1rem 0 3.7rem 0;
+    }
+    &__short-description ul li {
+        border-bottom: 1px solid gainsboro;
+        padding: 8px 0;
+        font-size: 0.93rem;
+        line-height: 1.6rem;
+    }
+    &__short-description ul li:last-child {
+        border-bottom: 0px solid gainsboro;
+    }
+    &__mask {
+        //box-shadow: inset 0 0 5px 2px rgba(0, 0, 0, .07);
+        border: 2px solid #f3f3f3;
+        width: 100%;
+    }
+    & .entry-header {
+        display: none;
+    }
+    & .woocommerce ul.products {
+        display: flex;
+        flex-wrap: wrap;
+    }
+    & .woocommerce ul.products li.product .button {
+        position: absolute;
+        bottom: 0;
+        font-size: 0.94rem;
+        padding: 1rem 0;
+    }
 }
+
+

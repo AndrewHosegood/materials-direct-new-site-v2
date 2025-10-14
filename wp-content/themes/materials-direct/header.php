@@ -85,3 +85,12 @@
 		</div>
 
 	</header><!-- #masthead -->
+
+
+	<!-- Conditionally display shop page banner -->
+
+	<?php if(is_shop() || is_product_category()){ ?>
+		<?php include('includes/shop-page-banner.php'); ?>
+	<?php } ?>
+	
+	<!-- Conditionally display shop page banner -->

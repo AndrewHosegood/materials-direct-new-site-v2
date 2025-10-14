@@ -25,7 +25,6 @@ function replace_related_products_add_to_cart() {
         add_action( 'woocommerce_after_shop_loop_item', 'custom_related_product_button', 20 );
     }
 }
-
 function custom_related_product_button() {
     global $product;
 
@@ -34,6 +33,9 @@ function custom_related_product_button() {
     echo '</a>';
 }
 // Remove Add to Cart button from Related Products and replace with "Select Options"
+
+
+/*
 
 // Open wrapper div before product title in related products
 add_action( 'woocommerce_before_shop_loop_item_title', 'open_related_grey_panel_wrapper', 20 );
@@ -73,3 +75,5 @@ function display_related_product_excerpt() {
     }
 }
 // Display short description OUTSIDE the wrapper
+
+*/

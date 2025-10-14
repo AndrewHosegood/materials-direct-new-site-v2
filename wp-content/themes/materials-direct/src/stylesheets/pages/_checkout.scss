@@ -5,6 +5,10 @@
     & .entry-header {
         display: none;
     }
+    & .product-name .product-name-bold {
+        color: variables.$primary-color;
+        font-weight: bold;
+    }
     & .product-name a {
         color: variables.$primary-color;
         font-weight: bold;
@@ -46,6 +50,14 @@
         padding: 0;
     }
     & .product-name .variation .variation-DXFDrawing p {
+        display: inline;
+        padding: 0;
+    }
+    & .product-name .variation .variation-Partshape p {
+        display: inline;
+        padding: 0;
+    }
+    & .product-name .variation .variation-RadiusMM p {
         display: inline;
         padding: 0;
     }
@@ -110,6 +122,9 @@
     & .woocommerce-terms-and-conditions-checkbox-text {
         font-size: 0.9rem;
         letter-spacing: -0.01rem;
+    }
+    & .woocommerce-remove-coupon {
+        display: none;
     }
 }
 

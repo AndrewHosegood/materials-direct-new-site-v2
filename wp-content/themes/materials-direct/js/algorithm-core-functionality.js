@@ -60,6 +60,41 @@ jQuery(document).ready(function($) {
                 });
             }
         }
+        else if (selectedTab === 'circle-radius') {
+            $('#pdf_upload_container').addClass('hidden');
+            $('#pdf_path').val(''); // Clear PDF path
+            $('#custom_price_display').html(''); // Reset displayed price
+            $('#uploadPdf').val(''); // Reset file input
+            $('#input_width').val(''); // Reset width
+            $('#input_length').val(''); // Reset length
+            $('#input_qty').val(''); // Reset quantity
+            $('#tabs_status_message').html('Circle Radius');
+            enableButtons();
+
+            // Delete temporary PDF file from server
+            const pdfPath = $('#pdf_path').data('last-uploaded-path') || '';
+            if (pdfPath) {
+                $.ajax({
+                    url: ajax_params.ajax_url,
+                    type: 'POST',
+                    data: {
+                        action: 'delete_temp_pdf',
+                        pdf_path: pdfPath,
+                        nonce: ajax_params.nonce
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            $('#pdf_path').data('last-uploaded-path', ''); // Clear stored path
+                        } else {
+                            console.log('Failed to delete temporary PDF: ' + (response.data.message || 'Unknown error'));
+                        }
+                    },
+                    error: function() {
+                        console.log('Server error while deleting temporary PDF.');
+                    }
+                });
+            }
+        }
         else {
             $('#pdf_upload_container').removeClass('hidden');
             $('#custom_price_display').html(''); // Reset displayed price

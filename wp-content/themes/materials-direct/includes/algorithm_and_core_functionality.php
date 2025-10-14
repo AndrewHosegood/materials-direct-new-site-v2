@@ -183,12 +183,12 @@ function custom_price_input_fields_prefill() {
     $user_id = get_current_user_id();
     $credit_options = get_field('credit_options', 'user_' . $user_id); // get the ACF Users Credits options
     $allow_credit = $credit_options['allow_user_credit_option'] ?? false; // get the ACF Users Credits options
-    $shipments = WC()->session->get('custom_shipments', []); // NEW CODE FOR DELIVERY OPTIONS
+    $shipments = WC()->session->get('custom_shipments', []); 
     
     if (is_user_logged_in() && $allow_credit && !is_admin()) {
-        $custom_qty = WC()->session->get('custom_qty', 0); // NEW CODE FOR DELIVERY OPTIONS
-        $total_parts = array_sum(array_column($shipments, 'parts')); // NEW CODE FOR DELIVERY OPTIONS
-        $remaining_parts = max(0, $custom_qty - $total_parts); // NEW CODE FOR DELIVERY OPTIONS
+        $custom_qty = WC()->session->get('custom_qty', 0); 
+        $total_parts = array_sum(array_column($shipments, 'parts')); 
+        $remaining_parts = max(0, $custom_qty - $total_parts); 
     }
     
     // Prefill shipping address fields from session
@@ -243,12 +243,19 @@ function custom_price_input_fields_prefill() {
 
         <!-- Tabs -->
         <ul class="product-page__tabs">
+
         <li class="product-page__tabs-list"><label class="product-page__tabs-label">Custom Shape (Drawing)
         <input class="product-page__tabs-input" name="tabs_input" type="radio" value="custom-shape-drawing" checked="checked" id="custom_drawing" tabindex="1">
         </label></li>
+
+        <li class="product-page__tabs-list"><label class="product-page__tabs-label">Circle Radius
+        <input class="product-page__tabs-input" name="tabs_input" type="radio" value="circle-radius" id="circle-radius" tabindex="0">
+        </label></li>
+
         <li class="product-page__tabs-list"><label class="product-page__tabs-label">Square Rectangle
         <input class="product-page__tabs-input" name="tabs_input" type="radio" value="square-rectangle" id="square_rectangle" tabindex="0">
         </label></li>
+
         </ul>
         <!-- Tabs -->
 
@@ -275,7 +282,8 @@ function custom_price_input_fields_prefill() {
         <a href="/wp-content/uploads/2025/10/DrawinGuide2025.pdf" target="_blank" class="product-page__drawing-guide-btn">Download here</a>
         <p class="product-page__drawing-guide-text">Download the drawing guide to help you with your pad and gasket design</p>
         </div>
-        
+
+        <label class="product-page__input-wrap-radius">Radius (MM): <input class="product-page__input" type="number" id="input_radius" name="custom_radius"></label>
 
         <label class="product-page__input-wrap">Width (MM): <input class="product-page__input" type="number" id="input_width" name="custom_width" min="0.01" step="0.01" required></label>
         <label class="product-page__input-wrap">Length (MM): <input class="product-page__input" type="number" id="input_length" name="custom_length" min="0.01" step="0.01" required></label>
@@ -499,12 +507,12 @@ function calculate_secure_price() {
         wp_send_json_error(['message' => 'Invalid input values.']);
     }
 
-    /* DELIVERY OPTIONS NEW CODE */
     // Save custom_qty to session
     WC()->session->set('custom_qty', $qty);
+
     // Clear any existing shipments to reset for new calculation
     WC()->session->set('custom_shipments', []);
-    /* DELIVERY OPTIONS NEW CODE */
+
 
     $product = wc_get_product($product_id);
     if (!$product) {
@@ -533,9 +541,7 @@ function calculate_secure_price() {
         WC()->session->set('custom_shipping_address', $shipping_address);
     }
 
-    // NEW: Dynamic global adjust based on shape_type
     $total_price = calculate_product_price($product_id, $width, $length, $qty, $discount_rate, $shape_type);
-    // NEW: Dynamic global adjust based on shape_type
 
     if (is_wp_error($total_price)) {
         wp_send_json_error(['message' => $total_price->get_error_message()]);
@@ -557,9 +563,11 @@ function calculate_secure_price() {
 
     // Optional: Log for debugging (remove in production)
     if (defined('WP_DEBUG') && WP_DEBUG) {
+        $session_qty = WC()->session->get('custom_qty');
         error_log("Dynamic sheets calculation: Sheets required = $sheets_required for width=$width, length=$length, qty=$qty, sheet=$sheet_width_mm x $sheet_length_mm");
         error_log("Stock check: sheets_required=$sheets_required, stock_quantity=$stock_quantity, is_backorder=" . ($is_backorder ? 'true' : 'false'));
         error_log("Quantity entered=$qty");
+        error_log("Quantity entered=$session_qty");
         error_log("Per part price=$per_part_price");
         error_log("Border around fixed=$border_around");
     }
@@ -1091,7 +1099,7 @@ function add_custom_price_cart_item_data_secure($cart_item_data, $product_id) {
     }
 
     $shape_type = sanitize_text_field($_POST['tabs_input'] ?? $_POST['shape_type'] ?? 'custom-shape-drawing');
-    if (!in_array($shape_type, ['custom-shape-drawing', 'square-rectangle'])) {
+    if (!in_array($shape_type, ['custom-shape-drawing', 'square-rectangle', 'circle-radius'])) {
         if (defined('WP_DEBUG') && WP_DEBUG) {
             error_log("add_custom_price_cart_item_data_secure: Invalid shape_type ($shape_type). Defaulting to custom-shape-drawing.");
         }
@@ -1664,6 +1672,27 @@ function show_custom_input_details_in_cart($item_data, $cart_item) {
 
     if (!empty($cart_item['custom_inputs'])) {
 
+
+        // Part Shape
+        if (isset($cart_item['custom_inputs']['shape_type']) && !empty($cart_item['custom_inputs']['shape_type'])) {
+            $ps_string = $cart_item['custom_inputs']['shape_type'];
+            $ps_string = str_replace('-', ' ', $ps_string);
+            $ps_string = ucwords($ps_string);
+            $item_data[] = [
+                'name' => 'Part shape',
+                'value' => $ps_string
+            ];
+        }
+
+        // Dynamically Display Radius Value
+         if ($cart_item['custom_inputs']['shape_type'] == "circle-radius") {
+            $width_value = $cart_item['custom_inputs']['width'] / 2;
+            $item_data[] = [
+                'name' => 'Radius (MM)',
+                'value' => $width_value
+            ];
+         }
+
         // PDF Drawing (if present)
         if (isset($cart_item['custom_inputs']['pdf_path']) && !empty($cart_item['custom_inputs']['pdf_path'])) {
             $item_data[] = [
@@ -1684,7 +1713,7 @@ function show_custom_input_details_in_cart($item_data, $cart_item) {
         if (isset($cart_item['custom_inputs']['width'])) {
             $item_data[] = [
                 'name' => 'Width (MM)',
-                'value' => $cart_item['custom_inputs']['width'] . ' mm'
+                'value' => $cart_item['custom_inputs']['width']
             ];
         }
 
@@ -1692,7 +1721,7 @@ function show_custom_input_details_in_cart($item_data, $cart_item) {
         if (isset($cart_item['custom_inputs']['length'])) {
             $item_data[] = [
                 'name' => 'Length (MM)',
-                'value' => $cart_item['custom_inputs']['length'] . ' mm'
+                'value' => $cart_item['custom_inputs']['length']
             ];
         }
 
@@ -1740,6 +1769,8 @@ function show_custom_input_details_in_cart($item_data, $cart_item) {
     return $item_data;
 }
 // SHOW DATA IN CART AND CHECKOUT
+
+
 
 
 
@@ -1841,7 +1872,7 @@ function apply_secure_custom_price($cart) {
         }
     }
 }
-// SHOW DATA IN CART AND CHECKOUT
+
 
 
 
