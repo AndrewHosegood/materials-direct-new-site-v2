@@ -1,4 +1,10 @@
 jQuery(document).ready(function($){
+        // Burger menu
+        $('#nav-icon4').click(function(){
+            $(this).toggleClass('open');
+        });
+        // Burger menu
+        
         // Footer scroll to top
         $('#back_to_top').on('click', function(e) {
             e.preventDefault(); 
@@ -58,6 +64,14 @@ jQuery(document).ready(function($){
         $("#stock_sheets").on("click", function() {
             $(".product-page__tabs-list").removeClass("active");
             $(this).closest("li").addClass("active");
+        });
+
+        // shipping address edit
+        $(".shipping-address-form__saved-edit").on("click", function() {
+            //alert("Hello");
+            
+            $(".shipping-address-form__saved").toggleClass("hide");
+            $("#shipping-address-form").addClass("show");
         });
 
         // hide/show file uploads when square rectangle/circle radius is clicked
@@ -139,9 +153,80 @@ jQuery(document).ready(function($){
         // add width and length values based on circle radius input
         $('#input_radius').on('keyup', function() {
             var keyup_value = $(this).val() * 2;
+            console.log(keyup_value);
             $("#input_length").val(keyup_value);
             $("#input_width").val(keyup_value);
             $("#generate_price").prop("disabled", false);
         });
         // add width and length values based on circle radius input
+
+        // Owl Carousel
+        $('.testimonials__carousel').owlCarousel({
+            loop:true,
+            margin:10,
+            nav:false,
+            autoplay: true,            
+            autoplayTimeout: 3000,     
+            autoplayHoverPause: true,  
+            responsive:{
+                0:{
+                    items:1
+                },
+                600:{
+                    items:1
+                },
+                1000:{
+                    items:1
+                }
+            }
+        });
+        $('.our-partners__carousel').owlCarousel({
+            loop:true,
+            margin:10,
+            nav:true,
+            autoplay: true,            
+            autoplayTimeout: 3000,     
+            autoplayHoverPause: true, 
+            navText: [
+                '<span class="our-partners__nav-previous"><img src="http://localhost:8888//wp-content/themes/materials-direct/images/prev-1.svg" alt="Prev"></span>',
+                '<span class="our-partners__nav-next"><img src="http://localhost:8888//wp-content/themes/materials-direct/images/next-1.svg" alt="Next"></span>'
+            ],
+            responsive:{
+                0:{
+                    items:2
+                },
+                600:{
+                    items:3
+                },
+                960:{
+                    items:4
+                },
+                1240:{
+                    items:5
+                }
+            }
+        });
+        $('.banner').owlCarousel({
+            loop:true,
+            margin:10,
+            nav:false,
+            autoplay: true,            
+            autoplayTimeout: 8000,     
+            autoplayHoverPause: true,  
+            items: 1, // fade works only with one item
+            animateOut: 'fadeOut', // enable fade
+            smartSpeed: 700, // optional: smooth fade transition
+            responsive:{
+                0:{
+                    items:1
+                },
+                600:{
+                    items:1
+                },
+                1000:{
+                    items:1
+                }
+            }
+        });
+        // Owl Carousel
 }); 

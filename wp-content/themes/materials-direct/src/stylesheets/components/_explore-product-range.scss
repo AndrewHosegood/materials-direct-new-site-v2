@@ -1,0 +1,26 @@
+@use "../abstracts/breakpoints";
+@use "../abstracts/variables";
+
+.explore-product-range {
+    background: #f7f7f7;
+    padding: 3.6rem 0;
+    &__card {
+        background: white;
+        text-align: left;
+        padding: 1rem;
+        min-height: 410px;
+        position: relative;
+    }
+    &__card-heading {
+        color: variables.$primary-color;
+        font-size: 1.4rem;
+        padding: 0.6rem 0;
+    }
+    &__btn {
+        position: absolute;
+        bottom: 2rem;
+    }
+    &__card-content {
+        font-size: 0.85rem;
+    }
+}

@@ -16,17 +16,41 @@
 @use "components/sheduled-shipments-modal";
 @use "components/delivery-options-shipment";
 @use "components/shop-banner";
-//@use "components/button";
-//@use "components/mainmenu";
+//@use "components/main-menu-new";
+@use "components/main-menu";
+@use "components/button";
+@use "components/home-category-menu";
+@use "components/featured-icons";
+@use "components/technical-bulletin";
+@use "components/counter";
+@use "components/welcome-text";
+@use "components/testimonials";
+@use "components/sectors";
+@use "components/banner";
+@use "components/sectors-two-column";
+@use "components/explore-product-range";
+@use "components/quality-assured";
+@use "components/wide-range-of-services";
+@use "components/featured-products";
+@use "components/request-material";
+@use "components/four-step-process";
+@use "components/promo-video";
+@use "components/our-partners";
+@use "components/partner-brand";
+@use "components/owl-carousel";
+@use "components/any-questions";
+@use "components/burger-menu.scss";
 
 @use "layout/footer";
 @use "layout/header";
 @use "layout/containers";
+@use "layout/grid-layouts";
 
 @use "pages/product-page";
 @use "pages/cart";
 @use "pages/checkout";
 @use "pages/thankyou";
 @use "pages/shop";
+@use "pages/partner-brands";
 
 @use "shame/shame";

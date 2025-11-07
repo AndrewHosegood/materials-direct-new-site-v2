@@ -112,12 +112,15 @@ function calculate_product_price($product_id, $width, $length, $qty, $discount_r
     }
 
     $cost_per_cm2 = floatval(get_field('cost_per_cm', $product_id));
+    //SHEETS we need to set the item border to '0' for sheets
     $item_border = floatval(get_field('border_around', $product_id));
+
 
     // NEW: Dynamic global adjust based on shape_type
     if ($shape_type === 'custom-shape-drawing') {
         $globalPriceAdjust = 1.0;
     } else {
+        //SHEETS - we need to set $globalPriceAdjust to '1' for sheets
         $globalPriceAdjust = floatval(get_field('global_adjust_square_rectangle', 'options'));
     }
     // NEW: Dynamic global adjust based on shape_type
@@ -130,6 +133,8 @@ function calculate_product_price($product_id, $width, $length, $qty, $discount_r
     $setWidth = $width / 10;
     $maxSetWidth = $setWidth + $borderSize;
     $maxSetLength = $setLength + $borderSize;
+    //SHEETS - we need to pass in (ACF Field) $cost_per_part = 0.00229;
+    //SHEETS - then $ppp = $maxSetLength * $maxSetWidth * $cost_per_part
     $ppp = $maxSetLength * $maxSetWidth * $cost_per_cm2;
     $totalSqMm = $setWidth * $setLength * 100;
 
@@ -146,6 +151,8 @@ function calculate_product_price($product_id, $width, $length, $qty, $discount_r
     // Apply discount rate
     $discountAmount = $finalPppOnAva * $discount_rate;
     $finalPppOnAva = $finalPppOnAva - $discountAmount;
+    //SHEETS - we need to pass in (ACF Field) $sheets_gpm = 0.25
+    //SHEETS - we need to add this line: $finalPppOnAva = $finalPppOnAva / 0.25;
 
 
     // Debug logging
@@ -169,6 +176,34 @@ function calculate_product_price($product_id, $width, $length, $qty, $discount_r
     return round($total_price, 2);
 }
 // 1. END PRICE CALCULATION FUNCTION
+
+
+// 1B. ENQUEUE THE RESET BUTTON JAVASCTPT
+
+add_action('wp_enqueue_scripts', 'enqueue_reset_shipments_script');
+function enqueue_reset_shipments_script() {
+    // Only enqueue on single product pages
+    if (is_product()) {
+        wp_enqueue_script(
+            'reset-shipments',
+            get_theme_file_uri('/js/reset-shipments.js'),
+            ['jquery'], // Dependency on jQuery
+            '1.0.0',
+            true // Load in footer
+        );
+
+        // Pass ajaxurl to the script
+        wp_localize_script(
+            'reset-shipments',
+            'resetShipmentsVars',
+            [
+                'ajaxurl' => admin_url('admin-ajax.php')
+            ]
+        );
+    }
+}
+
+// 1B. ENQUEUE THE RESET BUTTON JAVASCTPT
 
 
 // 2. HTML FORM WITH SPINNER
@@ -235,9 +270,7 @@ function custom_price_input_fields_prefill() {
 
 
     // Existing form for non-single products
-    echo '<!-- 123 stage banner -->
-    <div class="product-page__stages-heading"><h3 class="product-page__stages-heading-content one">Tell us what to manufacture and give us your delivery date</h3></div>
-    <!-- 123 stage banner -->
+    echo '<div class="product-page__stages-heading"><h3 class="product-page__stages-heading-content one">Tell us what to manufacture and give us your delivery date</h3></div>
     
         <div id="custom-price-calc" class="custom-price-calc">
 
@@ -254,6 +287,10 @@ function custom_price_input_fields_prefill() {
 
         <li class="product-page__tabs-list"><label class="product-page__tabs-label">Square Rectangle
         <input class="product-page__tabs-input" name="tabs_input" type="radio" value="square-rectangle" id="square_rectangle" tabindex="0">
+        </label></li>
+
+        <li class="product-page__tabs-list"><label class="product-page__tabs-label">Stock Sheets
+        <input class="product-page__tabs-input" name="tabs_input" type="radio" value="stock-sheets" id="stock_sheets" tabindex="0">
         </label></li>
 
         </ul>
@@ -411,39 +448,15 @@ function custom_price_input_fields_prefill() {
         <div id="custom_price_display"></div>
         <input type="hidden" id="custom_price" name="custom_price" value="">';
 
-        // add javascript for reset button
-        ?>
-        <script type="text/javascript">
-        jQuery(document).ready(function($) {
-            $('#reset_button').on('click', function(e) {
-                e.preventDefault();
+        echo '<div class="product-page__stages-heading"><h3 class="product-page__stages-heading-content two">Enter your delivery address</h3></div>';
 
-                $.ajax({
-                    url: '<?php echo admin_url("admin-ajax.php"); ?>',
-                    type: 'POST',
-                    data: {
-                        action: 'reset_custom_shipments'
-                    },
-                    success: function(response) {
-                        location.reload();
-                    },
-                    error: function() {
-                        console.log('Failed to reset session.');
-                    }
-                });
-            });
-        });
-        </script>
-
-        <?php
-        // add javascript for reset button
-        echo '<!-- 123 stage banner -->
-        <div class="product-page__stages-heading"><h3 class="product-page__stages-heading-content two">Enter your delivery address</h3></div>
-        <!-- 123 stage banner -->
-
-        <!-- Shipping Address Inputs -->
-        <div id="shipping-address-form">
-            <h3 class="product-page__subheading">Item(s) shipping address<span class="gfield_required gfield_required_asterisk">*</span></h3>
+        if(WC()->session->get('custom_shipping_address')){
+            echo '<div id="shipping-address-form" class="shipping-address-form__hide">';
+        } else {
+            echo '<div id="shipping-address-form">';
+        }
+        
+        echo '<h3 class="product-page__subheading">Item(s) shipping address<span class="gfield_required gfield_required_asterisk">*</span></h3>
             <label class="custom-price-calc__label"><input class="product-page__calc-input" type="text" id="input_street_address" name="custom_street_address" placeholder="Street Address" value="' . $street_address . '" required></label>
             <label class="custom-price-calc__label"><input class="product-page__calc-input" type="text" id="input_address_line2" name="custom_address_line2" placeholder="Address Line 2" value="' . $address_line2 . '"></label>
             <label class="custom-price-calc__label"><input class="product-page__calc-input product-page__calc-input-small" type="text" id="input_city" name="custom_city" placeholder="City" value="' . $city . '" required></label>
@@ -460,12 +473,32 @@ function custom_price_input_fields_prefill() {
                     <option value="United States"' . selected($country, 'United States', false) . '>United States</option>
                 </select>
             </label>
-        </div>
+        </div>';
+   
+        
 
+        if(WC()->session->get('custom_shipping_address')){
+            $address = WC()->session->get('custom_shipping_address');
+            echo '<div class="shipping-address-form__saved">';
+            echo '<h3 class="product-page__subheading">Item(s) shipping address?<span class="gfield_required gfield_required_asterisk">*</span></h3>';
+            echo '<p class="shipping-address-form__saved-content">';
+            echo $address['street_address'] . "<br>";
+            echo $address['address_line2'] . "<br>";
+            echo $address['city'] . "<br>";
+            echo $address['county_state'] . "<br>";
+            echo $address['zip_postal'] . "<br>";
+            echo $address['country'];
+            echo '</p>';
+            echo '<a class="shipping-address-form__saved-edit">Edit Address</a>';
+            echo '</div>';
+        }
+       
 
-    </div>';
+    echo '</div>';
 }
 // 2. HTML FORM WITH SPINNER
+
+
 
 
 
@@ -1099,7 +1132,7 @@ function add_custom_price_cart_item_data_secure($cart_item_data, $product_id) {
     }
 
     $shape_type = sanitize_text_field($_POST['tabs_input'] ?? $_POST['shape_type'] ?? 'custom-shape-drawing');
-    if (!in_array($shape_type, ['custom-shape-drawing', 'square-rectangle', 'circle-radius'])) {
+    if (!in_array($shape_type, ['custom-shape-drawing', 'square-rectangle', 'circle-radius', 'stock-sheets'])) {
         if (defined('WP_DEBUG') && WP_DEBUG) {
             error_log("add_custom_price_cart_item_data_secure: Invalid shape_type ($shape_type). Defaulting to custom-shape-drawing.");
         }
@@ -1614,7 +1647,9 @@ function save_sheets_required_to_order_item($item, $cart_item_key, $values, $ord
     if (isset($values['custom_inputs']['shipping_address'])) {
         $item->add_meta_data('custom_shipping_address', $values['custom_inputs']['shipping_address'], true);
     }
-
+    if (isset($values['custom_inputs']['shape_type'])) {
+        $item->add_meta_data('shape_type', $values['custom_inputs']['shape_type'], true);
+    }
     if (isset($values['custom_inputs']['width'])) {
         $item->add_meta_data('width', $values['custom_inputs']['width'], true);
     }
@@ -2017,7 +2052,7 @@ function display_global_shipping_address_cart() {
     if (!$shipping_address) return;
 
     echo '<div class="global-shipping-address" style="margin-top:20px;">';
-    echo '<h3>Shipping Details</h3>';
+    echo '<h3 class="global-shipping-address-title">Shipping Details</h3>';
     echo '<p><strong>Shipping Address: </strong><p class="global-shipping-address-list">';
     echo esc_html($shipping_address['street_address']) . '<br>';
     if (!empty($shipping_address['address_line2'])) {
@@ -2062,8 +2097,8 @@ function update_order_shipping_fields($order, $data) {
 add_action('woocommerce_checkout_order_processed', 'clear_custom_shipping_session', 10, 1);
 function clear_custom_shipping_session($order_id) {
     WC()->session->set('custom_shipping_address', null);
-    WC()->session->set('custom_qty', null); // NEW CODE FOR DELIVERY OPTIONS
-    WC()->session->set('custom_shipments', null); // NEW CODE FOR DELIVERY OPTIONS
+    WC()->session->set('custom_qty', null); 
+    WC()->session->set('custom_shipments', null); 
 }
 
 // CLEAR SESSION AFTER ORDER IS PLACED

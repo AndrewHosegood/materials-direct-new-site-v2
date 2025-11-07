@@ -1,0 +1,55 @@
+@use "../abstracts/breakpoints";
+@use "../abstracts/variables";
+
+.promo-video {
+    position: relative;
+    &__container {
+        width: 290px;
+        @include breakpoints.iphone {
+            width: 500px;
+        }
+        @include breakpoints.tablet {
+            width: 655px;
+        }
+        @include breakpoints.laptop {
+            width: 755px;
+        }
+        margin-left: auto;
+        margin-right: auto;
+    }
+    &__blue-panel {
+        content: "";
+        position: absolute;
+        background: variables.$secondary-color;
+        height: 250px;
+        left: 0;
+        right: 0;
+        top: 0;
+        z-index: 0;
+    }
+    &__video {
+        z-index: 1;
+        position: relative;
+        width: 290px;
+        height: 243px;
+        @include breakpoints.iphone { 
+            width: 500px;
+            height: 361px;
+        }
+        @include breakpoints.tablet {   
+            width: 100%;
+            height: auto;
+        }
+        @include breakpoints.laptop {
+            width: 100%;
+            height: auto;
+        }
+    }
+    &__text {
+        color: white;
+        text-align: center;
+        font-size: 1rem;
+        z-index: 2;
+        position: relative;
+    }
+}

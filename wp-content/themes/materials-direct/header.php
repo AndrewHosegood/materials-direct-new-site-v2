@@ -46,19 +46,30 @@
 			</div>
 		</div>
 
-		<div class="container header__main-container">		
+		<div class="header__main-container">		
 			<div class="site-branding header__left">
 				<?php the_custom_logo(); ?>
 			</div>
 			<div class="header__right">
+
+			<!-- 
+			<div id="nav-icon4">
+				<span></span>
+				<span></span>
+				<span></span>
+			</div>
+			 -->
+
 				<nav id="site-navigation" class="main-navigation">
-					<button class="menu-toggle" aria-controls="primary-menu" aria-expanded="false"><?php esc_html_e( 'Primary Menu', 'materials-direct' ); ?></button>
+					<!-- <button class="menu-toggle" aria-controls="primary-menu" aria-expanded="false"><?php //esc_html_e( 'Primary Menu', 'materials-direct' ); ?></button> -->
+
+
 					<?php
 					wp_nav_menu(
 						array(
 							'theme_location' => 'menu-1',
 							'menu_id'        => 'primary-menu',
-							'menu_class'     => 'header__main-menu',
+							'menu_class'     => 'sf-menu header__main-menu',
 						)
 					);
 					?>

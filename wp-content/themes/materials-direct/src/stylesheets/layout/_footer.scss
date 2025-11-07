@@ -5,30 +5,75 @@
     width: 100%;
     height: auto;
     background: variables.$secondary-color;
-    padding: 6.5rem 0 0 0;
+    padding: 4.5rem 0 0 0;
+    @include breakpoints.tablet {
+        padding: 6.5rem 0 0 0;
+    }
     color: white;
     font-size: 0.9rem;
     &__container {
-        display: flex;
+        display: block;
+        @include breakpoints.tablet {
+            display: flex;
+        }
         flex-wrap: wrap;
         width: 100%;
         height: auto;
     }
     &__col:nth-child(1) {
-        width: 24%;
-        margin-right: 2%;
+        width: 44%;
+        margin-right: 0%;
+        @include breakpoints.tablet {
+            width: 33%;
+            margin-right: 6%;
+        }
+        @include breakpoints.laptop {
+            width: 27%;
+            margin-right: 7%;
+        }
+        @include breakpoints.desktop {
+            width: 24%;
+            margin-right: 2%;
+        }
     }
     &__col:nth-child(2) {
-        width: 21%;
-        margin-right: 2%;
+        width: 44%;
+        margin-right: 0%;
+        margin-top: 3.3rem;
+         @include breakpoints.tablet {
+            width: 24%;
+            margin-right: 5%;
+            margin-top: 0;
+         }
+         @include breakpoints.desktop {
+            width: 21%;
+            margin-right: 2%;
+            margin-top: 0;
+         }
     }
     &__col:nth-child(3) {
-        width: 21%;
-        margin-right: 2%;
+        width: 44%;
+        margin-right: 5%;
+        @include breakpoints.tablet {
+            width: 27%;
+            margin-right: 5%;
+        }
+        @include breakpoints.desktop {
+            width: 21%;
+            margin-right: 2%;
+        }
     }
     &__col:nth-child(4) {
-        width: 28%;
+        width: 100%;
         margin-right: 0%;
+         @include breakpoints.tablet {
+            width: 100%;
+            margin-right: 0%;
+         }
+         @include breakpoints.desktop {
+            width: 28%;
+            margin-right: 0%;
+         }
     }
     &__logo {
         width: 99px;
@@ -137,5 +182,20 @@
     &__copyright {
         opacity: 0.8;
         font-size: 0.85rem;
+    }
+    & .wpcf7-not-valid-tip {
+        color: variables.$primary-color;
+        font-size: 1em;
+        font-weight: normal;
+        display: block;
+        margin-bottom: -2.2rem;
+        margin-top: -1rem;
+    }
+    & .wpcf7 form .wpcf7-response-output {
+        margin: 0.6em 0em 2.5em;
+        padding: 0.4em 1em;
+        border-color: variables.$primary-color;
+        background: variables.$primary-color;
+        color: white;
     }
 }

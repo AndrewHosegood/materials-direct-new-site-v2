@@ -11,6 +11,10 @@ function remove_specific_order_item_meta($formatted_meta, $item) {
         if (in_array($meta->key, $meta_keys_to_remove)) {
             unset($formatted_meta[$key]); // Remove it from the list
         }
+        if ($meta->key === 'shape_type') {
+            $formatted_meta[$key]->display_key = 'Shape Type'; // Change the label
+            $formatted_meta[$key]->display_value = ucwords(str_replace('-', ' ', $meta->value));
+        }
         if ($meta->key === 'despatch_notes') {
             $formatted_meta[$key]->display_key = 'Despatch Notes'; // Change the label
         }

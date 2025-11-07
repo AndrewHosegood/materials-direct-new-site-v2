@@ -1,0 +1,67 @@
+@use "../abstracts/breakpoints";
+@use "../abstracts/variables";
+
+.technical-bulletin {
+    background: variables.$secondary-color;
+    padding: 2.25rem 0 3.1rem 0;
+    &__subheading {
+        color: variables.$primary-color;
+        font-size: 1.36rem;
+        @include breakpoints.desktop {
+            font-size: 1.45rem;
+        }
+        padding: 0;
+        margin-bottom: 1.1rem;
+        line-height: 1.7rem;
+        margin-top: 0.3rem;
+    }
+    &__heading {
+        color: white;
+        font-size: 2.7rem;
+        line-height: 3.4rem;
+        padding: 0;
+        margin-bottom: 1rem;
+    }
+    &__left-col {
+        width: 100%;
+        margin-right: 0%;
+        @include breakpoints.tablet {
+            width: 72.5%;
+            margin-right: 5%;
+        }
+    }
+    &__right-col {
+        width: 0%;
+         @include breakpoints.tablet {
+            width: 22.5%;
+         }
+    }
+    &__container {
+        display: flex;
+        flex-wrap: wrap;
+        width: 90%;
+        @include breakpoints.desktop {
+            width: 80%;
+        }
+        max-width: 1150px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+    &__content {
+        font-size: 0.9rem;
+        line-height: 1.7rem;
+        color: white;
+        padding-top: 0;
+        padding-bottom: 1.2rem;
+    }
+    &__btn {
+        background: variables.$primary-color;
+        color: white;
+        padding: 1.1rem 1.5rem;
+        border-radius: 0.2rem;
+        margin-top: 1rem;
+        display: inline-block;
+        font-weight: 600;
+        font-size: 0.9rem;
+    }
+}

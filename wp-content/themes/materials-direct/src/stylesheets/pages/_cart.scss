@@ -71,6 +71,12 @@
     & .cart .product-name .variation dd {
             margin: 0 0 0.05rem 0;
     }
+    & .global-shipping-address-title {
+        font-size: 1.55rem;
+    }
+    & .global-shipping-address {
+        margin-top: 20px;
+    }
     & .global-shipping-address-list {
         padding: 0;
         line-height: 1.45rem;
@@ -84,6 +90,9 @@
     }
     & .woocommerce-remove-coupon {
         display: none;
+    }
+    & .cart_totals h2 {
+        font-size: 1.55rem;
     }
 }
 
@@ -138,4 +147,6 @@
     width: 200px;
     text-align: center;
 }
-
+.return-to-shop {
+    margin-bottom: 2rem;
+}

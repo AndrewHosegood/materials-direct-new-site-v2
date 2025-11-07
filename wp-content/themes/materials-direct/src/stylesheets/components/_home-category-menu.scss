@@ -1,0 +1,122 @@
+@use "../abstracts/breakpoints";
+@use "../abstracts/variables";
+
+.home-category-menu {
+    text-align: center;
+    background-image: url('/wp-content/uploads/2025/10/384e37e6da85410c59c0e2007c1b5494.md-background-12.webp');
+    background-repeat: repeat;
+    background-size: cover;
+    padding: 2rem 2rem 2.55rem 2rem;
+    &__top {
+        max-width: 1300px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+    &__title {
+        font-size: 1.5rem;
+        line-height: 2.2rem;
+        padding: 0 0 2rem 0;
+        margin: 0.5rem 1rem;
+        @include breakpoints.laptop {
+            font-size: 1.5rem;
+            line-height: 2.1rem;
+            margin: 0.5rem 1rem;
+        }
+        @include breakpoints.desktop {
+            font-size: 2.9rem;
+            line-height: 3.6rem;
+            margin: 0.5rem 0;
+        }
+    }
+    &__content {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: center;
+        max-width: 1169px;
+        margin-left: auto;
+        margin-right: auto;
+        padding: 0 1.2rem;
+        @include breakpoints.laptop {
+            padding: 0 1.2rem;
+        }
+        @include breakpoints.desktop {
+            padding: 0;
+        }
+        align-items: flex-start;
+        grid-gap: 0.55rem;
+    }
+    &__card {
+        margin: 0 0.5%;
+        background: white;
+        border-radius: 0.4rem;
+        box-shadow: 0px 0px 22px rgba(0, 0, 0, 0.15);
+        padding: 0.7rem;
+        margin-bottom: 0.2rem;
+        transform: scale(1);
+        transition: transform 0.12s ease-in;
+        margin: 0;
+        width: 100%;
+        @include breakpoints.iphone {
+            width: 49%;
+        }
+        @include breakpoints.laptop {
+            width: 24%
+        }
+        @include breakpoints.desktop {
+            width: 19%;
+        }
+    }
+    &__card:hover {
+        transform: scale(1.03);
+    }
+    &__card-heading {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.21rem;
+        line-height: 1.5rem;
+        padding: 0.4rem 0 0.9rem 0;
+        color: #2d3e4f;
+        min-height: 67px;
+    }
+    &__btn {
+        background: variables.$primary-color;
+        padding: 1.13rem .8rem;
+        width: 100%;
+        color: white;
+        font-size: 0.81rem;
+        font-weight: 400;
+        border-bottom-left-radius: .25rem;
+        border-bottom-right-radius: .25rem;
+        margin-top: 0.35rem;
+    }
+    &__card-img {
+        object-fit: cover;
+        height: 150px;
+        width: 100%;
+        border-top-left-radius: .25rem;
+        border-top-right-radius: .25rem;
+    }
+    &__link {
+        width: 100%;
+    }
+    &__lower {
+        background: variables.$primary-color;
+        color: white;
+        padding: 1.2rem 1.5rem;
+        border-radius: 0.3rem;
+        margin: 1rem auto 0 auto;
+        display: block;
+        text-align: center;
+        width: 260px;
+        transition: all 0.12s ease-in;
+        font-size: 0.88rem;
+    }
+    &__break {
+        display: inline;
+        @include breakpoints.desktop {
+            display: block;
+        }
+    }
+}

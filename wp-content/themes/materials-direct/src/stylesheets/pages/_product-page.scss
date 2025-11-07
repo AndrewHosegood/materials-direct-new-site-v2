@@ -78,8 +78,9 @@
     }
     &__subheading {
         color: variables.$secondary-color;
-        font-weight: 600;
-        font-size: 1rem;
+        font-weight: 700;
+        font-size: 0.88rem;
+        padding: 1rem 0 0 0;
     }
     &__display-price-outer {
         border: 2px solid variables.$primary-color;
@@ -119,14 +120,14 @@
     }
     &__discount-table-heading {
         font-weight: 700;
-        background: #f19000 !important;
-        color: #fff !important;
+        background: #f19000;
+        color: #fff;
         font-size: 80%;
         padding: 0.5rem;
     }
     &__discount-table-content {
-        background: #eee !important;
-        color: #2d3e4f !important;
+        background: #eee;
+        color: #2d3e4f;
         font-size: 80%;
         padding: 0.5rem;
         padding-left: 0px;
@@ -135,8 +136,8 @@
         border-width: 0 1px 1px 0;
     }
     &__discount-table-content-2 {
-        background: white !important;
-        color: #2d3e4f !important;
+        background: white;
+        color: #2d3e4f;
         font-size: 80%;
         padding: 0.5rem;
         padding-left: 0px;
@@ -298,18 +299,18 @@
         color: white;
     }
     &__tabs-label {
-        padding: .85rem .75rem .85rem 2.4rem;
+        padding: .88rem .75rem .88rem 2.7rem;
         display: block;
         color: white;
         font-weight: 600;
-        font-size: 0.83rem;
+        font-size: 0.79rem;
         line-height: 0.4rem;
         position: relative;
         border-right: 1px solid white;
         border-left: 1px solid white;
     }
     &__tabs-list.active {
-        background: variables.$primary-color !important;
+        background: variables.$primary-color;
         border-top-left-radius: 0.4rem;
         border-top-right-radius: 0.4rem;
         background: variables.$primary-color;
@@ -338,47 +339,59 @@
     &__tabs-list:nth-child(1) &__tabs-label:before {
         content: "";
         background-image: url("/wp-content/uploads/2025/10/icon-custom-shape.png");
-        background-size: 22px 22px;
+        background-size: 25px 25px;
         display: inline-block;
-        width: 22px;
-        height: 22px;
+        width: 25px;
+        height: 25px;
         position: absolute;
         left: 11px;
-        top: 14px;
+        top: 13px;
     }
     &__tabs-list:nth-child(2) &__tabs-label:before {
         content: "";
         background-image: url("/wp-content/uploads/2025/10/icon-circle-shape.png");
-        background-size: 22px 22px;
+        background-size: 25px 25px;
         display: inline-block;
-        width: 22px;
-        height: 22px;
+        width: 25px;
+        height: 25px;
         position: absolute;
         left: 11px;
-        top: 14px;
+        top: 13px;
     }
     &__tabs-list:nth-child(3) &__tabs-label:before {
         content: "";
         background-image: url("/wp-content/uploads/2025/10/icon-square-shape.png");
-        background-size: 22px 22px;
+        background-size: 25px 25px;
         display: inline-block;
-        width: 22px;
-        height: 22px;
+        width: 25px;
+        height: 25px;
         position: absolute;
         left: 11px;
-        top: 14px;
+        top: 13px;
     }
     &__tabs-list:nth-child(4) &__tabs-label:before {
         content: "";
         background-image: url("/wp-content/uploads/2025/10/icon-square-shape.png");
-        background-size: 22px 22px;
+        background-size: 25px 25px;
         display: inline-block;
-        width: 22px;
-        height: 22px;
+        width: 25px;
+        height: 25px;
         position: absolute;
         left: 11px;
-        top: 14px;
+        top: 13px;
     }
+    &__tabs-list:nth-child(4) &__tabs-label:before {
+        content: "";
+        background-image: url("/wp-content/uploads/2025/10/icon-sheet-shape-1.png");
+        background-size: 25px 25px;
+        display: inline-block;
+        width: 25px;
+        height: 25px;
+        position: absolute;
+        left: 11px;
+        top: 13px;
+    }
+    //
     &__tabs-input {
         width: 1px;
         opacity: 0;
@@ -467,4 +480,26 @@ div#order_info_box #parts_remaining {
 }
 #pdf_upload_container.hidden {
     display: none;
+}
+.shipping-address-form {
+    &__hide {
+        display: none;
+    }
+    &__saved {
+        width: 100%;
+    }
+    &__saved.hide {
+        display: none;
+    }
+    &__saved-content {
+        line-height: 1.6rem;
+        font-size: 0.9rem;
+    }
+    &__saved-edit {
+        font-size: 0.8rem;
+        background: variables.$secondary-color;
+        padding: 0.7rem 1rem;
+        color: white;
+        cursor: pointer;
+    }
 }

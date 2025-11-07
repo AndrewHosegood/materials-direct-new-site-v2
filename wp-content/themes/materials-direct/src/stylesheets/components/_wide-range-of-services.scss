@@ -1,0 +1,24 @@
+.wide-range-of-services {
+    padding: 4rem 0;
+    background-image: url('https://materials-direct.com/wp-content/uploads/2024/07/shutterstock_218519482-dark.jpg?id=39228');
+    background-size: cover;
+    background-repeat: no-repeat;
+    color: white;
+    &__card {
+        display: flex;
+    }
+    &__card-icon {
+        width: 16%;
+        margin-right: 6%;
+    }
+    &__card-content {
+        width: 78%;
+        text-align: left;
+    }
+    &__card-content-heading {
+        font-size: 1.6rem;
+        line-height: 1.7rem;
+        padding: 0;
+        margin-bottom: 1rem;
+    }
+}

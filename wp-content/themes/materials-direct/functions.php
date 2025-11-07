@@ -147,14 +147,17 @@ function materials_direct_scripts() {
 	wp_enqueue_style( 'materials-direct-style', get_stylesheet_uri(), array(), _S_VERSION );
 	wp_style_add_data( 'materials-direct-style', 'rtl', 'replace' );
 
-	wp_enqueue_script( 'materials-direct-navigation', get_template_directory_uri() . '/js/navigation.js', array(), _S_VERSION, true );
+	//wp_enqueue_script( 'materials-direct-navigation', get_template_directory_uri() . '/js/navigation.js', array(), _S_VERSION, true );
 	wp_enqueue_script( 'materials-direct-scripts', get_template_directory_uri() . '/js/scripts.js', array(), _S_VERSION, true );
+	wp_enqueue_script( 'owl-scripts', get_template_directory_uri() . '/js/owl.carousel.min.js', array(), _S_VERSION, true );
 
 	if ( is_singular() && comments_open() && get_option( 'thread_comments' ) ) {
 		wp_enqueue_script( 'comment-reply' );
 	}
 
 	wp_enqueue_style( 'font-awesome', 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css', array(), '6.6.0' );
+	wp_enqueue_style( 'owl-carousel-1', get_template_directory_uri() .'/css/owl.carousel.min.css', array(), _S_VERSION );
+	wp_enqueue_style( 'owl-carousel-2', get_template_directory_uri() .'/css/owl.theme.default.min.css', array(), _S_VERSION );
 
 	// Enqueue main.css after WooCommerce styles
 	wp_enqueue_style(
@@ -293,9 +296,9 @@ require_once('includes/show-stock-sheet-size-on-product-page.php');
 require_once('includes/change-shop-grid-to-3-columns.php');
 // change the shop grid to 3 columns
 
-// validation for product width and length
-require_once('includes/validation-for-product-width-and-length.php');
-// validation for product width and length
+// validation for product width and length - (to be deleted)
+//require_once('includes/validation-for-product-width-and-length.php');
+// validation for product width and length - (to be deleted)
 
 // Fix for VAT exclusion on checkout page if country is not GB
 require_once('includes/ensure-vat-is-not-included-on-checkout-page.php');
@@ -345,8 +348,94 @@ require_once('includes/add-mask-div-wrapper-to-shop-page.php');
 require_once('includes/shop-page-additional-content.php');
 /* shop/category page additional content */
 
+/* Sheet size validation and stock sheet logic */
+require_once('includes/sheets-size-validation-and-stock-sheet-logic.php');
+/* Sheet size validation and stock sheet logic */
+
+/* enqueue javascript for home onscroll counter  */
+require_once('includes/home-onscroll-counter.php');
+/* enqueue javascript for home onscroll counter  */
+
 /* END CUSTOM FUNCTIONS */
 
+
+
+
+
+
+
+
+
+/*
+function add_stock_sheet_dimension() {
+	if ( ! is_product() ) {
+        return; // Only run on single product pages
+    }
+
+    global $product;
+    $product_id = get_the_ID();
+    $product = wc_get_product($product_id);
+
+	if ( ! $product || ! is_a( $product, 'WC_Product' ) ) {
+        return;
+    }
+
+	// Get the border
+    $item_border = floatval(get_field('border_around', $product_id)) * 10;
+    $allowed_border = $item_border * 2;
+
+	// Get product dimensions (in cm), convert to mm
+	$sheet_length_mm = $product->get_length() * 10;
+    $sheet_width_mm  = $product->get_width() * 10;
+
+	// Allowed values
+    $allowed_length = $sheet_length_mm - $allowed_border;
+    $allowed_width  = $sheet_width_mm - $allowed_border;
+
+	if ( ! $sheet_length_mm || ! $sheet_width_mm ) {
+        return; // Avoid injecting if dimensions are missing
+    }
+
+	?>
+	<script type="text/javascript">
+		jQuery(document).ready(function($) {
+			const stocksheetWidth = <?php echo esc_js($sheet_length_mm); ?>;
+			const stocksheetLength = <?php echo esc_js($sheet_width_mm); ?>;
+
+			function handleTabChange() {
+				const selectedTab = $('[name="tabs_input"]:checked').val();
+				const $widthInput = $('input[name="custom_width"]');
+				const $lengthInput = $('input[name="custom_length"]');
+
+				if (!$widthInput.length || !$lengthInput.length) {
+					return; // Don't proceed if inputs are not found
+				}
+
+				if (selectedTab === "stock-sheets") {
+					$widthInput.val(stocksheetWidth).prop('disabled', true).trigger('change');
+					$lengthInput.val(stocksheetLength).prop('disabled', true).trigger('change');
+				} else {
+					$widthInput.prop('disabled', false);
+					$lengthInput.prop('disabled', false);
+				}
+			}
+
+			// Run on page load
+			handleTabChange();
+
+			// Run when tab changes
+			$('[name="tabs_input"]').on('change', function() {
+				// Optional delay in case DOM state is updated after change
+				setTimeout(handleTabChange, 100);
+			});
+		});
+	</script>
+	<?php
+}
+
+add_action( 'wp_head', 'add_stock_sheet_dimension' );
+
+*/
 
 
 
@@ -451,4 +540,5 @@ function display_wc_session_data_on_product_page() {
     echo '</div>';
 }
 */
+
 

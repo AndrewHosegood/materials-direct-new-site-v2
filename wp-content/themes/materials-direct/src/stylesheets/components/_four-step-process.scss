@@ -1,0 +1,114 @@
+@use "../abstracts/breakpoints";
+@use "../abstracts/variables";
+
+.four-step-process {
+    padding: 3rem 0;
+    background: variables.$secondary-color;
+    &__heading {
+        color: white;
+        line-height: 2.8rem;
+        margin-bottom: 2.8rem;
+    }
+    &__heading-italic {
+        color: variables.$primary-color;
+        font-style: italic;
+    }
+    &__card {
+        color: white;
+        border: 1px solid #8e8f93;
+        padding: 2.6rem 1.3rem 0.8rem 1.3rem;
+        text-align: center;
+        position: relative;
+        min-height: 229px;
+    }
+    &__card:nth-child(1) &__card-heading::before {
+        content: "1";
+        background: white;
+        border-radius: 50%;
+        color: variables.$primary-color;
+        position: absolute;
+        top: -1rem;
+        width: 23.5px;
+        height: auto;
+        font-size: 1.5rem;
+        font-weight: 400;
+        display: block;
+        padding: 0.42rem;
+        left: 50%;
+        margin-left: -18px;
+    }
+    &__card:nth-child(2) &__card-heading::before {
+        content: "2";
+        background: white;
+        border-radius: 50%;
+        color: variables.$primary-color;
+        position: absolute;
+        top: -1rem;
+        width: 23.5px;
+        height: auto;
+        font-size: 1.5rem;
+        font-weight: 400;
+        display: block;
+        padding: 0.42rem;
+        left: 50%;
+        margin-left: -18px;
+    }
+    &__card:nth-child(3) &__card-heading::before {
+        content: "3";
+        background: white;
+        border-radius: 50%;
+        color: variables.$primary-color;
+        position: absolute;
+        top: -1rem;
+        width: 23.5px;
+        height: auto;
+        font-size: 1.5rem;
+        font-weight: 400;
+        display: block;
+        padding: 0.42rem;
+        left: 50%;
+        margin-left: -18px;
+    }
+    &__card:nth-child(4) &__card-heading::before {
+        content: "4";
+        background: white;
+        border-radius: 50%;
+        color: variables.$primary-color;
+        position: absolute;
+        top: -1rem;
+        width: 23.5px;
+        height: auto;
+        font-size: 1.5rem;
+        font-weight: 400;
+        display: block;
+        padding: 0.42rem;
+        left: 50%;
+        margin-left: -18px;
+    }
+    &__card-heading {
+        color: variables.$primary-color;
+        font-weight: 700;
+        line-height: 1.5rem;
+        min-height: 70px;
+        padding-bottom: 0;
+    }
+    &__icon-container {
+        width: 100px;
+        height: 100px;
+        display: block;
+        margin-left:auto;
+        margin-right: auto;
+    }
+    &__card:nth-child(1) &__icon {
+        width: 95px;
+    }
+    &__card:nth-child(2) &__icon {
+        width: 95px;
+    }
+    &__card:nth-child(3) &__icon {
+        width: 95px;
+    }
+    &__card:nth-child(4) &__icon {
+        width: 95px;
+    }
+}

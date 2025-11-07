@@ -1,0 +1,104 @@
+@use "../abstracts/breakpoints";
+@use "../abstracts/variables";
+
+.any-questions {
+    padding: 3rem 0;
+    background: #f0f0f0;
+    &__link {
+        margin: 0 0.3rem;
+    }
+    &__contact-details::after {
+        background: variables.$primary-color;
+        content: "";
+        width: 30%;
+        @include breakpoints.tablet {
+            width: 260px;
+        }
+        height: 1px;
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+        margin-top: 2.1rem;
+        margin-bottom: 1.5rem;
+    }
+    &__form-input-1 input {
+         font-weight: 400;
+    }
+    &__form-input-1b input {
+         font-weight: 400;
+    }
+    &__form-input-2 input {
+         font-weight: 400;
+    }
+    &__form-input-2 textarea {
+         font-weight: 400;
+         height: 330px;
+    }
+    &__form-input-1 {
+        width: 48.95%;
+        margin-right: 1.05%;
+    }
+    &__form-input-1b {
+        width: 48.95%;
+        margin-left: 1.05%;
+        font-weight: 400;
+    }
+    &__form-input-2 {
+        width: 100%;
+        font-weight: 400;
+    }
+    &__form-input-1 input::placeholder {
+        color: #999;
+        opacity: 1;
+    }
+    &__form-input-1b input::placeholder {
+        color: #999;
+        opacity: 1;
+    }
+    &__form-input-2 input::placeholder {
+        color: #999;
+        opacity: 1;
+    }
+    &__form-input-2 textarea::placeholder {
+        color: #999;
+        opacity: 1;
+    }
+    & form {
+        display: flex;
+        flex-wrap: wrap;
+    }
+    & form &__form-input-1 p {
+        padding: 0;
+        margin: 0 0 -0.8rem 0;
+    }
+    & form &__form-input-1b p {
+        padding: 0;
+        margin: 0 0 -0.8rem 0;
+    }
+    & form &__form-input-2 p {
+        padding: 0;
+        margin: 0 0 -0.8rem 0;
+    }
+    & form .button {
+        padding: 0.6rem 2rem;
+        margin-top: 1.5rem;
+        text-align: left;
+        float: left;
+    }
+    & .wpcf7-not-valid-tip {
+        color: variables.$primary-color;
+        text-align: left;
+        font-style: italic;
+    }
+    & p {
+        width: 100%;
+    }
+    & .wpcf7 form.invalid .wpcf7-response-output {
+        border-color: variables.$primary-color;
+        background: variables.$primary-color;
+        margin: 1.6rem 0 0 0;
+        color: white;
+    }
+}
+
+

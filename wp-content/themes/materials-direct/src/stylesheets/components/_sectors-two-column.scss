@@ -1,0 +1,15 @@
+.sectors-two-column {
+    padding: 3.2rem 0;
+    &__heading {
+        line-height: 3.3rem;
+        margin-bottom: 1rem;
+    }
+    &__btn {
+        margin-top: 0.85rem;
+    }
+    &__img {
+        width: 100%;
+        object-fit: cover;
+        height: 510px;
+    }
+}

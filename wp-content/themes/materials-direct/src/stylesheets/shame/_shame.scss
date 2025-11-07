@@ -49,4 +49,20 @@
     color: #fff !important;
     font-weight: 600;
 }
+.product-page__tabs-list.active {
+    background: variables.$primary-color !important;
+}
+.shipping-address-form__hide.show {
+        display: block !important;
+    }
 /* Product page */
+
+/* Cart page */
+.return-to-shop .button {
+    color: white !important;
+    background: variables.$secondary-color !important;
+    padding: 0.8rem 1.5rem !important;
+    font-weight: 600 !important;
+    border-radius: 0 !important;
+}
+/* Cart page */

@@ -59,19 +59,23 @@ address {
     font-size: 32px;
   }
   @include breakpoints.desktop {
-    font-size: 50px;
+    font-size: 54px;
   }
 }
 
 %h2 {
   padding: 1rem 0;
-  font-size: 22px;
+  font-size: 34px;
   @include breakpoints.tablet {
     padding: 0 0 0.5rem 0;
-    font-size: 30px;
+    font-size: 38px;
+  }
+  @include breakpoints.laptop {
+    padding: 0 0 0.5rem 0;
+    font-size: 44px;
   }
   @include breakpoints.desktop {
-    font-size: 35px;
+    font-size: 44px;
   }
 }
 
@@ -108,8 +112,11 @@ address {
 }
 
 %p {
-  font-size: 16px;
+  font-size: 13.5px;
   padding: 0.5rem 0;
+  @include breakpoints.laptop {
+    font-size: 14px;
+  }
   @include breakpoints.tablet {
     padding: 1rem 0;
   }

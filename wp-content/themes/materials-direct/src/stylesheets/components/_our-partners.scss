@@ -1,0 +1,81 @@
+@use "../abstracts/breakpoints";
+@use "../abstracts/variables";
+
+.our-partners {
+    padding: 3rem 0;
+    &__heading::after {
+        background: variables.$primary-color;
+        content: "";
+        width: 30%;
+        @include breakpoints.tablet {
+            width: 210px;
+        }
+        height: 1px;
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+        margin-top: 2.1rem;
+        margin-bottom: 1.5rem;
+    }
+    &__nav-previous {
+        width: 20px;
+        height: 20px;
+        display: inline-block;
+    }
+    &__nav-next {
+        width: 20px;
+        height: 20px;
+        display: inline-block;
+    }
+    &__carousel {
+        position: relative;
+    }
+    &__item {
+        margin: 0 1rem;
+    }
+    &__logo {
+        object-fit: cover;
+        height: 170px;
+    }
+    & .owl-stage-outer {
+        z-index: 9;
+    }
+    & .owl-nav {
+        display: flex;
+        justify-content: space-between;
+        position: absolute;
+        top: 5.2rem;
+        @include breakpoints.laptop {
+             top: 4.9rem;
+        }
+        @include breakpoints.desktop {
+             top: 3.9rem;
+        }
+        width: 100%;
+    }
+    & .owl-nav .owl-prev {
+        left: -1.6rem;
+        @include breakpoints.laptop {
+            left: -2.8rem;
+        }
+        @include breakpoints.desktop {
+            left: -3.3rem;
+        }
+        display: inline-block;
+        position: relative;
+    }
+    & .owl-nav .owl-next {
+        right: -1.6rem;
+        @include breakpoints.laptop {
+            right: -2.8rem;
+        }
+        @include breakpoints.desktop {
+            right: -3.3rem;
+        }
+        display: inline-block;
+        position: relative;
+    }
+    & .owl-dots {
+        display: none;
+    }
+}

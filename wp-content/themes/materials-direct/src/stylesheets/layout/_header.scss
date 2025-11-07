@@ -10,7 +10,7 @@
     display: flex;
     flex-wrap:wrap;
     border-bottom: 1px solid #efefef;
-    margin-bottom: 2.5rem;
+    // margin-bottom: 2.5rem;
     &__container {
         display: flex;
         flex-wrap:wrap;
@@ -19,6 +19,13 @@
     &__main-container {
         display: flex;
         padding: 1.7rem 0;
+        width: 90%;
+        margin-left: auto;
+        margin-right: auto;
+        @include breakpoints.desktop {
+            width: 80%;
+        }
+        max-width: 1150px;
     }
     &__menu-right {
         margin: 0;
@@ -78,17 +85,21 @@
     }
     &__main-menu li {
         display: inline-block;
-        padding: 0 1.9vw 14px 0;
+        padding: 0 0.9vw 10px 0;
     }
     &__main-menu li a {
         color: variables.$secondary-color;
     }
-    &__cart-wrapper {
-        position: absolute;
-        margin-right: 0.5rem;
-        right: 0;
-        top:0;
-    }
+    // &__cart-wrapper {
+    //     position: absolute;
+    //     margin-right: 0.5rem;
+    //     right: 4rem;
+    //     top: 4px;
+    //     @include breakpoints.laptop {
+    //         right: 0;
+    //         top:0;
+    //     }
+    // }
     &__cart-count {
         background: variables.$secondary-color;
         color: white;
@@ -116,6 +127,12 @@
     color: white;
     background: variables.$primary-color;
 }
+// .is-form-style {
+//     margin-top: 2.9rem;
+//      @include breakpoints.laptop {
+//         margin-top: 0;
+//      }
+// }
 .is-form-style .is-search-submit path {
   fill: white;
 }

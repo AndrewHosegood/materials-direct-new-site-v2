@@ -1,0 +1,67 @@
+@use "../abstracts/breakpoints";
+@use "../abstracts/variables";
+
+.quality-assured {
+    background: variables.$secondary-color;
+    padding: 1.5rem 0;
+    @include breakpoints.tablet {
+        padding: 3rem 0;
+    }
+    &__container {
+        padding: 0;
+        @include breakpoints.laptop {
+            padding: 0 2rem;
+        }
+        @include breakpoints.desktop {
+            padding: 0;
+        }
+    }
+    &__heading {
+        color: variables.$primary-color;
+    }
+    &__subheading {
+        color: white;
+        font-size: 1.48rem;
+        line-height: 2.3rem;
+        margin-bottom: 2.4rem;
+        padding: 0;
+        @include breakpoints.tablet {
+            font-size: 1.6rem;
+            line-height: 2.5rem;
+            margin-bottom: 2.4rem;
+            padding: 0 2rem;
+        }
+        @include breakpoints.laptop {
+            font-size: 1.8rem;
+            line-height: 2.6rem;
+            padding: 0 2.2rem;
+        }
+        @include breakpoints.desktop {
+            font-size: 2.1rem;
+            line-height: 2.9rem;
+            padding: 0;
+        }
+    }
+    &__text {
+        color: white;
+        font-size: 1.03rem;
+        padding: 0 0 2rem 0;
+        @include breakpoints.tablet {
+            padding: 0 2.5rem 2rem 2.5rem;
+        }
+        @include breakpoints.laptop {
+            padding: 0 6.5rem 2rem 6.5rem;
+        }
+        line-height: 1.7rem;
+    }
+    &__logo {
+        width: 130px;
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+        margin-bottom: 1rem;
+    }
+    &__link {
+        font-size: 0.88rem;
+    }
+}

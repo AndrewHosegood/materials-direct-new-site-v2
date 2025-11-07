@@ -1,0 +1,68 @@
+@use "../abstracts/breakpoints";
+@use "../abstracts/variables";
+
+.two-column-grid {
+    display: grid;
+    grid-template-columns: repeat(2,1fr);
+    // align-items: flex-start;
+    grid-auto-flow: dense;
+}
+.two-column-grid.reverse {
+  direction: rtl;
+}
+
+.two-column-grid.reverse > * {
+  direction: ltr; /* Keeps text normal direction */
+}
+.three-column-grid {
+    display: grid;
+    grid-template-columns: repeat(1,1fr);
+    @include breakpoints.tablet {
+        grid-template-columns: repeat(2,1fr);
+    }
+    @include breakpoints.laptop {
+        grid-template-columns: repeat(3,1fr);
+    }
+    align-items: flex-start;
+}
+.four-column-grid {
+    display: grid;
+    grid-template-columns: repeat(1,1fr);
+    @include breakpoints.tablet {
+        grid-template-columns: repeat(2,1fr);
+    }
+    @include breakpoints.laptop {
+        grid-template-columns: repeat(4,1fr);
+    }
+    align-items: flex-start;
+}
+.grid-gap-zero-point-five {
+    grid-gap: 0.5rem;
+}
+.grid-gap-zero-point-six {
+    grid-gap: 0.6rem;
+}
+.grid-gap-zero-point-seven {
+    grid-gap: 0.7rem;
+}
+.grid-gap-one {
+    grid-gap: 1rem;
+}
+.grid-gap-one-point-two {
+    grid-gap: 1.2rem;
+}
+.grid-gap-two {
+    grid-gap: 2rem;
+}
+.grid-gap-three {
+    grid-gap: 0.8rem;
+    @include breakpoints.tablet {
+        grid-gap: 2rem;
+    }
+    @include breakpoints.laptop {
+        grid-gap: 3rem;
+    }
+}
+.text-center {
+    text-align:center;
+}

@@ -1,0 +1,14 @@
+@use "../abstracts/breakpoints";
+@use "../abstracts/variables";
+
+.button {
+    font-size: 0.85rem;
+    background: variables.$primary-color;
+    color: white;
+    padding: 1.1rem 1.5rem;
+    border-radius: 0.25rem;
+    transition: background 0.13s ease-in;
+    &:hover {
+        background: variables.$secondary-color;
+    }
+}
