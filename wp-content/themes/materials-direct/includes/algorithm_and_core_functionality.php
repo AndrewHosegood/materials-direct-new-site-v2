@@ -83,6 +83,8 @@ function calculate_product_price($product_id, $width, $length, $qty, $discount_r
     $qty = intval($qty);
     $discount_rate = floatval($discount_rate);
 
+    error_log("Shape Type: $shape_type");
+
     if ($width <= 0 || $length <= 0 || $qty < 1) {
         return new WP_Error('invalid_input', 'Width, Length, and Quantity must be positive');
     }
@@ -111,31 +113,44 @@ function calculate_product_price($product_id, $width, $length, $qty, $discount_r
         }
     }
 
+    $cost_per_part = floatval(get_field('buy_cost', $product_id));
     $cost_per_cm2 = floatval(get_field('cost_per_cm', $product_id));
-    //SHEETS we need to set the item border to '0' for sheets
+    $sheets_gpm = floatval(get_field('sheets_gpm', $product_id));
     $item_border = floatval(get_field('border_around', $product_id));
 
+    error_log("Buy Cost (Cost Per Part): $cost_per_part");
+    error_log("sheets_gpm: $sheets_gpm");
 
-    // NEW: Dynamic global adjust based on shape_type
     if ($shape_type === 'custom-shape-drawing') {
         $globalPriceAdjust = 1.0;
+    } elseif ($shape_type === 'stock-sheets') {      
+        $globalPriceAdjust = floatval(get_field('global_adjust_sheets', 'options') ?: 1.0);
     } else {
-        //SHEETS - we need to set $globalPriceAdjust to '1' for sheets
-        $globalPriceAdjust = floatval(get_field('global_adjust_square_rectangle', 'options'));
+        $globalPriceAdjust = floatval(get_field('global_adjust_square_rectangle', 'options') ?: 1.0); // Circle Radius + Square Rectangle both use the same option
     }
-    // NEW: Dynamic global adjust based on shape_type
 
-    //$globalPriceAdjust = floatval(get_field('global_adjust_square_rectangle', 'options'));
+    error_log("globalPriceAdjust in calculate_product_price: $globalPriceAdjust");
 
-    // Core calculation
-    $borderSize = $item_border * 2;
+
+    if($shape_type ==="stock-sheets"){
+        $borderSize = 0;
+    } else {
+        $borderSize = $item_border * 2;
+    }
+    
     $setLength = $length / 10;
     $setWidth = $width / 10;
     $maxSetWidth = $setWidth + $borderSize;
     $maxSetLength = $setLength + $borderSize;
-    //SHEETS - we need to pass in (ACF Field) $cost_per_part = 0.00229;
-    //SHEETS - then $ppp = $maxSetLength * $maxSetWidth * $cost_per_part
-    $ppp = $maxSetLength * $maxSetWidth * $cost_per_cm2;
+
+    if($shape_type ==="stock-sheets"){
+        $ppp = $maxSetLength * $maxSetWidth * $cost_per_part;
+    } else {
+        $ppp = $maxSetLength * $maxSetWidth * $cost_per_cm2;
+    }
+    
+    
+
     $totalSqMm = $setWidth * $setLength * 100;
 
 
@@ -146,32 +161,27 @@ function calculate_product_price($product_id, $width, $length, $qty, $discount_r
     $costFactorResult = exponentialDecay($A, $k, $t);
     // End Codys algorith
 
+    error_log("costFactorResult (1): $costFactorResult");
+    error_log("ppp (2): $ppp");
+
     $finalPppOnAva = $ppp + $costFactorResult;
+
+    error_log("finalPppOnAva (3): $finalPppOnAva");
+
+    if($shape_type ==="stock-sheets"){
+        $finalPppOnAva = $finalPppOnAva / $sheets_gpm;
+    }
+
+    error_log("finalPppOnAva: $finalPppOnAva");
 
     // Apply discount rate
     $discountAmount = $finalPppOnAva * $discount_rate;
     $finalPppOnAva = $finalPppOnAva - $discountAmount;
-    //SHEETS - we need to pass in (ACF Field) $sheets_gpm = 0.25
-    //SHEETS - we need to add this line: $finalPppOnAva = $finalPppOnAva / 0.25;
-
-
-    // Debug logging
-    error_log("Debug [Product ID: $product_id, Width: $width mm, Length: $length mm, Qty: $qty, Discount: $discount_rate]:");
-    error_log("  totalSqMm: $totalSqMm");
-    error_log("  borderSize: $borderSize");
-    error_log("  cost_per_cm2: $cost_per_cm2");
-    error_log("  maxSetWidth: $maxSetWidth");
-    error_log("  maxSetLength: $maxSetLength");
-    error_log("  SetWidth: $setWidth");
-    error_log("  SetLength: $setLength");
-    error_log("  ppp: $ppp");
-    error_log("  costFactorResult: $costFactorResult");
-    error_log("  finalPppOnAva: $finalPppOnAva");
-    error_log("  GlobalPriceAdjust: $globalPriceAdjust");
-    //error_log("  GlobalPriceAdjust: $shapeType");
 
     $adjustedPrice = $finalPppOnAva * $globalPriceAdjust;
+    error_log("adjustedPrice (myPPPVAlue): $adjustedPrice");
     $total_price = $adjustedPrice * $qty;
+    error_log("total_price: $total_price");
 
     return round($total_price, 2);
 }
@@ -187,9 +197,9 @@ function enqueue_reset_shipments_script() {
         wp_enqueue_script(
             'reset-shipments',
             get_theme_file_uri('/js/reset-shipments.js'),
-            ['jquery'], // Dependency on jQuery
+            ['jquery'], 
             '1.0.0',
-            true // Load in footer
+            true 
         );
 
         // Pass ajaxurl to the script
@@ -594,16 +604,6 @@ function calculate_secure_price() {
     $sheets_required = $sheet_result['sheets_required'];
     $is_backorder = $sheets_required > $stock_quantity;
 
-    // Optional: Log for debugging (remove in production)
-    if (defined('WP_DEBUG') && WP_DEBUG) {
-        $session_qty = WC()->session->get('custom_qty');
-        error_log("Dynamic sheets calculation: Sheets required = $sheets_required for width=$width, length=$length, qty=$qty, sheet=$sheet_width_mm x $sheet_length_mm");
-        error_log("Stock check: sheets_required=$sheets_required, stock_quantity=$stock_quantity, is_backorder=" . ($is_backorder ? 'true' : 'false'));
-        error_log("Quantity entered=$qty");
-        error_log("Quantity entered=$session_qty");
-        error_log("Per part price=$per_part_price");
-        error_log("Border around fixed=$border_around");
-    }
 
     // SEND DATA TO algorith-core-functionality.js
     wp_send_json_success([
@@ -659,11 +659,6 @@ function calculate_scheduled_price_func() {
     }
     $per_part_base = $base_total_price / $qty;
 
-    // Log base values for context
-    error_log("Debug [Scheduled Price Calc - Product ID: $product_id, Width: $width, Length: $length, Qty: $qty]:");
-    error_log("  Base total price (no discounts): $base_total_price");
-    error_log("  Per part base price: $per_part_base");
-
     // Calculate total scheduled price
     $today = date('Y-m-d');
     $total_scheduled_price = 0;
@@ -673,7 +668,28 @@ function calculate_scheduled_price_func() {
         $despatch_ymd = "$yyyy-$mm-$dd";
 
         /* new calendar days discounts */ 
-        
+        $today_timestamp   = strtotime($today);
+        $despatch_timestamp = strtotime($despatch_ymd);
+        $calendar_days      = floor(($despatch_timestamp - $today_timestamp) / 86400);
+
+        if ($calendar_days <= 1) {
+            $disc = 0;        // 24Hrs / next day
+        } elseif ($calendar_days <= 4) {
+            $disc = 0.015;    // 2–4 days (48Hrs–4 days)
+        } elseif ($calendar_days <= 6) {
+            $disc = 0.02;     // 5–6 days
+        } elseif ($calendar_days <= 11) {
+            $disc = 0.025;    // 7–11 days
+        } elseif ($calendar_days <= 13) {
+            $disc = 0.03;     // 12–13 days
+        } elseif ($calendar_days <= 29) {
+            $disc = 0.035;    // 14–29 days
+        } elseif ($calendar_days <= 34) {
+            $disc = 0.04;     // 30–34 days
+        } else {
+            $disc = 0.05;     // 35+ days
+        }
+        /*
         $today_timestamp = strtotime($today);
         $despatch_timestamp = strtotime($despatch_ymd);
         $calendar_days = ($despatch_timestamp - $today_timestamp) / (60 * 60 * 24);
@@ -686,8 +702,9 @@ function calculate_scheduled_price_func() {
         elseif ($calendar_days <= 29) $disc = 0.035; // 14–29 days (14–15 Days)
         elseif ($calendar_days <= 35) $disc = 0.04; // 30–35 days (30 Days)
         else $disc = 0.05; // 36+ days (35 Days)
-        
+        */
         /* new calendar days discounts */ 
+
 
         /* old working days discount */ 
         /*
@@ -711,17 +728,8 @@ function calculate_scheduled_price_func() {
         $portion_final = $portion_price - $portion_discount;
         $total_scheduled_price += $portion_final;
 
-        // Log detailed breakdown for this shipment
-        error_log("  Shipment #$index: Date={$despatch_date}, Parts={$portion_parts}");
-        error_log("    Working days: $days");
-        error_log("    Discount rate: $disc (" . ($disc * 100) . "%)");
-        error_log("    Portion price (before discount): $portion_price");
-        error_log("    Portion discount amount: $portion_discount");
-        error_log("    Portion final (after discount): $portion_final");
     }
 
-    // Log the overall total
-    error_log("  Total scheduled price: $total_scheduled_price");
 
     $product = wc_get_product($product_id);
     if (!$product) {
@@ -1107,13 +1115,6 @@ function add_custom_price_cart_item_data_secure($cart_item_data, $product_id) {
             'final_shipping' => $final_shipping,
         ]);
 
-        if (defined('WP_DEBUG') && WP_DEBUG) {
-            error_log("add_custom_price_cart_item_data_secure (Single Product ID: {$product_id}):");
-            error_log("  total_del_weight: {$total_del_weight}");
-            error_log("  final_shipping: {$final_shipping}");
-            error_log("  shipments: {$shipments}");
-        }
-
         return $cart_item_data;
     }
 
@@ -1124,18 +1125,11 @@ function add_custom_price_cart_item_data_secure($cart_item_data, $product_id) {
         !isset($_POST['custom_price']) ||
         !isset($_POST['custom_discount_rate'])
     ) {
-        if (defined('WP_DEBUG') && WP_DEBUG) {
-            error_log('add_custom_price_cart_item_data_secure: Missing required POST fields');
-            error_log('POST data: ' . print_r($_POST, true));
-        }
         return $cart_item_data;
     }
 
     $shape_type = sanitize_text_field($_POST['tabs_input'] ?? $_POST['shape_type'] ?? 'custom-shape-drawing');
     if (!in_array($shape_type, ['custom-shape-drawing', 'square-rectangle', 'circle-radius', 'stock-sheets'])) {
-        if (defined('WP_DEBUG') && WP_DEBUG) {
-            error_log("add_custom_price_cart_item_data_secure: Invalid shape_type ($shape_type). Defaulting to custom-shape-drawing.");
-        }
         $shape_type = 'custom-shape-drawing';
     }
 
@@ -1267,15 +1261,6 @@ function add_custom_price_cart_item_data_secure($cart_item_data, $product_id) {
             $portion_final = $portion_price - $portion_discount;
             $server_total += $portion_final;
 
-            // Log detailed breakdown for this shipment
-            if (defined('WP_DEBUG') && WP_DEBUG) {
-                error_log("add_custom_price_cart_item_data_secure: Shipment #$index: Date={$shipment['date']}, Parts={$portion_parts}");
-                error_log("  Calendar days: $calendar_days");
-                error_log("  Discount rate: $disc (" . ($disc * 100) . "%)");
-                error_log("  Portion price (before discount): $portion_price");
-                error_log("  Portion discount amount: $portion_discount");
-                error_log("  Portion final (after discount): $portion_final");
-            }
         }
         $server_total_price = $server_total;
 
@@ -1414,29 +1399,10 @@ function add_custom_price_cart_item_data_secure($cart_item_data, $product_id) {
         $cart_item_data['custom_inputs']['scheduled_shipments'] = $scheduled_shipments;
     }
 
-    if (defined('WP_DEBUG') && WP_DEBUG) {
-        error_log("add_custom_price_cart_item_data_secure (Non-Single Product ID: {$product_id}):");
-        error_log("  total_del_weight: {$total_del_weight}");
-        error_log("  final_shipping: {$final_shipping}");
-        error_log("  shipments: " . (is_array($shipments) ? print_r($shipments, true) : $shipments));
-        error_log("  shape_type: {$shape_type}");
-        error_log("  price_per_sheet: {$cart_item_data['custom_inputs']['price']}");
-        error_log("  total_price: {$cart_item_data['custom_inputs']['total_price']}");
-        if ($is_backorder) {
-            error_log("  backorder_data: " . print_r($backorder_data, true));
-        }
-        if ($is_scheduled) {
-            error_log("  scheduled_shipments: " . print_r($scheduled_shipments, true));
-        }
-    }
-
     // Clear custom_shipments and custom_qty sessions for scheduled orders
     if ($is_scheduled && !empty($shipments_session)) {
         WC()->session->set('custom_shipments', []);
         WC()->session->set('custom_qty', null);
-        if (defined('WP_DEBUG') && WP_DEBUG) {
-            error_log("add_custom_price_cart_item_data_secure: Cleared custom_shipments and custom_qty sessions for product ID {$product_id}");
-        }
     }
 
     return $cart_item_data;
@@ -1834,7 +1800,6 @@ function apply_secure_custom_price($cart) {
     if (defined('WP_DEBUG') && WP_DEBUG) {
         $shipping_country = WC()->customer->get_shipping_country();
         $tax_rates = WC_Tax::find_rates(['country' => $shipping_country]);
-        error_log("apply_secure_custom_price: Shipping country = {$shipping_country}, Tax rates = " . print_r($tax_rates, true));
     }
 
     foreach ($cart->get_cart() as $cart_item_key => $cart_item) {
@@ -1851,9 +1816,6 @@ function apply_secure_custom_price($cart) {
                 $price_per_sheet = floatval($cart_item['custom_inputs']['price']);
                 if ($price_per_sheet > 0) {
                     $cart_item['data']->set_price($price_per_sheet);
-                    if (defined('WP_DEBUG') && WP_DEBUG) {
-                        error_log("apply_secure_custom_price: Setting scheduled price per sheet for cart item key $cart_item_key: $price_per_sheet");
-                    }
                     continue;
                 }
             }
@@ -1879,9 +1841,6 @@ function apply_secure_custom_price($cart) {
                     $total_price = $backorder_data['backorder_total'];
                     $price_per_sheet = $sheets_required > 0 ? $total_price / $sheets_required : $total_price;
                 } else {
-                    if (defined('WP_DEBUG') && WP_DEBUG) {
-                        error_log("apply_secure_custom_price: Invalid backorder_total for cart item key $cart_item_key. Falling back to standard pricing.");
-                    }
                     $total_price = calculate_product_price($product_id, $width, $length, $qty, $discount_rate, $shape_type);
                     $price_per_sheet = $sheets_required > 0 ? $total_price / $sheets_required : $total_price;
                 }
@@ -1896,9 +1855,6 @@ function apply_secure_custom_price($cart) {
 
           if (!is_wp_error($price_per_sheet)) {
                 $cart_item['data']->set_price($price_per_sheet);
-                // if (defined('WP_DEBUG') && WP_DEBUG) {
-                //     error_log("apply_secure_custom_price: Setting price per sheet for cart item key $cart_item_key: Price=$price_per_sheet, Total Price=$total_price, Shape Type=$shape_type, Width=$width, Length=$length, Qty=$qty, Sheets Required=$sheets_required");
-                // }
             } else {
                 if (defined('WP_DEBUG') && WP_DEBUG) {
                     error_log("apply_secure_custom_price: Error calculating price for product ID $product_id: " . $price_per_sheet->get_error_message());
@@ -2232,35 +2188,8 @@ function display_custom_inputs_on_product_page() {
             $totalSqCm = $totalSqMm / 100;
             $total_del_weight = $totalSqCm * floatval($product_weight) * $quantity * 1.03;
             $final_shipping = calculate_shipping_cost($total_del_weight, $country);
-
-
-            error_log("product_weight?: $product_weight");
-            error_log("sheets?: $sheets");
-            error_log("total_del_weight??: $total_del_weight");
-            error_log("final shipping??: $final_shipping");
-            error_log("totalSqCm??: $totalSqCm");
-            error_log("totalSqMm??: $totalSqMm");
-            error_log("setWidthRaw??: $sheet_width_mm");
-            error_log("setLengthRaw??: $sheet_length_mm");
-            error_log("discount_rate: $discount_rate");
-            error_log("delivery time: $delivery_time");
-            error_log("shipments: $shipments");
-            //error_log("countries: $countries");
-            //error_log("weight: $weight");
-            //error_log("cost: $cost");
-            //error_log("description: $description");
         }
 
-
-        // Debug logging (only if WP_DEBUG is enabled)
-        if (defined('WP_DEBUG') && WP_DEBUG) {
-            error_log("Debug [Product ID: $product_id, Weight Calculation]:");
-            error_log("  sheets: $sheets");
-            error_log("  stock_quantity: $stock_quantity");
-            error_log("  product_weight: $product_weight $weight_unit");
-            error_log("  total_del_weight: " . (is_wp_error($total_del_weight) ? $total_del_weight->get_error_message() : "$total_del_weight $weight_unit"));
-            error_log("  final_shipping: $final_shipping");
-        }
 
         // Output styled results
         echo '<div class="custom-product-info" style="margin-bottom: 20px;">';
@@ -2301,9 +2230,6 @@ add_action('template_redirect', 'set_custom_shipping_country_for_tax_calculation
 function set_custom_shipping_country_for_tax_calculation() {
     if (is_cart() || is_checkout()) {
         $shipping_address = WC()->session->get('custom_shipping_address');
-        if (defined('WP_DEBUG') && WP_DEBUG) {
-            error_log("set_custom_shipping_country_for_tax_calculation: custom_shipping_address = " . print_r($shipping_address, true));
-        }
         if ($shipping_address && isset($shipping_address['country'])) {
             $custom_country = $shipping_address['country'];
             // Map full country names to ISO country codes for WooCommerce
@@ -2325,18 +2251,11 @@ function set_custom_shipping_country_for_tax_calculation() {
                 WC()->customer->set_shipping_city($shipping_address['city']);
                 WC()->customer->set_shipping_state($shipping_address['county_state']);
                 WC()->customer->set_shipping_postcode($shipping_address['zip_postal']);
-                // Log for debugging
-                if (defined('WP_DEBUG') && WP_DEBUG) {
-                    error_log("set_custom_shipping_country_for_tax_calculation: Set shipping country to {$country_code}");
-                }
             }
         } else {
                 // Fallback to store base country only if no session data
                 $store_country = WC()->countries->get_base_country();
                 WC()->customer->set_shipping_country($store_country);
-                if (defined('WP_DEBUG') && WP_DEBUG) {
-                    error_log("set_custom_shipping_country_for_tax_calculation: No custom_shipping_address, falling back to store base country {$store_country}");
-                }
         }
     }
 }

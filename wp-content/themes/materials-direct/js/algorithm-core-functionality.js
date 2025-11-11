@@ -1,8 +1,14 @@
 jQuery(document).ready(function($) {
     // Initialize jQuery UI Datepicker
-    $('.datepicker').datepicker({
+    $('#delivery_date').datepicker({
         dateFormat: 'dd/mm/yy',
         minDate: 1, // Prevent selecting past dates
+        maxDate: "+1Y",
+        appendTo: '.delivery-options-modal'
+    });
+    $('#delivery_date_backorder').datepicker({
+        dateFormat: 'dd/mm/yy',
+        minDate: 36, // Prevent selecting past dates
         maxDate: "+1Y",
         appendTo: '.delivery-options-modal'
     });
@@ -513,6 +519,7 @@ jQuery(document).ready(function($) {
                     $('#price-spinner-overlay').fadeOut(200);
                     if (response.success) {
                         const price = response.data.price;
+                        console.log("price: " + price);
                         const adjustedPrice = response.data.per_part;
                         const sheetsRequired = response.data.sheets_required || 1;
                         const isBackorder = response.data.is_backorder || false;
@@ -523,6 +530,9 @@ jQuery(document).ready(function($) {
                         const qty = response.data.entered_quantity;
                         const backorder_adjustedPrice = adjustedPrice * 0.05;
                         const discount_rate = response.data.discount_rate;
+                        const globalPriceAdjust = response.data.global_price_adjust;
+
+                        console.log("globalPriceAdjust: " + globalPriceAdjust);
 
                         // Compile the schedules using discounr_rate
                         let discount_display;

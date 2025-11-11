@@ -62,8 +62,12 @@ function combined_custom_jquery_for_dimensions_and_stock_sheets() {
             const selectedTab = $('[name="tabs_input"]:checked').val();
 
             if (selectedTab === "stock-sheets") {
-                $widthInput.val(stocksheetWidth).prop('disabled', true).trigger('change');
-                $lengthInput.val(stocksheetLength).prop('disabled', true).trigger('change');
+                $widthInput.val(stocksheetWidth).prop('readonly', true).trigger('change');
+                $lengthInput.val(stocksheetLength).prop('readonly', true).trigger('change');
+                $widthInput.addClass("disabled");
+                $lengthInput.addClass("disabled");
+                // $widthInput.val(stocksheetWidth).trigger('change');
+                // $lengthInput.val(stocksheetLength).trigger('change');
                 $button.prop('disabled', false); // Force enable button
                 removeMessage(); // No validation needed
             } else {

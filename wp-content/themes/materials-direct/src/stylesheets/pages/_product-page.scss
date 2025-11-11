@@ -39,6 +39,10 @@
         padding: .1rem 0.5rem;
         font-weight: 400;
     }
+    &__input.disabled {
+        background: transparent;
+        padding: 0;
+    }
     &__generate-price {
         color: white;
         padding: .25rem 1rem;

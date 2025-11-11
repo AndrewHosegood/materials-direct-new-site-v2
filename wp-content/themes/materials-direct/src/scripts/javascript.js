@@ -4,7 +4,7 @@ jQuery(document).ready(function($){
             $(this).toggleClass('open');
         });
         // Burger menu
-        
+
         // Footer scroll to top
         $('#back_to_top').on('click', function(e) {
             e.preventDefault(); 

@@ -12,6 +12,15 @@ function add_modal_to_product_page_footer() {
         $shipments = WC()->session->get('custom_shipments', []); // Get existing shipments
         $total_parts = array_sum(array_column($shipments, 'parts')); // Sum of parts in shipments
         $remaining_parts = max(0, $custom_qty - $total_parts); // Calculate remaining parts
+
+        global $product;
+        if ( $product instanceof WC_Product ) {
+
+            $product_id   = $product->get_id();
+            $backorders   = $product->get_backorders(); // 'no', 'notify', or 'yes'
+            $stock_status = $product->get_stock_status();
+
+        }
         ?>
         <div class="delivery-options-modal__outer" style="display: none;"> 
             <div class="delivery-options-modal">
@@ -23,7 +32,13 @@ function add_modal_to_product_page_footer() {
                     <p class="delivery-options-modal__info">You have <span id="remaining-parts"><?php echo esc_html($remaining_parts); ?></span> parts remaining to set delivery date(s) for.</p>
                     
                     <label class="delivery-options-modal__label">Despatch Date</label>
-                    <input type="text" class="datepicker delivery-options-modal__form-field" name="despatch_date" value="" placeholder="dd/mm/yyyy">
+
+                    
+                    <?php if($stock_status === "onbackorder"){ ?>
+                        <input type="text" id="delivery_date_backorder" class="datepicker delivery-options-modal__form-field" name="despatch_date" value="" placeholder="dd/mm/yyyy">
+                    <?php } else { ?>
+                        <input type="text" id="delivery_date" class="datepicker delivery-options-modal__form-field" name="despatch_date" value="" placeholder="dd/mm/yyyy">
+                    <?php } ?>
                     
                     <p class="delivery-options-modal__small-text">
                         Please set up your deliveries in order of date; you cannot create deliveries prior to an existing date.
@@ -31,6 +46,8 @@ function add_modal_to_product_page_footer() {
 
                     <label class="delivery-options-modal__label">Total number of parts</label>
                     <input type="number" class="delivery-options-modal__form-field parts-input" name="shipment_parts" value="" placeholder="Enter a number ≥ 1" min="1">
+
+
                     
                     <input type="submit" value="Add Despatch Date" class="delivery-options-modal__submit">
                 </div>
