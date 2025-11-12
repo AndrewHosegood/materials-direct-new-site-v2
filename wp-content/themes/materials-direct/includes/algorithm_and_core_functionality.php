@@ -709,6 +709,7 @@ function calculate_scheduled_price_func() {
         $portion_final = $portion_price - $portion_discount;
         $total_scheduled_price += $portion_final;
 
+
     }
     /* new calendar days discounts */ 
 
@@ -748,7 +749,8 @@ function calculate_scheduled_price_func() {
         'sheet_length_mm' => $sheet_length_mm,
         'entered_quantity' => $qty,
         'discount_rate' => 0,
-        'border_around' => $border_around
+        'border_around' => $border_around,
+        'shipments' => $enhanced_shipments
     ]);
 }
 // NEW. SCHEDULED PRICE CALCULATION IN PHP
@@ -1208,10 +1210,33 @@ function add_custom_price_cart_item_data_secure($cart_item_data, $product_id) {
     }
 
     if ($is_scheduled) {
+        /*
         $despatch_notes = '';
         $scheduled_shipments = $shipments_session;
         foreach ($scheduled_shipments as $s) {
             $despatch_notes .= $s['parts'] . ' parts to be despatched on ' . $s['date'] . "\n";
+        }
+        */
+
+        $despatch_notes = '';
+        $scheduled_shipments = $shipments_session;
+        $enhanced_shipments = [];
+
+        foreach ($scheduled_shipments as $s) {
+            $despatch_date = $s['date']; // dd/mm/yyyy
+            list($dd, $mm, $yyyy) = explode('/', $despatch_date);
+            $despatch_ymd = "$yyyy-$mm-$dd";
+
+            $lead_time_label = get_shipment_lead_time_label($despatch_ymd);
+
+            $formatted_line = number_format($s['parts']) . " parts to be despatched on {$despatch_date} {$lead_time_label}";
+            $despatch_notes .= $formatted_line . "\n";
+
+            $enhanced_shipments[] = [
+                'date'            => $despatch_date,
+                'parts'           => $s['parts'],
+                'lead_time_label' => $lead_time_label
+            ];
         }
 
         $per_part_base = $base_total_price_no_disc / $quantity;
@@ -1378,7 +1403,8 @@ function add_custom_price_cart_item_data_secure($cart_item_data, $product_id) {
 
     if ($is_scheduled) {
         $cart_item_data['custom_inputs']['is_scheduled'] = true;
-        $cart_item_data['custom_inputs']['scheduled_shipments'] = $scheduled_shipments;
+        //$cart_item_data['custom_inputs']['scheduled_shipments'] = $scheduled_shipments;
+        $cart_item_data['custom_inputs']['scheduled_shipments'] = $enhanced_shipments;
     }
 
     // Clear custom_shipments and custom_qty sessions for scheduled orders
@@ -2264,6 +2290,86 @@ function set_custom_shipping_country_for_tax_calculation() {
 
 
 // HANDLE MODAL SUBMISSION FOR DELIVERY OPTIONS VIA AJAX
+add_action('wp_ajax_save_shipment', 'save_shipment_callback');
+add_action('wp_ajax_nopriv_save_shipment', 'save_shipment_callback');
+
+function save_shipment_callback() {
+    check_ajax_referer('custom_price_nonce', 'nonce');
+
+    $despatch_date = sanitize_text_field($_POST['despatch_date'] ?? '');
+    $parts         = intval($_POST['shipment_parts'] ?? 0);
+
+    if (!$despatch_date || $parts < 1) {
+        wp_send_json_error(['message' => 'Invalid despatch date or parts.']);
+    }
+
+    // Get current shipments
+    $shipments = WC()->session->get('custom_shipments', []);
+    $custom_qty = WC()->session->get('custom_qty', 0);
+
+    if ($custom_qty <= 0) {
+        wp_send_json_error(['message' => 'No total quantity set.']);
+    }
+
+    $total_scheduled = array_sum(array_column($shipments, 'parts'));
+    $remaining = $custom_qty - $total_scheduled;
+
+    if ($parts > $remaining) {
+        wp_send_json_error(['message' => "Only $remaining parts remaining."]);
+    }
+
+    // Add new shipment
+    $shipments[] = [
+        'date'  => $despatch_date,
+        'parts' => $parts
+    ];
+
+    WC()->session->set('custom_shipments', $shipments);
+
+    $new_total = array_sum(array_column($shipments, 'parts'));
+    $remaining = $custom_qty - $new_total;
+
+    // Build enhanced table HTML
+    ob_start();
+    ?>
+    <div class="delivery-options-shipment__outer">
+        <table class="delivery-options-shipment">
+            <thead>
+                <tr>
+                    <th class="delivery-options-shipment__title">Despatch Date</th>
+                    <th class="delivery-options-shipment__title">Total number of parts</th>
+                    <th class="delivery-options-shipment__title"><span class="screen-reader-text">Actions</span></th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php foreach ($shipments as $index => $shipment): 
+                    $despatch_ymd = date('Y-m-d', strtotime(str_replace('/', '-', $shipment['date'])));
+                    $lead_time_label = get_shipment_lead_time_label($despatch_ymd);
+                ?>
+                    <tr>
+                        <td class="delivery-options-shipment__display-results">
+                            <?php echo esc_html($shipment['date'] . ' ' . $lead_time_label); ?>
+                        </td>
+                        <td class="delivery-options-shipment__display-results">
+                            <?php echo esc_html($shipment['parts']); ?>
+                        </td>
+                        <td class="delivery-options-shipment__display-results">
+                            <a href="#" class="delete-shipment" data-index="<?php echo $index; ?>">Delete</a>
+                        </td>
+                    </tr>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
+    </div>
+    <?php
+    $table_html = ob_get_clean();
+
+    wp_send_json_success([
+        'table_html'       => $table_html,
+        'remaining_parts'  => $remaining
+    ]);
+}
+/*
 add_action('wp_ajax_save_shipment', 'save_shipment');
 add_action('wp_ajax_nopriv_save_shipment', 'save_shipment');
 
@@ -2369,6 +2475,7 @@ function save_shipment() {
         'remaining_parts' => $remaining_parts
     ]);
 }
+    */
 // HANDLE MODAL SUBMISSION FOR DELIVERY OPTIONS VIA AJAX
 
 
@@ -2482,3 +2589,48 @@ function reset_custom_shipments_callback() {
 }
 
 // RESET BUTTON
+
+
+//Delivery options lead time helper
+/**
+ * Return formatted lead-time + discount string for a despatch date.
+ */
+function get_shipment_lead_time_label( $despatch_ymd ) {
+    $today            = date( 'Y-m-d' );
+    $today_ts         = strtotime( $today );
+    $despatch_ts      = strtotime( $despatch_ymd );
+    $calendar_days    = floor( ( $despatch_ts - $today_ts ) / 86400 );
+
+    if ( $calendar_days <= 1 ) {
+        $label = '24Hrs (working day)';
+        $disc  = 0;
+    } elseif ( $calendar_days <= 4 ) {
+        $label = $calendar_days . ' Days (working days)';
+        $disc  = 0.015;
+    } elseif ( $calendar_days <= 6 ) {
+        $label = $calendar_days . ' Days (working days)';
+        $disc  = 0.02;
+    } elseif ( $calendar_days <= 11 ) {
+        $label = $calendar_days . ' Days (working days)';
+        $disc  = 0.025;
+    } elseif ( $calendar_days <= 13 ) {
+        $label = $calendar_days . ' Days (working days)';
+        $disc  = 0.03;
+    } elseif ( $calendar_days <= 29 ) {
+        $label = $calendar_days . ' Days (working days)';
+        $disc  = 0.035;
+    } elseif ( $calendar_days <= 34 ) {
+        $label = $calendar_days . ' Days (working days)';
+        $disc  = 0.04;
+    } else {
+        $label = $calendar_days . ' Days (working days)';
+        $disc  = 0.05;
+    }
+
+    if ( $disc > 0 ) {
+        $label .= ' (' . ( $disc * 100 ) . '% Discount)';
+    }
+
+    return $label;
+}
+//Delivery options lead time helper
