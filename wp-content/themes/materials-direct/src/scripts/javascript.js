@@ -66,6 +66,12 @@ jQuery(document).ready(function($){
             $(this).closest("li").addClass("active");
         });
 
+        // Stock Sheets click
+        $("#rolls").on("click", function() {
+            $(".product-page__tabs-list").removeClass("active");
+            $(this).closest("li").addClass("active");
+        });
+
         // shipping address edit
         $(".shipping-address-form__saved-edit").on("click", function() {
             //alert("Hello");
@@ -75,6 +81,20 @@ jQuery(document).ready(function($){
         });
 
         // hide/show file uploads when square rectangle/circle radius is clicked
+        $("#rolls").click(function(){
+            $('#circle-radius').closest(".product-page__tabs-label").removeClass("active");
+            $('#custom_drawing').closest(".product-page__tabs-label").removeClass("active");
+            $('#pdf_upload_label').hide();
+            $('#uploadPdf').hide();
+            $('#pdf_upload_text').hide();
+            $('#dxf_upload_label').hide();
+            $('#uploadDxf').hide();
+            $('#drawing_guide').hide();
+            $('#input_width').closest("label").show();
+            $('#input_length').closest("label").show();
+            $('#input_radius').closest("label").hide();
+            $("#input_radius").val("");
+        });
         $("#square_rectangle").click(function(){
             $('#circle-radius').closest(".product-page__tabs-label").removeClass("active");
             $('#custom_drawing').closest(".product-page__tabs-label").removeClass("active");

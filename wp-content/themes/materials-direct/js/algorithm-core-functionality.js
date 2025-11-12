@@ -40,6 +40,8 @@ jQuery(document).ready(function($) {
             $('#input_length').val(''); // Reset length
             $('#input_qty').val(''); // Reset quantity
             $('#tabs_status_message').html('Square Rectange'); // dynamically add shape text
+            $('.product-page__rolls-label-text-1').text('Length (MM):');
+            $('.product-page__rolls-label-text-2').text('Total number of parts:');
             enableButtons(); // Enable buttons since PDF is not required
 
             // Delete temporary PDF file from server
@@ -75,6 +77,8 @@ jQuery(document).ready(function($) {
             $('#input_length').val(''); // Reset length
             $('#input_qty').val(''); // Reset quantity
             $('#tabs_status_message').html('Circle Radius');
+            $('.product-page__rolls-label-text-1').text('Length (MM):');
+            $('.product-page__rolls-label-text-2').text('Total number of parts:');
             enableButtons();
 
             // Delete temporary PDF file from server
@@ -109,7 +113,9 @@ jQuery(document).ready(function($) {
             $('#input_width').val(''); // Reset width
             $('#input_length').val(''); // Reset length
             $('#input_qty').val(''); // Reset quantity
-            $('#tabs_status_message').html('Stock Sheets');
+            $('#tabs_status_message').html('Stock Sheet');
+            $('.product-page__rolls-label-text-1').text('Length (MM):');
+            $('.product-page__rolls-label-text-2').text('Total number of parts:');
             enableButtons();
 
             // Delete temporary PDF file from server
@@ -136,6 +142,11 @@ jQuery(document).ready(function($) {
                 });
             }
         }
+        else if (selectedTab === 'rolls') {
+            $('#tabs_status_message').html('Roll');
+            $('.product-page__rolls-label-text-1').text('Length (Metres):');
+            $('.product-page__rolls-label-text-2').text('Quantity of rolls:');
+        }
         else {
             $('#pdf_upload_container').removeClass('hidden');
             $('#custom_price_display').html(''); // Reset displayed price
@@ -146,6 +157,8 @@ jQuery(document).ready(function($) {
             if (!$('#pdf_path').val().trim()) {
                 disableButtons(); // Disable buttons if no PDF is uploaded
             }
+            $('.product-page__rolls-label-text-1').text('Length (MM):');
+            $('.product-page__rolls-label-text-2').text('Total number of parts:');
         }
     }
 

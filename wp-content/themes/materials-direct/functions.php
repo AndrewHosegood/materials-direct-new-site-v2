@@ -356,7 +356,13 @@ require_once('includes/sheets-size-validation-and-stock-sheet-logic.php');
 require_once('includes/home-onscroll-counter.php');
 /* enqueue javascript for home onscroll counter  */
 
+/* Replace product page woocommerce gallery image with static image  */
+require_once('includes/custom-product-page-featured-image.php');
+/* Replace product page woocommerce gallery image with static image  */
+
 /* END CUSTOM FUNCTIONS */
+
+
 
 
 

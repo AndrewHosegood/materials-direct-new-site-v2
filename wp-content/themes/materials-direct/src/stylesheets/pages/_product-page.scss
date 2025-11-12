@@ -38,6 +38,10 @@
         display: block;
         padding: .1rem 0.5rem;
         font-weight: 400;
+        height: 33px;
+    }
+    &__input:focus-visible {
+        outline: 0;
     }
     &__input.disabled {
         background: transparent;
@@ -299,6 +303,10 @@
         background: #cacaca;
         color: white;
     }
+    &__tabs &__tabs-list:nth-child(5){
+        background: #cacaca;
+        color: white;
+    }
     &__tabs &__tabs-list &__tabs-label {
         color: white;
     }
@@ -312,6 +320,10 @@
         position: relative;
         border-right: 1px solid white;
         border-left: 1px solid white;
+        height: 51px;
+    }
+    &__tabs-list:nth-child(5) &__tabs-label{
+        line-height: 1.35rem;
     }
     &__tabs-list.active {
         background: variables.$primary-color;
@@ -332,13 +344,16 @@
         width: 168px;
     }
     &__tabs-list:nth-child(2) {
-        width: 135px;
+        width: 125px;
     }
     &__tabs-list:nth-child(3) {
-        width: 140px;
+        width: 135px;
     }
     &__tabs-list:nth-child(4) {
         width: 115px;
+    }
+    &__tabs-list:nth-child(5) {
+        width: 96px;
     }
     &__tabs-list:nth-child(1) &__tabs-label:before {
         content: "";
@@ -395,7 +410,17 @@
         left: 11px;
         top: 13px;
     }
-    //
+    &__tabs-list:nth-child(5) &__tabs-label:before {
+        content: "";
+        background-image: url("/wp-content/uploads/2025/10/icon-sheet-shape-1.png");
+        background-size: 25px 25px;
+        display: inline-block;
+        width: 25px;
+        height: 25px;
+        position: absolute;
+        left: 11px;
+        top: 13px;
+    }
     &__tabs-input {
         width: 1px;
         opacity: 0;
@@ -410,8 +435,39 @@
         color: variables.$primary-color;
     }
 }
+
+.single-product {
+    &__gallery-image-col {
+        width: 40%;
+        height: auto;
+        position:relative;
+        overflow: hidden;
+    }
+    &__gallery-image {
+        width:100%;
+        height: auto;
+        position:relative;
+        z-index: 1;
+        opacity: 1;
+        transition: opacity 0.5s ease-in;
+    }
+    &__gallery-image:hover {
+        opacity: 0;
+    }    
+    &__gallery-image-zoom {
+        width:100%;
+        height: auto;
+        position:absolute;
+        z-index: 0;
+        top: 0;
+    }
+}
 .single-product div.product .stock.out-of-stock {
     margin-bottom: 1.5rem;
+}
+
+.single-product .site-main {
+    margin-top: 3rem;
 }
 
 .woocommerce div.product form.cart .button {

@@ -5,22 +5,6 @@ function exponentialDecay($A, $k, $t) {
 }
 // End Codys Exponential Decay Function 
 
-// Function to count working days (excluding weekends)
-function count_working_days($from, $to) {
-    $working_days = 0;
-    $current = strtotime($from) + 86400; // start from next day
-    $end = strtotime($to);
-    while ($current <= $end) {
-        $day = date('w', $current);
-        if ($day != 0 && $day != 6) {
-            $working_days++;
-        }
-        $current += 86400;
-    }
-    return $working_days;
-}
-// Function to count working days (excluding weekends)
-
 
 // AJAX handler for file uploads
 add_action('wp_ajax_upload_drawing', 'upload_drawing');
@@ -116,16 +100,24 @@ function calculate_product_price($product_id, $width, $length, $qty, $discount_r
     $cost_per_part = floatval(get_field('buy_cost', $product_id));
     $cost_per_cm2 = floatval(get_field('cost_per_cm', $product_id));
     $sheets_gpm = floatval(get_field('sheets_gpm', $product_id));
+    $rolls_gpm = floatval(get_field('rolls_gpm', $product_id));
     $item_border = floatval(get_field('border_around', $product_id));
 
+    error_log("Shape Type: $shape_type");
     error_log("Buy Cost (Cost Per Part): $cost_per_part");
     error_log("sheets_gpm: $sheets_gpm");
+    error_log("rolls_gpm: $rolls_gpm");
 
     if ($shape_type === 'custom-shape-drawing') {
         $globalPriceAdjust = 1.0;
-    } elseif ($shape_type === 'stock-sheets') {      
+    } 
+    elseif ($shape_type === 'stock-sheets') {      
         $globalPriceAdjust = floatval(get_field('global_adjust_sheets', 'options') ?: 1.0);
-    } else {
+    }
+    elseif ($shape_type === 'rolls') {      
+        $globalPriceAdjust = floatval(get_field('global_adjust_rolls', 'options') ?: 1.0);
+    } 
+    else {
         $globalPriceAdjust = floatval(get_field('global_adjust_square_rectangle', 'options') ?: 1.0); // Circle Radius + Square Rectangle both use the same option
     }
 
@@ -134,7 +126,11 @@ function calculate_product_price($product_id, $width, $length, $qty, $discount_r
 
     if($shape_type ==="stock-sheets"){
         $borderSize = 0;
-    } else {
+    } 
+    elseif($shape_type ==="rolls"){
+        $borderSize = 0;
+    }
+    else {
         $borderSize = $item_border * 2;
     }
     
@@ -143,7 +139,7 @@ function calculate_product_price($product_id, $width, $length, $qty, $discount_r
     $maxSetWidth = $setWidth + $borderSize;
     $maxSetLength = $setLength + $borderSize;
 
-    if($shape_type ==="stock-sheets"){
+    if($shape_type ==="stock-sheets" || $shape_type ==="rolls"){
         $ppp = $maxSetLength * $maxSetWidth * $cost_per_part;
     } else {
         $ppp = $maxSetLength * $maxSetWidth * $cost_per_cm2;
@@ -167,10 +163,13 @@ function calculate_product_price($product_id, $width, $length, $qty, $discount_r
     $finalPppOnAva = $ppp + $costFactorResult;
 
     error_log("finalPppOnAva (3): $finalPppOnAva");
-
+    
     if($shape_type ==="stock-sheets"){
         $finalPppOnAva = $finalPppOnAva / $sheets_gpm;
     }
+    if($shape_type === "rolls"){
+		$finalPppOnAva = $finalPppOnAva / $rolls_gpm;
+	}
 
     error_log("finalPppOnAva: $finalPppOnAva");
 
@@ -180,7 +179,16 @@ function calculate_product_price($product_id, $width, $length, $qty, $discount_r
 
     $adjustedPrice = $finalPppOnAva * $globalPriceAdjust;
     error_log("adjustedPrice (myPPPVAlue): $adjustedPrice");
-    $total_price = $adjustedPrice * $qty;
+    error_log("QTY: $qty");
+    error_log("shape_type: $shape_type");
+
+    
+    if($shape_type ==="rolls"){
+        $total_price = $adjustedPrice * $qty * 8;
+    } else {
+        $total_price = $adjustedPrice * $qty;
+    }
+
     error_log("total_price: $total_price");
 
     return round($total_price, 2);
@@ -303,6 +311,10 @@ function custom_price_input_fields_prefill() {
         <input class="product-page__tabs-input" name="tabs_input" type="radio" value="stock-sheets" id="stock_sheets" tabindex="0">
         </label></li>
 
+        <li class="product-page__tabs-list"><label class="product-page__tabs-label">Rolls
+        <input class="product-page__tabs-input" name="tabs_input" type="radio" value="rolls" id="rolls" tabindex="0">
+        </label></li>
+
         </ul>
         <!-- Tabs -->
 
@@ -333,8 +345,8 @@ function custom_price_input_fields_prefill() {
         <label class="product-page__input-wrap-radius">Radius (MM): <input class="product-page__input" type="number" id="input_radius" name="custom_radius"></label>
 
         <label class="product-page__input-wrap">Width (MM): <input class="product-page__input" type="number" id="input_width" name="custom_width" min="0.01" step="0.01" required></label>
-        <label class="product-page__input-wrap">Length (MM): <input class="product-page__input" type="number" id="input_length" name="custom_length" min="0.01" step="0.01" required></label>
-        <label class="product-page__input-wrap">Total number of parts: <input class="product-page__input" type="number" id="input_qty" name="custom_qty" value="1" min="1" step="1" required></label>
+        <label class="product-page__input-wrap"><span class="product-page__rolls-label-text-1">Length (MM):</span> <input class="product-page__input" type="number" id="input_length" name="custom_length" min="0.01" step="0.01" required></label>
+        <label class="product-page__input-wrap"><span class="product-page__rolls-label-text-2">Total number of parts:</span> <input class="product-page__input" type="number" id="input_qty" name="custom_qty" value="1" min="1" step="1" required></label>
         </div>';
 
 
@@ -584,7 +596,7 @@ function calculate_secure_price() {
         WC()->session->set('custom_shipping_address', $shipping_address);
     }
 
-    $total_price = calculate_product_price($product_id, $width, $length, $qty, $discount_rate, $shape_type);
+    $total_price = calculate_product_price($product_id, $width, $length, $qty, $discount_rate, $shape_type, $product_id);
 
     if (is_wp_error($total_price)) {
         wp_send_json_error(['message' => $total_price->get_error_message()]);
@@ -598,7 +610,8 @@ function calculate_secure_price() {
         $sheet_length_mm,
         $width,
         $length,
-        $qty
+        $qty,
+        $product_id
     );
 
     $sheets_required = $sheet_result['sheets_required'];
@@ -689,38 +702,6 @@ function calculate_scheduled_price_func() {
         } else {
             $disc = 0.05;     // 35+ days
         }
-        /*
-        $today_timestamp = strtotime($today);
-        $despatch_timestamp = strtotime($despatch_ymd);
-        $calendar_days = ($despatch_timestamp - $today_timestamp) / (60 * 60 * 24);
-        
-        if ($calendar_days <= 1) $disc = 0; // 24Hr (Next day)
-        elseif ($calendar_days <= 4) $disc = 0.015; // 2–4 days (48Hr)
-        elseif ($calendar_days <= 6) $disc = 0.02; // 5–6 days (5 Days)
-        elseif ($calendar_days <= 12) $disc = 0.025; // 7–12 days (7 Days)
-        elseif ($calendar_days <= 13) $disc = 0.03; // 13 days (12 Days)
-        elseif ($calendar_days <= 29) $disc = 0.035; // 14–29 days (14–15 Days)
-        elseif ($calendar_days <= 35) $disc = 0.04; // 30–35 days (30 Days)
-        else $disc = 0.05; // 36+ days (35 Days)
-        */
-        /* new calendar days discounts */ 
-
-
-        /* old working days discount */ 
-        /*
-        $days = count_working_days($today, $despatch_ymd);
-
-        if ($days <= 1) $disc = 0;
-        elseif ($days <= 2) $disc = 0.015;
-        elseif ($days <= 5) $disc = 0.02;
-        elseif ($days <= 7) $disc = 0.025;
-        elseif ($days <= 12) $disc = 0.03;
-        elseif ($days <= 14) $disc = 0.035;
-        elseif ($days <= 30) $disc = 0.04;
-        else $disc = 0.05;
-        */
-        /* old working days discount */ 
-
 
         $portion_parts = $shipment['parts'];
         $portion_price = $per_part_base * $portion_parts;
@@ -729,7 +710,7 @@ function calculate_scheduled_price_func() {
         $total_scheduled_price += $portion_final;
 
     }
-
+    /* new calendar days discounts */ 
 
     $product = wc_get_product($product_id);
     if (!$product) {
@@ -753,7 +734,7 @@ function calculate_scheduled_price_func() {
         WC()->session->set('custom_shipping_address', $shipping_address);
     }
 
-    $sheet_result = calculate_sheets_required($sheet_width_mm, $sheet_length_mm, $width, $length, $qty);
+    $sheet_result = calculate_sheets_required($sheet_width_mm, $sheet_length_mm, $width, $length, $qty, $product_id);
     $sheets_required = $sheet_result['sheets_required'];
     $is_backorder = false; // No backorder for scheduled deliveries
 
@@ -1129,7 +1110,7 @@ function add_custom_price_cart_item_data_secure($cart_item_data, $product_id) {
     }
 
     $shape_type = sanitize_text_field($_POST['tabs_input'] ?? $_POST['shape_type'] ?? 'custom-shape-drawing');
-    if (!in_array($shape_type, ['custom-shape-drawing', 'square-rectangle', 'circle-radius', 'stock-sheets'])) {
+    if (!in_array($shape_type, ['custom-shape-drawing', 'square-rectangle', 'circle-radius', 'stock-sheets', 'rolls'])) {
         $shape_type = 'custom-shape-drawing';
     }
 
@@ -1184,7 +1165,8 @@ function add_custom_price_cart_item_data_secure($cart_item_data, $product_id) {
         $sheet_length_mm,
         $part_width_mm,
         $part_length_mm,
-        $quantity
+        $quantity,
+        $product_id
     );
 
     $totalSqMm = $part_length_mm * $part_width_mm;
@@ -2064,7 +2046,24 @@ function clear_custom_shipping_session($order_id) {
 
 // CALCULATE SHEETS REQUIRED
 
-function calculate_sheets_required($sheet_width, $sheet_length, $part_width, $part_length, $quantity, $edge_margin = 2, $gap = 4) {
+function calculate_sheets_required($sheet_width, $sheet_length, $part_width, $part_length, $quantity, $product_id = null) {
+
+    $border_cm = 0.2;
+    error_log("Product ID: $product_id");
+
+    if ($product_id && function_exists('get_field')) {
+        $acf_border = get_field('border_around', $product_id);
+        error_log("ACF Border Active: $acf_border");
+        if (is_numeric($acf_border) && $acf_border > 0) {
+            $border_cm = floatval($acf_border);
+        }
+    }
+
+    $border_mm = $border_cm * 10; // cm → mm
+
+    $edge_margin = $border_mm;
+    $gap         = $border_mm;
+
     // Calculate max parts per row (width-wise)
     $max_parts_per_row = 1;
     while (true) {
@@ -2176,7 +2175,8 @@ function display_custom_inputs_on_product_page() {
             $sheet_length_mm,
             $part_width_mm,
             $part_length_mm,
-            $quantity
+            $quantity,
+            $product_id
         );
 
         // Calculate total delivery weight

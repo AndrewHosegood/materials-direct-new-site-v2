@@ -66,13 +66,23 @@ function combined_custom_jquery_for_dimensions_and_stock_sheets() {
                 $lengthInput.val(stocksheetLength).prop('readonly', true).trigger('change');
                 $widthInput.addClass("disabled");
                 $lengthInput.addClass("disabled");
-                // $widthInput.val(stocksheetWidth).trigger('change');
-                // $lengthInput.val(stocksheetLength).trigger('change');
                 $button.prop('disabled', false); // Force enable button
                 removeMessage(); // No validation needed
-            } else {
-                $widthInput.prop('disabled', false);
-                $lengthInput.prop('disabled', false);
+            } 
+            else if(selectedTab === "rolls"){
+                //$rolls_length = 8000;
+                $widthInput.val(stocksheetWidth).prop('readonly', true).trigger('change');
+                $lengthInput.val(stocksheetLength).prop('readonly', true).trigger('change');
+                $widthInput.addClass("disabled");
+                $lengthInput.addClass("disabled");
+                $button.prop('disabled', false); // Force enable button
+                removeMessage(); // No validation needed
+            }
+            else {
+                $widthInput.prop('readonly', false);
+                $lengthInput.prop('readonly', false);
+                $widthInput.removeClass("disabled");
+                $lengthInput.removeClass("disabled");
                 validateInputs(); // Re-validate for custom input
             }
         }
@@ -82,6 +92,10 @@ function combined_custom_jquery_for_dimensions_and_stock_sheets() {
             const selectedTab = $('[name="tabs_input"]:checked').val();
 
             if (selectedTab === "stock-sheets") {
+                return; // Skip validation
+            }
+
+            if (selectedTab === "rolls") {
                 return; // Skip validation
             }
 
