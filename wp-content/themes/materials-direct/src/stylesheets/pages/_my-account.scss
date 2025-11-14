@@ -1,0 +1,57 @@
+@use "../abstracts/breakpoints";
+@use "../abstracts/variables";
+
+.woocommerce .woocommerce-form-login .woocommerce-form-login__submit, .woocommerce .woocommerce-form-register .woocommerce-form-register__submit {
+    background: variables.$secondary-color;;
+    color: white;
+    border-radius: 0.15rem;
+    font-weight: 400;
+    padding: 1rem 1.5rem;
+}
+.page-id-11 {
+    & .woocommerce-form p:nth-child(3) {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: stretch;
+        flex-direction: row-reverse;
+        margin-top: 1.5rem;
+    }
+    & .woocommerce-form p:nth-child(3) .woocommerce-form-login__rememberme {
+        margin-right: auto;
+    }
+    & .woocommerce-form label {
+        margin-bottom: 0.2rem;
+        font-weight: 700;
+    }
+    & .woocommerce .woocommerce-form-login {
+        min-height: 338px;
+    }
+    & .woocommerce .woocommerce-form-register {
+        min-height: 338px;
+    }
+    & .woocommerce .woocommerce-form-register p {
+        padding: 0rem 0 1rem 0;
+    }
+    & .woocommerce .woocommerce-form-register p:nth-child(3) {
+        padding: 0;
+    }
+    & .woocommerce .woocommerce-form-register .woocommerce-form-register__submit {
+        margin: 0 0 -1rem 0;
+    }
+    & .woocommerce h2 {
+        line-height: 40px;
+        margin-top: 5rem;
+    }
+}
+
+
+// .page-id-11 .woocommerce-form p:nth-child(3) .woocommerce-form-login__rememberme {
+//     margin-right: auto;
+// }
+// .page-id-11 .woocommerce-form label {
+//     margin-bottom: 0.2rem;
+// }
+// .page-id-11 .woocommerce .woocommerce-form-login {
+//     min-height: 380px;
+// }

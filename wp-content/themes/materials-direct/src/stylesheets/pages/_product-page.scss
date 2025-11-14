@@ -434,6 +434,44 @@
         font-size: 1rem;
         color: variables.$primary-color;
     }
+    &__optional-fees {
+        display: flex;
+        flex-wrap: wrap;
+        margin: -0.4rem 0 1rem 0;
+    }
+    &__optional-fees-title {
+        font-size: 1.1rem;
+        font-weight: 600;
+        padding: 0;
+    }
+    &__checkbox-label {
+        width: 48.5%;
+        float: left;
+        margin-bottom: 1rem;
+        margin-bottom: .5rem;
+        background: #eee;
+        padding: .4rem .7rem 0 .7rem;
+        margin-right: 1.5%;
+        border-radius: .3rem;
+        border: 2px solid white;
+        box-shadow: 1px 1px 3px rgba(0, 0, 0, .3);
+        transition: background 0.15s ease-in;
+        cursor: pointer;
+    }
+    &__checkbox-label:hover {
+        background: #ddd;
+    }
+    &__checkbox-title {
+        padding: 0;
+        font-weight: 700;
+    }
+    &__checkbox-heading {
+        font-weight: 700;
+        font-size: 0.9rem;
+    }
+    &__checkbox-price {
+        font-weight: 400;
+    }
 }
 
 .single-product {

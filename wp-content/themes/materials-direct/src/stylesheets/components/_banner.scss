@@ -1,3 +1,5 @@
+@use "../abstracts/breakpoints";
+@use "../abstracts/variables";
 .banner {
     width: 100%;
     height: auto;
@@ -29,6 +31,104 @@
         right: 0;
         top: 0;
         bottom: 0;
+    }
+    &__heading {
+        width: 100%;
+        position: relative;
+        padding: 0;
+        line-height: 60px;
+    }
+    &__subheading {
+        width: 100%;
+        position: relative;
+        padding: 0;
+    }
+    &__btn {
+        position: relative;
+    }
+    &__text {
+        max-width: 700px;
+        margin-left: auto;
+        margin-right: auto;
+        margin-top: 2rem;
+        z-index: 99;
+    }
+}
+
+.brands-banner {
+    width: 100%;
+    height: auto;
+    position: relative;
+    &__container {
+        width: 100%;
+        height: auto;
+        @include breakpoints.laptop {
+            height: 355px;
+        }
+        background-repeat:no-repeat;
+        background-size: cover;
+    }
+    // &__img {
+    //     width: 100%;
+    //     object-fit: cover;
+    //     height: 355px;
+    //     position: absolute;
+    //     top: 0;
+    // }
+    &__logo {
+        position:relative;
+        width: 235px !important;
+        height: auto;
+        z-index: 9;
+        margin-left: auto;
+        margin-right: auto;
+        top: 0;
+        margin-top: 0;
+        height: 130px;
+        object-fit: cover;
+    }
+    &__content {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        color: white;
+        text-align: center;
+        left: 0;
+        right: 0;
+        top: 0;
+        bottom: 0;
+        padding: 1.29rem 0 4rem 0;
+    }
+    &__content-wrap {
+        z-index:99;
+        max-width: 90%;
+        margin-left: 5%;
+        margin-right: 5%;
+        @include breakpoints.laptop {
+            max-width: 75%;
+            margin-left: 12.5%;
+            margin-right: 12.5%;
+        }
+        @include breakpoints.desktop {
+            max-width: 60%;
+            margin-left: 20%;
+            margin-right: 20%;
+        }
+
+    }
+    &__content-wrap p {
+        font-size: 0.98rem;
+        line-height: 1.5rem;
+    }
+    &__container::before {
+        content: "";
+        position: absolute;
+        background: rgba(0, 0, 0, 0.57);
+        left: 0;
+        right: 0;
+        top: 0;
+        bottom: 0;
+        z-index: 1;
     }
     &__heading {
         width: 100%;

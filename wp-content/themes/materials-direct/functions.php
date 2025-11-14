@@ -360,8 +360,24 @@ require_once('includes/home-onscroll-counter.php');
 require_once('includes/custom-product-page-featured-image.php');
 /* Replace product page woocommerce gallery image with static image  */
 
+/* Remove h1 heading from the my-accounts page */
+require_once('includes/remove-heading-from-my-accounts-page.php');
+/* Remove h1 heading from the my-accounts page */
+
+/* Remove the shop/category sorting select menu */
+require_once('includes/remove-category-shop-sorting-menu.php');
+/* Remove the shop/category sorting select menu */
+
+/* Display custom banner on my-accounts page */
+require_once('includes/my-accounts-page-custom-banner.php');
+/* Display custom banner on my-accounts page */
+
 /* END CUSTOM FUNCTIONS */
 
+
+/* Add COFCs to the product page */
+//require_once('includes/add_cofc_to_product_page.php');
+/* Add COFCs to the product page */
 
 
 

@@ -80,6 +80,16 @@ jQuery(document).ready(function($){
             $("#shipping-address-form").addClass("show");
         });
 
+        $('#input_qty').on('keyup change', function() {
+            const qty = parseInt($(this).val(), 10);
+
+            if (!isNaN(qty) && qty > 0) {
+            $('.product-page__optional-fees').css('display', 'flex');
+            } else {
+            $('.product-page__optional-fees').css('display', 'none');
+            }
+        });
+
         // hide/show file uploads when square rectangle/circle radius is clicked
         $("#rolls").click(function(){
             $('#circle-radius').closest(".product-page__tabs-label").removeClass("active");
@@ -227,6 +237,28 @@ jQuery(document).ready(function($){
             }
         });
         $('.banner').owlCarousel({
+            loop:true,
+            margin:10,
+            nav:false,
+            autoplay: true,            
+            autoplayTimeout: 8000,     
+            autoplayHoverPause: true,  
+            items: 1, // fade works only with one item
+            animateOut: 'fadeOut', // enable fade
+            smartSpeed: 700, // optional: smooth fade transition
+            responsive:{
+                0:{
+                    items:1
+                },
+                600:{
+                    items:1
+                },
+                1000:{
+                    items:1
+                }
+            }
+        });
+        $('.brands-banner').owlCarousel({
             loop:true,
             margin:10,
             nav:false,
