@@ -80,6 +80,7 @@ jQuery(document).ready(function($){
             $("#shipping-address-form").addClass("show");
         });
 
+        // display cofc on product page 'on keyup'
         $('#input_qty').on('keyup change', function() {
             const qty = parseInt($(this).val(), 10);
 
@@ -90,6 +91,10 @@ jQuery(document).ready(function($){
             }
         });
 
+        $('body').on('change', '#add_manufacturers_COFC', function() {
+		    alert("Supplying the manufacturers CofC may effect the lead time");
+	    });
+
         // hide/show file uploads when square rectangle/circle radius is clicked
         $("#rolls").click(function(){
             $('#circle-radius').closest(".product-page__tabs-label").removeClass("active");
@@ -97,6 +102,7 @@ jQuery(document).ready(function($){
             $('#pdf_upload_label').hide();
             $('#uploadPdf').hide();
             $('#pdf_upload_text').hide();
+            $('#dxf_upload_text').hide();
             $('#dxf_upload_label').hide();
             $('#uploadDxf').hide();
             $('#drawing_guide').hide();
@@ -111,6 +117,7 @@ jQuery(document).ready(function($){
             $('#pdf_upload_label').hide();
             $('#uploadPdf').hide();
             $('#pdf_upload_text').hide();
+            $('#dxf_upload_text').hide();
             $('#dxf_upload_label').hide();
             $('#uploadDxf').hide();
             $('#drawing_guide').hide();
@@ -125,6 +132,7 @@ jQuery(document).ready(function($){
             $('#pdf_upload_label').hide();
             $('#uploadPdf').hide();
             $('#pdf_upload_text').hide();
+            $('#dxf_upload_text').hide();
             $('#dxf_upload_label').hide();
             $('#uploadDxf').hide();
             $('#drawing_guide').hide();
@@ -137,6 +145,7 @@ jQuery(document).ready(function($){
             $('#pdf_upload_label').hide();
             $('#uploadPdf').hide();
             $('#pdf_upload_text').hide();
+            $('#dxf_upload_text').hide();
             $('#dxf_upload_label').hide();
             $('#uploadDxf').hide();
             $('#drawing_guide').hide();
@@ -148,6 +157,7 @@ jQuery(document).ready(function($){
             $('#pdf_upload_label').show();
             $('#uploadPdf').show();
             $('#pdf_upload_text').show();
+            $('#dxf_upload_text').show();
             $('#dxf_upload_label').show();
             $('#uploadDxf').show();
             $('#drawing_guide').show();

@@ -12,7 +12,7 @@ function custom_hide_despatched_within_css() {
 
     // Check if this is a single product page
     if ( is_product() ) {
-        echo '<style>#despatched_within { display: none !important; }</style>';
+        echo '<style>#despatched_within { display: none !important; } .product-page__optional-fees { display: none !important; }</style>';
     }
 }
 add_action('wp_head', 'custom_hide_despatched_within_css');

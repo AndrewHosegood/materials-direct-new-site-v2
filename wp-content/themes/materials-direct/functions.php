@@ -372,12 +372,23 @@ require_once('includes/remove-category-shop-sorting-menu.php');
 require_once('includes/my-accounts-page-custom-banner.php');
 /* Display custom banner on my-accounts page */
 
+/* Add logic for calculating COFC fees on cart page */
+require_once('includes/cofc-logic-for-cart-page.php');
+/* Add logic for calculating COFC fees on cart page */
+
+//require_once('includes/credit-status-hide-cofc-product_page.php');
+
 /* END CUSTOM FUNCTIONS */
 
 
-/* Add COFCs to the product page */
-//require_once('includes/add_cofc_to_product_page.php');
-/* Add COFCs to the product page */
+
+
+
+
+
+
+
+
 
 
 

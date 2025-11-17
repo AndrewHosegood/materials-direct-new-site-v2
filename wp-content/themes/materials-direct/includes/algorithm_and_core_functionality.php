@@ -333,6 +333,7 @@ function custom_price_input_fields_prefill() {
         
         <label id="dxf_upload_label" class="product-page__file-upload-label">Upload .DXF Drawing</label>
         <input class="product-page__file-upload-input" type="file" id="uploadDxf" name="upload-dxf" accept=".dxf">
+        <p id="dxf_upload_text" class="product-page__file-upload-pdf-message">Uploading a <strong>.dxf</strong> is the preferred file to manufacture your parts</p>
         
         <input type="hidden" id="pdf_path" name="pdf_path" value="">
         <input type="hidden" id="dxf_path" name="dxf_path" value="">
@@ -351,33 +352,35 @@ function custom_price_input_fields_prefill() {
 
 
         // MOCOF FAIR CONTENT
-        echo '<div class="product-page__optional-fees" style="display:none;">
-        <h4 class="product-page__optional-fees-title">Do you require these addons with your product?</h4>
+        echo '<div id="cofc_hide_show"><div class="product-page__optional-fees" style="display:none;">
 
-        <label class="product-page__checkbox-label">
-            <p class="product-page__checkbox-title">Add Manufacturers COFC</p>
-            <input type="checkbox" name="add_manufacturers_COFC" value="10" id="add_manufacturers_COFC">
-            <span class="product-page__checkbox-heading">Manufacturers COFC <span class="product-page__checkbox-price">£10</span>
-                <span class="cfc__tooltip" data-tooltip="A Manufacturers Certificate of Conformity (MCOFC) is a document that manufacturers issue to confirm that a product has been made to a specific standard and meets quality and regulatory requirements.">?</span>
-            </span>
-        </label><br>
+            <h4 class="product-page__optional-fees-title">Do you require these addons with your product?</h4>
 
-        <label class="product-page__checkbox-label">
-            <p class="product-page__checkbox-title">Add First Article Inspection Report</p>
-            <input type="checkbox" name="add_fair" value="95" id="add_fair">
-            <span class="product-page__checkbox-heading">FAIR <span class="product-page__checkbox-price">£95</span>
-                <span class="cfc__tooltip" data-tooltip="A First Article Inspection Report (FAIR) or ISIR is the first item we make for the customer and measure to confirm all dimensions meet the drawing and tolerances.">?</span>
-            </span>
-        </label><br>
+            <label class="product-page__checkbox-label">
+                <p class="product-page__checkbox-title">Add Manufacturers COFC</p>
+                <input type="checkbox" name="add_manufacturers_COFC" value="10" id="add_manufacturers_COFC">
+                <span class="product-page__checkbox-heading">Manufacturers COFC <span class="product-page__checkbox-price">£10</span>
+                    <span class="cfc__tooltip" data-tooltip="A Manufacturers Certificate of Conformity (MCOFC) is a document that manufacturers issue to confirm that a product has been made to a specific standard and meets quality and regulatory requirements.">?</span>
+                </span>
+            </label><br>
 
-        <label class="product-page__checkbox-label">
-            <p class="product-page__checkbox-title">Add Materials Direct COFC?</p>
-            <input type="checkbox" name="add_materials_direct_COFC" value="12.50" id="add_materials_direct_COFC">
-            <span class="product-page__checkbox-heading">Materials Direct COFC <span class="product-page__checkbox-price">£12.50</span>
-                <span class="cfc__tooltip" data-tooltip="A certificate from Materials Direct confirming that the part meets the criteria ordered (RoHS and REACH compliant).">?</span>
-            </span>
-        </label>
-        </div>';
+            <label id="fair_label" class="product-page__checkbox-label">
+                <p class="product-page__checkbox-title">Add First Article Inspection Report</p>
+                <input type="checkbox" name="add_fair" value="95" id="add_fair">
+                <span class="product-page__checkbox-heading">FAIR <span class="product-page__checkbox-price">£95</span>
+                    <span class="cfc__tooltip" data-tooltip="A First Article Inspection Report (FAIR) or ISIR is the first item we make for the customer and measure to confirm all dimensions meet the drawing and tolerances.">?</span>
+                </span>
+            </label><br>
+
+            <label class="product-page__checkbox-label">
+                <p class="product-page__checkbox-title">Add Materials Direct COFC?</p>
+                <input type="checkbox" name="add_materials_direct_COFC" value="12.50" id="add_materials_direct_COFC">
+                <span class="product-page__checkbox-heading">Materials Direct COFC <span class="product-page__checkbox-price">£12.50</span>
+                    <span class="cfc__tooltip" data-tooltip="A certificate from Materials Direct confirming that the part meets the criteria ordered (RoHS and REACH compliant).">?</span>
+                </span>
+            </label>
+
+        </div></div>';
         // END MOCOF FAIR CONTENT
 
 

@@ -42,6 +42,7 @@ jQuery(document).ready(function($) {
             $('#tabs_status_message').html('Square Rectange'); // dynamically add shape text
             $('.product-page__rolls-label-text-1').text('Length (MM):');
             $('.product-page__rolls-label-text-2').text('Total number of parts:');
+            $('#fair_label').hide();
             enableButtons(); // Enable buttons since PDF is not required
 
             // Delete temporary PDF file from server
@@ -79,6 +80,7 @@ jQuery(document).ready(function($) {
             $('#tabs_status_message').html('Circle Radius');
             $('.product-page__rolls-label-text-1').text('Length (MM):');
             $('.product-page__rolls-label-text-2').text('Total number of parts:');
+            $('#fair_label').hide();
             enableButtons();
 
             // Delete temporary PDF file from server
@@ -116,6 +118,7 @@ jQuery(document).ready(function($) {
             $('#tabs_status_message').html('Stock Sheet');
             $('.product-page__rolls-label-text-1').text('Length (MM):');
             $('.product-page__rolls-label-text-2').text('Total number of parts:');
+            $('#fair_label').hide();
             enableButtons();
 
             // Delete temporary PDF file from server
@@ -146,6 +149,7 @@ jQuery(document).ready(function($) {
             $('#tabs_status_message').html('Roll');
             $('.product-page__rolls-label-text-1').text('Length (Metres):');
             $('.product-page__rolls-label-text-2').text('Quantity of rolls:');
+            $('#fair_label').hide();
         }
         else {
             $('#pdf_upload_container').removeClass('hidden');
@@ -159,6 +163,7 @@ jQuery(document).ready(function($) {
             }
             $('.product-page__rolls-label-text-1').text('Length (MM):');
             $('.product-page__rolls-label-text-2').text('Total number of parts:');
+            $('#fair_label').show();
         }
     }
 
