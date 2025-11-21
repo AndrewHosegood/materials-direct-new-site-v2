@@ -3,28 +3,71 @@
 
 .shop-banner {
     background: #475562;
-    padding: 2rem 4rem;
+    padding: 2rem 4.9vw;
+    @include breakpoints.desktop {
+        padding: 2rem 4rem;
+    }
     background-image: url("/wp-content/uploads/2025/10/shop-page-banner-bg-4.jpg");
     opacity: 0.9;
     background-repeat: no-repeat;
     background-size: cover;
+    &__container {
+        width: 100%;
+        @include breakpoints.desktop {
+            width: 90%;
+        }
+        max-width: 1150px;
+        margin-left:auto;
+        margin-right: auto;
+    }
     &__heading {
-    color: white;
-    font-size: 3.23rem;
-    padding: 0;
-    line-height: 4rem;
-    font-weight: 500;
-    margin-bottom: 0.4rem;
+        color: white;
+        padding: 0;
+        font-size: 1.29rem;
+        line-height: 2.0rem;
+        @include breakpoints.iphone {
+            font-size: 1.6rem;
+            line-height: 2.3rem;
+        }
+        @include breakpoints.tablet {
+            font-size: 3.5vw;
+            line-height: 4.4vw;
+        }
+        @include breakpoints.desktop {
+            font-size: 2.9rem;
+            line-height: 4rem;
+            letter-spacing: -0.07rem;
+        }
+        font-weight: 500;
+        margin-bottom: 0.4rem;
     }
     &__subheading {
-        font-size: 2.13rem;
+        font-size: 1.1rem;
+        @include breakpoints.tablet {
+            font-size: 2.13vw;
+        }
+        @include breakpoints.desktop {
+            font-size: 2.13rem;
+        }
         color: variables.$primary-color;
         font-weight: 400;
         padding: 0.2rem 0;
     }
     &__content {
         color: white;
-        font-size: 1.28rem;
+        font-size: 0.83rem;
+        line-height: 1.45rem;
+        @include breakpoints.tablet {
+            font-size: 1.55vw;
+            line-height: 1.65rem;
+        }
+        @include breakpoints.laptop {
+            font-size: 1.28vw;
+        }
+        @include breakpoints.desktop {
+            font-size: 1.28rem;
+            line-height: 1.8rem;
+        }
     }
     &__statement-wrapper {
         width: 100%;
@@ -33,24 +76,46 @@
         flex-wrap: wrap;
     }
     &__statement-list:nth-child(1) {
-        width: 27.333%;
+        width: 100%;
+        @include breakpoints.tablet {
+            width: 27.333%;
+        }
         color: white;
         margin-right: 2.5%;
     }
     &__statement-list:nth-child(2) {
-        width: 29.1%;
+        width: 100%;
+        @include breakpoints.tablet {
+            width: 29.1%;
+        }
         color: white;
         margin-right: 1.2%;
         letter-spacing:-0.02rem;
     }
     &__statement-list:nth-child(3) {
-        width: 37.333%;
+        width: 100%;
+        @include breakpoints.tablet {
+            width: 37.333%;
+        }
         color: white;
         margin-right: 2.5%;
     }
     &__statement-title {
         color:white;
-        font-size: 1.48em;
+        font-size: 1.13rem;
+        letter-spacing: 0rem;
+        @include breakpoints.tablet {
+            font-size: 1.77vw;
+            letter-spacing: -0.02rem;
+        }
+        @include breakpoints.laptop {
+            font-size: 1.48vw;
+            letter-spacing: -0.06rem;
+        }
+        @include breakpoints.desktop {
+            font-size: 1.40em;
+            letter-spacing: -0.06rem;
+        }
         line-height: 2.45rem;
     }
     &__statement-list:nth-child(1) &__statement-title::before {
@@ -64,7 +129,13 @@
         height: 36px;
         margin-right:0.5rem;
         font-weight: 500;
-        font-size: 1.44rem;
+        font-size: 1.8vw;
+        @include breakpoints.laptop {
+            font-size: 1.6vw;
+        }
+        @include breakpoints.desktop {
+            font-size: 1.44rem;
+        }
     }
     &__statement-list:nth-child(2) &__statement-title::before {
         content: "2";
@@ -77,7 +148,13 @@
         height: 36px;
         margin-right:0.5rem;
         font-weight: 500;
-        font-size: 1.44rem;
+        font-size: 1.8vw;
+        @include breakpoints.laptop {
+            font-size: 1.6vw;
+        }
+        @include breakpoints.desktop {
+            font-size: 1.44rem;
+        }
     }
     &__statement-list:nth-child(3) &__statement-title::before {
         content: "3";
@@ -90,17 +167,27 @@
         height: 36px;
         margin-right:0.5rem;
         font-weight: 500;
-        font-size: 1.44rem;
+        font-size: 1.8vw;
+        @include breakpoints.laptop {
+            font-size: 1.6vw;
+        }
+        @include breakpoints.desktop {
+            font-size: 1.44rem;
+        }
     }
-    // &__statement-list {
-    //     color:white;
-    //     font-size: 1.1rem;
-    //     width: 30.333%;
-    //     margin-right: 3%;
-    // }
     &__statement-text {
-        font-size: 1.05rem;
+        font-size: 0.83rem;
+        @include breakpoints.iphone {
+            font-size: 0.9rem;
+        }
+        @include breakpoints.desktop {
+            font-size: 1.05rem;
+        }
         line-height: 1.65rem;
         opacity: .7;
+    }
+    &__statement-text-link {
+        color: white;
+        text-decoration: underline;
     }
 }

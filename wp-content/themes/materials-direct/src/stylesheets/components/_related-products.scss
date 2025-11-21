@@ -1,6 +1,7 @@
 @use "../abstracts/breakpoints";
 @use "../abstracts/variables";
 .related {
+    padding: 2.7rem 0;
     &__grey-panel {
         text-align: center;
         background: #efefef;
@@ -29,11 +30,12 @@
         width: 100%;
         display: block;
         background: variables.$primary-color;
-        padding: 0.5rem;
+        padding: 0.45rem 0.5rem;
         color: white;
         border-radius: 0.3rem;
         text-align: center;
-        height: 50px;
+        height: auto;
+        font-size: 0.82rem;
     }
     &__button:hover {
         background: variables.$secondary-color;
@@ -44,9 +46,9 @@
         margin-top: 0px;
         font-weight: 400;
     }
-    & .products li a {
-        width: 100%;
-    }
+    // & .products li a {
+    //     width: 100%;
+    // }
     & img {
          border: 1px solid #f2f2f2;
     }
@@ -56,17 +58,40 @@
     & .woocommerce-shop__mask {
         border: 0;
     }
+    & h2 {
+       font-size: 1.4rem; 
+    }
+}
+.related ul.products li.product:nth-child(odd) .woocommerce-shop__info-card {
+    background: #e2e2e2 !important;
+}
+.related ul.products li.product .woocommerce-shop__short-description {
+    flex-grow: 1;
+    margin: 1rem 0 0.2rem 0;
 }
 .woocommerce ul.products li.product a img {
     margin: 0;
+    position: relative;
+    z-index: 1;
 }
-.woocommerce ul.products.columns-3 li.product, .woocommerce-page ul.products.columns-3 li.product {
-    width: 31.333%;
+.woocommerce ul.products li.product a img:hover {
+    opacity: 0;
+}
+.woocommerce ul.products,
+.woocommerce-page ul.products {
+    display: flex;
+    flex-wrap: wrap;
+}
+.related ul.products.columns-3 li.product {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 calc(33.333% - 1%);
+    width: 32.333%;
     margin-bottom: 2rem;
     position: relative;
 }
 .woocommerce ul.products li.product, .woocommerce-page ul.products li.product {
-    margin: 0 2% 0 0;
+    margin: 0 1% 2rem 0;
 }
 .woocommerce ul.products li.product .woocommerce-loop-product__title {
     font-size: 1.1rem;

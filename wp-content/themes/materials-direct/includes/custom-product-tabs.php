@@ -1,6 +1,9 @@
 <?php
 add_filter( 'woocommerce_product_tabs', 'custom_modify_product_tabs' );
 function custom_modify_product_tabs( $tabs ) {
+
+    $tabs['description']['callback'] = 'custom_description_tab_content';
+
     // 1. Remove Additional Information tab
     unset( $tabs['additional_information'] );
 
@@ -33,6 +36,35 @@ function custom_modify_product_tabs( $tabs ) {
     );
 
     return $tabs;
+}
+
+function custom_description_tab_content() {
+    echo '<div class="woocommerce-tabs__description-wrap">';
+        echo '<div class="woocommerce-tabs__description">';
+            echo '<h2>Description</h2>';
+            the_content();
+        echo '</div>';
+        echo '<div class="woocommerce-tabs__benefits">';
+        ?>
+            <div class="woocommerce-tabs__benefits-list">
+
+                <?php if( have_rows('full_feature_list') ): ?>
+                <h2>Benefits</h2>
+                <ul class="woocommerce-tabs__benefits-text">
+                    <?php while ( have_rows('full_feature_list') ) : the_row(); ?>
+
+                        <li class="woocommerce-tabs__benefits-text-list"><?php the_sub_field('ff_list_item'); ?></li>
+
+                    <?php endwhile; ?>
+                </ul>
+
+                <?php endif; ?>
+
+             </div>
+
+        <?php
+        echo '</div>';
+    echo '</div>';
 }
 
 // Callback Functions for Each Tab Content
@@ -82,8 +114,23 @@ function custom_features_tab_content() {
 }
 
 function custom_technical_data_tab_content() {
-    echo '<h2>Technical Data</h2>';
-    echo '<p>Technical data details go here...</p>';
+
+
+if( have_rows('add_technical_data') ): 
+    while( have_rows('add_technical_data') ): the_row();
+
+        // Check for your flexible content layout
+        if( get_row_layout() == 'technical_data_table' ): 
+            ?>
+            <h5 class="product-page__technical-data-title"><?php the_sub_field('technical_table_title');  ?></h5>
+
+            <?php the_sub_field('technical_table_content_new'); ?>
+
+        <?php endif; // end layout check ?>
+
+    <?php endwhile;
+endif; 
+
 }
 
 function custom_downloads_tab_content() {
@@ -108,7 +155,7 @@ function custom_downloads_tab_content() {
                         <a href="<?php the_sub_field('download_file'); ?>" target="_blank"><div class="img-inner" style="background-image: url(<?php echo $image['url']; ?>);"></div></a>
                     <?php endif; ?>
                 </div>
-                <div class="d-title"><a href="<?php the_sub_field('download_file'); ?>" target="_blank"><h4><?php the_sub_field('download_title'); ?></h4></a></div>
+                <div class="d-title"><a href="<?php the_sub_field('download_file'); ?>" target="_blank"><h4 class="woocommerce-tabs__downloads-heading"><?php the_sub_field('download_title'); ?></h4></a></div>
                 <div class="d-desc"><?php the_sub_field('download_description'); ?></div>
             </div>
         </div>

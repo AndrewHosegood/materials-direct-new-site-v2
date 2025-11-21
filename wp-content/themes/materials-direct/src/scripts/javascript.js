@@ -47,38 +47,42 @@ jQuery(document).ready(function($){
             $(".product-page__tabs-list").removeClass("active");
             $(this).closest("li").addClass("active");
         });
+         // Custom drawing click
 
         // Circle Radius click
         $("#circle-radius").on("click", function() {
             $(".product-page__tabs-list").removeClass("active");
             $(this).closest("li").addClass("active");
         });
+        // Circle Radius click
 
         // Square Rectangle click
         $("#square_rectangle").on("click", function() {
             $(".product-page__tabs-list").removeClass("active");
             $(this).closest("li").addClass("active");
         });
+        // Square Rectangle click
 
         // Stock Sheets click
         $("#stock_sheets").on("click", function() {
             $(".product-page__tabs-list").removeClass("active");
             $(this).closest("li").addClass("active");
         });
-
         // Stock Sheets click
+
+        // Rolls click
         $("#rolls").on("click", function() {
             $(".product-page__tabs-list").removeClass("active");
             $(this).closest("li").addClass("active");
         });
+        // Rolls click
 
         // shipping address edit
         $(".shipping-address-form__saved-edit").on("click", function() {
-            //alert("Hello");
-            
             $(".shipping-address-form__saved").toggleClass("hide");
             $("#shipping-address-form").addClass("show");
         });
+        // shipping address edit
 
         // display cofc on product page 'on keyup'
         $('#input_qty').on('keyup change', function() {
@@ -94,6 +98,39 @@ jQuery(document).ready(function($){
         $('body').on('change', '#add_manufacturers_COFC', function() {
 		    alert("Supplying the manufacturers CofC may effect the lead time");
 	    });
+        // display cofc on product page 'on keyup'
+
+        // need_help_with_ordering product page link
+        $("#need_help_with_ordering").on("click", function(e) {
+            e.preventDefault();
+            $('.help-with-ordering__outer').fadeToggle();
+        });
+        $('.help-with-ordering__outer').on('click', function(e) {
+            if ($(e.target).closest('.help-with-ordering').length === 0) {
+                $(this).fadeOut();
+            }
+        });
+        $('.help-with-ordering__close-btn').on('click', function(e) {
+            e.preventDefault();
+            $('.help-with-ordering__outer').fadeOut();
+        });
+        // need_help_with_ordering product page link
+
+        // shop page hover orange image links
+        // $('.woocommerce-shop__img').on('mouseenter', function () {
+        //     $(this)
+        //         .closest('li.product')
+        //         .find('.woocommerce-shop__image-links')
+        //         .addClass('active');
+        // });
+
+        // $('.woocommerce-shop__img').on('mouseleave', function () {
+        //     $(this)
+        //         .closest('li.product')
+        //         .find('.woocommerce-shop__image-links')
+        //         .removeClass('active');
+        // });
+        // shop page hover orange image links
 
         // hide/show file uploads when square rectangle/circle radius is clicked
         $("#rolls").click(function(){

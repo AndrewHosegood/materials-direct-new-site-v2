@@ -13,6 +13,7 @@ function custom_hide_despatched_within_css() {
     // Check if this is a single product page
     if ( is_product() ) {
         echo '<style>#despatched_within { display: none !important; '.$allow_credit.' }</style>';
+        echo '<style>#cofc_hide_show { display: none !important; '.$allow_credit.' }</style>';
     }
 }
 add_action('wp_head', 'custom_hide_despatched_within_css');

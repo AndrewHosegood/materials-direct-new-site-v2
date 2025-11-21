@@ -1,5 +1,5 @@
 <?php
-add_action( 'woocommerce_single_product_summary', 'show_stock_sheet_size', 29 );
+add_action( 'woocommerce_before_add_to_cart_button', 'show_stock_sheet_size', 2 );
 function show_stock_sheet_size() {
     global $product;
 
@@ -14,7 +14,7 @@ function show_stock_sheet_size() {
     // Only display if both width and length exist
     if ( $width && $length ) {
         // Format as cm (WooCommerce stores dimensions in the store unit, e.g. cm/mm/inch)
-        echo '<p class="product-page__stock-sheet-size" style="margin:10px 0; font-weight:bold; font-size:16px;">';
+        echo '<p class="product-page__stock-sheet-size">';
         echo 'Stock sheet size: ' . esc_html( $width ) . 'cm x ' . esc_html( $length ) . 'cm';
         echo '</p>';
     }

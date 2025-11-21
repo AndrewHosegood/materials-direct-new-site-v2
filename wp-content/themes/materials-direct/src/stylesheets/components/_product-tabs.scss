@@ -21,18 +21,29 @@
 
 .woocommerce div.product .woocommerce-tabs ul.tabs li a {
     display: inline-block;
-    padding: 3em 0.5rem .5em 0.5rem;
-    font-weight: 700;
+    padding: 1.1em 0rem 1.1em 0rem;
+    font-size: 0.7rem;
+    @include breakpoints.iphone {
+        padding: 4.2em 0.4rem .5em 0.4rem;
+        font-size: 0.7rem;
+    }
+    @include breakpoints.tablet {
+        padding: 4.2em 1.2rem .5em 1.2rem;
+        font-size: 0.77rem;
+    }
+    font-weight: 600;
     color: #515151;
     text-decoration: none;
-    font-size: 0.9rem;
 }
 
 .woocommerce div.product .woocommerce-tabs ul.tabs li {
     border: 0px solid #cfc8d8;
     background-color: transparent;
     color: #515151;
-    display: inline-block;
+    display: block;
+    @include breakpoints.iphone {
+        display: inline-block;
+    }
     position: relative;
     z-index: 0;
     border-radius: 0;
@@ -62,7 +73,26 @@
     color: #515151;
     z-index: 2;
     border-bottom-color: variables.$secondary-color;
-    border-bottom-width: 3px;
+    border-bottom-width: 0px;
+    @include breakpoints.iphone {
+        border-bottom-width: 3px;
+    }
+}
+
+.woocommerce div.product .woocommerce-tabs .panel {
+    margin: 0 0 2em;
+    padding: 0;
+    @include breakpoints.tablet {
+        padding: 1.45rem 1.35rem;
+    }
+    
+}
+
+.woocommerce div.product .woocommerce-tabs ul.tabs {
+    padding: 0;
+}
+.woocommerce-Tabs-panel h2 {
+    font-size: 1.45rem;
 }
 
 .woocommerce-tabs {
@@ -71,13 +101,24 @@
         flex-wrap: wrap;
     }
     &__mkd-grid-col-6 {
-        width: 50%;
+        width: 100%;
+        @include breakpoints.tablet {
+            width: 50%;
+        }
+        
     }
     &__mkd-grid-col-6.enq.left {
-        width: 70%;
+        width: 100%;
+         @include breakpoints.tablet {
+            width: 70%;
+         }
+        
     }
     &__mkd-grid-col-6.enq.right {
-        width: 30%;
+        width: 100%;
+        @include breakpoints.tablet {
+            width: 30%;
+        }
     }
     &__mkd-grid-heading {
         font-size: 1.7rem;
@@ -109,7 +150,10 @@
         border-bottom: 0px solid #bfbfbf;
     }
     &__specs {
-        padding: 0 1.5rem 0 1.5rem;
+        padding: 0;
+        @include breakpoints.tablet {
+            padding: 0 1.5rem 0 1.5rem;
+        }
         color: variables.$secondary-color;
     }
     &__fullFeats {
@@ -132,7 +176,10 @@
         margin:0;
     }
     &__contact-address {
-        margin:0 0 0 4rem;
+        margin: 0;
+        @include breakpoints.tablet {
+            margin: 0 0 0 4rem;
+        }
     }
     &__form-input {
         padding: 0.5rem;
@@ -160,6 +207,48 @@
         letter-spacing: 0.02rem;
         font-weight: 400;
     }
+    &__description-wrap {
+        display: flex;
+        flex-wrap: wrap;
+    }
+    &__description {
+        width: 100%;
+        margin-right: 0%;
+        @include breakpoints.tablet {
+            width: 70%;
+            margin-right: 5%;
+        }
+    }
+    &__description p {
+        font-size: 0.85rem;
+    }
+    &__benefits {
+        width: 100%;
+        @include breakpoints.tablet {
+            width: 25%;
+        }
+    }
+    &__benefits-text {
+        margin-top: -0.1rem;
+        font-size: 0.85rem;
+    }
+    &__benefits-text-list {
+        border-bottom: 1px solid #666;
+        padding: 0.3rem 0 0.5rem 0;
+        line-height: 1.6rem;
+    }
+    &__benefits-text-list:nth-child(1){
+        padding: 0 0 0.5rem 0;
+    }
+    &__downloads-heading {
+        font-size: 1.05rem;
+        font-weight: 700;
+        color: variables.$secondary-color;
+        text-decoration: none;
+    }
+    &__downloads-heading:hover {
+        text-decoration: underline;
+    }
     & .wpcf7-not-valid-tip {
         color: variables.$primary-color;
         font-style: italic;
@@ -175,5 +264,40 @@
     & .wpcf7 form.invalid .wpcf7-response-output {
         border-color: variables.$primary-color;
     }
+
 }
 
+.woocommerce-Tabs-panel {
+    & table {
+        width: 100%;
+        border: 1px solid #e2e2e1;
+        margin-bottom: 0;
+        display: table;
+        visibility: visible;
+    }
+    & table tr th {
+        background: #fff;
+        color: #ef9003;
+        font-weight: 600;
+        font-size: .7rem;
+        padding: 0.8rem 0.6rem;
+        @include breakpoints.tablet {
+            font-size: .87rem;
+            padding: 1.1rem 1rem;
+        }
+        text-align: left;
+        border-right: 1px solid #ddd;
+    }
+    & table tr td {
+        background: 0 0;
+        font-size: .7rem;
+        padding: 0.8rem 0.6rem;
+        @include breakpoints.tablet {
+            font-size: .87rem;
+            padding: 1.1rem 1rem;
+        }
+        text-align: left;
+        border-bottom: 1px solid #ddd;
+        border-right: 1px solid #ddd;
+    }
+}

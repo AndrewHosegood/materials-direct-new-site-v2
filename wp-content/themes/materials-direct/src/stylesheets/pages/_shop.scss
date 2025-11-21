@@ -40,7 +40,7 @@
     &__short-description ul li {
         border-bottom: 1px solid gainsboro;
         padding: 8px 0;
-        font-size: 0.93rem;
+        font-size: 0.85rem;
         line-height: 1.6rem;
     }
     &__short-description ul li:last-child {
@@ -48,8 +48,73 @@
     }
     &__mask {
         //box-shadow: inset 0 0 5px 2px rgba(0, 0, 0, .07);
-        border: 2px solid #f3f3f3;
+        border: 0px solid #f3f3f3;
         width: 100%;
+        position: relative;
+        transition: all 0.13s ease-in;
+    }
+    &__mask:hover .woocommerce-shop__image-links {
+        // border: 1px solid red;
+        cursor: pointer;
+        bottom: 0;
+        animation-name: image_links_active;
+        animation-duration: 0.5s;
+        animation-fill-mode: forwards;
+    }
+    &__soft-border {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        box-shadow: inset 0 0 6px rgba(0, 0, 0, .1);
+        z-index: 9;
+        display: none;
+    }
+    // &__soft-border:hover &__img {
+    //     opacity: 0;
+    // }
+    &__img {
+        opacity: 1;
+        transition: opacity 0.15s ease-in;
+        width: 100%;
+        z-index: 1;
+        position: relative;
+        margin-bottom: -0.7rem;
+    }
+    &__img:hover {
+        opacity: 0;
+    }
+    &__cat-hover-image {
+        position: absolute !important;
+        z-index: 0;
+    }
+    &__image-links {
+        position: absolute;
+        width: 100%;
+        z-index: 2;
+        background: variables.$primary-color;
+        color: white;
+        opacity: 0.8;
+        bottom: -3.8rem;
+    }
+    // &__image-links.active {
+    //     animation-name: image_links_active;
+    //     animation-duration: 0.5s;
+    //     animation-fill-mode: forwards;
+    // }
+    &__image-links-link {
+        color: white;
+        width: 50%;
+        text-align:center;
+        font-size: 0.85rem;
+        line-height: 1.25rem;
+        padding: 0.65rem;
+        border-right: 1px solid orange;
+    }
+    &__image-links-link:nth-child(1){
+        border-right: 1px solid orange;
     }
     & .entry-header {
         display: none;
@@ -66,4 +131,8 @@
     }
 }
 
+@keyframes image_links_active {
+  from {bottom: -3.8rem;}
+  to {bottom: 0rem;}
+}
 

@@ -13,7 +13,7 @@
 @use "components/related-products";
 @use "components/product-tabs";
 @use "components/delivery-options-modal";
-@use "components/sheduled-shipments-modal";
+@use "components/default-modal";
 @use "components/delivery-options-shipment";
 @use "components/shop-banner";
 //@use "components/main-menu-new";
@@ -40,6 +40,8 @@
 @use "components/owl-carousel";
 @use "components/any-questions";
 @use "components/burger-menu.scss";
+@use "components/home-help-with-ordering";
+@use "components/woof-product-filter";
 
 @use "layout/footer";
 @use "layout/header";

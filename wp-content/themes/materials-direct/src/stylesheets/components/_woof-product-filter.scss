@@ -1,0 +1,329 @@
+@use "../abstracts/breakpoints";
+@use "../abstracts/variables";
+
+.woocommerce-shop .woof .woof_redraw_zone {
+    display: flex;
+    justify-content: stretch;
+    margin-left: auto;
+    margin-right: auto;
+}
+.woocommerce-page .woof .woof_redraw_zone {
+    display: flex;
+    justify-content: stretch;
+    margin-left: auto;
+    margin-right: auto;
+}
+.woocommerce-shop .one.column {
+        width: 99%;
+}
+.woocommerce-page .one.column {
+    width: 99%;
+}
+.woocommerce-shop .column {
+    margin: 0 0 40px;
+    @include breakpoints.tablet {
+        margin: 0 0.5% 40px;
+    }
+}
+.woocommerce-page .column {
+    margin: 0 0 40px;
+    @include breakpoints.tablet {
+        margin: 0 0.5% 40px;
+    }
+}
+
+.woocommerce-shop .woof .woof_redraw_zone .woof_container:nth-child(1) {
+   width: 295px !important;
+}
+.woocommerce-shop .woof .woof_redraw_zone .woof_container:nth-child(2) {
+   //width: 360px !important;
+   width: 345px !important;
+}
+.woocommerce-shop .woof .woof_redraw_zone .woof_container:nth-child(3) {
+   width: 330px !important;
+}
+.woocommerce-shop .woof .woof_redraw_zone .woof_container:nth-child(4) {
+    width: 260px !important;
+}
+.woocommerce-shop .woof .woof_redraw_zone .woof_container:nth-child(5) {
+    width: 285px !important;
+}
+.woocommerce-shop .woof .woof_redraw_zone .woof_container:nth-child(6) {
+    width: 315px !important;
+}
+.woocommerce-shop .woof .woof_redraw_zone .woof_container:nth-child(7) {
+    width: 275px !important;
+}
+.woocommerce-shop .woof .woof_redraw_zone .woof_container:nth-child(8) {
+    width: 245px !important;
+}
+
+.woocommerce-page .woof .woof_redraw_zone .woof_container:nth-child(1) {
+    width: 295px !important;
+ }
+ .woocommerce-page .woof .woof_redraw_zone .woof_container:nth-child(2) {
+    //width: 360px !important;
+    width: 345px !important;
+ }
+ .woocommerce-page .woof .woof_redraw_zone .woof_container:nth-child(3) {
+    width: 330px !important;
+ }
+ .woocommerce-page .woof .woof_redraw_zone .woof_container:nth-child(4) {
+     width: 260px !important;
+ }
+ .woocommerce-page .woof .woof_redraw_zone .woof_container:nth-child(5) {
+     width: 285px !important;
+ }
+ .woocommerce-page .woof .woof_redraw_zone .woof_container:nth-child(6) {
+     width: 315px !important;
+ }
+ .woocommerce-page .woof .woof_redraw_zone .woof_container:nth-child(7) {
+     width: 275px !important;
+ }
+ .woocommerce-page .woof .woof_redraw_zone .woof_container:nth-child(8) {
+     width: 245px !important;
+ }
+
+.woocommerce-shop .woof .woof_redraw_zone .woof_container {
+    width: 195px;
+    /*padding: 0 1% 0.5rem 0;*/
+    background: #fff;
+    border-radius: 0.5rem;
+    padding: 0.5rem;
+    margin-right: 11px;
+    box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.05);
+}
+.woocommerce-page .woof .woof_redraw_zone .woof_container {
+    width: 195px;
+    /*padding: 0 1% 0.5rem 0;*/
+    background: #fff;
+    border-radius: 0.5rem;
+    padding: 0.5rem;
+    margin-right: 11px;
+    box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.05);
+}
+.woof {
+    width: 2440px;
+    margin-left: auto;
+    margin-right: auto;
+    padding-top: 1.55rem;
+    padding-bottom: 1.35rem;
+    background: #f8f7f7;
+}
+.woof_list li {
+    margin: 0 3px -9px 3px !important;
+    padding: 0 !important;
+}
+
+.woocommerce-shop .widget-woof h3 {
+	font-size:24px;
+}
+
+.woof_container_inner.woof_container_inner_brands h4 {
+    font-size: 14px;
+	line-height: 17px;
+	margin-bottom: 0.6rem;
+	border-bottom: 1px solid #eee;
+    padding-bottom: 0.5rem;
+    padding-top: 0;
+}
+
+.woof_container_inner.woof_container_inner_productcategories h4 {
+    font-size: 14px;
+	line-height: 18px;
+	margin-bottom: 0.6rem;
+	border-bottom: 1px solid #eee;
+    padding-bottom: 0.5rem;
+    padding-top: 0;
+}
+
+.woof_container_inner.woof_container_inner_manufacturer h4 {
+	font-size: 14px;
+	line-height: 18px;
+	margin-bottom: 0.6rem;
+	border-bottom: 1px solid #eee;
+    padding-bottom: 0.5rem;
+    padding-top: 0;
+}
+
+.woof_container_inner.woof_container_inner_thicknesses h4 {
+	font-size: 14px;
+	line-height: 18px;
+	margin-bottom: 0.6rem;
+	border-bottom: 1px solid #eee;
+    padding-bottom: 0.5rem;
+    padding-top: 0;
+}
+
+.woof_container_inner.woof_container_inner_mainfunctionusage h4 {
+	font-size: 14px;
+	line-height: 18px;
+	margin-bottom: 0.6rem;
+	border-bottom: 1px solid #eee;
+    padding-bottom: 0.5rem;
+    padding-top: 0;
+}
+
+.woof_container_inner.woof_container_inner_thermalconductivity h4 {
+	font-size: 14px;
+	line-height: 18px;
+	margin-bottom: 0.6rem;
+	border-bottom: 1px solid #eee;
+    padding-bottom: 0.5rem;
+    padding-top: 0;
+}
+.woof_container_inner.woof_container_inner_type h4 {
+	font-size: 14px;
+	line-height: 18px;
+	margin-bottom: 0.6rem;
+	border-bottom: 1px solid #eee;
+    padding-bottom: 0.5rem;
+    padding-top: 0;
+}
+.woof_container_inner.woof_container_inner_usage h4 {
+	font-size: 14px;
+	line-height: 18px;
+	margin-bottom: 0.6rem;
+	border-bottom: 1px solid #eee;
+    padding-bottom: 0.5rem;
+    padding-top: 0;
+}
+.woof_container_inner.woof_container_inner_productname h4 {
+    font-size: 14px;
+	line-height: 18px;
+	margin-bottom: 0.6rem;
+	border-bottom: 1px solid #eee;
+    padding-bottom: 0.5rem;
+    padding-top: 0;
+}
+.woof_container_inner.woof_container_inner_base h4 {
+    font-size: 14px;
+	line-height: 18px;
+	margin-bottom: 0.6rem;
+	border-bottom: 1px solid #eee;
+    padding-bottom: 0.5rem;
+    padding-top: 0;
+}
+.woof_container_inner.woof_container_inner_adhesive h4 {
+    font-size: 14px;
+	line-height: 18px;
+	margin-bottom: 0.6rem;
+	border-bottom: 1px solid #eee;
+    padding-bottom: 0.5rem;
+    padding-top: 0;
+}
+.woof_container_inner.woof_container_inner_liners h4 {
+    font-size: 14px;
+	line-height: 18px;
+	margin-bottom: 0.6rem;
+	border-bottom: 1px solid #eee;
+    padding-bottom: 0.5rem;
+    padding-top: 0;
+}
+.woof_container_inner.woof_container_inner_colour h4 {
+    font-size: 14px;
+	line-height: 18px;
+	margin-bottom: 0.6rem;
+	border-bottom: 1px solid #eee;
+    padding-bottom: 0.5rem;
+    padding-top: 0;
+}
+.woocommerce-shop .sidebar {
+    display: none;
+}
+.woocommerce-shop .sections_group {
+	width: 100%;
+}
+.woocommerce-page .sidebar {
+    display: none;
+}
+.woocommerce-page .sections_group {
+	width: 100%;
+}
+.woocommerce-page .column .term-description {
+    margin-left: 0.2rem;
+}
+.woocommerce-page .column .term-description h1 {
+    margin-top: 1.3rem;
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+}
+.filter-heading {
+	margin-left: 1.1rem;
+	margin-bottom: 0;
+	display: inline;
+    padding: 0;
+}
+.filter-btn {
+	background: variables.$primary-color;
+    color: #fff;
+    padding: 0.75rem 0.8rem;
+    display: inline;
+    float: right;
+    margin-right: 1.25rem;
+	transition: all 0.15s ease-in;
+    margin-left: auto;
+}
+.filter-btn:hover {
+	background: variables.$secondary-color;
+	color: #fff;
+	text-decoration: none;
+}
+.filter-btn-hide {
+	background: #fff;
+    color: variables.$primary-color;
+    padding: 0.75rem 0.8rem;
+    display: inline;
+    float: right;
+    margin-right: 0.7rem;
+	transition: all 0.15s ease-in;
+}
+.filter-btn-hide:hover {
+	background: #ccc;
+	color: variables.$primary-color;
+	text-decoration: none;
+}
+.filter-heading-background {
+    background: linear-gradient(to bottom, rgb(210 210 210) 0%, rgb(239 239 239) 100%);
+	padding: 0.7rem;
+	margin-bottom: 0;
+    border-bottom: 1px solid #dedede;
+}
+.filter-wrapper {
+	background: #f8f7f7;
+    padding: 0;
+    overflow: hidden;
+    position: relative;
+    padding-left: 1.9rem;
+    padding-right: 1.9rem;
+}
+.filter-wrapper-inner {
+    overflow-x: scroll;
+    max-width: 1160px;
+    margin-left: auto;
+    margin-right: auto;
+}
+.filter-content-wrapper {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    max-width: 1200px;
+    margin-left: auto;
+    margin-right: auto;
+}
+.shop-filters {
+    padding: 20px 0 0 12px;
+    @include breakpoints.laptop {
+        padding: 20px 0 0 4px;
+    }
+    margin-bottom: 7px;
+}
+.shop-filters .woocommerce-result-count {
+    margin: 7px 0 0;
+}
+label.woof_checkbox_label {
+    font-weight: 300;
+    line-height: 140%;
+    font-size: 13px;
+    margin: 0 0 0 8px;
+}

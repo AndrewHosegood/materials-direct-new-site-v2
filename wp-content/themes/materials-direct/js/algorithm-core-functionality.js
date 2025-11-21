@@ -43,6 +43,7 @@ jQuery(document).ready(function($) {
             $('.product-page__rolls-label-text-1').text('Length (MM):');
             $('.product-page__rolls-label-text-2').text('Total number of parts:');
             $('#fair_label').hide();
+            $('#fair_label_credit_account').hide();
             enableButtons(); // Enable buttons since PDF is not required
 
             // Delete temporary PDF file from server
@@ -81,6 +82,7 @@ jQuery(document).ready(function($) {
             $('.product-page__rolls-label-text-1').text('Length (MM):');
             $('.product-page__rolls-label-text-2').text('Total number of parts:');
             $('#fair_label').hide();
+            $('#fair_label_credit_account').hide();
             enableButtons();
 
             // Delete temporary PDF file from server
@@ -119,6 +121,7 @@ jQuery(document).ready(function($) {
             $('.product-page__rolls-label-text-1').text('Length (MM):');
             $('.product-page__rolls-label-text-2').text('Total number of parts:');
             $('#fair_label').hide();
+            $('#fair_label_credit_account').hide();
             enableButtons();
 
             // Delete temporary PDF file from server
@@ -164,6 +167,7 @@ jQuery(document).ready(function($) {
             $('.product-page__rolls-label-text-1').text('Length (MM):');
             $('.product-page__rolls-label-text-2').text('Total number of parts:');
             $('#fair_label').show();
+            $('#fair_label_credit_account').show();
         }
     }
 

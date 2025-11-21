@@ -13,6 +13,26 @@
  */
 
 get_header();
+
+        if (is_shop() || is_product_category()) {
+			
+			echo '<div id="advanced-filter" class="filter-heading-background">';
+			echo '<div class="filter-content-wrapper">';
+			echo '<h4 class="filter-heading">Product Filter</h4>';
+			echo '<a class="filter-btn" href="/shop/">Reset</a>';
+			echo '<a class="filter-btn-hide" href="">Hide</a>';
+			echo '</div>';
+			echo '</div>';
+
+            echo '<div class="filter-wrapper">';
+			echo '<div class="filter-wrapper-inner">';
+			echo do_shortcode('[woof]');
+            //echo do_shortcode("[woof sid='generator_669ebf62086a6 woof_auto_4_columns' autohide='0' autosubmit='0' is_ajax='1' ajax_redraw='0' start_filtering_btn='0' btn_position='b' dynamic_recount='1' hide_terms_count_txt='0' mobile_mode='1' ]");
+            
+			echo '</div>';
+			echo '</div>';
+        }
+
 ?>
 
 	<main id="primary" class="site-main container www">

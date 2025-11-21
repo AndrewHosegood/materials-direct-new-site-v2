@@ -376,22 +376,76 @@ require_once('includes/my-accounts-page-custom-banner.php');
 require_once('includes/cofc-logic-for-cart-page.php');
 /* Add logic for calculating COFC fees on cart page */
 
-//require_once('includes/credit-status-hide-cofc-product_page.php');
+/* Add currency switcher and subtitle to product page */
+require_once('includes/add-currency-switcher-to-product-page.php');
+/* Add currency switcher and subtitle to product page */
+
+/* Add view products link and need help link to product page */
+require_once('includes/add-view-product-details-link-and-need-help-link.php');
+/* Add view products link and need help link to product page */
+
+/* Add download datasheet button on product page */
+require_once('includes/add-download-datasheet-product-page.php');
+/* Add download datasheet button on product page */
+
+/* add custom id to woocoomerce default tabs on product page */
+require_once('includes/add-custom-id-to-tabs-on-product-page.php');
+/* add custom id to woocoomerce default tabs on product page */
 
 /* END CUSTOM FUNCTIONS */
 
 
+/*
+if (!function_exists('add_shortcode_to_shop_page')) {
+
+    function add_shortcode_to_shop_page() {
+        if (is_shop() || is_product_category()) {
+			
+			echo '<div id="advanced-filter" class="filter-heading-background">';
+			echo '<div class="filter-content-wrapper">';
+			echo '<h4 class="filter-heading">Product Filter</h4>';
+			echo '<a class="filter-btn" href="/shop/">Reset</a>';
+			echo '<a class="filter-btn-hide" href="">Hide</a>';
+			echo '</div>';
+			echo '</div>';
+
+            echo '<div class="filter-wrapper">';
+			echo '<div class="filter-wrapper-inner">';
+			echo do_shortcode('[woof]');
+            //echo do_shortcode("[woof sid='generator_669ebf62086a6 woof_auto_4_columns' autohide='0' autosubmit='0' is_ajax='1' ajax_redraw='0' start_filtering_btn='0' btn_position='b' dynamic_recount='1' hide_terms_count_txt='0' mobile_mode='1' ]");
+            
+			echo '</div>';
+			echo '</div>';
+        }
+    }
+    add_action('woocommerce_before_shop_loop', 'add_shortcode_to_shop_page');
+}
+*/
+
+
+// add_action( 'woocommerce_before_shop_loop', 'add_woof_builder_before_shop' );
+// function add_woof_builder_before_shop() {
+//     if ( is_shop() ) {
+//         echo do_shortcode('[woof]');
+//     }
+// }
 
 
 
 
 
 
+add_action( 'woocommerce_before_shop_loop_item', 'inject_hover_image_in_related_products', 5 );
+function inject_hover_image_in_related_products() {
 
+    // Run ONLY inside the related products loop
+    if ( wc_get_loop_prop( 'name' ) !== 'related' ) {
+        return;
+    }
 
-
-
-
+    // Inject image BEFORE <a> tag starts
+    echo '<img class="woocommerce-shop__cat-hover-image" src="/wp-content/uploads/2025/11/category_hover_with_text.jpg" alt="">';
+}
 
 
 
