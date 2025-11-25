@@ -18,6 +18,7 @@ jQuery(document).ready(function($){
         $('#add_shipments').on('click', function(e) {
             e.preventDefault();
             $('#generate_price').prop('disabled', true);
+            $('.delivery-options-modal').addClass('active');
         });
         // hide #generate_price when add shipments is clicked
 
@@ -96,6 +97,9 @@ jQuery(document).ready(function($){
         });
 
         $('body').on('change', '#add_manufacturers_COFC', function() {
+		    alert("Supplying the manufacturers CofC may effect the lead time");
+	    });
+        $('body').on('change', '#add_manufacturers_COFC_ss', function() {
 		    alert("Supplying the manufacturers CofC may effect the lead time");
 	    });
         // display cofc on product page 'on keyup'

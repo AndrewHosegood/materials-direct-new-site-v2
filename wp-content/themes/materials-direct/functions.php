@@ -376,6 +376,11 @@ require_once('includes/my-accounts-page-custom-banner.php');
 require_once('includes/cofc-logic-for-cart-page.php');
 /* Add logic for calculating COFC fees on cart page */
 
+/* Add logic for calculating scheduled COFC fees on cart page */
+/* DELETE THIS */
+//require_once('includes/cofc-scheduled-logic-for-cart-page.php');
+/* Add logic for calculating scheduled COFC fees on cart page */
+
 /* Add currency switcher and subtitle to product page */
 require_once('includes/add-currency-switcher-to-product-page.php');
 /* Add currency switcher and subtitle to product page */
@@ -393,6 +398,17 @@ require_once('includes/add-custom-id-to-tabs-on-product-page.php');
 /* add custom id to woocoomerce default tabs on product page */
 
 /* END CUSTOM FUNCTIONS */
+
+
+
+
+
+
+
+
+
+
+
 
 
 /*

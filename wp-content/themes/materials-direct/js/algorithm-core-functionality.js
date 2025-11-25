@@ -153,6 +153,7 @@ jQuery(document).ready(function($) {
             $('.product-page__rolls-label-text-1').text('Length (Metres):');
             $('.product-page__rolls-label-text-2').text('Quantity of rolls:');
             $('#fair_label').hide();
+            $('#fair_label_credit_account').hide();
         }
         else {
             $('#pdf_upload_container').removeClass('hidden');
@@ -371,6 +372,7 @@ jQuery(document).ready(function($) {
     $('.delivery-options-modal__close-btn').on('click', function(e) {
         e.preventDefault();
         $('.delivery-options-modal__outer').fadeOut();
+        $('.delivery-options-modal').removeClass('active');
     });
 
     // Handle modal form submission
@@ -379,6 +381,9 @@ jQuery(document).ready(function($) {
         $('.delivery-options-modal__outer').fadeOut();
         const despatch_date = $('input[name="despatch_date"]').val();
         const parts = parseInt($('input[name="shipment_parts"]').val());
+        const add_manufacturers_cofc_ss = $('#add_manufacturers_COFC_ss').is(':checked') ? 10 : 0; //new cofc delivery options
+        const add_fair_ss = $('#add_fair_ss').is(':checked') ? 95 : 0; //new cofc delivery options
+        const add_materials_direct_cofc_ss = $('#add_materials_direct_COFC_ss').is(':checked') ? 12.50 : 0; //new cofc delivery options
 
         if (!despatch_date) {
             alert('Please select a despatch date.');
@@ -389,6 +394,23 @@ jQuery(document).ready(function($) {
             return;
         }
 
+        $('.delivery-options-modal__outer').fadeOut();
+    
+        //new cofc delivery options
+        console.log('Modal Checkbox States:', {
+            manufacturers: $('#add_manufacturers_COFC_ss').is(':checked'),
+            fair: $('#add_fair_ss').is(':checked'),
+            materials: $('#add_materials_direct_COFC_ss').is(':checked')
+        });
+        console.log('Values Sending to PHP:', {
+            despatch_date,
+            parts,
+            add_manufacturers_cofc_ss,
+            add_fair_ss,
+            add_materials_direct_cofc_ss
+        });
+        //new cofc delivery options
+
         $('#price-spinner-overlay').fadeIn(200);
 
         $.ajax({
@@ -398,6 +420,9 @@ jQuery(document).ready(function($) {
                 action: 'save_shipment',
                 despatch_date: despatch_date,
                 shipment_parts: parts,
+                add_manufacturers_COFC_ss: add_manufacturers_cofc_ss, //new cofc delivery options
+                add_fair_ss: add_fair_ss, //new cofc delivery options
+                add_materials_direct_COFC_ss: add_materials_direct_cofc_ss, //new cofc delivery options
                 nonce: ajax_params.nonce
             },
             success: function(response) {
@@ -411,6 +436,9 @@ jQuery(document).ready(function($) {
                     // Clear input fields
                     $('input[name="despatch_date"]').val('');
                     $('input[name="shipment_parts"]').val('');
+                    $('input[name="add_manufacturers_COFC_ss"][value="10"]').prop('checked', false);
+                    $('input[name="add_fair_ss"][value="95"]').prop('checked', false);
+                    $('input[name="add_materials_direct_COFC_ss"][value="12.50"]').prop('checked', false);
                     // Close modal if no parts remain
                     if (response.data.remaining_parts <= 0) {
                         console.log('Remaining <=0 after add, allowCredit:', allowCredit);

@@ -739,10 +739,26 @@ function calculate_scheduled_price_func() {
         $portion_price = $per_part_base * $portion_parts;
         $portion_discount = $portion_price * $disc;
         $portion_final = $portion_price - $portion_discount;
-        $total_scheduled_price += $portion_final;
 
+        //new cofc delivery options
+        $lead_time_label = get_shipment_lead_time_label($despatch_ymd);
+        $enhanced_shipments[] = [
+            'date' => $despatch_date,
+            'parts' => $portion_parts,
+            'lead_time_label' => $lead_time_label
+        ];
+
+        $total_scheduled_price += $portion_final;
+        //new cofc delivery options
 
     }
+
+    $total_optional_fees = 0; //new cofc delivery options
+    foreach ($shipments as $s) { //new cofc delivery options
+        $total_optional_fees += $s['total_fee'] ?? 0; //new cofc delivery options
+    } 
+
+
     /* new calendar days discounts */ 
 
     $product = wc_get_product($product_id);
@@ -774,6 +790,7 @@ function calculate_scheduled_price_func() {
     wp_send_json_success([
         'price' => round($total_scheduled_price, 2),
         'per_part' => round($total_scheduled_price / $qty, 6), // Higher precision for per_part
+        'total_optional_fees' => $total_optional_fees, //new cofc delivery options
         'sheets_required' => $sheets_required,
         'stock_quantity' => $stock_quantity,
         'is_backorder' => $is_backorder,
@@ -1242,13 +1259,6 @@ function add_custom_price_cart_item_data_secure($cart_item_data, $product_id) {
     }
 
     if ($is_scheduled) {
-        /*
-        $despatch_notes = '';
-        $scheduled_shipments = $shipments_session;
-        foreach ($scheduled_shipments as $s) {
-            $despatch_notes .= $s['parts'] . ' parts to be despatched on ' . $s['date'] . "\n";
-        }
-        */
 
         $despatch_notes = '';
         $scheduled_shipments = $shipments_session;
@@ -1261,7 +1271,29 @@ function add_custom_price_cart_item_data_secure($cart_item_data, $product_id) {
 
             $lead_time_label = get_shipment_lead_time_label($despatch_ymd);
 
-            $formatted_line = number_format($s['parts']) . " parts to be despatched on {$despatch_date} {$lead_time_label}";
+            // new code for new teusday cofc delivery options
+            $feeAppendix = '';
+            if (!empty($s['fees'])) {
+                $feeLabels = [
+                    'add_manufacturers_COFC_ss' => 'Manufacturers COFC',
+                    'add_fair_ss' => 'First Article Inspection Report',
+                    'add_materials_direct_COFC_ss' => 'Materials Direct COFC'
+                ];
+                $feeParts = [];
+                foreach ($s['fees'] as $feeKey => $feeValue) {
+                    if ($feeValue > 0) {
+                        $label = isset($feeLabels[$feeKey]) ? $feeLabels[$feeKey] : $feeKey;
+                        $feeParts[] = $label . ' £' . number_format($feeValue, 2);
+                    }
+                }
+                if (!empty($feeParts)) {
+                    $feeAppendix = ' - ' . implode(' - ', $feeParts);
+                }
+            }
+            // new code for new teusday cofc delivery options
+
+            $formatted_line = number_format($s['parts']) . " parts to be despatched on {$despatch_date} {$lead_time_label}" . $feeAppendix;
+            //$formatted_line = number_format($s['parts']) . " parts to be despatched on {$despatch_date} {$lead_time_label}";
             $despatch_notes .= $formatted_line . "\n";
 
             $enhanced_shipments[] = [
@@ -1302,6 +1334,25 @@ function add_custom_price_cart_item_data_secure($cart_item_data, $product_id) {
 
         }
         $server_total_price = $server_total;
+
+        //new cofc delivery options
+        $total_optional_fees = 0;
+
+        foreach ($scheduled_shipments as $shipment) {
+            $total_optional_fees += $shipment['total_fee'] ?? 0;
+        }
+
+        // Store in cart data (for display and fee hook)
+        $cart_item_data['custom_inputs']['total_optional_fees'] = $total_optional_fees; 
+        $cart_item_data['custom_inputs']['optional_fees_per_shipment'] = []; 
+        foreach ($scheduled_shipments as $s) {
+            $cart_item_data['custom_inputs']['optional_fees_per_shipment'][] = [
+                'date' => $s['date'],
+                'fee' => $s['total_fee'] ?? 0,
+                'fees' => $s['fees'] ?? [] // new teusday cofc delivery options
+            ];
+        }
+        //new cofc delivery options
 
         $server_price_per_sheet = $sheets_required > 0 ? $server_total_price / $sheets_required : $server_total_price;
 
@@ -1552,7 +1603,6 @@ function display_shipping_address_on_checkout() {
 
 
 // DISPLAY SHIPMENTS SECTION ABOVE CHECKOUT TOTALS
-
 add_action('woocommerce_review_order_before_payment', 'display_shipments_section_checkout');
 function display_shipments_section_checkout() {
     $cart = WC()->cart;
@@ -1571,7 +1621,6 @@ function display_shipments_section_checkout() {
         echo '</div>';
     }
 }
-
 // DISPLAY SHIPMENTS SECTION ABOVE CHECKOUT TOTALS
 
 
@@ -1778,7 +1827,7 @@ function show_custom_input_details_in_cart($item_data, $cart_item) {
         if (isset($cart_item['custom_inputs']['despatch_notes'])) {
             $item_data[] = [
                 'name' => 'Despatch Notes',
-                'value' => '<br>' . $cart_item['custom_inputs']['despatch_notes']
+                'value' => '<br>' . esc_html($cart_item['custom_inputs']['despatch_notes'])
             ];
         }
 
@@ -1789,6 +1838,39 @@ function show_custom_input_details_in_cart($item_data, $cart_item) {
                 'value' => round((float)$cart_item['custom_inputs']['total_del_weight'], 3) . "kg"
             ];
         }
+
+        // COFC CHECKBOX VALUES:
+        if (isset($cart_item['custom_inputs']['optional_fees_per_shipment'])) {
+            // Label map for explicit names
+            $feeLabels = [
+                'add_manufacturers_COFC_ss' => 'Manufacturers COFC',
+                'add_fair_ss' => 'First Article Inspection Report',
+                'add_materials_direct_COFC_ss' => 'Materials Direct COFC'
+            ];
+            foreach ($cart_item['custom_inputs']['optional_fees_per_shipment'] as $shipment_fees) {
+                if (!empty($shipment_fees['fees'])) {
+                    foreach ($shipment_fees['fees'] as $feeKey => $feeValue) {
+                        if ($feeValue > 0) {
+                            $label = isset($feeLabels[$feeKey]) ? $feeLabels[$feeKey] : $feeKey;
+                            $item_data[] = [
+                                'name' => $label,
+                                'value' => '£' . number_format($feeValue, 2)
+                            ];
+                        }
+                    }
+                }
+            }
+        }
+        // if (isset($cart_item['custom_inputs']['optional_fees_per_shipment'])) {
+        //     foreach ($cart_item['custom_inputs']['optional_fees_per_shipment'] as $shipment_fee) {
+        //         if ($shipment_fee['fee'] > 0) {
+        //             $item_data[] = [
+        //                 'name' => "All COFC's & FAIR's - " . $shipment_fee['date'],
+        //                 'value' => '£' . number_format($shipment_fee['fee'], 2)
+        //             ];
+        //         }
+        //     }
+        // }
 
         // Backorder Details
         /*
@@ -2331,6 +2413,20 @@ function save_shipment_callback() {
     $despatch_date = sanitize_text_field($_POST['despatch_date'] ?? '');
     $parts         = intval($_POST['shipment_parts'] ?? 0);
 
+    $fees = [
+        'add_manufacturers_COFC_ss' => isset($_POST['add_manufacturers_COFC_ss']) ? floatval($_POST['add_manufacturers_COFC_ss']) : 0, //new cofc delivery options
+        'add_fair_ss' => isset($_POST['add_fair_ss']) ? floatval($_POST['add_fair_ss']) : 0, //new cofc delivery options
+        'add_materials_direct_COFC_ss' => isset($_POST['add_materials_direct_COFC_ss']) ? floatval($_POST['add_materials_direct_COFC_ss']) : 0, //new cofc delivery options
+    ];
+
+    $total_shipment_fee = array_sum($fees); //new cofc delivery options
+
+    // error_log("post despatch date" . $despatch_date);
+    // error_log("post parts" . $parts);
+    // error_log("POST manufacturers COFC_ss: " . $fees['add_manufacturers_COFC_ss']);
+    // error_log("POST fair_ss: " . $fees['add_fair_ss']);
+    // error_log("POST materials_direct_COFC_ss: " . $fees['add_materials_direct_COFC_ss']);
+
     if (!$despatch_date || $parts < 1) {
         wp_send_json_error(['message' => 'Invalid despatch date or parts.']);
     }
@@ -2353,13 +2449,17 @@ function save_shipment_callback() {
     // Add new shipment
     $shipments[] = [
         'date'  => $despatch_date,
-        'parts' => $parts
+        'parts' => $parts,
+        'fees' => $fees, //new cofc delivery options
+        'total_fee'   => $total_shipment_fee //new cofc delivery options
     ];
 
     WC()->session->set('custom_shipments', $shipments);
+    //error_log("Session Custom Shipments: " . WC()->session->get('custom_shipments', $shipments));
 
     $new_total = array_sum(array_column($shipments, 'parts'));
     $remaining = $custom_qty - $new_total;
+    $total_fees = array_sum(array_column($shipments, 'total_fee')); //new cofc delivery options
 
     // Build enhanced table HTML
     ob_start();
@@ -2370,26 +2470,39 @@ function save_shipment_callback() {
                 <tr>
                     <th class="delivery-options-shipment__title">Despatch Date</th>
                     <th class="delivery-options-shipment__title">Total number of parts</th>
+                    <th class="delivery-options-shipment__title">All COFC's & FAIR's</th> <!-- NEW -->
                     <th class="delivery-options-shipment__title"><span class="screen-reader-text">Actions</span></th>
                 </tr>
             </thead>
             <tbody>
-                <?php foreach ($shipments as $index => $shipment): 
-                    $despatch_ymd = date('Y-m-d', strtotime(str_replace('/', '-', $shipment['date'])));
-                    $lead_time_label = get_shipment_lead_time_label($despatch_ymd);
-                ?>
-                    <tr>
-                        <td class="delivery-options-shipment__display-results">
-                            <?php echo esc_html($shipment['date'] . ' ' . $lead_time_label); ?>
-                        </td>
-                        <td class="delivery-options-shipment__display-results">
-                            <?php echo esc_html($shipment['parts']); ?>
-                        </td>
-                        <td class="delivery-options-shipment__display-results">
-                            <a href="#" class="delete-shipment" data-index="<?php echo $index; ?>">Delete</a>
-                        </td>
+                <?php if (empty($shipments)) { ?>
+                    <tr class="delivery-options-shipment__display">
+                        <td class="delivery-options-shipment__display-inner" colspan="4">There are no <span>shipments.</span></td>
                     </tr>
-                <?php endforeach; ?>
+                <?php } else { ?>
+                <?php //error_log("Shipments: " . print_r($shipments)) ?>
+                        <?php foreach ($shipments as $index => $shipment) {
+                            //error_log("Shipment: " . print_r($shipment));
+                            $despatch_ymd = date('Y-m-d', strtotime(str_replace('/', '-', $shipment['date'])));
+                            $lead_time_label = get_shipment_lead_time_label($despatch_ymd);
+                            $fee_display = $shipment['total_fee'] > 0 ? '+ £' . number_format($shipment['total_fee'], 2) : 'None';
+                        ?>
+                            <tr>
+                                <td class="delivery-options-shipment__display-results">
+                                    <?php echo esc_html($shipment['date'] . ' ' . $lead_time_label); ?>
+                                </td>
+                                <td class="delivery-options-shipment__display-results">
+                                    <?php echo esc_html($shipment['parts']); ?>
+                                </td>
+                                <td class="delivery-options-shipment__display-results"> <!-- NEW -->
+                                        <?php echo esc_html($fee_display); ?>
+                                </td>
+                                <td class="delivery-options-shipment__display-results">
+                                    <a href="#" class="delete-shipment" data-index="<?php echo $index; ?>">Delete</a>
+                                </td>
+                            </tr>
+                        <?php } ?>
+                <?php } ?>
             </tbody>
         </table>
     </div>
@@ -2401,113 +2514,7 @@ function save_shipment_callback() {
         'remaining_parts'  => $remaining
     ]);
 }
-/*
-add_action('wp_ajax_save_shipment', 'save_shipment');
-add_action('wp_ajax_nopriv_save_shipment', 'save_shipment');
 
-function save_shipment() {
-    check_ajax_referer('custom_price_nonce', 'nonce');
-
-    $despatch_date = sanitize_text_field($_POST['despatch_date']);
-    $parts = intval($_POST['shipment_parts']);
-    $custom_qty = WC()->session->get('custom_qty', 0);
-    $shipments = WC()->session->get('custom_shipments', []);
-
-    // Validate inputs
-    if (empty($despatch_date) || !preg_match('/^\d{2}\/\d{2}\/\d{4}$/', $despatch_date)) {
-        wp_send_json_error(['message' => 'Invalid despatch date format.']);
-        return;
-    }
-    if ($parts < 1) {
-        wp_send_json_error(['message' => 'Number of parts must be at least 1.']);
-        return;
-    }
-
-    // Convert despatch date to timestamp for comparison
-    $date_parts = explode('/', $despatch_date);
-    $despatch_timestamp = strtotime("{$date_parts[2]}-{$date_parts[1]}-{$date_parts[0]}");
-    if (!$despatch_timestamp) {
-        wp_send_json_error(['message' => 'Invalid despatch date.']);
-        return;
-    }
-
-    // Check if date is in the past
-    if ($despatch_timestamp < strtotime('today')) {
-        wp_send_json_error(['message' => 'Despatch date cannot be in the past.']);
-        return;
-    }
-
-    // Check if date is earlier than any existing shipment dates
-    foreach ($shipments as $shipment) {
-        $existing_date = DateTime::createFromFormat('d/m/Y', $shipment['date']);
-        if ($existing_date && $despatch_timestamp < $existing_date->getTimestamp()) {
-            wp_send_json_error(['message' => 'Despatch date cannot be earlier than existing shipment dates.']);
-            return;
-        }
-    }
-
-    // Calculate total parts in existing shipments
-    $total_parts = array_sum(array_column($shipments, 'parts'));
-    if ($total_parts + $parts > $custom_qty) {
-        wp_send_json_error(['message' => 'Total number of parts exceeds the ordered quantity.']);
-        return;
-    }
-
-    // Add new shipment to array
-    $shipments[] = [
-        'date' => $despatch_date,
-        'parts' => $parts
-    ];
-
-    // Sort shipments by date
-    usort($shipments, function($a, $b) {
-        $date_a = DateTime::createFromFormat('d/m/Y', $a['date']);
-        $date_b = DateTime::createFromFormat('d/m/Y', $b['date']);
-        return $date_a->getTimestamp() <=> $date_b->getTimestamp();
-    });
-
-    // Save to session
-    WC()->session->set('custom_shipments', $shipments);
-
-    // Calculate remaining parts
-    $remaining_parts = max(0, $custom_qty - ($total_parts + $parts));
-
-    // Generate updated table HTML
-    ob_start();
-    ?>
-    <table class="delivery-options-shipment">
-        <thead>
-            <tr>
-                <th class="delivery-options-shipment__title">Despatch Date</th>
-                <th class="delivery-options-shipment__title">Total number of parts</th>
-                <th class="delivery-options-shipment__title"><span class="screen-reader-text">Actions</span></th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php if (empty($shipments)) : ?>
-                <tr class="delivery-options-shipment__display">
-                    <td class="delivery-options-shipment__display-inner" colspan="3">There are no <span>shipments.</span></td>
-                </tr>
-            <?php else : ?>
-                <?php foreach ($shipments as $index => $shipment) : ?>
-                    <tr>
-                        <td class="delivery-options-shipment__display-results"><?php echo esc_html($shipment['date']); ?></td>
-                        <td class="delivery-options-shipment__display-results"><?php echo esc_html($shipment['parts']); ?></td>
-                        <td class="delivery-options-shipment__display-results"><a href="#" class="delete-shipment" data-index="<?php echo esc_attr($index); ?>">Delete</a></td>
-                    </tr>
-                <?php endforeach; ?>
-            <?php endif; ?>
-        </tbody>
-    </table>
-    <?php
-    $table_html = ob_get_clean();
-
-    wp_send_json_success([
-        'table_html' => $table_html,
-        'remaining_parts' => $remaining_parts
-    ]);
-}
-    */
 // HANDLE MODAL SUBMISSION FOR DELIVERY OPTIONS VIA AJAX
 
 
@@ -2541,30 +2548,48 @@ function delete_shipment() {
     // Generate updated table HTML
     ob_start();
     ?>
-    <table class="delivery-options-shipment">
-        <thead>
-            <tr>
-                <th class="delivery-options-shipment__title">Despatch Date</th>
-                <th class="delivery-options-shipment__title">Total number of parts</th>
-                <th class="delivery-options-shipment__title"><span class="screen-reader-text">Actions</span></th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php if (empty($shipments)) : ?>
-                <tr class="delivery-options-shipment__display">
-                    <td class="delivery-options-shipment__display-inner" colspan="3">There are no <span>shipments.</span></td>
+    <div class="delivery-options-shipment__outer">
+        <table class="delivery-options-shipment">
+            <thead>
+                <tr>
+                    <th class="delivery-options-shipment__title">Despatch Date</th>
+                    <th class="delivery-options-shipment__title">Total number of parts</th>
+                    <th class="delivery-options-shipment__title">All COFC's & FAIR's</th> <!-- NEW -->
+                    <th class="delivery-options-shipment__title"><span class="screen-reader-text">Actions</span></th>
                 </tr>
-            <?php else : ?>
-                <?php foreach ($shipments as $index => $shipment) : ?>
-                    <tr>
-                        <td class="delivery-options-shipment__display-results"><?php echo esc_html($shipment['date']); ?></td>
-                        <td class="delivery-options-shipment__display-results"><?php echo esc_html($shipment['parts']); ?></td>
-                        <td class="delivery-options-shipment__display-results"><a href="#" class="delete-shipment" data-index="<?php echo esc_attr($index); ?>">Delete</a></td>
+            </thead>
+            <tbody>
+                <?php if (empty($shipments)) { ?>
+                    <tr class="delivery-options-shipment__display">
+                        <td class="delivery-options-shipment__display-inner" colspan="4">There are no <span>shipments.</span></td>
                     </tr>
-                <?php endforeach; ?>
-            <?php endif; ?>
-        </tbody>
-    </table>
+                <?php } else { ?>
+                <?php //error_log("Shipments: " . print_r($shipments)) ?>
+                        <?php foreach ($shipments as $index => $shipment) {
+                            //error_log("Shipment: " . print_r($shipment));
+                            $despatch_ymd = date('Y-m-d', strtotime(str_replace('/', '-', $shipment['date'])));
+                            $lead_time_label = get_shipment_lead_time_label($despatch_ymd);
+                            $fee_display = $shipment['total_fee'] > 0 ? '+ £' . number_format($shipment['total_fee'], 2) : 'None';
+                        ?>
+                            <tr>
+                                <td class="delivery-options-shipment__display-results">
+                                    <?php echo esc_html($shipment['date'] . ' ' . $lead_time_label); ?>
+                                </td>
+                                <td class="delivery-options-shipment__display-results">
+                                    <?php echo esc_html($shipment['parts']); ?>
+                                </td>
+                                <td class="delivery-options-shipment__display-results"> <!-- NEW -->
+                                        <?php echo esc_html($fee_display); ?>
+                                </td>
+                                <td class="delivery-options-shipment__display-results">
+                                    <a href="#" class="delete-shipment" data-index="<?php echo $index; ?>">Delete</a>
+                                </td>
+                            </tr>
+                        <?php } ?>
+                <?php } ?>
+            </tbody>
+        </table>
+    </div>    
     <?php
     $table_html = ob_get_clean();
 

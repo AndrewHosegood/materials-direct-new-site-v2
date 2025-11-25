@@ -13,17 +13,29 @@
         color: variables.$primary-color;
         font-weight: bold;
     }
+    & .product-name .variation .variation-WidthMM {
+        line-height: 1.7rem;
+    }
     & .product-name .variation .variation-WidthMM p {
         display: inline;
         padding: 0;
+        line-height: 2.4rem;
+    }
+    & .product-name .variation .variation-LengthMM {
+        line-height: 1.7rem;
     }
     & .product-name .variation .variation-LengthMM p {
         display: inline;
         padding: 0;
+        line-height: 1.9rem;
+    }
+    & .product-name .variation .variation-Totalnumberofparts {
+        line-height: 1.7rem;
     }
     & .product-name .variation .variation-Totalnumberofparts p {
         display: inline;
         padding: 0;
+        line-height: 1.9rem;
     }
     & .product-name .variation .variation-DeliveryTime p {
         display: inline;
@@ -33,13 +45,50 @@
         display: inline;
         padding: 0;
     }
+
+    & .product-name .variation .variation-DespatchNotes {
+        line-height: 1.7rem;
+    }
     & .product-name .variation .variation-DespatchNotes p {
         display: inline;
         padding: 0;
+        line-height: 1.9rem;
+    }
+
+    & .product-name .variation .variation-ManufacturersCOFC {
+        line-height: 1.7rem;
+    }
+    & .product-name .variation .variation-ManufacturersCOFC p {
+        display: inline;
+        padding: 0;
+        line-height: 1.9rem;
+    }
+
+    & .product-name .variation .variation-MaterialsDirectCOFC {
+        line-height: 1.7rem;
+    }
+    & .product-name .variation .variation-MaterialsDirectCOFC p {
+        display: inline;
+        padding: 0;
+        line-height: 1.9rem;
+    }
+
+    & .product-name .variation .variation-FirstArticleInspectionReport {
+        line-height: 1.7rem;
+    }
+    & .product-name .variation .variation-FirstArticleInspectionReport p {
+        display: inline;
+        padding: 0;
+        line-height: 1.9rem;
+    }
+    
+    & .product-name .variation .variation-CustomerShippingWeights {
+        line-height: 1.7rem;
     }
     & .product-name .variation .variation-CustomerShippingWeights p {
         display: inline;
         padding: 0;
+        line-height: 1.9rem;
     }
     & .product-name .variation .variation-BackorderNotice p {
         display: inline;

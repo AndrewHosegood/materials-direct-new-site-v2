@@ -85,7 +85,18 @@
         padding: 0;
         line-height: 2.1rem;
     }
+    & .cart .product-name .variation .variation-AddManufacturersCOFC p {
+        display: inline;
+        padding: 0;
+        line-height: 2.1rem;
+    }
+    & .cart .product-name .variation .variation-AddMaterialsDirectCOFC p {
+        display: inline;
+        padding: 0;
+        line-height: 2.1rem;
+    }
     & .cart .product-name .variation dt {
+        font-size: 0.88rem;
         margin-right: 0.5rem;
         font-weight: bold;
         line-height: 2rem;
@@ -95,7 +106,7 @@
         margin-bottom: -0.1rem;
     }
     & .cart .product-name .variation dd {
-            margin: 0 0 0.05rem 0;
+            margin: 0 0 -0.05rem 0;
     }
     & .global-shipping-address-title {
         font-size: 1.55rem;
@@ -119,6 +130,9 @@
     }
     & .cart_totals h2 {
         font-size: 1.55rem;
+    }
+    & .woocommerce table.shop_table {
+        font-size: 0.88rem;
     }
 }
 
@@ -148,10 +162,13 @@
     max-width: 60px;
 }
 .woocommerce-cart .wc-proceed-to-checkout a.checkout-button {
+    font-size: 1.12rem;
+    padding: 0.9rem;
     background: variables.$secondary-color;
     font-weight: 400;
     transition: background 0.15s ease-in;
     border-radius: 0.3rem;
+    margin-bottom: 2.7rem;
 }
 .woocommerce-cart .wc-proceed-to-checkout a.checkout-button:hover {
     background: #1a2631;

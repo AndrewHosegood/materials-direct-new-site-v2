@@ -13,10 +13,14 @@
     }
     border-radius: 6px;
     box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
-    top: 50%;
+    top: 100%;
     margin-top: -360px;
     position: relative;
     height: auto;
+    transition: all 0.3s ease-in;
+    &.active {
+        top: 50%
+    }
     &__footer {
         display: none;
         @include breakpoints.tablet {
@@ -95,3 +99,4 @@
         margin-top: 1.5rem;
     }
 }
+
