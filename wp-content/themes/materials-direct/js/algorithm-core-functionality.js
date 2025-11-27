@@ -1,17 +1,17 @@
 jQuery(document).ready(function($) {
     // Initialize jQuery UI Datepicker
-    $('#delivery_date').datepicker({
-        dateFormat: 'dd/mm/yy',
-        minDate: 1, // Prevent selecting past dates
-        maxDate: "+1Y",
-        appendTo: '.delivery-options-modal'
-    });
-    $('#delivery_date_backorder').datepicker({
-        dateFormat: 'dd/mm/yy',
-        minDate: 36, // Prevent selecting past dates
-        maxDate: "+1Y",
-        appendTo: '.delivery-options-modal'
-    });
+    // $('#delivery_date').datepicker({
+    //     dateFormat: 'dd/mm/yy',
+    //     minDate: 1, // Prevent selecting past dates
+    //     maxDate: "+1Y",
+    //     appendTo: '.delivery-options-modal'
+    // });
+    // $('#delivery_date_backorder').datepicker({
+    //     dateFormat: 'dd/mm/yy',
+    //     minDate: 36, // Prevent selecting past dates
+    //     maxDate: "+1Y",
+    //     appendTo: '.delivery-options-modal'
+    // });
 
     // Check if the product is single (via data attribute or AJAX)
     const isProductSingle = $('input[name="is_product_single"]').val() === '1';
@@ -33,18 +33,18 @@ jQuery(document).ready(function($) {
         const selectedTab = $('input[name="tabs_input"]:checked').val();
         if (selectedTab === 'square-rectangle') {
             $('#pdf_upload_container').addClass('hidden');
-            $('#pdf_path').val(''); // Clear PDF path
-            $('#custom_price_display').html(''); // Reset displayed price
-            $('#uploadPdf').val(''); // Reset file input
-            $('#input_width').val(''); // Reset width
-            $('#input_length').val(''); // Reset length
-            $('#input_qty').val(''); // Reset quantity
-            $('#tabs_status_message').html('Square Rectange'); // dynamically add shape text
+            $('#pdf_path').val('');
+            $('#custom_price_display').html('');
+            $('#uploadPdf').val('');
+            $('#input_width').val('');
+            $('#input_length').val('');
+            $('#input_qty').val('');
+            $('#tabs_status_message').html('Square Rectange');
             $('.product-page__rolls-label-text-1').text('Length (MM):');
             $('.product-page__rolls-label-text-2').text('Total number of parts:');
             $('#fair_label').hide();
             $('#fair_label_credit_account').hide();
-            enableButtons(); // Enable buttons since PDF is not required
+            enableButtons();
 
             // Delete temporary PDF file from server
             const pdfPath = $('#pdf_path').data('last-uploaded-path') || '';
@@ -59,7 +59,7 @@ jQuery(document).ready(function($) {
                     },
                     success: function(response) {
                         if (response.success) {
-                            $('#pdf_path').data('last-uploaded-path', ''); // Clear stored path
+                            $('#pdf_path').data('last-uploaded-path', '');
                         } else {
                             console.log('Failed to delete temporary PDF: ' + (response.data.message || 'Unknown error'));
                         }
@@ -72,12 +72,12 @@ jQuery(document).ready(function($) {
         }
         else if (selectedTab === 'circle-radius') {
             $('#pdf_upload_container').addClass('hidden');
-            $('#pdf_path').val(''); // Clear PDF path
-            $('#custom_price_display').html(''); // Reset displayed price
-            $('#uploadPdf').val(''); // Reset file input
-            $('#input_width').val(''); // Reset width
-            $('#input_length').val(''); // Reset length
-            $('#input_qty').val(''); // Reset quantity
+            $('#pdf_path').val('');
+            $('#custom_price_display').html('');
+            $('#uploadPdf').val('');
+            $('#input_width').val('');
+            $('#input_length').val('');
+            $('#input_qty').val('');
             $('#tabs_status_message').html('Circle Radius');
             $('.product-page__rolls-label-text-1').text('Length (MM):');
             $('.product-page__rolls-label-text-2').text('Total number of parts:');
@@ -98,7 +98,7 @@ jQuery(document).ready(function($) {
                     },
                     success: function(response) {
                         if (response.success) {
-                            $('#pdf_path').data('last-uploaded-path', ''); // Clear stored path
+                            $('#pdf_path').data('last-uploaded-path', ''); 
                         } else {
                             console.log('Failed to delete temporary PDF: ' + (response.data.message || 'Unknown error'));
                         }
@@ -111,12 +111,12 @@ jQuery(document).ready(function($) {
         }
         else if (selectedTab === 'stock-sheets') {
             $('#pdf_upload_container').addClass('hidden');
-            $('#pdf_path').val(''); // Clear PDF path
-            $('#custom_price_display').html(''); // Reset displayed price
-            $('#uploadPdf').val(''); // Reset file input
-            $('#input_width').val(''); // Reset width
-            $('#input_length').val(''); // Reset length
-            $('#input_qty').val(''); // Reset quantity
+            $('#pdf_path').val('');
+            $('#custom_price_display').html('');
+            $('#uploadPdf').val('');
+            $('#input_width').val('');
+            $('#input_length').val('');
+            $('#input_qty').val('');
             $('#tabs_status_message').html('Stock Sheet');
             $('.product-page__rolls-label-text-1').text('Length (MM):');
             $('.product-page__rolls-label-text-2').text('Total number of parts:');
@@ -137,7 +137,7 @@ jQuery(document).ready(function($) {
                     },
                     success: function(response) {
                         if (response.success) {
-                            $('#pdf_path').data('last-uploaded-path', ''); // Clear stored path
+                            $('#pdf_path').data('last-uploaded-path', '');
                         } else {
                             console.log('Failed to delete temporary PDF: ' + (response.data.message || 'Unknown error'));
                         }
@@ -157,13 +157,13 @@ jQuery(document).ready(function($) {
         }
         else {
             $('#pdf_upload_container').removeClass('hidden');
-            $('#custom_price_display').html(''); // Reset displayed price
-            $('#input_width').val(''); // Reset width
-            $('#input_length').val(''); // Reset length
-            $('#input_qty').val(''); // Reset quantity
+            $('#custom_price_display').html('');
+            $('#input_width').val('');
+            $('#input_length').val('');
+            $('#input_qty').val('');
             $('#tabs_status_message').html('Custom Shape');
             if (!$('#pdf_path').val().trim()) {
-                disableButtons(); // Disable buttons if no PDF is uploaded
+                disableButtons();
             }
             $('.product-page__rolls-label-text-1').text('Length (MM):');
             $('.product-page__rolls-label-text-2').text('Total number of parts:');
@@ -224,7 +224,7 @@ jQuery(document).ready(function($) {
                 if (response.success) {
                     $('#' + type + '_path').val(response.data.path);
                     if (type === 'pdf') {
-                            $('#pdf_path').data('last-uploaded-path', response.data.path); // Store path for deletion
+                            $('#pdf_path').data('last-uploaded-path', response.data.path);
                             if ($('input[name="tabs_input"]:checked').val() === 'custom-shape-drawing') {
                                 enableButtons();
                             }
@@ -287,6 +287,118 @@ jQuery(document).ready(function($) {
             country
         };
     }
+
+
+    // New code for dynamic jquery picker
+
+    // NEW: Helper to get last shipment date (parses from table, returns Date or null)
+function getLastShipmentDate() {
+    const tbodyRows = $('.delivery-options-shipment tbody tr');
+    for (let i = tbodyRows.length - 1; i >= 0; i--) { // Scan backward for last real row
+        const row = $(tbodyRows[i]);
+        if (!row.hasClass('delivery-options-shipment__display')) { // Skip "no shipments" row
+            const firstTdText = row.find('td:first').text().trim(); // e.g., "26/11/2025 24Hrs (working day)"
+            const dateMatch = firstTdText.match(/(\d{2}\/\d{2}\/\d{4})/); // Extract dd/mm/yyyy
+            if (dateMatch) {
+                const [dd, mm, yyyy] = dateMatch[1].split('/').map(Number);
+                return new Date(yyyy, mm - 1, dd); // JS Date: month 0-indexed
+            }
+        }
+    }
+    return null; // No shipments
+}
+
+// NEW: Helper to get base minDate (1 for normal, 36 for backorder)
+function getBaseMinDate() {
+    const inputSelector = 'input[name="despatch_date"]'; // Active input in modal
+    if ($(inputSelector).attr('id') === 'delivery_date_backorder') {
+        return 36; // Backorder base
+    }
+    return 1; // Normal base
+}
+
+// UPDATED: Helper to update datepicker minDate dynamically (+2 days after last shipment)
+function updateDatepickerMinDate() {
+    const inputSelector = 'input[name="despatch_date"]';
+    const lastDate = getLastShipmentDate();
+    let newMinDate;
+
+    if (lastDate) {
+        // UPDATED: minDate = 2 days after last shipment date (for manufacturing buffer)
+        const nextDay = new Date(lastDate);
+        nextDay.setDate(lastDate.getDate() + 2); // +2 days
+        newMinDate = nextDay; // Date object for datepicker
+    } else {
+        // Fallback to base (days from today)
+        const baseMinDate = getBaseMinDate();
+        newMinDate = baseMinDate; // Number of days from today
+    }
+
+    // Destroy existing datepicker and re-init with new minDate
+    $(inputSelector).datepicker('destroy').datepicker({
+        dateFormat: 'dd/mm/yy',
+        minDate: newMinDate,
+        maxDate: "+1Y",
+        appendTo: '.delivery-options-modal'
+    });
+}
+
+    // NEW: Helper to get last shipment date (parses from table, returns Date or null)
+    /*
+    function getLastShipmentDate() {
+        const tbodyRows = $('.delivery-options-shipment tbody tr');
+        for (let i = tbodyRows.length - 1; i >= 0; i--) { 
+            const row = $(tbodyRows[i]);
+            if (!row.hasClass('delivery-options-shipment__display')) { 
+                const firstTdText = row.find('td:first').text().trim(); 
+                const dateMatch = firstTdText.match(/(\d{2}\/\d{2}\/\d{4})/); 
+                if (dateMatch) {
+                    const [dd, mm, yyyy] = dateMatch[1].split('/').map(Number);
+                    return new Date(yyyy, mm - 1, dd); 
+                }
+            }
+        }
+        return null; 
+    }
+        */
+
+    // NEW: Helper function to get base minDate (1 for normal, 36 for backorder)
+    /*
+    function getBaseMinDate() {
+        const inputSelector = 'input[name="despatch_date"]'; 
+        if ($(inputSelector).attr('id') === 'delivery_date_backorder') {
+            return 36; 
+        }
+        return 1; 
+    }
+        */
+
+    // NEW: Helper to count existing shipments (tbody rows minus empty message if present)
+    /*
+    function updateDatepickerMinDate() {
+        const inputSelector = 'input[name="despatch_date"]';
+        const lastDate = getLastShipmentDate();
+        let newMinDate;
+
+        if (lastDate) {
+            const nextDay = new Date(lastDate);
+            nextDay.setDate(lastDate.getDate() + 1);
+            newMinDate = nextDay; 
+        } else {
+            const baseMinDate = getBaseMinDate();
+            newMinDate = baseMinDate;
+        }
+
+        $(inputSelector).datepicker('destroy').datepicker({
+            dateFormat: 'dd/mm/yy',
+            minDate: newMinDate,
+            maxDate: "+1Y",
+            appendTo: '.delivery-options-modal'
+        });
+    }
+        */
+
+    // End new code for dynamic jquery picker
     
      // Calculate the delivery options price
     function calculateScheduledPrice() {
@@ -366,6 +478,7 @@ jQuery(document).ready(function($) {
     $('#add_shipments').on('click', function(e) {
         e.preventDefault();
         $('.delivery-options-modal__outer').fadeToggle();
+        setTimeout(updateDatepickerMinDate, 100); // new code for dynamic jquery picker
     });
 
     // Close modal on clicking the close button

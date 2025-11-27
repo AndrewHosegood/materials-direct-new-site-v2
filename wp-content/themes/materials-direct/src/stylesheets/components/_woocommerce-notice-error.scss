@@ -1,0 +1,14 @@
+.woocommerce-NoticeGroup {
+    & .woocommerce-error a {
+        color: #2d3e4f;
+    }
+}
+.woocommerce-order-received .woocommerce-thankyou-order-received {
+    font-size: 1rem;
+    margin-bottom: 20px;
+    background: rgba(0, 0, 0, 0.02);
+    border-top: 1px solid rgba(0, 0, 0, 0.08);
+    clear: both;
+    padding: 25px;
+    margin-bottom: 1.3rem;
+}

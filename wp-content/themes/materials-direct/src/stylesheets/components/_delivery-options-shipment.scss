@@ -7,11 +7,14 @@
     &__title {
         font-size:0.86rem;
         font-weight:600;
-        background: #eee;
+        background: white;
         padding: 10px;
         line-height: 1.1rem;
         vertical-align: middle;
         border-right: 1px solid #ddd;
+    }
+    &__title:nth-child(1){
+        width: 250px;
     }
     &__display &__display-inner {
         background: variables.$secondary-color;
@@ -23,10 +26,16 @@
     }
     &__display-results {
         background: variables.$secondary-color;
-        padding: 1.2rem;
         color: white;
         text-align:center;
         font-weight: 300;
         font-size: 0.87rem;
+        line-height: 1.2rem;
+        vertical-align: middle;
+        border-bottom: 1px solid #45505c;
+        border-right: 1px solid #45505c;
+    }
+    &__delete {
+        color: white;
     }
 }

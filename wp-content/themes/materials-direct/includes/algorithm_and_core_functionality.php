@@ -422,20 +422,22 @@ function custom_price_input_fields_prefill() {
                                 <tr>
                                     <th class="delivery-options-shipment__title">Despatch Date</th>
                                     <th class="delivery-options-shipment__title">Total number of parts</th>
+                                    <th class="delivery-options-shipment__title">All COFCs & FAIRs</th>
                                     <th class="delivery-options-shipment__title"><span class="screen-reader-text">Actions</span></th>
                                 </tr>
                             </thead>
                             <tbody>';
                 if (empty($shipments)) {
                     echo '<tr class="delivery-options-shipment__display">
-                            <td class="delivery-options-shipment__display-inner" colspan="3">There are no <span>shipments.</span></td>
+                            <td class="delivery-options-shipment__display-inner" colspan="4">There are no <span>shipments.</span></td>
                         </tr>';
                 } else {
                     foreach ($shipments as $index => $shipment) {
                         echo '<tr>
                             <td class="delivery-options-shipment__display-results">' . esc_html($shipment['date']) . '</td>
                             <td class="delivery-options-shipment__display-results">' . esc_html($shipment['parts']) . '</td>
-                            <td class="delivery-options-shipment__display-results"><a href="#" class="delete-shipment" data-index="' . esc_attr($index) . '">Delete</a></td>
+                            <td class="delivery-options-shipment__display-results">' . esc_html($fee_display) . '</td>
+                            <td class="delivery-options-shipment__display-results"><a href="#" class="delete-shipment delivery-options-shipment__delete" data-index="' . esc_attr($index) . '"><i class="fa-solid fa-trash-can"></i></a></td>
                         </tr>';
                     }
                 }
@@ -1840,8 +1842,8 @@ function show_custom_input_details_in_cart($item_data, $cart_item) {
         }
 
         // COFC CHECKBOX VALUES:
+        /*
         if (isset($cart_item['custom_inputs']['optional_fees_per_shipment'])) {
-            // Label map for explicit names
             $feeLabels = [
                 'add_manufacturers_COFC_ss' => 'Manufacturers COFC',
                 'add_fair_ss' => 'First Article Inspection Report',
@@ -1861,6 +1863,7 @@ function show_custom_input_details_in_cart($item_data, $cart_item) {
                 }
             }
         }
+            */
         // if (isset($cart_item['custom_inputs']['optional_fees_per_shipment'])) {
         //     foreach ($cart_item['custom_inputs']['optional_fees_per_shipment'] as $shipment_fee) {
         //         if ($shipment_fee['fee'] > 0) {
@@ -2470,7 +2473,7 @@ function save_shipment_callback() {
                 <tr>
                     <th class="delivery-options-shipment__title">Despatch Date</th>
                     <th class="delivery-options-shipment__title">Total number of parts</th>
-                    <th class="delivery-options-shipment__title">All COFC's & FAIR's</th> <!-- NEW -->
+                    <th class="delivery-options-shipment__title">All COFCs & FAIRs</th> <!-- NEW -->
                     <th class="delivery-options-shipment__title"><span class="screen-reader-text">Actions</span></th>
                 </tr>
             </thead>
@@ -2498,7 +2501,7 @@ function save_shipment_callback() {
                                         <?php echo esc_html($fee_display); ?>
                                 </td>
                                 <td class="delivery-options-shipment__display-results">
-                                    <a href="#" class="delete-shipment" data-index="<?php echo $index; ?>">Delete</a>
+                                    <a href="#" class="delete-shipment delivery-options-shipment__delete" data-index="<?php echo $index; ?>"><i class="fa-solid fa-trash-can"></i></a>
                                 </td>
                             </tr>
                         <?php } ?>
@@ -2582,7 +2585,7 @@ function delete_shipment() {
                                         <?php echo esc_html($fee_display); ?>
                                 </td>
                                 <td class="delivery-options-shipment__display-results">
-                                    <a href="#" class="delete-shipment" data-index="<?php echo $index; ?>">Delete</a>
+                                    <a href="#" class="delete-shipment delivery-options-shipment__delete" data-index="<?php echo $index; ?>"><i class="fa-solid fa-trash-can"></i></a>
                                 </td>
                             </tr>
                         <?php } ?>

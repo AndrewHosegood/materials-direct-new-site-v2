@@ -376,11 +376,6 @@ require_once('includes/my-accounts-page-custom-banner.php');
 require_once('includes/cofc-logic-for-cart-page.php');
 /* Add logic for calculating COFC fees on cart page */
 
-/* Add logic for calculating scheduled COFC fees on cart page */
-/* DELETE THIS */
-//require_once('includes/cofc-scheduled-logic-for-cart-page.php');
-/* Add logic for calculating scheduled COFC fees on cart page */
-
 /* Add currency switcher and subtitle to product page */
 require_once('includes/add-currency-switcher-to-product-page.php');
 /* Add currency switcher and subtitle to product page */
@@ -397,7 +392,31 @@ require_once('includes/add-download-datasheet-product-page.php');
 require_once('includes/add-custom-id-to-tabs-on-product-page.php');
 /* add custom id to woocoomerce default tabs on product page */
 
+/* Disable payment gateway items when the user has a credit account */
+require_once('includes/payment-gateway-disable-items-for-credit-account.php');
+/* Disable payment gateway items when the user has a credit account */
+
+/* Remove paynow buttons on thankyou page */
+require_once('includes/remove-paynow-buttons-on-thankyou-page.php');
+/* Remove paynow buttons on thankyou page */
+
+
+
 /* END CUSTOM FUNCTIONS */
+
+
+
+
+
+
+
+// Remove product thumbnails in WooCommerce emails
+/*
+add_filter( 'woocommerce_email_order_items_args', function( $args ) {
+    $args['show_image'] = false; // disable thumbnails
+    return $args;
+});
+*/
 
 
 

@@ -3,6 +3,13 @@
 @use 'sass:color';
 
 .page-id-9 {
+    & .site-main .entry-content .woocommerce .cart-collaterals .cart_totals .download-pdf-button {
+        background: variables.$secondary-color;
+        color: white;
+        font-weight: 400;
+        font-size: 0.85rem;
+        padding: 1rem 1.2rem;
+    }
     & .entry-header {
         display: none;
     }
@@ -36,6 +43,7 @@
         line-height: 2.1rem;
     }
     & .cart .product-name .variation .variation-DespatchNotes p {
+        font-size: 0.84rem;
         display: inline;
         padding: 0;
         line-height: 1rem;
@@ -134,6 +142,9 @@
     & .woocommerce table.shop_table {
         font-size: 0.88rem;
     }
+    & .site-main {
+        padding: 3rem 0rem;
+    }
 }
 
 .woocommerce-cart th.product-price, .woocommerce-cart td.product-price, .woocommerce-cart th.product-quantity, .woocommerce-cart td.product-quantity {
@@ -156,10 +167,11 @@
   width: 120px;
 }
 .woocommerce .shop_table .product-thumbnail {
-    max-width: 100px;
+    max-width: 117px;
 }
 .woocommerce .shop_table .product-remove {
-    max-width: 60px;
+    max-width: 48px;
+    padding: 9px 9px;
 }
 .woocommerce-cart .wc-proceed-to-checkout a.checkout-button {
     font-size: 1.12rem;
@@ -187,7 +199,7 @@
     padding: 0.4rem 0.9rem;
 }
 .woocommerce table.shop_table .product-subtotal {
-    width: 200px;
+    width: 145px;
     text-align: center;
 }
 .return-to-shop {

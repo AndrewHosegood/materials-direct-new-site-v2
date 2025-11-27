@@ -85,6 +85,9 @@
         color: #666;
         opacity: 0.5;
     }
+    &__form-field:focus-visible {
+        outline: 0;
+    }
     &__label {
         font-weight: 700;
     }

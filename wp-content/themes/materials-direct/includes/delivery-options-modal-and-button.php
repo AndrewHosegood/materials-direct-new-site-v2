@@ -35,9 +35,9 @@ function add_modal_to_product_page_footer() {
 
                     
                     <?php if($stock_status === "onbackorder"){ ?>
-                        <input type="text" id="delivery_date_backorder" class="datepicker delivery-options-modal__form-field" name="despatch_date" value="" placeholder="dd/mm/yyyy">
+                        <input type="text" id="delivery_date_backorder" autocomplete="off" class="datepicker delivery-options-modal__form-field" name="despatch_date" value="" placeholder="dd/mm/yyyy">
                     <?php } else { ?>
-                        <input type="text" id="delivery_date" class="datepicker delivery-options-modal__form-field" name="despatch_date" value="" placeholder="dd/mm/yyyy">
+                        <input type="text" id="delivery_date" autocomplete="off" class="datepicker delivery-options-modal__form-field" name="despatch_date" value="" placeholder="dd/mm/yyyy">
                     <?php } ?>
                     
                     <p class="delivery-options-modal__small-text">
