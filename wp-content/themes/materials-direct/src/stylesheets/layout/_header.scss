@@ -14,15 +14,21 @@
     &__container {
         display: flex;
         flex-wrap:wrap;
-        justify-content: space-between;
+        justify-content: center;
+        text-align: center;
+        @include breakpoints.tablet {
+            justify-content: space-between;
+            text-align: unset;
+        }
     }
     &__main-container {
         display: flex;
-        padding: 1.7rem 0;
+        padding: 1.35rem 0;
         width: 90%;
         margin-left: auto;
         margin-right: auto;
         @include breakpoints.desktop {
+            padding: 1.7rem 0;
             width: 80%;
         }
         max-width: 1150px;
@@ -32,7 +38,10 @@
     }
     &__menu-right li {
         display: inline;
-        margin: 0 0 0 0.7rem;
+        margin: 0 0.7rem 0 0;
+        @include breakpoints.iphone {
+            margin: 0 0 0 0.7rem;
+        }
     }
     &__menu-right li a {
         color: variables.$secondary-color;
@@ -48,9 +57,18 @@
     &__contact-details {
         list-style-type: none;
         margin: 0;
+        text-align: center;
+        @include breakpoints.iphone {
+            text-align: left;
+        }
     }
     &__phone, &__mail {
-        display: inline;
+        display: block;
+        line-height: 1.3rem;
+        @include breakpoints.iphone {
+            display: inline;
+            line-height: 1.8rem;
+        }
     }
     &__icon-link {
         color: #bababa;
@@ -59,14 +77,25 @@
         color: #bababa;
     }
     &__left {
-        width: 200px;
-        margin-right: 70px;
+        width: 140px;
+        margin-right: 20px;
+        @include breakpoints.iphone {
+            width: 200px;
+            margin-right: 70px;
+        }
     }
     &__left .custom-logo-link {
         display: block;
+        margin-top: 0.4rem;
+        @include breakpoints.iphone {
+            margin-top: 0rem;
+        }
     }
     &__right {
-        width: calc(100% - 270px);
+        width: calc(100% - 160px);
+        @include breakpoints.iphone {
+            width: calc(100% - 270px);
+        }
         margin-right: 0;
         margin-left: auto;
         position: relative;

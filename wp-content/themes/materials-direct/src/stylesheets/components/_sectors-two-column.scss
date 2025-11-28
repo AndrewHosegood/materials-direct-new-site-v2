@@ -1,8 +1,16 @@
+@use "../abstracts/breakpoints";
+@use "../abstracts/variables";
+
 .sectors-two-column {
     padding: 3.2rem 0;
     &__heading {
-        line-height: 3.3rem;
+        font-size: 1.85rem;
+        line-height: 2.4rem;
         margin-bottom: 1rem;
+        @include breakpoints.laptop {
+            font-size: 2.35rem;
+            line-height: 2.8rem;
+        }
     }
     &__btn {
         margin-top: 0.85rem;
@@ -10,6 +18,9 @@
     &__img {
         width: 100%;
         object-fit: cover;
-        height: 510px;
+        height: 250px;
+        @include breakpoints.tablet { 
+            height: 510px;
+        }
     }
 }

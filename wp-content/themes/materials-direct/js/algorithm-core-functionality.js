@@ -1,17 +1,4 @@
 jQuery(document).ready(function($) {
-    // Initialize jQuery UI Datepicker
-    // $('#delivery_date').datepicker({
-    //     dateFormat: 'dd/mm/yy',
-    //     minDate: 1, // Prevent selecting past dates
-    //     maxDate: "+1Y",
-    //     appendTo: '.delivery-options-modal'
-    // });
-    // $('#delivery_date_backorder').datepicker({
-    //     dateFormat: 'dd/mm/yy',
-    //     minDate: 36, // Prevent selecting past dates
-    //     maxDate: "+1Y",
-    //     appendTo: '.delivery-options-modal'
-    // });
 
     // Check if the product is single (via data attribute or AJAX)
     const isProductSingle = $('input[name="is_product_single"]').val() === '1';
@@ -44,6 +31,7 @@ jQuery(document).ready(function($) {
             $('.product-page__rolls-label-text-2').text('Total number of parts:');
             $('#fair_label').hide();
             $('#fair_label_credit_account').hide();
+            $('#input_width, #input_length, #input_qty, #input_radius').prop('readonly', false);
             enableButtons();
 
             // Delete temporary PDF file from server
@@ -83,6 +71,7 @@ jQuery(document).ready(function($) {
             $('.product-page__rolls-label-text-2').text('Total number of parts:');
             $('#fair_label').hide();
             $('#fair_label_credit_account').hide();
+            $('#input_width, #input_length, #input_qty, #input_radius').prop('readonly', false);
             enableButtons();
 
             // Delete temporary PDF file from server
@@ -122,6 +111,7 @@ jQuery(document).ready(function($) {
             $('.product-page__rolls-label-text-2').text('Total number of parts:');
             $('#fair_label').hide();
             $('#fair_label_credit_account').hide();
+            $('#input_width, #input_length, #input_qty, #input_radius').prop('readonly', false);
             enableButtons();
 
             // Delete temporary PDF file from server
@@ -154,6 +144,7 @@ jQuery(document).ready(function($) {
             $('.product-page__rolls-label-text-2').text('Quantity of rolls:');
             $('#fair_label').hide();
             $('#fair_label_credit_account').hide();
+            $('#input_width, #input_length, #input_qty, #input_radius').prop('readonly', false);
         }
         else {
             $('#pdf_upload_container').removeClass('hidden');
@@ -477,8 +468,33 @@ function updateDatepickerMinDate() {
     // Toggle modal on clicking Add Shipments button
     $('#add_shipments').on('click', function(e) {
         e.preventDefault();
-        $('.delivery-options-modal__outer').fadeToggle();
+
+        // NEW: AJAX fetch fresh remaining parts from session
+        $.ajax({
+            url: ajax_params.ajax_url,
+            type: 'POST',
+            data: {
+                action: 'get_remaining_parts',
+                nonce: ajax_params.nonce
+            },
+            success: function(response) {
+                if (response.success) {
+                    const remaining = response.data.remaining_parts;
+                    $('#remaining-parts').text(remaining); // Modal span
+                    $('#parts_remaining').text(remaining); // Page span
+                    console.log('Updated remaining parts:', remaining); // Optional debug
+                } else {
+                    console.error('Failed to fetch remaining parts:', response.data.message);
+                }
+            },
+            error: function() {
+                console.error('AJAX error fetching remaining parts.');
+            }
+        });
+        // END NEW: AJAX fetch fresh remaining parts from session
+
         setTimeout(updateDatepickerMinDate, 100); // new code for dynamic jquery picker
+        $('.delivery-options-modal__outer').fadeToggle();
     });
 
     // Close modal on clicking the close button

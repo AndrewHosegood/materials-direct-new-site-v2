@@ -4,10 +4,29 @@
     width: 100%;
     height: auto;
     position: relative;
-    &__img {
-        width: 100%;
-        object-fit: cover;
-        height: 460px;
+    height: 220px;
+    @include breakpoints.iphone {
+        height: 330px;
+    }
+    @include breakpoints.tablet {
+        height: 405px;
+    }
+    @include breakpoints.desktop {
+        height: 480px;
+    }
+    & .item {
+        height: 220px;
+        @include breakpoints.iphone {
+            height: 330px;
+        }
+        @include breakpoints.tablet {
+            height: 405px;
+        }
+        @include breakpoints.desktop {
+            height: 480px;
+        }
+        background-size: cover;
+        background-repeat: no-repeat;
     }
     &__content {
         display: flex;
@@ -21,7 +40,13 @@
         right: 0;
         top: 0;
         bottom: 0;
-        padding: 7rem 0;
+        padding: 1.8rem 0;
+        @include breakpoints.iphone {
+            padding: 4rem 0;
+        }
+        @include breakpoints.desktop {
+            padding: 6rem 0;
+        }
     }
     &__content::before {
         content: "";
@@ -33,18 +58,41 @@
         bottom: 0;
     }
     &__heading {
+        font-size: 2.0rem;
+        line-height: 35px;
+        @include breakpoints.iphone {
+            font-size: 2.9rem;
+            line-height: 60px;
+        }
+        @include breakpoints.laptop {
+            font-size: 3.35rem;
+        }
         width: 100%;
         position: relative;
         padding: 0;
-        line-height: 60px;
     }
     &__subheading {
+        font-size: 1rem;
+        line-height: 1.4rem;
+        @include breakpoints.tablet {
+            font-size: 1.6rem;
+            line-height: 2.1rem;
+        }
+        @include breakpoints.laptop {
+            font-size: 1.85rem;
+            line-height: 2.2rem;
+        }
+        @include breakpoints.desktop {
+            font-size: 2rem;
+            line-height: 2.5rem;
+        }
         width: 100%;
         position: relative;
-        padding: 0;
+        padding: 0 0.3rem;
     }
     &__btn {
         position: relative;
+        margin-top: 1rem;
     }
     &__text {
         max-width: 700px;
@@ -68,13 +116,6 @@
         background-repeat:no-repeat;
         background-size: cover;
     }
-    // &__img {
-    //     width: 100%;
-    //     object-fit: cover;
-    //     height: 355px;
-    //     position: absolute;
-    //     top: 0;
-    // }
     &__logo {
         position:relative;
         width: 235px !important;

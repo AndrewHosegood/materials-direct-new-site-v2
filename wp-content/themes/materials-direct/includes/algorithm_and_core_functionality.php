@@ -2605,6 +2605,21 @@ function delete_shipment() {
 // HANDLE DELIVERY OPTIONS DELETE AJAX SHIPPING
 
 
+// GET THE 4remaining_parts VALUE FOR LATER USE ON THE DELIVERY OPTIONS MODAL
+add_action('wp_ajax_get_remaining_parts', 'get_remaining_parts_callback');
+add_action('wp_ajax_nopriv_get_remaining_parts', 'get_remaining_parts_callback'); // If needed for guests
+function get_remaining_parts_callback() {
+    check_ajax_referer('custom_price_nonce', 'nonce'); // Security
+
+    $custom_qty = WC()->session->get('custom_qty', 0);
+    $shipments = WC()->session->get('custom_shipments', []);
+    $total_parts = array_sum(array_column($shipments, 'parts'));
+    $remaining_parts = max(0, $custom_qty - $total_parts);
+
+    wp_send_json_success(['remaining_parts' => $remaining_parts]);
+}
+// GET THE 4remaining_parts VALUE FOR LATER USE ON THE DELIVERY OPTIONS MODAL
+
 
 // HANDLE TEMP PDF DELETE
 function delete_temp_pdf() {

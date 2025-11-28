@@ -400,7 +400,9 @@ require_once('includes/payment-gateway-disable-items-for-credit-account.php');
 require_once('includes/remove-paynow-buttons-on-thankyou-page.php');
 /* Remove paynow buttons on thankyou page */
 
-
+/* Disable width length and quantity when generate price is clicked for credit account user */
+require_once('includes/disable-width-length-qty-credit-account.php');
+/* Disable width length and quantity when generate price is clicked for credit account user */
 
 /* END CUSTOM FUNCTIONS */
 
@@ -409,67 +411,27 @@ require_once('includes/remove-paynow-buttons-on-thankyou-page.php');
 
 
 
+/* Custom voucher discount */
+require_once('includes/custom-voucher-system.php');
+/* Custom voucher discount */
 
-// Remove product thumbnails in WooCommerce emails
+
+
+
+
+
+
+
+
+
+add_filter( 'woocommerce_customer_has_shipping_address', '__return_false' );
+
+
+
+
+
+
 /*
-add_filter( 'woocommerce_email_order_items_args', function( $args ) {
-    $args['show_image'] = false; // disable thumbnails
-    return $args;
-});
-*/
-
-
-
-
-
-
-
-
-
-
-
-
-
-/*
-if (!function_exists('add_shortcode_to_shop_page')) {
-
-    function add_shortcode_to_shop_page() {
-        if (is_shop() || is_product_category()) {
-			
-			echo '<div id="advanced-filter" class="filter-heading-background">';
-			echo '<div class="filter-content-wrapper">';
-			echo '<h4 class="filter-heading">Product Filter</h4>';
-			echo '<a class="filter-btn" href="/shop/">Reset</a>';
-			echo '<a class="filter-btn-hide" href="">Hide</a>';
-			echo '</div>';
-			echo '</div>';
-
-            echo '<div class="filter-wrapper">';
-			echo '<div class="filter-wrapper-inner">';
-			echo do_shortcode('[woof]');
-            //echo do_shortcode("[woof sid='generator_669ebf62086a6 woof_auto_4_columns' autohide='0' autosubmit='0' is_ajax='1' ajax_redraw='0' start_filtering_btn='0' btn_position='b' dynamic_recount='1' hide_terms_count_txt='0' mobile_mode='1' ]");
-            
-			echo '</div>';
-			echo '</div>';
-        }
-    }
-    add_action('woocommerce_before_shop_loop', 'add_shortcode_to_shop_page');
-}
-*/
-
-
-// add_action( 'woocommerce_before_shop_loop', 'add_woof_builder_before_shop' );
-// function add_woof_builder_before_shop() {
-//     if ( is_shop() ) {
-//         echo do_shortcode('[woof]');
-//     }
-// }
-
-
-
-
-
-
 add_action( 'woocommerce_before_shop_loop_item', 'inject_hover_image_in_related_products', 5 );
 function inject_hover_image_in_related_products() {
 
@@ -481,104 +443,7 @@ function inject_hover_image_in_related_products() {
     // Inject image BEFORE <a> tag starts
     echo '<img class="woocommerce-shop__cat-hover-image" src="/wp-content/uploads/2025/11/category_hover_with_text.jpg" alt="">';
 }
-
-
-
-
-
-
-
-/*
-function add_stock_sheet_dimension() {
-	if ( ! is_product() ) {
-        return; // Only run on single product pages
-    }
-
-    global $product;
-    $product_id = get_the_ID();
-    $product = wc_get_product($product_id);
-
-	if ( ! $product || ! is_a( $product, 'WC_Product' ) ) {
-        return;
-    }
-
-	// Get the border
-    $item_border = floatval(get_field('border_around', $product_id)) * 10;
-    $allowed_border = $item_border * 2;
-
-	// Get product dimensions (in cm), convert to mm
-	$sheet_length_mm = $product->get_length() * 10;
-    $sheet_width_mm  = $product->get_width() * 10;
-
-	// Allowed values
-    $allowed_length = $sheet_length_mm - $allowed_border;
-    $allowed_width  = $sheet_width_mm - $allowed_border;
-
-	if ( ! $sheet_length_mm || ! $sheet_width_mm ) {
-        return; // Avoid injecting if dimensions are missing
-    }
-
-	?>
-	<script type="text/javascript">
-		jQuery(document).ready(function($) {
-			const stocksheetWidth = <?php echo esc_js($sheet_length_mm); ?>;
-			const stocksheetLength = <?php echo esc_js($sheet_width_mm); ?>;
-
-			function handleTabChange() {
-				const selectedTab = $('[name="tabs_input"]:checked').val();
-				const $widthInput = $('input[name="custom_width"]');
-				const $lengthInput = $('input[name="custom_length"]');
-
-				if (!$widthInput.length || !$lengthInput.length) {
-					return; // Don't proceed if inputs are not found
-				}
-
-				if (selectedTab === "stock-sheets") {
-					$widthInput.val(stocksheetWidth).prop('disabled', true).trigger('change');
-					$lengthInput.val(stocksheetLength).prop('disabled', true).trigger('change');
-				} else {
-					$widthInput.prop('disabled', false);
-					$lengthInput.prop('disabled', false);
-				}
-			}
-
-			// Run on page load
-			handleTabChange();
-
-			// Run when tab changes
-			$('[name="tabs_input"]').on('change', function() {
-				// Optional delay in case DOM state is updated after change
-				setTimeout(handleTabChange, 100);
-			});
-		});
-	</script>
-	<?php
-}
-
-add_action( 'wp_head', 'add_stock_sheet_dimension' );
-
 */
-
-
-
-
-
-/*
-function custom_remove_woocommerce_page_titles( $show ) {
-    if ( is_shop() || is_product_category() ) {
-        return false;
-    }
-    return $show;
-}
-add_filter( 'woocommerce_show_page_title', 'custom_remove_woocommerce_page_titles' );
-*/
-
-
-
-
-
-
-
 
 
 

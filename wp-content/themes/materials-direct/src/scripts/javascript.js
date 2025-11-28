@@ -120,21 +120,13 @@ jQuery(document).ready(function($){
         });
         // need_help_with_ordering product page link
 
-        // shop page hover orange image links
-        // $('.woocommerce-shop__img').on('mouseenter', function () {
-        //     $(this)
-        //         .closest('li.product')
-        //         .find('.woocommerce-shop__image-links')
-        //         .addClass('active');
-        // });
+        // Voucher discount link
+        $(document).on('click', '#voucherClick', function(e) {
+            e.preventDefault();
+            $(this).closest('tr').next('.voucher-discount').toggle();
+        });
+        // Voucher discount link
 
-        // $('.woocommerce-shop__img').on('mouseleave', function () {
-        //     $(this)
-        //         .closest('li.product')
-        //         .find('.woocommerce-shop__image-links')
-        //         .removeClass('active');
-        // });
-        // shop page hover orange image links
 
         // hide/show file uploads when square rectangle/circle radius is clicked
         $("#rolls").click(function(){

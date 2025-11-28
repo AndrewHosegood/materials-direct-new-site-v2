@@ -14,9 +14,9 @@ get_header();
 <section class="banner owl-carousel owl-theme">
 	<?php if (have_rows('banner')) : ?>
 		<?php while (have_rows('banner')) : the_row(); ?>
-			<div class="item">
+		<?php $banner_image = get_sub_field('banner_image'); ?>
+			<div class="item" style="background-image:url('<?php echo $banner_image['url']; ?>');">
 				<div class="banner__content">
-					<?php $banner_image = get_sub_field('banner_image'); ?>
 					<?php 
 					if(get_sub_field('banner_height')){
 						$banner_height = get_sub_field('banner_height');
@@ -28,7 +28,7 @@ get_header();
 					<h3 class="banner__subheading"><?php the_sub_field('banner_subheading'); ?></h3>
 					<a class="button banner__btn" href="/shop/"><?php the_sub_field('banner_button'); ?></a>
 				</div>
-				<img src="<?php echo $banner_image['url']; ?>" alt="<?php echo $banner_image['alt']; ?>" class="banner__img" style="height:<?php the_field('banner_height'); ?>px;">
+				<!-- <img src="<?php //echo $banner_image['url']; ?>" alt="<?php //echo $banner_image['alt']; ?>" class="banner__img" style="height:<?php //the_field('banner_height'); ?>px;"> -->
 			</div>
 		<?php endwhile; ?>
     <?php endif; ?>  

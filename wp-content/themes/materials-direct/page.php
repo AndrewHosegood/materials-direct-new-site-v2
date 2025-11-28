@@ -27,13 +27,13 @@ get_header();
             echo '<div class="filter-wrapper">';
 			echo '<div class="filter-wrapper-inner">';
 			echo do_shortcode('[woof]');
-            //echo do_shortcode("[woof sid='generator_669ebf62086a6 woof_auto_4_columns' autohide='0' autosubmit='0' is_ajax='1' ajax_redraw='0' start_filtering_btn='0' btn_position='b' dynamic_recount='1' hide_terms_count_txt='0' mobile_mode='1' ]");
             
 			echo '</div>';
 			echo '</div>';
         }
 
 ?>
+
 
 	<main id="primary" class="site-main container www">
 
@@ -52,6 +52,8 @@ get_header();
 		?>
 
 	</main><!-- #main -->
+
+
 
 <?php
 get_sidebar();

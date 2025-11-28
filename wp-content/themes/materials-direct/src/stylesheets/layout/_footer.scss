@@ -157,6 +157,7 @@
     }
     &__baseline-container {
         display: flex;
+        flex-wrap: wrap;
         justify-content: space-between;
         align-items: center;
         padding: 0.95rem 0;
@@ -173,7 +174,10 @@
     }
     &__baseline-right {
         width: auto;
-        margin: 0 0 0 auto;
+        margin: 0 auto 0 auto;
+        @include breakpoints.iphone {
+            margin: 0 0 0 auto;
+        }
     }
     & a .footer__baseline-icon {
         margin-left: 0.75rem;
@@ -182,6 +186,12 @@
     &__copyright {
         opacity: 0.8;
         font-size: 0.85rem;
+        width: 100%;
+        text-align:center;
+        @include breakpoints.iphone {
+            width: auto;
+            text-align: unset;
+        }
     }
     & .wpcf7-not-valid-tip {
         color: variables.$primary-color;
