@@ -1,24 +1,71 @@
+@use "../abstracts/breakpoints";
+@use "../abstracts/variables";
+
 .wide-range-of-services {
-    padding: 4rem 0;
+    padding: 2.5rem 0 5rem 0;
     background-image: url('https://materials-direct.com/wp-content/uploads/2024/07/shutterstock_218519482-dark.jpg?id=39228');
     background-size: cover;
     background-repeat: no-repeat;
     color: white;
+    &__heading {
+        padding: 0 1rem;
+        font-weight: 300;
+        margin-bottom: 3rem;
+        font-size: 1.8rem;
+        line-height: 2.7rem;
+        @include breakpoints.laptop {
+            font-size: 2.17rem;
+            line-height: 2.9rem;
+        }
+    }
     &__card {
         display: flex;
+        flex-wrap: wrap;
+        margin-bottom: 1.2rem;
     }
     &__card-icon {
-        width: 16%;
+        width: 100%;
+        @include breakpoints.iphone {
+            width: 16%;
+        }
         margin-right: 6%;
     }
+    &__card-icon-img {
+        width: 50px;
+        margin-bottom: 1.5rem;
+        @include breakpoints.iphone {
+            width: 100%;
+            margin-bottom: 0;
+        }
+        height: auto;
+    }
     &__card-content {
-        width: 78%;
-        text-align: left;
+        width: 100%;
+        text-align: center;
+        @include breakpoints.iphone {
+            width: 78%;
+            text-align: left;
+        }
     }
     &__card-content-heading {
-        font-size: 1.6rem;
-        line-height: 1.7rem;
+        font-size: 1.3rem;
+        line-height: 1.5rem;
+        @include breakpoints.laptop {
+            font-size: 1.45rem;
+            line-height: 1.6rem;
+        }
+        @include breakpoints.desktop {
+            font-size: 1.6rem;
+            line-height: 1.7rem;
+        }
         padding: 0;
         margin-bottom: 1rem;
+        font-weight: 300;
+    }
+    &__card-content-text {
+        font-weight: 300;
+        font-size: 0.87rem;
+        line-height: 1.65rem;
+        opacity: 0.9;
     }
 }

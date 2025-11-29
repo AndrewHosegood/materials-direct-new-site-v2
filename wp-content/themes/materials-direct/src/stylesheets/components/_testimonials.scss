@@ -2,7 +2,7 @@
 @use "../abstracts/variables";
 
 .testimonials {
-    padding: 2.6rem 0;
+    padding: 2.6rem 0 2.9rem 0;
     background: variables.$secondary-color;
     text-align: center;
     &__heading {
@@ -12,19 +12,26 @@
     }
     &__subheading {
         color: white;
-        font-size: 2.2em;
+        font-size: 1.65em;
+        line-height: 2rem;
+        @include breakpoints.tablet {
+            font-size: 2.2em;
+            line-height: 2.5rem;
+        }
         padding: 0;
         margin-bottom: 3.5rem;
     }
     &__quote {
         color: white;
         font-style: italic;
-        font-size: 0.98rem;
+        font-size: 1rem;
         line-height: 1.5rem;
         max-width: 1000px;
         margin-left: auto;
         margin-right: auto;
+        margin-bottom: 1rem;
         padding: 0 2rem;
+        font-weight: 300;
     }
     &__title {
         color: variables.$primary-color;

@@ -56,6 +56,11 @@
     }
     &__card-img {
         width: 100%;
+        object-fit: cover;
+        height: 350px;
+        @include breakpoints.iphone {
+            height: auto;
+        }
     }
     &__card-img:hover &__card-content {
         bottom: 0rem;

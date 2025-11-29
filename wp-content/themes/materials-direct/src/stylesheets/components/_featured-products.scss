@@ -1,8 +1,57 @@
+@use "../abstracts/breakpoints";
+@use "../abstracts/variables";
+
 .featured-products {
     padding: 1.8rem 0;
     margin-bottom: 2.5rem;
+    &__heading {
+        font-size: 1.8rem;
+        line-height: 2.2rem;
+        @include breakpoints.iphone {
+            font-size: 2.2rem;
+            line-height: 2.55rem;
+        }
+        font-weight: 400;
+        margin-bottom: 2rem;
+        margin-top: 1.1rem;
+    }
+    & .featured-products__content {
+        display: flex;
+        flex-wrap: wrap;
+    }
+    & .featured-products__content li {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        min-height: auto;
+        @include breakpoints.iphone {
+            width: 48%;
+            min-height: 570px;
+        }
+        @include breakpoints.tablet {
+            width: 48%;
+            min-height: 638px;
+        }
+        @include breakpoints.laptop {
+            width: 24%;
+            min-height: 555px;
+        }
+    }
+    & .woocommerce-shop__card-title {
+        margin-top: 0.3rem;
+    }
     &__content li .woocommerce-shop__mask a {
         width: 100%;
+    }
+    &__content li .woocommerce-shop__mask a::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        box-shadow: inset 0 0 7px rgba(0,0,0,.15);
+        z-index: 9;
     }
     &__content li .woocommerce-shop__mask a img {
         width: 100%;
@@ -27,6 +76,9 @@
         background: #e2e2e2 ;
     }
     & .woocommerce-shop__info-card {
-        min-height: 160px;
+        flex: 1; /* Stretch to equal height */
+        display: flex;
+        flex-direction: column;
+        margin-top: -0.7rem;
     }
 }

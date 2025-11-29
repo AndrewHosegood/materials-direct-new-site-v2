@@ -256,10 +256,6 @@ require_once('includes/prevent-duplicate-order-merge.php');
 require_once('includes/related-products-styling.php');
 // Related products styling
 
-// Shop page styling
-require_once('includes/shop-page-styling.php');
-// Shop page styling
-
 // Custom product page tabs
 require_once('includes/custom-product-tabs.php');
 // Custom product page tabs
@@ -344,6 +340,10 @@ require_once('includes/remove-product-title-from-shop-page.php');
 require_once('includes/add-mask-div-wrapper-to-shop-page.php');
 /* Add mask div wrapper to shop/category page */
 
+// Shop page styling
+require_once('includes/shop-page-styling.php');
+// Shop page styling
+
 /* shop/category page additional content */
 require_once('includes/shop-page-additional-content.php');
 /* shop/category page additional content */
@@ -418,13 +418,10 @@ require_once('includes/custom-voucher-system.php');
 
 
 
-
-
-
-
-
-
 add_filter( 'woocommerce_customer_has_shipping_address', '__return_false' );
+
+
+
 
 
 

@@ -12,6 +12,7 @@ if ( ! function_exists( 'custom_add_info_after_product_thumbnail' ) ) {
         $product_title = get_the_title( $product->get_id() );
         $product_sku = $product->get_sku();
         $short_desc_raw = apply_filters( 'woocommerce_short_description', $product->get_short_description() );
+        $product_terms    = get_the_terms( $product->get_id(), 'product_cat' );
         
 
         echo '</div>';
@@ -21,6 +22,19 @@ if ( ! function_exists( 'custom_add_info_after_product_thumbnail' ) ) {
         if ( $product_sku ) {
             echo '<div class="woocommerce-shop__info-sku">';
             echo '<span class="woocommerce-shop__i-sku">SKU: ' . esc_html( $product_sku ) . '</span>';
+            echo '</div>';
+        }
+
+        // Categories list
+        if ( ! is_wp_error( $product_terms ) && ! empty( $product_terms ) ) {
+            echo '<div class="woocommerce-shop__i-cat">';
+            $cats = [];
+
+            foreach ( $product_terms as $term ) {
+                $cats[] = '<a class="woocommerce-shop__i-cat-link" href="' . esc_url( get_term_link( $term ) ) . '" rel="tag">' . esc_html( $term->name ) . '</a>';
+            }
+
+            echo implode( ', ', $cats );
             echo '</div>';
         }
 
@@ -43,7 +57,7 @@ add_filter( 'woocommerce_product_get_image', 'inject_soft_border_and_add_img_cla
 function inject_soft_border_and_add_img_class( $image, $product, $size, $attr, $placeholder ) {
 
     // Only modify images on loop pages
-    if ( ! is_shop() && ! is_product_category() && ! is_product_tag() && ! is_product() ) {
+    if ( ! in_the_loop() ) {
         return $image;
     }
 
@@ -133,27 +147,7 @@ function inject_cat_hover_links() {
                     Product<br>Data Sheet
                   </a>';
         }
-
+        
         echo '</div>';
     }
 }
-
-
-/*
-add_action( 'woocommerce_before_shop_loop_item', 'inject_cat_hover_links', 5 );
-function inject_cat_hover_links() {
-
-    if ( is_shop() || is_product_category() || is_product_tag() ) {
-
-
-
-        echo '<div class="woocommerce-shop__image-links double">';
-        echo '<a class="woocommerce-shop__image-links-link" rel="nofollow" href="' . get_the_permalink() . '">Order<br>Custom Parts</a>';
-        echo '<a class="woocommerce-shop__image-links-link" target="_blank" href="https://materials-direct.com/wp-content/uploads/2025/03/T-Pad-1500_New002.pdf">Product<br>Data Sheet</a>';
-        echo '</div>';
-    }
-}
-*/
-
-
-

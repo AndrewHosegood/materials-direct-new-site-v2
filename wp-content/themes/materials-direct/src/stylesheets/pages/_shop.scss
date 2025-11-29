@@ -15,9 +15,9 @@
         min-height: 4rem;
     }
     &__card-link {
-        font-size: 1.22rem;
+        font-size: 1.1rem;
         color: variables.$secondary-color;
-        line-height: 1.77rem;
+        line-height: 1.67rem;
     }
     & .woocommerce a.button {
         background: variables.$primary-color;
@@ -30,6 +30,15 @@
     &__i-sku {
         font-size: 0.82rem;
     }
+    &__info-sku {
+        margin-top: -0.4rem;
+    }
+    &__i-cat {
+        font-size: 0.79rem;
+    }
+    &__i-cat-link {
+        display: inline;
+    }
     & .products li:nth-child(even) &__info-card {
         background-color: #e2e2e2;
     }
@@ -41,7 +50,8 @@
         border-bottom: 1px solid gainsboro;
         padding: 8px 0;
         font-size: 0.85rem;
-        line-height: 1.6rem;
+        line-height: 1.655em;
+        opacity: 0.85;
     }
     &__short-description ul li:last-child {
         border-bottom: 0px solid gainsboro;
@@ -68,9 +78,8 @@
         left: 0;
         right: 0;
         bottom: 0;
-        box-shadow: inset 0 0 6px rgba(0, 0, 0, .1);
+        box-shadow: inset 0 0 7px rgba(0, 0, 0, .15);
         z-index: 9;
-        display: none;
     }
     // &__soft-border:hover &__img {
     //     opacity: 0;
@@ -98,6 +107,7 @@
         color: white;
         opacity: 0.8;
         bottom: -3.8rem;
+        z-index: 99;
     }
     // &__image-links.active {
     //     animation-name: image_links_active;
@@ -126,8 +136,13 @@
     & .woocommerce ul.products li.product .button {
         position: absolute;
         bottom: 0;
-        font-size: 0.94rem;
-        padding: 1rem 0;
+        font-size: 0.87rem;
+        padding: 0.9rem;
+        font-weight: 300;
+        //color: rgba(255, 255, 255, 0.85);
+    }
+    & .woocommerce ul.products li.product .button:hover {
+        background: variables.$secondary-color
     }
 }
 

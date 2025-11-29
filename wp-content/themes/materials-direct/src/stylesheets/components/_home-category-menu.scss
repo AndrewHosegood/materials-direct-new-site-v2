@@ -1,5 +1,6 @@
 @use "../abstracts/breakpoints";
 @use "../abstracts/variables";
+@use "sass:color";
 
 .home-category-menu {
     text-align: center;
@@ -17,6 +18,7 @@
         line-height: 2.2rem;
         padding: 0 0 2rem 0;
         margin: 0.5rem 1rem;
+        font-weight: 300;
         @include breakpoints.laptop {
             font-size: 1.5rem;
             line-height: 2.1rem;
@@ -44,10 +46,9 @@
             padding: 0;
         }
         align-items: flex-start;
-        grid-gap: 0.55rem;
+        grid-gap: 0.63rem;
     }
     &__card {
-        margin: 0 0.5%;
         background: white;
         border-radius: 0.4rem;
         box-shadow: 0px 0px 22px rgba(0, 0, 0, 0.15);
@@ -55,7 +56,7 @@
         margin-bottom: 0.2rem;
         transform: scale(1);
         transition: transform 0.12s ease-in;
-        margin: 0;
+        margin: 0 0 0.35rem 0;
         width: 100%;
         @include breakpoints.iphone {
             width: 49%;
@@ -86,10 +87,14 @@
         width: 100%;
         color: white;
         font-size: 0.81rem;
-        font-weight: 400;
+        font-weight: 300;
         border-bottom-left-radius: .25rem;
         border-bottom-right-radius: .25rem;
         margin-top: 0.35rem;
+        transition: background 0.15s ease-in;
+    }
+    &__btn:hover {
+        background: variables.$secondary-color;
     }
     &__card-img {
         object-fit: cover;
@@ -112,6 +117,9 @@
         width: 260px;
         transition: all 0.12s ease-in;
         font-size: 0.88rem;
+    }
+    &__lower:hover {
+        background: color.adjust(variables.$primary-color, $lightness: -8%);
     }
     &__break {
         display: inline;
