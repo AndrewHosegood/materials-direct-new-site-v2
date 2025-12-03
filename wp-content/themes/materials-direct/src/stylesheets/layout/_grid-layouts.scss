@@ -69,6 +69,15 @@
         grid-gap: 3rem;
     }
 }
+.grid-gap-three-point-five {
+    grid-gap: 0.8rem;
+    @include breakpoints.tablet {
+        grid-gap: 2rem;
+    }
+    @include breakpoints.laptop {
+        grid-gap: 3.5rem;
+    }
+}
 .text-center {
     text-align:center;
 }
@@ -86,3 +95,6 @@
         margin-right: 1%;
     }
 }
+
+// Manufacturing custom post type styles
+

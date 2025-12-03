@@ -43,6 +43,11 @@
 @use "components/home-help-with-ordering";
 @use "components/woof-product-filter";
 @use "components/woocommerce-notice-error";
+@use "components/manufacturing-latest-products";
+@use "components/manufacturing-instant-quotes";
+@use "components/manufacturing-testimonials";
+@use "components/manufacturing-two-column";
+@use "components/manufacturing-single-column";
 
 @use "layout/footer";
 @use "layout/header";

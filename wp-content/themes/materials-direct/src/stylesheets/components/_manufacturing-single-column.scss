@@ -1,0 +1,60 @@
+@use "../abstracts/breakpoints";
+@use "../abstracts/variables";
+
+.manufacturing-single-column {
+    padding: 3.5rem 0 3.3rem;
+    &__container {
+        padding: 0 1rem;
+        @include breakpoints.tablet {
+            padding: 0 3rem;
+        }
+        @include breakpoints.laptop {
+            padding: 0 3.8rem;
+        }
+    }
+    &__heading {
+        font-size: 31px;
+        line-height: 38px;
+        margin-bottom: 1rem;
+        @include breakpoints.tablet {
+            font-size: 44px;
+            line-height: 50px;
+        } 
+    }
+    &__content {
+        padding: 0;
+        @include breakpoints.tablet {
+            padding: 0 7rem;
+        }
+    }
+    &__button-1 {
+        color: variables.$primary-color;
+        border: 2px solid variables.$primary-color;
+        background-color: transparent;
+        border-radius: 0.25rem;
+        padding: 1.1rem 1.2rem;
+        font-size: 0.85rem;
+        margin-top: 1rem;
+        margin-left: 3px;
+        transition: background 0.15s ease-in;
+    }
+    &__button-1:hover {
+        background-color: variables.$primary-color;
+        color: white;
+    }
+    &__button-2 {
+        background: variables.$primary-color;
+        border: 2px solid variables.$primary-color;
+        color: white;
+        border-radius: 0.25rem;
+        padding: 1.1rem 1.2rem;
+        font-size: 0.85rem;
+        margin-top: 1rem;
+        margin-right: 3px;
+        transition: background 0.15s ease-in;
+    }
+    &__button-2:hover {
+        background: variables.$secondary-color;
+        border: 2px solid variables.$secondary-color;
+    }
+}

@@ -1,0 +1,26 @@
+@use "../abstracts/breakpoints";
+@use "../abstracts/variables";
+
+.manufacturing-two-column {
+    &__heading {
+        font-size: 2.15rem;
+        line-height: 2.7rem;
+        @include breakpoints.laptop {
+            font-size: 2.45rem;
+            line-height: 3.0rem;
+        }
+        @include breakpoints.desktop {
+            font-size: 2.8rem;
+            line-height: 3.5rem
+        }
+    }
+    &__img {
+        height: 300px;
+        @include breakpoints.iphone {
+             height: 400px;
+        }
+        @include breakpoints.tablet {
+            height: 527px;
+        }
+    }
+}

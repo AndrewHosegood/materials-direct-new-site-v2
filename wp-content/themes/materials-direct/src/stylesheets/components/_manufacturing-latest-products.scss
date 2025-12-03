@@ -1,0 +1,142 @@
+@use "../abstracts/breakpoints";
+@use "../abstracts/variables";
+
+.manufacturing-latest-products {
+    padding: 3.6rem 0;
+    margin-bottom: 0;
+    &__info-card {
+        background-color: #e2e2e2;
+        padding: 15px;
+        position: relative;
+        z-index: 999;
+        text-align: center;
+        width: 100%;
+    }
+    &__link {
+        width: 100%;
+        position: relative;
+    }
+    &__image {
+        width: 100%;
+        height: auto;
+        margin-bottom: -0.59rem;
+    }
+    &__heading {
+        font-size: 1.8rem;
+        line-height: 2.2rem;
+        @include breakpoints.iphone {
+            font-size: 2.2rem;
+            line-height: 2.55rem;
+        }
+        @include breakpoints.tablet {
+            font-size: 2.3rem;
+            line-height: 2.7rem;
+        }
+        @include breakpoints.laptop {
+            font-size: 2.75rem;
+            line-height: 3rem;
+        }
+        font-weight: 400;
+        margin-bottom: 2rem;
+        margin-top: 1.1rem;
+    }
+    &__content {
+        display: grid;
+        grid-gap: 1.5rem;
+        grid-template-columns: repeat(1,1fr);
+        @include breakpoints.iphone {
+            grid-template-columns: repeat(2,1fr);
+        }
+        @include breakpoints.tablet {
+            grid-template-columns: repeat(2,1fr);
+        }
+        @include breakpoints.laptop {
+            grid-template-columns: repeat(3,1fr);
+        }
+    }
+    &__content &__card {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        min-height: auto;
+        position: relative;
+        @include breakpoints.iphone {
+            min-height: 570px;
+        }
+        @include breakpoints.tablet {
+            min-height: 638px;
+        }
+        @include breakpoints.laptop {
+            min-height: 555px;
+        }
+    }
+    &__card:nth-child(2) &__info-card {
+         background-color: #f5f5f4;
+    }
+    &__title {
+        font-size: 1.15rem;
+        line-height: 1.85rem;
+    }
+    &__sku {
+        font-size:0.7rem;
+    }
+    &__i-cat-link {
+        font-size:0.79rem;
+        line-height: 1.1rem;
+    }
+    &__short-description {
+        text-align: center;
+        margin: 1rem 0 4.7rem 0;
+    }
+    &__short-description ul li {
+        border-bottom: 1px solid #dcdcdc;
+        padding: 8px 0;
+        font-size: .85rem;
+        line-height: 1.655em;
+        opacity: .85;
+    }
+    &__btn {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        padding: 0.4rem 1.5rem;
+    }
+    &__mask {
+        //box-shadow: inset 0 0 5px 2px rgba(0, 0, 0, .07);
+        border: 0px solid #f3f3f3;
+        width: 100%;
+        position: relative;
+        transition: all 0.13s ease-in;
+    }
+    &__mask:hover .manufacturing-latest-products__image-links {
+        // border: 1px solid red;
+        cursor: pointer;
+        bottom: 0;
+        animation-name: image_links_active;
+        animation-duration: 0.5s;
+        animation-fill-mode: forwards;
+    }
+    &__image-links {
+        position: absolute;
+        width: 100%;
+        z-index: 2;
+        background: variables.$primary-color;
+        color: white;
+        opacity: 0.8;
+        bottom: -3.8rem;
+        z-index: 99;
+    }
+    &__image-links-link {
+        color: white;
+        width: 49%;
+        text-align:center;
+        font-size: 0.85rem;
+        line-height: 1.25rem;
+        padding: 0.65rem;
+        border-right: 1px solid orange;
+        display:inline-block;
+    }
+}
+
+

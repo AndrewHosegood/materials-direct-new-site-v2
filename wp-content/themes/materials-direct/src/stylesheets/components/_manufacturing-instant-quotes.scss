@@ -1,0 +1,79 @@
+@use "../abstracts/breakpoints";
+@use "../abstracts/variables";
+
+.manufacturing-instant-quotes {
+    padding: 0 0 4rem 0;
+    &__heading {
+        padding: 0 1rem;
+        margin-bottom: 1rem;
+        font-size: 1.6rem;
+        line-height: 2.05rem;
+        @include breakpoints.iphone {
+            font-size: 1.75rem;
+            line-height: 2.2rem;
+        }
+        @include breakpoints.tablet {
+            font-size: 2.1rem;
+            line-height: 2.5rem;
+        }
+    }
+    &__content {
+        display: flex;
+        flex-wrap: wrap;
+        margin-bottom: 3.8rem;
+    }
+    &__content-left {
+        width: 100%;
+        @include breakpoints.tablet {
+            width: 48%;
+        }
+        text-align: left;
+        margin-right: 2%;
+    }
+    &__content-right {
+        width: 100%;
+        @include breakpoints.tablet {
+            width: 48%;
+        }
+        text-align: left;
+        margin-right: 2%;
+    }
+    &__card {
+        position: relative;
+        border: 1px solid #8e8f93;
+        padding: 1rem;
+    }
+    &__img-wrap {
+        text-align:center;
+        width: 100%;
+        height: 130px;
+    }
+    &__img {
+        width: 100px;
+        margin-left: auto;
+        margin-right: auto;
+        margin-top: 1.5rem;
+    }
+    &__card-text {
+        color: variables.$primary-color;
+        font-weight: 700;
+        width: 180px;
+        margin-left: auto;
+        margin-right: auto;
+        font-size: 0.87rem;
+        line-height: 1.6rem;
+    }
+    &__number {
+        font-size: 1.6rem;
+        font-weight: 300;
+        text-align: center;
+        position: absolute;
+        color: variables.$primary-color;
+        background: white;
+        top:-0.75rem;
+        width:30px;
+        height: 25px;
+        left: 50%;
+        margin-left: -15px;
+    }
+}

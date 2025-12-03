@@ -1,4 +1,4 @@
-<section class="counter">
+<section class="counter" style="background-image: url('/wp-content/uploads/2025/11/shutterstock_218519482-dark.jpg');">
     <div class="container counter__container">
         <div class="counter__card">
             <span class="counter__no-of-products">980</span>

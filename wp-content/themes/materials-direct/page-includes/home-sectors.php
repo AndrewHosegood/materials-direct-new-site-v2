@@ -1,7 +1,8 @@
+<?php if(get_field('home_page_sectors_heading')){?>
 <section class="sectors">
     <div class="container sectors__container">
-        <h2 class="sectors__title">Sectors</h2>
-        <p class="sectors__subtitle">Each sector has its own unique requirements and specifications. Materials Direct works to ensure that each sector we supply to, receives the highest quality and best-performing products in relation to their industry and specific need.</p>
+        <h2 class="sectors__title"><?php the_field('home_page_sectors_heading'); ?></h2>
+        <p class="sectors__subtitle"><?php the_field('home_page_sectors_subheading'); ?></p>
         <div class="sectors__content three-column-grid grid-gap-three">
 
         <?php
@@ -39,3 +40,4 @@
         </div>
     </div>
 </section>
+<?php } ?>

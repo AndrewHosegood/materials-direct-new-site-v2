@@ -1,0 +1,19 @@
+@use "../abstracts/breakpoints";
+@use "../abstracts/variables";
+
+.manufacturing-testimonials {
+    &__border {
+        border-top: 1px solid variables.$primary-color;
+        border-bottom: 1px solid variables.$primary-color;
+        padding-top: 2.5rem;
+        padding-bottom: 1.5rem;
+        margin-top: 1rem;
+        margin-bottom: 1rem;
+    }
+    &__content {
+        color: white;
+    }
+    &__btn {
+        margin-top: 1.6rem;
+    }
+}

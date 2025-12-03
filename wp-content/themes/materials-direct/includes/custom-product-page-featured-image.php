@@ -25,6 +25,8 @@ function mytheme_static_product_image() {
         echo '<img class="single-product__gallery-image-zoom" src="' . esc_url( $swap_image_url ) . '" alt="Custom pads and gaskets priced instantly and made to order within 24 hours!" />';
         echo '</div>';
     } else {
+        echo '<div class="single-product__gallery-image-col product-image-static images">';
         echo wc_placeholder_img( 'large' );
+        echo '</div>';
     }
 }

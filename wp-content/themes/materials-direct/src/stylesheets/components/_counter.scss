@@ -3,9 +3,10 @@
 
 .counter {
     padding: 2.8rem 0 3.4rem 0;
-    background-image: url('/wp-content/uploads/2025/11/shutterstock_218519482-dark.jpg');
+    // background-image: url('/wp-content/uploads/2025/11/shutterstock_218519482-dark.jpg');
     background-size: cover;
     background-position: center;
+    background-color: #efefef;
     &__container {
         display: flex;
         flex-wrap: wrap;
