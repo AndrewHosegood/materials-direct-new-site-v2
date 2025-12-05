@@ -12,9 +12,9 @@ get_header();
 
 	<main id="primary" class="site-main">
 
-		<section class="error-404 not-found">
+		<section class="error-404 not-found text-center">
 			<header class="page-header">
-				<h1 class="page-title"><?php esc_html_e( 'Oops! That page can&rsquo;t be found.', 'materials-direct' ); ?></h1>
+				<h1 class="page-title error-404__title"><?php esc_html_e( 'Oops! That page can&rsquo;t be found.', 'materials-direct' ); ?></h1>
 			</header><!-- .page-header -->
 
 			<div class="page-content">
@@ -23,33 +23,12 @@ get_header();
 					<?php
 					get_search_form();
 
-					the_widget( 'WP_Widget_Recent_Posts' );
+					//the_widget( 'WP_Widget_Recent_Posts' );
 					?>
 
-					<div class="widget widget_categories">
-						<h2 class="widget-title"><?php esc_html_e( 'Most Used Categories', 'materials-direct' ); ?></h2>
-						<ul>
-							<?php
-							wp_list_categories(
-								array(
-									'orderby'    => 'count',
-									'order'      => 'DESC',
-									'show_count' => 1,
-									'title_li'   => '',
-									'number'     => 10,
-								)
-							);
-							?>
-						</ul>
-					</div><!-- .widget -->
 
-					<?php
-					/* translators: %1$s: smiley */
-					$materials_direct_archive_content = '<p>' . sprintf( esc_html__( 'Try looking in the monthly archives. %1$s', 'materials-direct' ), convert_smilies( ':)' ) ) . '</p>';
-					the_widget( 'WP_Widget_Archives', 'dropdown=1', "after_title=</h2>$materials_direct_archive_content" );
 
-					the_widget( 'WP_Widget_Tag_Cloud' );
-					?>
+
 
 			</div><!-- .page-content -->
 		</section><!-- .error-404 -->

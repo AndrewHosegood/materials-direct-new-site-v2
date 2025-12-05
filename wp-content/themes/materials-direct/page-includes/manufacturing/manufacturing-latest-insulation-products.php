@@ -33,9 +33,9 @@ $electrical_insulators = new WP_Query($args);
 
                         <div class="manufacturing-latest-products__mask">
                             <div class="manufacturing-latest-products__image-links double">
-                                <a class="manufacturing-latest-products__image-links-link" rel="nofollow" href="http://localhost:8888/product/kapton-200hn-a0-0-0508mm-dupont/">
+                                <a class="manufacturing-latest-products__image-links-link" rel="nofollow" href="/product/kapton-200hn-a0-0-0508mm-dupont/">
                                 Order<br>Custom Parts</a>
-                                <a class="manufacturing-latest-products__image-links-link" target="_blank" href="http://localhost:8888/wp-content/uploads/2025/12/Kapton-HN_NEW.pdf">
+                                <a class="manufacturing-latest-products__image-links-link" target="_blank" href="/wp-content/uploads/2025/12/Kapton-HN_NEW.pdf">
                                     Product<br>Data Sheet
                                 </a>
                             </div>

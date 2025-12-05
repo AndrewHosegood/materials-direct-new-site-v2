@@ -27,6 +27,7 @@
         }
         background-size: cover;
         background-repeat: no-repeat;
+        background-position: center;
     }
     &__content {
         display: flex;
@@ -100,6 +101,53 @@
         margin-right: auto;
         margin-top: 2rem;
         z-index: 99;
+        font-weight: 300;
+        font-size: 0.85rem;
+    }
+}
+
+.page-template-page-faq {
+    & .banner {
+        height: 220px;
+        @include breakpoints.iphone {
+            height: 330px;
+        }
+        @include breakpoints.tablet {
+            height: 360px;
+        }
+        @include breakpoints.desktop {
+            height: 360px;
+        }
+    }
+    & .banner .item {
+        height: 220px;
+        @include breakpoints.iphone {
+            height: 330px;
+        }
+        @include breakpoints.tablet {
+            height: 360px;
+        }
+        @include breakpoints.desktop {
+            height: 360px;
+        }
+    }
+    & .banner .item .banner__heading {
+        font-size: 1.15rem;
+        line-height: 1.9rem;
+        @include breakpoints.iphone {
+             font-size: 1.8rem;
+             line-height: 2.7rem;
+        }
+        @include breakpoints.tablet {
+            font-size: 1.95rem;
+            line-height: 2.9rem;
+        }
+        @include breakpoints.laptop {
+            font-size: 2.15rem;
+            line-height: 3rem;
+        }
+        max-width: 1200px;
+        padding: 1rem;
     }
 }
 
@@ -146,12 +194,12 @@
         margin-left: 5%;
         margin-right: 5%;
         @include breakpoints.laptop {
-            max-width: 75%;
+            max-width: 900px;
             margin-left: 12.5%;
             margin-right: 12.5%;
         }
         @include breakpoints.desktop {
-            max-width: 60%;
+            max-width: 900px;
             margin-left: 20%;
             margin-right: 20%;
         }

@@ -69,7 +69,7 @@
     &__content li .woocommerce-loop-product__title {
         font-size: 1.2rem;
         line-height: 1.55rem;
-        color: #2d3e4f;
+        color: variables.$secondary-color;
         display: none;
     }
     &__content li:nth-child(odd) .woocommerce-shop__info-card {

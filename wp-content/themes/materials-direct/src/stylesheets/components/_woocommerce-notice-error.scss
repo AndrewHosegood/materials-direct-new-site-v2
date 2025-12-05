@@ -1,6 +1,9 @@
+@use "../abstracts/breakpoints";
+@use "../abstracts/variables";
+
 .woocommerce-NoticeGroup {
     & .woocommerce-error a {
-        color: #2d3e4f;
+        color: variables.$secondary-color;
     }
 }
 .woocommerce-order-received .woocommerce-thankyou-order-received {

@@ -7,10 +7,10 @@ get_header();
 ?>
 
 <!-- Banner -->
-<section class="banner owl-carousel owl-theme">
+<section class="banner owl-carousel owl-theme" style="height:<?php the_field('banner_height'); ?>px;">
 	<?php if (have_rows('banner')) : ?>
 		<?php while (have_rows('banner')) : the_row(); ?>
-			<div class="item">
+			<div class="item" style="height:<?php the_field('banner_height'); ?>px;">
 				<div class="banner__content" style="padding: 5rem 0;">
 					<?php $banner_image = get_sub_field('banner_image'); ?>
                     <?php $banner_height = get_sub_field('banner_height'); ?>

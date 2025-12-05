@@ -153,7 +153,7 @@
     }
     &__discount-table-content {
         background: #eee;
-        color: #2d3e4f;
+        color: variables.$secondary-color;
         font-size: 80%;
         padding: 0.5rem;
         padding-left: 0px;
@@ -163,7 +163,7 @@
     }
     &__discount-table-content-2 {
         background: white;
-        color: #2d3e4f;
+        color: variables.$secondary-color;
         font-size: 80%;
         padding: 0.5rem;
         padding-left: 0px;

@@ -282,7 +282,7 @@ get_header();
                         <div class="container featured-icons__container">
                             <div class="featured-icons__column">
                                 <div class="featured-icons__icon-left">
-                                    <img class="featured-icons__icon" alt="No Tooling Charge" src="http://localhost:8888/wp-content/uploads/2025/11/tooling-cost.svg">
+                                    <img class="featured-icons__icon" alt="No Tooling Charge" src="/wp-content/uploads/2025/11/tooling-cost.svg">
                                 </div>
                                 <div class="featured-icons__content-right">
                                     <h6 class="featured-icons__heading">No Tooling Charge</h6>
@@ -291,7 +291,7 @@ get_header();
                             </div>
                             <div class="featured-icons__column">
                                 <div class="featured-icons__icon-left">
-                                    <img class="featured-icons__icon" alt="" src="http://localhost:8888/wp-content/uploads/2025/11/fast-manufacture.svg">
+                                    <img class="featured-icons__icon" alt="" src="/wp-content/uploads/2025/11/fast-manufacture.svg">
                                 </div>
                                 <div class="featured-icons__content-right">
                                     <h6 class="featured-icons__heading">Fast Manufacturing</h6>
@@ -300,7 +300,7 @@ get_header();
                             </div>
                             <div class="featured-icons__column">
                                 <div class="featured-icons__icon-left">
-                                    <img class="featured-icons__icon" alt="" src="http://localhost:8888/wp-content/uploads/2025/11/support.svg">
+                                    <img class="featured-icons__icon" alt="" src="/wp-content/uploads/2025/11/support.svg">
                                 </div>
                                 <div class="featured-icons__content-right">
                                     <h6 class="featured-icons__heading">Technical Support</h6>
@@ -309,7 +309,7 @@ get_header();
                             </div>
                             <div class="featured-icons__column">
                                 <div class="featured-icons__icon-left">
-                                    <img class="featured-icons__icon" alt="" src="http://localhost:8888/wp-content/uploads/2025/11/secure.svg">
+                                    <img class="featured-icons__icon" alt="" src="/wp-content/uploads/2025/11/secure.svg">
                                 </div>
                                 <div class="featured-icons__content-right">
                                     <h6 class="featured-icons__heading">100% Payment Secure</h6>

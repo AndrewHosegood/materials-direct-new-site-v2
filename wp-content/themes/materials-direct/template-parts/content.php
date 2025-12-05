@@ -11,25 +11,28 @@
 
 <article id="post-<?php the_ID(); ?>" <?php post_class(); ?>>
 	<header class="entry-header">
+
 		<?php
 		if ( is_singular() ) :
-			the_title( '<h1 class="entry-title">', '</h1>' );
+			the_title( '<h1 class="news-detail__title aaa">', '</h1>' );
 		else :
-			the_title( '<h2 class="entry-title"><a href="' . esc_url( get_permalink() ) . '" rel="bookmark">', '</a></h2>' );
+			the_title( '<h2 class="news-detail__title bbb"><a href="' . esc_url( get_permalink() ) . '" rel="bookmark">', '</a></h2>' );
 		endif;
+		?>
 
-		if ( 'post' === get_post_type() ) :
-			?>
-			<div class="entry-meta">
-				<?php
-				materials_direct_posted_on();
-				materials_direct_posted_by();
-				?>
-			</div><!-- .entry-meta -->
-		<?php endif; ?>
+		<?php 
+			$display_post_author = get_field('display_post_author_details', get_the_ID());
+			$author_name = get_field('post_authour_name', get_the_ID());
+			if($display_post_author){
+				echo "<p class='news-detail__author'>" . get_the_date('d/m/Y') . " | by " . $author_name . " | <a href='https://materials-direct.com'>Materials-direct</a></p>";
+			}
+		?>
+
+
+
 	</header><!-- .entry-header -->
 
-	<?php materials_direct_post_thumbnail(); ?>
+	<?php //materials_direct_post_thumbnail(); ?>
 
 	<div class="entry-content">
 		<?php
@@ -57,7 +60,8 @@
 		?>
 	</div><!-- .entry-content -->
 
-	<footer class="entry-footer">
-		<?php materials_direct_entry_footer(); ?>
-	</footer><!-- .entry-footer -->
+	<!--<footer class="entry-footer">
+		<?php //materials_direct_entry_footer(); ?>
+	</footer>--><!-- .entry-footer -->
+	
 </article><!-- #post-<?php the_ID(); ?> -->

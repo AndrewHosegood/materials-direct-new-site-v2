@@ -15,43 +15,80 @@
 get_header();
 ?>
 
-	<main id="primary" class="site-main container zzz">
 
-		<?php
-		if ( have_posts() ) :
+<main id="primary" class="site-main container">
 
-			if ( is_home() && ! is_front_page() ) :
-				?>
-				<header>
-					<h1 class="page-title screen-reader-text"><?php single_post_title(); ?></h1>
-				</header>
-				<?php
-			endif;
+    <?php if ( have_posts() ) : ?>
+		<section class="news">
+        <div class="news__grid">
 
-			/* Start the Loop */
-			while ( have_posts() ) :
-				the_post();
+            <?php while ( have_posts() ) : the_post(); ?>
 
-				/*
-				 * Include the Post-Type-specific template for the content.
-				 * If you want to override this in a child theme, then include a file
-				 * called content-___.php (where ___ is the Post Type name) and that will be used instead.
-				 */
-				get_template_part( 'template-parts/content', get_post_type() );
+                <article id="post-<?php the_ID(); ?>" <?php post_class('news__card'); ?>>
 
-			endwhile;
+                    <a href="<?php the_permalink(); ?>" class="news__image">
+                        <?php 
+                        if ( has_post_thumbnail() ) {
+                            the_post_thumbnail('medium_large');
+                        } else {
+                            // fallback image or blank div
+                            echo '<div class="no-image"></div>';
+                        }
+                        ?>
+                    </a>
 
-			the_posts_navigation();
+                    <div class="news__content">
 
-		else :
+					    <p class="news__date"><i class="fa-regular fa-clock"></i> <?php echo get_the_date('d/m/Y'); ?></p>
 
-			get_template_part( 'template-parts/content', 'none' );
+                        <h3 class="news__title">
+                            <a class="news__title-link" href="<?php the_permalink(); ?>">
+                                <?php the_title(); ?>
+                            </a>
+                        </h3>
 
-		endif;
-		?>
 
-	</main><!-- #main -->
+
+                        <!-- <div class="news__links"><span class="news__favourites"><a href="#"><i class="fa-regular fa-heart news__link-icon"></i><span class="news__link-icon-number">0</span></a></span> <a class="news__readmore" href="<?php //the_permalink(); ?>"><i class="fa-regular fa-file-lines news__link-icon"></i> Read more</a></div> -->
+						<?php 
+						$post_id = get_the_ID();
+						$count   = md_get_post_favourites($post_id);
+						$active  = is_user_logged_in() && md_user_has_favourited(get_current_user_id(), $post_id);
+						?>
+						 <div class="news__links">
+							<span class="news__favourites">
+								<a href="#" 
+								class="md-fav-toggle" 
+								data-post="<?php echo $post_id; ?>">
+
+								<i class="<?php echo $active ? 'fa-solid' : 'fa-regular'; ?> fa-heart news__link-icon"></i>
+								<span class="news__link-icon-number"><?php echo $count; ?></span>
+								</a>
+							</span>
+
+							<a class="news__readmore" href="<?php the_permalink(); ?>">
+								<i class="fa-regular fa-file-lines news__link-icon"></i> Read more
+							</a>
+						</div>
+
+                    </div>
+
+                </article>
+
+            <?php endwhile; ?>
+
+        </div><!-- .blog-card-grid -->
+
+        <?php the_posts_navigation(); ?>
+
+    <?php else : ?>
+
+        <?php get_template_part( 'template-parts/content', 'none' ); ?>
+
+    <?php endif; ?>
+	</section>
+</main>
 
 <?php
-//get_sidebar();
+
 get_footer();

@@ -56,6 +56,11 @@ if ( ! function_exists( 'custom_add_info_after_product_thumbnail' ) ) {
 add_filter( 'woocommerce_product_get_image', 'inject_soft_border_and_add_img_class', 10, 5 );
 function inject_soft_border_and_add_img_class( $image, $product, $size, $attr, $placeholder ) {
 
+    // Prevent injection on the cart page (basket)
+    if ( is_cart() ) {
+        return $image;
+    }
+
     // Only modify images on loop pages
     if ( ! in_the_loop() ) {
         return $image;
@@ -86,7 +91,11 @@ function inject_soft_border_and_add_img_class( $image, $product, $size, $attr, $
         2. Inject <div class="soft-border"></div> before <img>
        ------------------------------------------------- */
     $soft_border = '<div class="woocommerce-shop__soft-border"></div>';
-    $image = preg_replace( '/<img/i', $soft_border . '<img', $image, 1 );
+
+    //$image = preg_replace( '/<img/i', $soft_border . '<img', $image, 1 );
+    if ( strpos( $image, 'woocommerce-shop__soft-border' ) === false ) {
+        $image = preg_replace( '/<img/i', $soft_border . '<img', $image, 1 );
+    }
 
     return $image;
 }

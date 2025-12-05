@@ -233,6 +233,41 @@ jQuery(document).ready(function($){
         });
         // add width and length values based on circle radius input
 
+        // faqs accordion
+        $(".faqs__ui-accordion .faqs__ui-accordion-header").on("click", function() {
+
+            const panelID = $(this).attr("aria-controls");
+            const panel = $("#" + panelID);
+
+            // If clicking an already open panel → close it
+            if (panel.is(":visible")) {
+                panel.slideUp(200);
+                $(this)
+                    .removeClass("ui-state-active ui-accordion-header-active")
+                    .addClass("ui-accordion-header-collapsed");
+                return;
+            }
+
+            // Close all panels EXCEPT the one we're about to open
+            $(".faqs__ui-accordion .faqs__ui-accordion-content:visible").not(panel).slideUp(200);
+
+            // Reset all headers EXCEPT clicked one
+            $(".faqs__ui-accordion .faqs__ui-accordion-header")
+                .not(this)
+                .removeClass("ui-state-active ui-accordion-header-active")
+                .addClass("ui-accordion-header-collapsed");
+
+            // Open clicked panel
+            $(this)
+                .removeClass("ui-accordion-header-collapsed")
+                .addClass("ui-state-active ui-accordion-header-active");
+            
+            panel.slideDown(200);
+        });
+
+
+        // faqs accordion
+
         // Owl Carousel
         $('.testimonials__carousel').owlCarousel({
             loop:true,

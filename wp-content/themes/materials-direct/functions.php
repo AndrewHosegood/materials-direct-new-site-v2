@@ -293,7 +293,7 @@ require_once('includes/change-shop-grid-to-3-columns.php');
 // change the shop grid to 3 columns
 
 // validation for product width and length - (to be deleted)
-//require_once('includes/validation-for-product-width-and-length.php');
+require_once('includes/validation-for-product-width-and-length.php');
 // validation for product width and length - (to be deleted)
 
 // Fix for VAT exclusion on checkout page if country is not GB
@@ -414,6 +414,13 @@ require_once('includes/disable-width-length-qty-credit-account.php');
 /* Custom voucher discount */
 require_once('includes/custom-voucher-system.php');
 /* Custom voucher discount */
+
+
+
+
+/* Favourite heart system for news page */
+require_once('includes/news-page-favourite-heart-system.php');
+/* Favourite heart system for news page */
 
 
 
