@@ -404,6 +404,14 @@ require_once('includes/remove-paynow-buttons-on-thankyou-page.php');
 require_once('includes/disable-width-length-qty-credit-account.php');
 /* Disable width length and quantity when generate price is clicked for credit account user */
 
+/* Favourite heart system for news page */
+require_once('includes/news-page-favourite-heart-system.php');
+/* Favourite heart system for news page */
+
+/* Show or hide product rolls tab based on ACF value */
+require_once('includes/show-hide-product-rolls-tab.php');
+/* Show or hide product rolls tab based on ACF value */
+
 /* END CUSTOM FUNCTIONS */
 
 
@@ -418,14 +426,26 @@ require_once('includes/custom-voucher-system.php');
 
 
 
-/* Favourite heart system for news page */
-require_once('includes/news-page-favourite-heart-system.php');
-/* Favourite heart system for news page */
 
 
 
 
+// This filter forces WooCommerce to always think the customer does not have a saved shipping address
+// Forces customers to re-enter shipping details on every order, even when logged in
+// Need to test that this is ok to use long term
 add_filter( 'woocommerce_customer_has_shipping_address', '__return_false' );
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

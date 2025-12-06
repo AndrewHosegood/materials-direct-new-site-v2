@@ -99,14 +99,29 @@ function calculate_product_price($product_id, $width, $length, $qty, $discount_r
 
     $cost_per_part = floatval(get_field('buy_cost', $product_id));
     $cost_per_cm2 = floatval(get_field('cost_per_cm', $product_id));
-    $sheets_gpm = floatval(get_field('sheets_gpm', $product_id));
-    $rolls_gpm = floatval(get_field('rolls_gpm', $product_id));
+    if(get_field('sheets_gpm', $product_id)){
+        $sheets_gpm = floatval(get_field('sheets_gpm', $product_id));
+    } else {
+        $sheets_gpm = 0.5;
+    }
+    if(get_field('rolls_gpm', $product_id)){
+        $rolls_gpm = floatval(get_field('rolls_gpm', $product_id));
+    } else {
+        $rolls_gpm = 0.5;
+    }
+    if(get_field('roll_length', $product_id)){
+        $roll_length = floatval(get_field('roll_length', $product_id));
+    } else {
+        $roll_length = 0;
+    }
+    $roll_length_v =   $roll_length / 1000;
     $item_border = floatval(get_field('border_around', $product_id));
 
     error_log("Shape Type: $shape_type");
     error_log("Buy Cost (Cost Per Part): $cost_per_part");
     error_log("sheets_gpm: $sheets_gpm");
     error_log("rolls_gpm: $rolls_gpm");
+    error_log("roll_length: $roll_length_v");
 
     if ($shape_type === 'custom-shape-drawing') {
         $globalPriceAdjust = 1.0;
@@ -184,7 +199,8 @@ function calculate_product_price($product_id, $width, $length, $qty, $discount_r
 
     
     if($shape_type ==="rolls"){
-        $total_price = $adjustedPrice * $qty * 8;
+        $total_price = $adjustedPrice * $qty * $roll_length_v;
+        //$total_price = $adjustedPrice * $qty * 8;
     } else {
         $total_price = $adjustedPrice * $qty;
     }
