@@ -704,11 +704,15 @@ function updateDatepickerMinDate() {
                         const isBackorder = response.data.is_backorder || false;
                         const sheet_width_mm = response.data.sheet_width_mm;
                         const sheet_length_mm = response.data.sheet_length_mm;
-                        const border = parseFloat(response.data.border_around || 0.2) * 10;
+
+                        //const border = parseFloat(response.data.border_around || 0.2) * 10;
+                        const border = parseFloat(response.data.border_around) * 10 || 0; // sunday partial backorder fix
+
                         const stock_quantity = response.data.stock_quantity;
                         const qty = response.data.entered_quantity;
                         const backorder_adjustedPrice = adjustedPrice * 0.05;
                         const discount_rate = response.data.discount_rate;
+                        const roll_length_v = response.data.roll_length_v || 1;
                         const globalPriceAdjust = response.data.global_price_adjust;
 
                         console.log("globalPriceAdjust: " + globalPriceAdjust);
@@ -763,11 +767,36 @@ function updateDatepickerMinDate() {
                         const parts_per_row = Math.floor(usable_width / v1);
                         const parts_per_column = Math.floor(usable_length / v2);
                         const parts_per_sheet = parts_per_row * parts_per_column;
-                        
+                        console.log("Parts Per Sheet: " + parts_per_sheet);
 
 
                         let priceHtml = '';
-
+                        if (isBackorder && stock_quantity > 0) {
+                            if (parts_per_sheet <= 0 && selectedTab !== 'rolls') {  // Skip check for Rolls
+                                $('#custom_price_display').html('Error: Invalid sheet calculation. Part does not fit on sheet.');
+                                return;
+                            }
+                            sheets_backorder = sheetsRequired - stock_quantity;
+                            total_parts_d = qty;
+                            if (selectedTab === 'rolls') {
+                                // Rolls-specific: Dispatch full rolls only (sheets must cover full roll_length_v per roll)
+                                able_to_dispatch = Math.floor(stock_quantity / roll_length_v);
+                                parts_backorder = total_parts_d - able_to_dispatch;
+                            } else {
+                                // Non-Rolls (original)
+                                parts_from_stock = stock_quantity * parts_per_sheet;
+                                able_to_dispatch = Math.min(parts_from_stock, total_parts_d);
+                                parts_backorder = total_parts_d - able_to_dispatch;
+                            }
+                            backorder_adjustedPriceDisplay = adjustedPrice - backorder_adjustedPrice;
+                            calcPartialbackorderdiscount_1 = able_to_dispatch * adjustedPrice;
+                            calcPartialbackorderdiscount_2 = parts_backorder * backorder_adjustedPriceDisplay;
+                            calcPartialbackorderFinal = (calcPartialbackorderdiscount_1 + calcPartialbackorderdiscount_2).toFixed(2);
+                            cart_price = calcPartialbackorderFinal / sheetsRequired;
+                            priceHtml = '<div class="product-page__display-price-outer"><div><h4 class="product-page__display-price-heading">Here is your instant quote</h4></div><div class="product-page__display-price-inner"><div class="product-page__display-price">Cost per part: <span class="product-page__display-price-text">£' + adjustedPrice.toFixed(2) + '<span style="font-size: 0.82rem; font-weight: 400;"> (£' + backorder_adjustedPriceDisplay.toFixed(2) + ' for backorder parts)</span></span></div><div class="product-page__display-price">Total part costs: <span class="product-page__display-price-text">£' + calcPartialbackorderFinal + '</span></div></div></div>';
+                            priceHtml += '<div class="product-page__backorder-message"><p class="product-page__backorder-message-text"><strong>Notice:</strong> This order exceeds current stock, it requires an additional ' + sheets_backorder + ' sheets (' + parts_backorder + ' parts) to be back ordered. We are able to despatch: ' + able_to_dispatch + ' parts within ' + discount_display + '. Please allow 35 Days to complete the back ordered items. A 5% discount will apply to these parts.</p></div>';
+                        }
+                        /*
                         if (isBackorder && stock_quantity > 0) {
 
                             if (parts_per_sheet <= 0) {
@@ -789,11 +818,14 @@ function updateDatepickerMinDate() {
                             priceHtml = '<div class="product-page__display-price-outer"><div><h4 class="product-page__display-price-heading">Here is your instant quote</h4></div><div class="product-page__display-price-inner"><div class="product-page__display-price">Cost per part: <span class="product-page__display-price-text">£' + adjustedPrice.toFixed(2) + '<span style="font-size: 0.82rem; font-weight: 400;"> (£' + backorder_adjustedPriceDisplay.toFixed(2) + ' for backorder parts)</span></span></div><div class="product-page__display-price">Total part costs: <span class="product-page__display-price-text">£' + calcPartialbackorderFinal + '</span></div></div></div>';
                             priceHtml += '<div class="product-page__backorder-message"><p class="product-page__backorder-message-text"><strong>Notice:</strong> This order exceeds current stock, it requires an additional ' + sheets_backorder + ' sheets (' + parts_backorder + ' parts) to be back ordered. We are able to despatch: ' + able_to_dispatch + ' parts within ' + discount_display + '. Please allow 35 Days to complete the back ordered items. A 5% discount will apply to these parts.</p></div>';
 
-                        } else if (isBackorder && stock_quantity <= 0) {
+                        } 
+                            */
+                        else if (isBackorder && stock_quantity <= 0) {
                             // Full backorder case (stock_quantity <= 0)
                             priceHtml = '<div class="product-page__display-price-outer"><div><h4 class="product-page__display-price-heading">Here is your instant quote</h4></div><div class="product-page__display-price-inner"><div class="product-page__display-price">Cost per part: <span class="product-page__display-price-text">£' + adjustedPrice.toFixed(2) + '</span></div><div class="product-page__display-price">Total part costs: <span class="product-page__display-price-text">£' + price.toFixed(2) + '</span></div></div></div>';
                             priceHtml += '<div class="product-page__backorder-message"><p class="product-page__backorder-message-text"><strong>Notice:</strong> This order is currently on backorder only. Please allow 35 Days for complete order fulfillment with a 5% discount applied to the total order.</p></div>';
-                        } else {
+                        } 
+                        else {
                             // No backorder case
                             priceHtml = '<div class="product-page__display-price-outer"><div><h4 class="product-page__display-price-heading">Here is your instant quote</h4></div><div class="product-page__display-price-inner"><div class="product-page__display-price">Cost per part: <span class="product-page__display-price-text">£' + adjustedPrice.toFixed(2) + '</span></div><div class="product-page__display-price">Total part costs: <span class="product-page__display-price-text">£' + price.toFixed(2) + '</span></div></div></div>';
                         }

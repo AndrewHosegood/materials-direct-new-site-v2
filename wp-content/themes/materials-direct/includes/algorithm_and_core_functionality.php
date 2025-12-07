@@ -627,7 +627,8 @@ function calculate_secure_price() {
     $sheet_length_mm = $product->get_length() * 10;
     $sheet_width_mm = $product->get_width() * 10;
     $stock_quantity = $product->get_stock_quantity();
-    $border_around = function_exists('get_field') ? floatval(get_field('border_around', $product_id) ?: 0.2) : 0.2;
+    //$border_around = function_exists('get_field') ? floatval(get_field('border_around', $product_id) ?: 0.2) : 0.2;
+    $border_around = ($shape_type === 'stock-sheets' || $shape_type === 'rolls') ? 0 : (get_field('border_around', $product_id) ?: 0.2); // sundays partial backorder fix
 
     if ($sheet_length_mm <= 0 || $sheet_width_mm <= 0) {
         wp_send_json_error(['message' => 'Invalid sheet dimensions for this product.']);
@@ -661,11 +662,29 @@ function calculate_secure_price() {
         $width,
         $length,
         $qty,
-        $product_id
+        $product_id,
+        $border_around // sundays partial backorder fix
     );
 
     $sheets_required = $sheet_result['sheets_required'];
     $is_backorder = $sheets_required > $stock_quantity;
+
+    if ($shape_type === 'rolls') {
+        $roll_length = floatval(get_field('roll_length', $product_id) ?: 0);
+        $roll_length_v = $roll_length / 1000;
+        $sheets_required = ceil($qty * $roll_length_v);
+        $is_backorder = $sheets_required > $stock_quantity;
+    }
+
+
+
+    error_log("Sheets Required (b)" . $sheets_required);
+    error_log("Is Backorder" . $is_backorder);
+    error_log('border_around: ' . $border_around);
+    error_log('shape type: ' . $shape_type);
+    error_log('Roll Length: ' . $roll_length);
+    error_log('Roll Length V: ' . $roll_length_v);
+
 
 
     // SEND DATA TO algorith-core-functionality.js
@@ -679,7 +698,8 @@ function calculate_secure_price() {
         'sheet_length_mm' => $sheet_length_mm,
         'entered_quantity' => $qty,
         'discount_rate' => $discount_rate,
-        'border_around' => $border_around
+        'border_around' => $border_around,
+        'roll_length_v' => isset($roll_length_v) ? $roll_length_v : 1,
     ]);
 }
 // 3. SECURE PRICE CALCULATION IN PHP
@@ -1857,56 +1877,6 @@ function show_custom_input_details_in_cart($item_data, $cart_item) {
             ];
         }
 
-        // COFC CHECKBOX VALUES:
-        /*
-        if (isset($cart_item['custom_inputs']['optional_fees_per_shipment'])) {
-            $feeLabels = [
-                'add_manufacturers_COFC_ss' => 'Manufacturers COFC',
-                'add_fair_ss' => 'First Article Inspection Report',
-                'add_materials_direct_COFC_ss' => 'Materials Direct COFC'
-            ];
-            foreach ($cart_item['custom_inputs']['optional_fees_per_shipment'] as $shipment_fees) {
-                if (!empty($shipment_fees['fees'])) {
-                    foreach ($shipment_fees['fees'] as $feeKey => $feeValue) {
-                        if ($feeValue > 0) {
-                            $label = isset($feeLabels[$feeKey]) ? $feeLabels[$feeKey] : $feeKey;
-                            $item_data[] = [
-                                'name' => $label,
-                                'value' => '£' . number_format($feeValue, 2)
-                            ];
-                        }
-                    }
-                }
-            }
-        }
-            */
-        // if (isset($cart_item['custom_inputs']['optional_fees_per_shipment'])) {
-        //     foreach ($cart_item['custom_inputs']['optional_fees_per_shipment'] as $shipment_fee) {
-        //         if ($shipment_fee['fee'] > 0) {
-        //             $item_data[] = [
-        //                 'name' => "All COFC's & FAIR's - " . $shipment_fee['date'],
-        //                 'value' => '£' . number_format($shipment_fee['fee'], 2)
-        //             ];
-        //         }
-        //     }
-        // }
-
-        // Backorder Details
-        /*
-        if (isset($cart_item['custom_inputs']['is_backorder']) && $cart_item['custom_inputs']['is_backorder']) {
-            $backorder_data = $cart_item['custom_inputs']['backorder_data'];
-            $item_data[] = [
-                'name' => 'Backorder Notice',
-                'value' => sprintf(
-                    'This order requires %d parts to be backordered (%d sheets). %d parts can be dispatched immediately.',
-                    $backorder_data['parts_backorder'],
-                    $cart_item['custom_inputs']['sheets_required'] - $cart_item['custom_inputs']['stock_quantity'],
-                    $backorder_data['able_to_dispatch']
-                )
-            ];
-        }
-        */
-
     }
     return $item_data;
 }
@@ -1925,7 +1895,7 @@ add_filter('woocommerce_get_cart_item_from_session', function($item, $values) {
 
 
 
-
+// THIS IS THE FUNCTION THAT SENDS THE FINAL PRICE TO THE CART
 add_action('woocommerce_before_calculate_totals', 'apply_secure_custom_price');
 
 function apply_secure_custom_price($cart) {
@@ -1996,6 +1966,7 @@ function apply_secure_custom_price($cart) {
 
           if (!is_wp_error($price_per_sheet)) {
                 $cart_item['data']->set_price($price_per_sheet);
+                error_log("Final Price Sent To Cart: " . $price_per_sheet);
             } else {
                 if (defined('WP_DEBUG') && WP_DEBUG) {
                     error_log("apply_secure_custom_price: Error calculating price for product ID $product_id: " . $price_per_sheet->get_error_message());
@@ -2205,11 +2176,18 @@ function clear_custom_shipping_session($order_id) {
 
 // CALCULATE SHEETS REQUIRED
 
-function calculate_sheets_required($sheet_width, $sheet_length, $part_width, $part_length, $quantity, $product_id = null) {
+function calculate_sheets_required($sheet_width, $sheet_length, $part_width, $part_length, $quantity, $product_id, $border_cm = null) {
 
-    $border_cm = 0.2;
+    //$border_cm = 0.2;
+    // sundays partial backorder fix
+    if ($border_cm === null) {
+        $border_cm = function_exists('get_field') ? get_field('border_around', $product_id) ?: 0.2 : 0.2;
+    }
+    // sundays partial backorder fix
+
     error_log("Product ID: $product_id");
-
+    error_log("Border CM: $border_cm");
+    /*
     if ($product_id && function_exists('get_field')) {
         $acf_border = get_field('border_around', $product_id);
         error_log("ACF Border Active: $acf_border");
@@ -2217,6 +2195,7 @@ function calculate_sheets_required($sheet_width, $sheet_length, $part_width, $pa
             $border_cm = floatval($acf_border);
         }
     }
+    */  
 
     $border_mm = $border_cm * 10; // cm → mm
 
@@ -2255,6 +2234,8 @@ function calculate_sheets_required($sheet_width, $sheet_length, $part_width, $pa
 
     // Calculate required sheets
     $sheets_required = ceil($quantity / $parts_per_sheet);
+
+    error_log("Sheets Required (a): " . $sheets_required);
 
     return [
         'sheets_required' => $sheets_required,
@@ -2440,11 +2421,6 @@ function save_shipment_callback() {
 
     $total_shipment_fee = array_sum($fees); //new cofc delivery options
 
-    // error_log("post despatch date" . $despatch_date);
-    // error_log("post parts" . $parts);
-    // error_log("POST manufacturers COFC_ss: " . $fees['add_manufacturers_COFC_ss']);
-    // error_log("POST fair_ss: " . $fees['add_fair_ss']);
-    // error_log("POST materials_direct_COFC_ss: " . $fees['add_materials_direct_COFC_ss']);
 
     if (!$despatch_date || $parts < 1) {
         wp_send_json_error(['message' => 'Invalid despatch date or parts.']);
