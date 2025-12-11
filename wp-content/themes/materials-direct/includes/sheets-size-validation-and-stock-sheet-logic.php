@@ -31,8 +31,12 @@ function combined_custom_jquery_for_dimensions_and_stock_sheets() {
     ?>
     <script type="text/javascript">
     jQuery(document).ready(function ($) {
+        //const stocksheetWidth = <?php //echo esc_js( $sheet_width_mm ); ?>;
         const stocksheetWidth = <?php echo esc_js( $sheet_width_mm ); ?>;
+        const allowedBorder = <?php echo esc_js( $allowed_border ) ?>;
+        const stocksheetWidthB = stocksheetWidth - allowedBorder;
         const stocksheetLength = <?php echo esc_js( $sheet_length_mm ); ?>;
+        const stocksheetLengthB = stocksheetLength - allowedBorder;
         const maxWidth = <?php echo esc_js( $allowed_width ); ?>;
         const maxLength = <?php echo esc_js( $allowed_length ); ?>;
 
@@ -62,8 +66,8 @@ function combined_custom_jquery_for_dimensions_and_stock_sheets() {
             const selectedTab = $('[name="tabs_input"]:checked').val();
 
             if (selectedTab === "stock-sheets") {
-                $widthInput.val(stocksheetWidth).prop('readonly', true).trigger('change');
-                $lengthInput.val(stocksheetLength).prop('readonly', true).trigger('change');
+                $widthInput.val(stocksheetWidthB).prop('readonly', true).trigger('change');
+                $lengthInput.val(stocksheetLengthB).prop('readonly', true).trigger('change');
                 $widthInput.addClass("disabled");
                 $lengthInput.addClass("disabled");
                 $button.prop('disabled', false); // Force enable button
@@ -71,8 +75,8 @@ function combined_custom_jquery_for_dimensions_and_stock_sheets() {
             } 
             else if(selectedTab === "rolls"){
                 //$rolls_length = 8000;
-                $widthInput.val(stocksheetWidth).prop('readonly', true).trigger('change');
-                $lengthInput.val(stocksheetLength).prop('readonly', true).trigger('change');
+                $widthInput.val(stocksheetWidthB).prop('readonly', true).trigger('change');
+                $lengthInput.val(stocksheetLengthB).prop('readonly', true).trigger('change');
                 $widthInput.addClass("disabled");
                 $lengthInput.addClass("disabled");
                 $button.prop('disabled', false); // Force enable button

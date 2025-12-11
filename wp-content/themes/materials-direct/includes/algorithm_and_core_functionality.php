@@ -67,8 +67,6 @@ function calculate_product_price($product_id, $width, $length, $qty, $discount_r
     $qty = intval($qty);
     $discount_rate = floatval($discount_rate);
 
-    error_log("Shape Type: $shape_type");
-
     if ($width <= 0 || $length <= 0 || $qty < 1) {
         return new WP_Error('invalid_input', 'Width, Length, and Quantity must be positive');
     }
@@ -102,12 +100,12 @@ function calculate_product_price($product_id, $width, $length, $qty, $discount_r
     if(get_field('sheets_gpm', $product_id)){
         $sheets_gpm = floatval(get_field('sheets_gpm', $product_id));
     } else {
-        $sheets_gpm = 0.5;
+        $sheets_gpm = 0.48679; // changed from 0.5 to allow for borders in sheets
     }
     if(get_field('rolls_gpm', $product_id)){
         $rolls_gpm = floatval(get_field('rolls_gpm', $product_id));
     } else {
-        $rolls_gpm = 0.5;
+        $rolls_gpm = 0.48679;// changed from 0.5 to allow for borders in rolls
     }
     if(get_field('roll_length', $product_id)){
         $roll_length = floatval(get_field('roll_length', $product_id));
@@ -117,11 +115,6 @@ function calculate_product_price($product_id, $width, $length, $qty, $discount_r
     $roll_length_v =   $roll_length / 1000;
     $item_border = floatval(get_field('border_around', $product_id));
 
-    error_log("Shape Type: $shape_type");
-    error_log("Buy Cost (Cost Per Part): $cost_per_part");
-    error_log("sheets_gpm: $sheets_gpm");
-    error_log("rolls_gpm: $rolls_gpm");
-    error_log("roll_length: $roll_length_v");
 
     if ($shape_type === 'custom-shape-drawing') {
         $globalPriceAdjust = 1.0;
@@ -135,8 +128,6 @@ function calculate_product_price($product_id, $width, $length, $qty, $discount_r
     else {
         $globalPriceAdjust = floatval(get_field('global_adjust_square_rectangle', 'options') ?: 1.0); // Circle Radius + Square Rectangle both use the same option
     }
-
-    error_log("globalPriceAdjust in calculate_product_price: $globalPriceAdjust");
 
 
     if($shape_type ==="stock-sheets"){
@@ -172,12 +163,9 @@ function calculate_product_price($product_id, $width, $length, $qty, $discount_r
     $costFactorResult = exponentialDecay($A, $k, $t);
     // End Codys algorith
 
-    error_log("costFactorResult (1): $costFactorResult");
-    error_log("ppp (2): $ppp");
 
     $finalPppOnAva = $ppp + $costFactorResult;
 
-    error_log("finalPppOnAva (3): $finalPppOnAva");
     
     if($shape_type ==="stock-sheets"){
         $finalPppOnAva = $finalPppOnAva / $sheets_gpm;
@@ -186,26 +174,22 @@ function calculate_product_price($product_id, $width, $length, $qty, $discount_r
 		$finalPppOnAva = $finalPppOnAva / $rolls_gpm;
 	}
 
-    error_log("finalPppOnAva: $finalPppOnAva");
 
     // Apply discount rate
     $discountAmount = $finalPppOnAva * $discount_rate;
     $finalPppOnAva = $finalPppOnAva - $discountAmount;
-
     $adjustedPrice = $finalPppOnAva * $globalPriceAdjust;
-    error_log("adjustedPrice (myPPPVAlue): $adjustedPrice");
-    error_log("QTY: $qty");
-    error_log("shape_type: $shape_type");
 
-    
+
+    /* AH rolls fix 9.12.2025 */
     if($shape_type ==="rolls"){
         $total_price = $adjustedPrice * $qty * $roll_length_v;
-        //$total_price = $adjustedPrice * $qty * 8;
     } else {
         $total_price = $adjustedPrice * $qty;
     }
+    //$total_price = $adjustedPrice * $qty;
+    /* AH rolls fix 9.12.2025 */
 
-    error_log("total_price: $total_price");
 
     return round($total_price, 2);
 }
@@ -301,7 +285,9 @@ function custom_price_input_fields_prefill() {
     // Check stock quantity for backorder status
     $stock_quantity = $product->get_stock_quantity();
     $is_full_backorder = $stock_quantity <= 0;
-
+    $roll_length = floatval(get_field('roll_length', $product_id) ?: 0);
+    $roll_length_v = $roll_length / 1000;
+    
 
     // Existing form for non-single products
     echo '<div class="product-page__stages-heading"><h3 class="product-page__stages-heading-content one">Tell us what to manufacture and give us your delivery date</h3></div>
@@ -337,7 +323,7 @@ function custom_price_input_fields_prefill() {
         <!-- Price Inputs -->
         <div class="product-page__grey-panel">
 
-        <p class="product-page__square-rectangle-message"><i class="fa-solid fa-circle-info product-page__square-rectangle-message-icon"></i> You are asking us to manufacture a <span id="tabs_status_message">custom shape</span>. Enter your values below</p>
+        <p class="product-page__square-rectangle-message"><i class="fa-solid fa-circle-info product-page__square-rectangle-message-icon"></i> You are asking us to manufacture a <span id="tabs_status_message">custom shape</span><span id="tabs_status_message_2">. The roll length is <span id="tabs_status_message_3">'.$roll_length_v.'</span> metres</span>. Enter your values below</p>
 
         <!-- File Upload Fields -->
         <div id="pdf_upload_container">
@@ -363,7 +349,7 @@ function custom_price_input_fields_prefill() {
 
         <label class="product-page__input-wrap">Width (MM): <input class="product-page__input" type="number" id="input_width" name="custom_width" min="0.01" step="0.01" required></label>
         <label class="product-page__input-wrap"><span class="product-page__rolls-label-text-1">Length (MM):</span> <input class="product-page__input" type="number" id="input_length" name="custom_length" min="0.01" step="0.01" required></label>
-        <label class="product-page__input-wrap"><span class="product-page__rolls-label-text-2">Total number of parts:</span> <input class="product-page__input" type="number" id="input_qty" name="custom_qty" value="1" min="1" step="1" required></label>
+        <label style="position:relative;" class="product-page__input-wrap"><span class="product-page__rolls-label-text-2">Total number of parts:</span> <input class="product-page__input" type="number" id="input_qty" name="custom_qty" value="1" min="1" step="1" required></label>
         </div>';
 
 
@@ -584,6 +570,10 @@ function calculate_secure_price() {
     $product_id = intval($_POST['product_id']);
     $is_product_single = function_exists('get_field') ? get_field('is_product_single', $product_id) : false;
 
+    $roll_length = function_exists('get_field') ? floatval(get_field('roll_length', $product_id)) : false;
+    //$roll_length = floatval(get_field('roll_length', $product_id));
+    $roll_length_v = ($roll_length > 0) ? $roll_length / 1000 : 0;
+
     if ($is_product_single) {
         $product = wc_get_product($product_id);
         if (!$product) {
@@ -627,8 +617,8 @@ function calculate_secure_price() {
     $sheet_length_mm = $product->get_length() * 10;
     $sheet_width_mm = $product->get_width() * 10;
     $stock_quantity = $product->get_stock_quantity();
-    //$border_around = function_exists('get_field') ? floatval(get_field('border_around', $product_id) ?: 0.2) : 0.2;
-    $border_around = ($shape_type === 'stock-sheets' || $shape_type === 'rolls') ? 0 : (get_field('border_around', $product_id) ?: 0.2); // sundays partial backorder fix
+    $border_around = function_exists('get_field') ? floatval(get_field('border_around', $product_id) ?: 0.2) : 0.2;
+    //$border_around = ($shape_type === 'stock-sheets' || $shape_type === 'rolls') ? 0 : (get_field('border_around', $product_id) ?: 0.2); // ah fix for partial backorder
 
     if ($sheet_length_mm <= 0 || $sheet_width_mm <= 0) {
         wp_send_json_error(['message' => 'Invalid sheet dimensions for this product.']);
@@ -662,29 +652,21 @@ function calculate_secure_price() {
         $width,
         $length,
         $qty,
-        $product_id,
-        $border_around // sundays partial backorder fix
+        $product_id
     );
 
     $sheets_required = $sheet_result['sheets_required'];
-    $is_backorder = $sheets_required > $stock_quantity;
+    $sheets_required_rolls = $sheet_result['sheets_required'] * $roll_length_v;
 
-    if ($shape_type === 'rolls') {
-        $roll_length = floatval(get_field('roll_length', $product_id) ?: 0);
-        $roll_length_v = $roll_length / 1000;
-        $sheets_required = ceil($qty * $roll_length_v);
+    /* AH rolls fix 9.12.2025 */
+    if($shape_type === "rolls"){
+        $is_backorder = $sheets_required_rolls > $stock_quantity;
+    } else {
         $is_backorder = $sheets_required > $stock_quantity;
     }
-
-
-
-    error_log("Sheets Required (b)" . $sheets_required);
-    error_log("Is Backorder" . $is_backorder);
-    error_log('border_around: ' . $border_around);
-    error_log('shape type: ' . $shape_type);
-    error_log('Roll Length: ' . $roll_length);
-    error_log('Roll Length V: ' . $roll_length_v);
-
+    /* AH rolls fix 9.12.2025 */
+    
+    // $is_backorder = $sheets_required > $stock_quantity;
 
 
     // SEND DATA TO algorith-core-functionality.js
@@ -699,7 +681,7 @@ function calculate_secure_price() {
         'entered_quantity' => $qty,
         'discount_rate' => $discount_rate,
         'border_around' => $border_around,
-        'roll_length_v' => isset($roll_length_v) ? $roll_length_v : 1,
+        'roll_length' => $roll_length_v
     ]);
 }
 // 3. SECURE PRICE CALCULATION IN PHP
@@ -1121,7 +1103,8 @@ function calculate_shipping_cost($total_del_weight, $country) {
 add_filter('woocommerce_add_cart_item_data', 'add_custom_price_cart_item_data_secure', 10, 2);
 function add_custom_price_cart_item_data_secure($cart_item_data, $product_id) {
     $is_product_single = function_exists('get_field') ? get_field('is_product_single', $product_id) : false;
-
+    $roll_length = floatval(get_field('roll_length', $product_id));
+    $roll_length_v = ($roll_length > 0) ? $roll_length / 1000 : 0;
     $cart_item_data['custom_inputs'] = [];
 
     if (
@@ -1263,7 +1246,12 @@ function add_custom_price_cart_item_data_secure($cart_item_data, $product_id) {
     $total_del_weight = $totalSqCm * floatval($product_weight) * $quantity * 1.03;
     $final_shipping = calculate_shipping_cost($total_del_weight, $country);
 
-    $stock_quantity = $product->get_stock_quantity();
+    if($shape_type === "rolls"){
+        $stock_quantity = $product->get_stock_quantity() / $roll_length_v;
+    } else {
+        $stock_quantity = $product->get_stock_quantity(); // I NEED TO DIVIDE THIS VALUE BY ROLL LENGTH OR FOR MY TEST EXAMPLE '8'
+    }
+
     $sheets_required = $sheet_result['sheets_required'];
     $is_backorder_raw = $sheets_required > $stock_quantity;
 
@@ -1793,6 +1781,8 @@ add_filter('woocommerce_get_item_data', 'show_custom_input_details_in_cart', 10,
 function show_custom_input_details_in_cart($item_data, $cart_item) {
     $product_id = $cart_item['product_id'];
     $is_product_single = function_exists('get_field') ? get_field('is_product_single', $product_id) : false;
+    $roll_length = floatval(get_field('roll_length', $product_id));
+    $roll_length_v = ($roll_length > 0) ? $roll_length / 1000 : 0;
 
     if ($is_product_single) {
         return $item_data; // Skip custom inputs for single products
@@ -1854,12 +1844,38 @@ function show_custom_input_details_in_cart($item_data, $cart_item) {
         }
 
         // Quantity
-        if (isset($cart_item['custom_inputs']['qty'])) {
-            $item_data[] = [
-                'name' => 'Total number of parts',
-                'value' => $cart_item['custom_inputs']['qty']
-            ];
+        // if (isset($cart_item['custom_inputs']['qty'])) {
+        //     $item_data[] = [
+        //         'name' => 'Total number of parts',
+        //         'value' => $cart_item['custom_inputs']['qty']
+        //     ];
+        // }
+
+
+        if ($cart_item['custom_inputs']['shape_type'] === "rolls") {
+
+        if (!empty($cart_item['custom_inputs']['qty']) && $roll_length_v > 0) {
+
+                $qty = floatval($cart_item['custom_inputs']['qty']);
+                $parts = $qty / $roll_length_v;
+
+                $item_data[] = [
+                    'name'  => 'Total number of rolls',
+                    'value' => $cart_item['custom_inputs']['qty']
+                ];
+            }
+
+        } else {
+
+            if (!empty($cart_item['custom_inputs']['qty'])) {
+
+                $item_data[] = [
+                    'name'  => 'Total number of parts',
+                    'value' => $cart_item['custom_inputs']['qty']
+                ];
+            }
         }
+
 
         // Despatch Notes
         if (isset($cart_item['custom_inputs']['despatch_notes'])) {
@@ -1895,7 +1911,7 @@ add_filter('woocommerce_get_cart_item_from_session', function($item, $values) {
 
 
 
-// THIS IS THE FUNCTION THAT SENDS THE FINAL PRICE TO THE CART
+
 add_action('woocommerce_before_calculate_totals', 'apply_secure_custom_price');
 
 function apply_secure_custom_price($cart) {
@@ -1938,7 +1954,7 @@ function apply_secure_custom_price($cart) {
             $is_backorder = isset($cart_item['custom_inputs']['is_backorder']) ? $cart_item['custom_inputs']['is_backorder'] : false;
             $shape_type = $cart_item['custom_inputs']['shape_type'] ?? 'custom-shape-drawing'; 
 
-            if (!in_array($shape_type, ['custom-shape-drawing', 'square-rectangle'])) {
+            if (!in_array($shape_type, ['custom-shape-drawing', 'square-rectangle', 'circle-radius', 'stock-sheets', 'rolls'])) {
                 if (defined('WP_DEBUG') && WP_DEBUG) {
                     error_log("apply_secure_custom_price: Invalid shape_type ($shape_type) for cart item key $cart_item_key. Defaulting to custom-shape-drawing.");
                 }
@@ -1946,6 +1962,7 @@ function apply_secure_custom_price($cart) {
             }
 
             if ($is_backorder && !empty($cart_item['custom_inputs']['backorder_data'])) {
+                //error_log('We triggered the backorder');
                 $backorder_data = $cart_item['custom_inputs']['backorder_data'];
                 // Use the backorder total if valid
                 if (isset($backorder_data['backorder_total']) && $backorder_data['backorder_total'] > 0) {
@@ -1956,6 +1973,7 @@ function apply_secure_custom_price($cart) {
                     $price_per_sheet = $sheets_required > 0 ? $total_price / $sheets_required : $total_price;
                 }
             } else {
+                //error_log('We triggered the else');
                 // Use stored price per sheet if available, otherwise recalculate
                 $price_per_sheet = isset($cart_item['custom_inputs']['price']) ? floatval($cart_item['custom_inputs']['price']) : 0;
                 if ($price_per_sheet <= 0) {
@@ -1966,7 +1984,6 @@ function apply_secure_custom_price($cart) {
 
           if (!is_wp_error($price_per_sheet)) {
                 $cart_item['data']->set_price($price_per_sheet);
-                error_log("Final Price Sent To Cart: " . $price_per_sheet);
             } else {
                 if (defined('WP_DEBUG') && WP_DEBUG) {
                     error_log("apply_secure_custom_price: Error calculating price for product ID $product_id: " . $price_per_sheet->get_error_message());
@@ -2176,27 +2193,20 @@ function clear_custom_shipping_session($order_id) {
 
 // CALCULATE SHEETS REQUIRED
 
-function calculate_sheets_required($sheet_width, $sheet_length, $part_width, $part_length, $quantity, $product_id, $border_cm = null) {
+function calculate_sheets_required($sheet_width, $sheet_length, $part_width, $part_length, $quantity, $product_id) {
 
-    //$border_cm = 0.2;
-    // sundays partial backorder fix
-    if ($border_cm === null) {
-        $border_cm = function_exists('get_field') ? get_field('border_around', $product_id) ?: 0.2 : 0.2;
-    }
-    // sundays partial backorder fix
-
-    error_log("Product ID: $product_id");
-    error_log("Border CM: $border_cm");
-    /*
+    $border_cm = 0.2;
+    
     if ($product_id && function_exists('get_field')) {
-        $acf_border = get_field('border_around', $product_id);
-        error_log("ACF Border Active: $acf_border");
+        $acf_border = get_field('border_around', $product_id); // i need to conditionally set $acf_border to '0' if stock sheets is clicked
         if (is_numeric($acf_border) && $acf_border > 0) {
             $border_cm = floatval($acf_border);
-        }
+        } 
+        // else {
+        //      $border_cm = 0;
+        // }
     }
-    */  
-
+    
     $border_mm = $border_cm * 10; // cm → mm
 
     $edge_margin = $border_mm;
@@ -2234,8 +2244,6 @@ function calculate_sheets_required($sheet_width, $sheet_length, $part_width, $pa
 
     // Calculate required sheets
     $sheets_required = ceil($quantity / $parts_per_sheet);
-
-    error_log("Sheets Required (a): " . $sheets_required);
 
     return [
         'sheets_required' => $sheets_required,
@@ -2421,7 +2429,6 @@ function save_shipment_callback() {
 
     $total_shipment_fee = array_sum($fees); //new cofc delivery options
 
-
     if (!$despatch_date || $parts < 1) {
         wp_send_json_error(['message' => 'Invalid despatch date or parts.']);
     }
@@ -2450,7 +2457,6 @@ function save_shipment_callback() {
     ];
 
     WC()->session->set('custom_shipments', $shipments);
-    //error_log("Session Custom Shipments: " . WC()->session->get('custom_shipments', $shipments));
 
     $new_total = array_sum(array_column($shipments, 'parts'));
     $remaining = $custom_qty - $new_total;
@@ -2489,7 +2495,7 @@ function save_shipment_callback() {
                                 <td class="delivery-options-shipment__display-results">
                                     <?php echo esc_html($shipment['parts']); ?>
                                 </td>
-                                <td class="delivery-options-shipment__display-results"> <!-- NEW -->
+                                <td class="delivery-options-shipment__display-results"> 
                                         <?php echo esc_html($fee_display); ?>
                                 </td>
                                 <td class="delivery-options-shipment__display-results">
@@ -2597,7 +2603,7 @@ function delete_shipment() {
 // HANDLE DELIVERY OPTIONS DELETE AJAX SHIPPING
 
 
-// GET THE 4remaining_parts VALUE FOR LATER USE ON THE DELIVERY OPTIONS MODAL
+// GET THE remaining_parts VALUE FOR LATER USE ON THE DELIVERY OPTIONS MODAL
 add_action('wp_ajax_get_remaining_parts', 'get_remaining_parts_callback');
 add_action('wp_ajax_nopriv_get_remaining_parts', 'get_remaining_parts_callback'); // If needed for guests
 function get_remaining_parts_callback() {
@@ -2610,7 +2616,7 @@ function get_remaining_parts_callback() {
 
     wp_send_json_success(['remaining_parts' => $remaining_parts]);
 }
-// GET THE 4remaining_parts VALUE FOR LATER USE ON THE DELIVERY OPTIONS MODAL
+// GET THE remaining_parts VALUE FOR LATER USE ON THE DELIVERY OPTIONS MODAL
 
 
 // HANDLE TEMP PDF DELETE

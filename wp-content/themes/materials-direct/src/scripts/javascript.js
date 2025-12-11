@@ -40,6 +40,8 @@ jQuery(document).ready(function($){
 
         $('#input_radius').closest("label").hide();
 
+        $('#input_qty_rolls').hide();
+
         // display active class for product page tabs
         $("#custom_drawing").closest("li").addClass("active");
 
@@ -96,6 +98,17 @@ jQuery(document).ready(function($){
             }
         });
 
+        // display cofc on product page 'on keyup' dor rolls
+        $('#input_qty_rolls').on('keyup change', function() {
+            const qty_rolls = parseInt($(this).val(), 10);
+
+            if (!isNaN(qty_rolls) && qty_rolls > 0) {
+            $('.product-page__optional-fees').css('display', 'flex');
+            } else {
+            $('.product-page__optional-fees').css('display', 'none');
+            }
+        });
+
         $('body').on('change', '#add_manufacturers_COFC', function() {
 		    alert("Supplying the manufacturers CofC may effect the lead time");
 	    });
@@ -143,6 +156,7 @@ jQuery(document).ready(function($){
             $('#input_length').closest("label").show();
             $('#input_radius').closest("label").hide();
             $("#input_radius").val("");
+            $('#input_qty_rolls').show();
         });
         $("#square_rectangle").click(function(){
             $('#circle-radius').closest(".product-page__tabs-label").removeClass("active");
@@ -158,6 +172,7 @@ jQuery(document).ready(function($){
             $('#input_length').closest("label").show();
             $('#input_radius').closest("label").hide();
             $("#input_radius").val("");
+            $('#input_qty_rolls').hide();
         });
         $("#stock_sheets").click(function(){
             $('#circle-radius').closest(".product-page__tabs-label").removeClass("active");
@@ -173,6 +188,7 @@ jQuery(document).ready(function($){
             $('#input_length').closest("label").show();
             $('#input_radius').closest("label").hide();
             $("#input_radius").val("");
+            $('#input_qty_rolls').hide();
         });
         $("#circle-radius").click(function(){
             $('#pdf_upload_label').hide();
@@ -185,6 +201,7 @@ jQuery(document).ready(function($){
             $('#input_width').closest("label").hide();
             $('#input_length').closest("label").hide();
             $('#input_radius').closest("label").show();
+            $('#input_qty_rolls').hide();
         });
         $("#custom_drawing").click(function(){
             $('#pdf_upload_label').show();
@@ -198,6 +215,7 @@ jQuery(document).ready(function($){
             $('#input_length').closest("label").show();
             $('#input_radius').closest("label").hide();
             $("#input_radius").val("");
+            $('#input_qty_rolls').hide();
         });
         // hide/show file uploads when square rectangle/circle radius is clicked
 
@@ -232,6 +250,16 @@ jQuery(document).ready(function($){
             $("#generate_price").prop("disabled", false);
         });
         // add width and length values based on circle radius input
+
+        // add quantity value based on rolls quantity input
+        var rollLength = parseFloat($('#tabs_status_message_3').text());
+
+        $('#input_qty_rolls').on('keyup', function() {
+            var keyup_value_rolls = $(this).val() * rollLength;
+            console.log(keyup_value_rolls);
+            $("#input_qty").val(keyup_value_rolls);
+        });
+        // add quantity value based on rolls quantity input
 
         // faqs accordion
         $(".faqs__ui-accordion .faqs__ui-accordion-header").on("click", function() {
