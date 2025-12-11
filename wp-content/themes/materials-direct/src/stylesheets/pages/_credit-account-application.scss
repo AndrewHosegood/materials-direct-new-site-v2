@@ -1,0 +1,27 @@
+.credit-account-application {
+    background: #f7f7f7;
+    padding: 3rem 0;
+    &__partner-logos {
+        background: white;
+    }
+    &__4-column-company-info {
+        background: white;
+        padding: 3rem 0;
+    }
+    & form {
+        display: flex;
+        flex-wrap: wrap;
+    }
+    & form .any-questions__form-input-1 p {
+        padding: 0;
+        margin: 0 0 0.85rem 0;
+    }
+    & form .any-questions__form-input-1b p {
+        padding: 0;
+        margin: 0 0 0.85rem 0;
+    }
+    & form .any-questions__form-input-2 p {
+        padding: 0;
+        margin: 0 0 0.85rem 0;
+    }
+}
