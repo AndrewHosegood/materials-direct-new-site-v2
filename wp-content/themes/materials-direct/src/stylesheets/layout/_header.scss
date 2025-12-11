@@ -119,16 +119,6 @@
     &__main-menu li a {
         color: variables.$secondary-color;
     }
-    // &__cart-wrapper {
-    //     position: absolute;
-    //     margin-right: 0.5rem;
-    //     right: 4rem;
-    //     top: 4px;
-    //     @include breakpoints.laptop {
-    //         right: 0;
-    //         top:0;
-    //     }
-    // }
     &__cart-count {
         background: variables.$secondary-color;
         color: white;
@@ -156,13 +146,33 @@
     color: white;
     background: variables.$primary-color;
 }
-// .is-form-style {
-//     margin-top: 2.9rem;
-//      @include breakpoints.laptop {
-//         margin-top: 0;
-//      }
-// }
 .is-form-style .is-search-submit path {
   fill: white;
 }
 
+.menu-item-top-right-credit a {
+    font-size: 0.82rem;
+    font-weight: 300;
+    line-height: 1.25rem;
+    background: variables.$primary-color;
+    border-radius: 4px;
+    padding: 0 6px 0 0;
+    -webkit-transition: background 0.05s ease-in;
+    transition: background 0.05s ease-in;
+}
+.menu-item-top-right-credit a:hover {
+    color: variables.$secondary-color;
+    text-decoration: none;
+    background: variables.$primary-color;
+}
+.menu-item-top-right-credit a:before {
+    font-family: 'FontAwesome';
+    content: '\f058 ';
+    //content: url("/wp-content/uploads/2024/07/check-circle-solid-2.svg");
+    width: 11px;
+    height:11px;
+    font-weight: normal;
+    font-style: normal; 
+    display: inline-block;
+    margin: 0 0.3rem;
+}

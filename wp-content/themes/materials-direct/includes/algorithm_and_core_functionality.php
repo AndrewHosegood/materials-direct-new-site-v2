@@ -354,6 +354,7 @@ function custom_price_input_fields_prefill() {
 
 
         // MOCOF FAIR CONTENT
+
         echo '<div id="cofc_hide_show"><div class="product-page__optional-fees" style="display:none;">
 
             <h4 class="product-page__optional-fees-title">Do you require these addons with your product?</h4>
@@ -384,6 +385,10 @@ function custom_price_input_fields_prefill() {
 
         </div></div>';
         // END MOCOF FAIR CONTENT
+
+        // Display login buttons if the user is not logged in
+        echo do_shortcode('[md_shipping_options]');
+        // Display login buttons if the user is not logged in
 
 
         if($is_full_backorder != 1){

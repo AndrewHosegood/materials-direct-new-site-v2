@@ -55,6 +55,7 @@ function materials_direct_setup() {
 			'service-sectors' => esc_html__( 'service-sectors', 'materials-direct' ),
 			'useful-links' => esc_html__( 'useful-links', 'materials-direct' ),
 			'page-navigation' => esc_html__( 'page-navigation', 'materials-direct' ),
+			'page-not-found' => esc_html__( 'page-not-found', 'materials-direct' ),
 		)
 	);
 
@@ -412,9 +413,15 @@ require_once('includes/news-page-favourite-heart-system.php');
 require_once('includes/show-hide-product-rolls-tab.php');
 /* Show or hide product rolls tab based on ACF value */
 
+/* Display one shipment/scheduled shipment buttons on product page */
+require_once('includes/product-page-one-shipment-schedule-shipments-buttons.php');
+/* Display one shipment/scheduled shipment buttons on product page */
+
+/* Toggle show/hide credit account related links in header */
+require_once('includes/show-hide-credit-account-links-in-header.php');
+/* Toggle show/hide credit account related links in header */
+
 /* END CUSTOM FUNCTIONS */
-
-
 
 
 
@@ -422,10 +429,6 @@ require_once('includes/show-hide-product-rolls-tab.php');
 /* Custom voucher discount */
 require_once('includes/custom-voucher-system.php');
 /* Custom voucher discount */
-
-
-
-
 
 
 

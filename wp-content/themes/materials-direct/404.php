@@ -17,13 +17,20 @@ get_header();
 				<h1 class="page-title error-404__title"><?php esc_html_e( 'Oops! That page can&rsquo;t be found.', 'materials-direct' ); ?></h1>
 			</header><!-- .page-header -->
 
-			<div class="page-content">
+			<div class="page-content error-404__page-content">
 				<p><?php esc_html_e( 'It looks like nothing was found at this location. Maybe try one of the links below or a search?', 'materials-direct' ); ?></p>
 
-					<?php
-					get_search_form();
+					<a class="error-404__btn button" href="/shop/?#advanced-filter">Product Search</a>
 
-					//the_widget( 'WP_Widget_Recent_Posts' );
+					<?php
+					wp_nav_menu(
+						array(
+							'theme_location' => 'page-not-found',
+							'menu_id'        => 'page-not-found',
+							'container'      => false,
+							'menu_class'     => 'error-404__not-found-menu',
+						)
+					);
 					?>
 
 

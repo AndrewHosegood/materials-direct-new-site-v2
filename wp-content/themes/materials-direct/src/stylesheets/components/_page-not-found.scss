@@ -1,9 +1,23 @@
 .error-404 {
+    &__page-content {
+        padding: 2.5rem 0 3.5rem 0;
+    }
     &__title {
         color: white;
         background-image: url('http://localhost:8888/wp-content/uploads/2025/11/header-place-holder-image.webp');
         background-size: cover;
         background-repeat: no-repeat;
         padding: 5rem 0;
+    }
+    &__not-found-menu {
+        text-align: center;
+        margin: 1rem 0;
+    }
+    &__not-found-menu li {
+        display: inline;
+        margin: 0 0.4rem;
+    }
+    &__btn {
+        margin: 1rem 0;
     }
 }
