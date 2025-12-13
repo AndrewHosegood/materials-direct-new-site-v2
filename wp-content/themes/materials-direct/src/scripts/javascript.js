@@ -342,6 +342,32 @@ jQuery(document).ready(function($){
                 }
             }
         });
+        $('.manufacturing-services__carousel').owlCarousel({
+            loop:true,
+            margin:10,
+            nav:true,
+            autoplay: true,            
+            autoplayTimeout: 3000,     
+            autoplayHoverPause: true, 
+            navText: [
+                '<span class="our-partners__nav-previous"><img src="http://localhost:8888//wp-content/themes/materials-direct/images/prev-1.svg" alt="Prev"></span>',
+                '<span class="our-partners__nav-next"><img src="http://localhost:8888//wp-content/themes/materials-direct/images/next-1.svg" alt="Next"></span>'
+            ],
+            responsive:{
+                0:{
+                    items:1
+                },
+                494:{
+                    items:2
+                },
+                768:{
+                    items:3
+                },
+                1240:{
+                    items:3
+                }
+            }
+        });
         $('.banner').owlCarousel({
             loop:true,
             margin:10,

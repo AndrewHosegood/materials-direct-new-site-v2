@@ -78,6 +78,24 @@
         grid-gap: 3.5rem;
     }
 }
+.grid-gap-four {
+    grid-gap: 0.8rem;
+    @include breakpoints.tablet {
+        grid-gap: 2rem;
+    }
+    @include breakpoints.laptop {
+        grid-gap: 4rem;
+    }
+}
+.grid-gap-four-point-five {
+    grid-gap: 0.8rem;
+    @include breakpoints.tablet {
+        grid-gap: 2rem;
+    }
+    @include breakpoints.laptop {
+        grid-gap: 4.5rem;
+    }
+}
 .text-center {
     text-align:center;
 }
