@@ -244,11 +244,14 @@
 }
 
 .credit-account-banner {
-    height: 400px;
+    height: 220px;
+    @include breakpoints.iphone {
+        height: 400px;
+    }
     &__container {
         width: 100%;
-        height: auto;
-        @include breakpoints.laptop {
+        height: 220px;
+        @include breakpoints.iphone {
             height: 400px;
         }
         background-repeat:no-repeat;
@@ -256,8 +259,8 @@
     }
     & .item {
         width: 100%;
-        height: auto;
-        @include breakpoints.laptop {
+        height: 220px;
+        @include breakpoints.iphone {
             height: 400px;
         }
     }
@@ -267,7 +270,7 @@
         flex-direction: column;
         justify-content: center;
         height: auto;
-        @include breakpoints.laptop {
+        @include breakpoints.iphone {
             height: 400px;
         }
         color: white;

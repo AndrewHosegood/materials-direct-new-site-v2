@@ -11,7 +11,22 @@
 }
 /* Header */
 .menu-item-top-right-credit a {
+    color: variables.$secondary-color !important;
+    @include breakpoints.iphone {
+        color: white !important;
+    }
+}
+.header__mobile-contact-link a {
+    background: variables.$primary-color;
     color: white !important;
+    position: absolute;
+    left: 0;
+    display: inline-block;
+    padding: 0.7rem 0.6rem !important;
+    @include breakpoints.iphone {
+        display:none;
+        
+    }
 }
 
 /* Google Reviews Widget */

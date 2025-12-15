@@ -28,7 +28,7 @@
 	<header id="masthead" class="header">
 
 		<div class="header__top">
-			<div class="container header__container">
+			<div class="header__container">
 				<ul class="header__contact-details">
 						<li class="header__phone"><i class="fa-solid fa-phone-flip header__icon-phone"></i><a class="header__icon-link" href="tel:+44(0)1908222211">+44 (0)1908 222 211</a></li>
 						<li class="header__mail"><i class="fa-regular fa-envelope header__icon-email"></i><a class="header__icon-link" href="mailto:info@materials-direct.com"> info@materials-direct.com</a></li>				

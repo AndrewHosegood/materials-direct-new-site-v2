@@ -6,6 +6,7 @@
 
 /// Centralized breakpoints map
 $breakpoints: (
+  iphone-small: 360px,
   iphone: 560px,
   tablet: 768px,
   laptop: 960px,
@@ -27,6 +28,12 @@ $breakpoints: (
 }
 
 // Convenience mixins
+@mixin iphone-small {
+  @include breakpoint(iphone-small) {
+    @content;
+  }
+}
+
 @mixin iphone {
   @include breakpoint(iphone) {
     @content;

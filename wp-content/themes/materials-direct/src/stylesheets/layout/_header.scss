@@ -10,12 +10,18 @@
     display: flex;
     flex-wrap:wrap;
     border-bottom: 1px solid #efefef;
-    // margin-bottom: 2.5rem;
     &__container {
         display: flex;
         flex-wrap:wrap;
         justify-content: center;
         text-align: center;
+        width: 100%;
+        
+        @include breakpoints.iphone {
+            width: 90%;
+            max-width: 1150px;
+            margin: auto;
+        }
         @include breakpoints.tablet {
             justify-content: space-between;
             text-align: unset;
@@ -35,22 +41,52 @@
     }
     &__menu-right {
         margin: 0;
+        position: relative;
+        width: 100%;
+        @include breakpoints.iphone {
+            width: auto;
+        }
     }
     &__menu-right li {
         display: inline;
-        margin: 0 0.7rem 0 0;
+        margin: 0 0.2rem 0 0;
         @include breakpoints.iphone {
             margin: 0 0 0 0.7rem;
         }
     }
+    &__menu-right li:nth-child(2) {
+        float: right;
+        @include breakpoints.iphone {
+            float:unset;
+        }
+    }
+    &__menu-right li:nth-child(3) {
+        float: right;
+        @include breakpoints.iphone {
+            float:unset;
+        }
+    }
     &__menu-right li a {
         color: variables.$secondary-color;
+        padding: 0.7rem 0.6rem 0.7rem 0;
+        font-size: 0.71rem;
+        @include breakpoints.iphone-small {
+            font-size: 0.79rem;
+        } 
+        @include breakpoints.iphone {
+            padding: .1rem .35rem .15rem .15rem;
+            font-size: 0.835rem;
+        }
+        line-height: 1rem;
     }
     &__top {
         background: #ededed;
         width: 100%;
         display: block;
-        padding: 0.5rem 0;
+        padding: 0;
+        @include breakpoints.iphone {
+            padding: 0.5rem 0;
+        }
         font-size: 0.83rem;
         font-weight: 400;
     }
@@ -58,23 +94,55 @@
         list-style-type: none;
         margin: 0;
         text-align: center;
+        width: 100%;
+        display: none;
         @include breakpoints.iphone {
+            display: block;
+            background: transparent;
             text-align: left;
+            width: auto;
         }
     }
     &__phone, &__mail {
         display: block;
         line-height: 1.3rem;
+        padding: 0.5rem 0;
+        font-size: 1.05rem;
+        background: variables.$primary-color;
+        transition: background 0.05s ease-in;
+        cursor: pointer;
         @include breakpoints.iphone {
+            background: transparent;
+            font-size: 0.88rem;
             display: inline;
             line-height: 1.8rem;
         }
     }
+    &__mail {
+        border-top: 1px solid rgba(255, 255, 255, 0.4);
+        margin-bottom: 0.4rem;
+        @include breakpoints.iphone {
+            border-top: 0px solid rgba(255, 255, 255, 0.4);
+            margin-bottom: 0;
+        }
+    }
+    &__mail:hover {
+        background: variables.$secondary-color
+    }
+    &__phone:hover {
+        background: variables.$secondary-color
+    }
     &__icon-link {
-        color: #bababa;
+        color: white;
+        @include breakpoints.iphone {
+            color: #bababa;
+        }
     }
     &__icon-phone, &__icon-email {
-        color: #bababa;
+        color: white;
+        @include breakpoints.iphone {
+            color: #bababa;
+        }
     }
     &__left {
         width: 140px;
@@ -152,9 +220,14 @@
 
 .menu-item-top-right-credit a {
     font-size: 0.82rem;
-    font-weight: 300;
+    font-weight: 400;
     line-height: 1.25rem;
-    background: variables.$primary-color;
+    background: transparent;
+    float: right;
+    @include breakpoints.iphone {
+        background: variables.$primary-color;
+        float: unset;
+    }
     border-radius: 4px;
     padding: 0 6px 0 0;
     -webkit-transition: background 0.05s ease-in;
