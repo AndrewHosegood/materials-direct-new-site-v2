@@ -105,6 +105,24 @@ function materials_direct_setup() {
 			'flex-height' => true,
 		)
 	);
+
+	/**
+	 * ADD THIS: Declare WooCommerce support
+	 * This enables proper template handling, product gallery features (zoom, lightbox, slider),
+	 * and ensures category/shop archives use the correct templates.
+	 */
+	add_theme_support( 'woocommerce', array(
+		'thumbnail_image_width' => 600,
+		'single_image_width'    => 800,
+		'product_grid'          => array(
+			'default_columns' => 3,  // Matches your custom 3-column change
+			'default_rows'    => 4,
+			'min_columns'     => 3,
+			'max_columns'     => 3,
+		),
+	) );
+
+
 }
 add_action( 'after_setup_theme', 'materials_direct_setup' );
 
@@ -232,6 +250,10 @@ require_once('includes/allow-dxf-upload.php');
 // Reposition product title on product page
 require_once('includes/reposition-product-title-on-product-page.php');
 // Reposition product title on product page
+
+// Remove breadcrumbs from product page
+require_once('includes/remove-breadcrumbs-from-product-page.php');
+// Remove breadcrumbs from product page
 
 // remove different shipping address option on checkout page
 require_once('includes/checkout-remove-different-shipping-address.php');
@@ -421,6 +443,8 @@ require_once('includes/product-page-one-shipment-schedule-shipments-buttons.php'
 require_once('includes/show-hide-credit-account-links-in-header.php');
 /* Toggle show/hide credit account related links in header */
 
+/* DELIVERY OPTIONS FUNCTIONS */
+require_once('includes/split_schedule_add_to_calendar.php');
 /* END CUSTOM FUNCTIONS */
 
 

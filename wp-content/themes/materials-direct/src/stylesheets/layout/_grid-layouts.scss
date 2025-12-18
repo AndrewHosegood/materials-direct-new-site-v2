@@ -101,7 +101,7 @@
 }
 
 // Woocommerce shop grid
-.woocommerce.columns-3 ul.products li.product {
+.woocommerce ul.products.columns-3 li.product {
     width: 100%;
     margin-right: 0%;
     @include breakpoints.iphone {
@@ -113,6 +113,7 @@
         margin-right: 1%;
     }
 }
+
 
 // Manufacturing custom post type styles
 

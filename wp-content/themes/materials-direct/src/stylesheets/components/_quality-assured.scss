@@ -3,7 +3,10 @@
 
 .quality-assured {
     background: variables.$secondary-color;
-    padding: 1.5rem 0;
+        padding: 0.5rem 0 2.5rem 0;
+    @include breakpoints.iphone {
+        padding: 1.5rem 0;
+    }
     @include breakpoints.tablet {
         padding: 3rem 0 4.5rem 0;;
     }
@@ -46,8 +49,11 @@
     }
     &__text {
         color: white;
-        font-size: 1.03rem;
+        font-size: 0.88rem;
         padding: 0 0 2rem 0;
+        @include breakpoints.iphone {
+            font-size: 1.03rem;
+        }
         @include breakpoints.tablet {
             padding: 0 2.5rem 2rem 2.5rem;
         }
@@ -59,7 +65,10 @@
         font-size: 0.95rem;
     }
     &__logo {
-        width: 130px;
+        width: 110px;
+        @include breakpoints.iphone {
+            width: 130px;
+        }
         display: block;
         margin-left: auto;
         margin-right: auto;
@@ -67,6 +76,9 @@
         margin-top: 0.45rem;
     }
     &__link {
-        font-size: 0.88rem;
+        font-size: 0.85rem;
+        @include breakpoints.iphone {
+            font-size: 0.88rem;
+        }
     }
 }

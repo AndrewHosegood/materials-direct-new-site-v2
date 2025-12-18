@@ -1,6 +1,6 @@
 <?php
 /**
- * The template for displaying all single posts
+ * The template for displaying all single news items
  *
  * @link https://developer.wordpress.org/themes/basics/template-hierarchy/#single-post
  *
@@ -9,9 +9,8 @@
 
 get_header();
 ?>
-<!-- TEMPLATE DEBUG: <?php echo basename(__FILE__); ?> -->
 
-	<main id="primary" class="site-main container ah">
+	<main id="primary" class="site-main container news-detail this-is-the-news-page">
 
 		<?php
 		while ( have_posts() ) :

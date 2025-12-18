@@ -15,6 +15,7 @@
         flex-wrap:wrap;
         justify-content: center;
         text-align: center;
+        flex-direction: row-reverse;
         width: 100%;
         
         @include breakpoints.iphone {
@@ -120,7 +121,7 @@
     }
     &__mail {
         border-top: 1px solid rgba(255, 255, 255, 0.4);
-        margin-bottom: 0.4rem;
+        margin-bottom: 0;
         @include breakpoints.iphone {
             border-top: 0px solid rgba(255, 255, 255, 0.4);
             margin-bottom: 0;

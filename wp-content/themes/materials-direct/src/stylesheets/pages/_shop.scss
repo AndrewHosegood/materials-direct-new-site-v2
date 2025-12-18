@@ -19,6 +19,22 @@
         color: variables.$secondary-color;
         line-height: 1.67rem;
     }
+    & ul.products li.product .button {
+        background: variables.$primary-color;
+        color: white;
+        font-weight: 400;
+        text-align: center;
+        display:block;
+        width: 100%;
+        position: absolute;
+        bottom: 0;
+        font-size: .87rem;
+        padding: .9rem;
+        font-weight: 300;
+    }
+    & ul.products li.product .button:hover {
+        background: variables.$secondary-color;
+    }
     & .woocommerce a.button {
         background: variables.$primary-color;
         color: white;
@@ -143,6 +159,9 @@
     }
     & .woocommerce ul.products li.product .button:hover {
         background: variables.$secondary-color
+    }
+    & .woocommerce-products-header {
+        display: none;
     }
 }
 

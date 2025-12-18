@@ -2,7 +2,10 @@
 @use "../abstracts/variables";
 
 .featured-icons {
-    margin: 3.8rem 0 3.65rem 0;
+    margin: 2.5rem 0 2.65rem 0;
+    @include breakpoints.iphone {
+        margin: 3.8rem 0 3.65rem 0;
+    }
     &__container {
         display: grid;
         grid-template-columns: repeat(2,1fr);
@@ -26,10 +29,14 @@
         flex-wrap: wrap;
     }
     &__icon-left {
-        width: 64px;
+        width: 55px;
         margin-right: auto;
         margin-left: auto;
-        margin-bottom: 1.8rem;
+        margin-bottom: 1.05rem;
+        @include breakpoints.iphone {
+            margin-bottom: 1.8rem;
+            width: 64px;
+        }
         @include breakpoints.tablet {
             width: 21%;
             margin-right: 10%;

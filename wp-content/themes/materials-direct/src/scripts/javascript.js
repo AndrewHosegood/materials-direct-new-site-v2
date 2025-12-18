@@ -140,7 +140,14 @@ jQuery(document).ready(function($){
         });
         // Voucher discount link
 
+        // Mobile Contact Link
+        $(document).on('click', '.header__mobile-contact-link', function(e) {
+            e.preventDefault();
+            $('.header__contact-details').toggleClass('header__contact-details-active');
+            $('.header__mobile-contact-link a').toggleClass('active');
 
+        });
+    
         // hide/show file uploads when square rectangle/circle radius is clicked
         $("#rolls").click(function(){
             $('#circle-radius').closest(".product-page__tabs-label").removeClass("active");
@@ -267,7 +274,6 @@ jQuery(document).ready(function($){
             const panelID = $(this).attr("aria-controls");
             const panel = $("#" + panelID);
 
-            // If clicking an already open panel → close it
             if (panel.is(":visible")) {
                 panel.slideUp(200);
                 $(this)
@@ -276,24 +282,19 @@ jQuery(document).ready(function($){
                 return;
             }
 
-            // Close all panels EXCEPT the one we're about to open
             $(".faqs__ui-accordion .faqs__ui-accordion-content:visible").not(panel).slideUp(200);
 
-            // Reset all headers EXCEPT clicked one
             $(".faqs__ui-accordion .faqs__ui-accordion-header")
                 .not(this)
                 .removeClass("ui-state-active ui-accordion-header-active")
                 .addClass("ui-accordion-header-collapsed");
 
-            // Open clicked panel
             $(this)
                 .removeClass("ui-accordion-header-collapsed")
                 .addClass("ui-state-active ui-accordion-header-active");
             
             panel.slideDown(200);
         });
-
-
         // faqs accordion
 
         // Owl Carousel

@@ -28,7 +28,16 @@
         
     }
 }
-
+.header__mobile-contact-link a.active {
+    background: variables.$secondary-color;
+}
+.header__mobile-contact-link a.active i {
+    rotate: 45deg;
+    vertical-align: middle;
+}
+.header__contact-details-active {
+    display: block !important;
+}
 /* Google Reviews Widget */
 .wp-gr:not(.wp-dark) .grw-review-inner.grw-backgnd {
     background: transparent !important;

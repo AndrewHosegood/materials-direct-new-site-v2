@@ -5,3 +5,5 @@ function custom_remove_product_titles_from_shop_and_categories() {
     }
 }
 add_action( 'woocommerce_before_shop_loop', 'custom_remove_product_titles_from_shop_and_categories', 1 );
+
+

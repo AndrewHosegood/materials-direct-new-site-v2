@@ -650,6 +650,8 @@ function calculate_secure_price() {
     }
     $per_part_price = $total_price / $qty;
 
+    error_log($per_part_price);
+
     // Dynamically calculate sheets required
     $sheet_result = calculate_sheets_required(
         $sheet_width_mm,
@@ -1290,7 +1292,8 @@ function add_custom_price_cart_item_data_secure($cart_item_data, $product_id) {
     }
 
     if ($is_scheduled) {
-
+        $cart_item_data['custom_inputs']['is_scheduled'] = $is_scheduled; // wednesday amend
+        $cart_item_data['custom_inputs']['roll_length'] = $roll_length_v; // wednesday amend
         $despatch_notes = '';
         $scheduled_shipments = $shipments_session;
         $enhanced_shipments = [];
@@ -1526,6 +1529,9 @@ function add_custom_price_cart_item_data_secure($cart_item_data, $product_id) {
         WC()->session->set('custom_shipments', []);
         WC()->session->set('custom_qty', null);
     }
+    echo "<pre>";
+    print_r($cart_item_data['custom_inputs']);
+    echo "</pre>";
 
     return $cart_item_data;
 }
@@ -1750,6 +1756,21 @@ function save_sheets_required_to_order_item($item, $cart_item_key, $values, $ord
     }
     if (isset($values['custom_inputs']['total_del_weight'])) {
         $item->add_meta_data('total_del_weight', $values['custom_inputs']['total_del_weight'], true);
+    }
+    if (isset($values['custom_inputs']['is_backorder'])) {
+        $item->add_meta_data('is_backorder', $values['custom_inputs']['is_backorder'], true);
+    }
+    if (isset($values['custom_inputs']['per_part'])) {
+        $item->add_meta_data('per_part', $values['custom_inputs']['per_part'], true);
+    }
+    if (isset($values['custom_inputs']['price'])) {
+        $item->add_meta_data('price', $values['custom_inputs']['price'], true);
+    }
+    if (isset($values['custom_inputs']['is_scheduled'])) {
+        $item->add_meta_data('is_scheduled', $values['custom_inputs']['is_scheduled'], true);
+    }
+    if (isset($values['custom_inputs']['roll_length'])) {
+        $item->add_meta_data('roll_length', $values['custom_inputs']['roll_length'], true);
     }
     if (isset($values['custom_inputs']['is_backorder']) && $values['custom_inputs']['is_backorder']) {
         $backorder_data = $values['custom_inputs']['backorder_data'];
@@ -2285,6 +2306,7 @@ function display_custom_inputs_on_product_page() {
     $quantity = isset($_POST['custom_qty']) ? intval($_POST['custom_qty']) : 0;
     $stock_quantity = $product->get_stock_quantity();
     $discount_rate = isset($_POST['custom_discount_rate']) ? floatval($_POST['custom_discount_rate']) : 0;
+    $is_backorder = isset($_POST['is_backorder']) ? floatval($_POST['is_backorder']) : 0;
 
     $country = isset($_POST['custom_country']) ? sanitize_text_field($_POST['custom_country']) : 'United Kingdom';
 
@@ -2360,6 +2382,7 @@ function display_custom_inputs_on_product_page() {
         echo '<p><strong>Total Delivery Weight:</strong> ' . esc_html($total_del_weight) . ' ' . esc_html($weight_unit) . '</p>';
         echo '<p><strong>Discount Rate:</strong> ' . esc_html($discount_rate) . '</p>';
         echo '<p><strong>Stock Quantity:</strong> ' . esc_html($stock_quantity) . '</p>';
+        echo '<p><strong>ON Backorder?:</strong> ' . esc_html($is_backorder) . '</p>';
         echo '</div>';
     }
 }

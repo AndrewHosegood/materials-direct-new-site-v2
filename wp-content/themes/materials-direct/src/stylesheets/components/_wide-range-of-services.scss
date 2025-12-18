@@ -2,7 +2,10 @@
 @use "../abstracts/variables";
 
 .wide-range-of-services {
-    padding: 2.5rem 0 5rem 0;
+    padding: 2.5rem 0 2.2rem 0;
+    @include breakpoints.iphone {
+        padding: 2.5rem 0 5rem 0;
+    }
     background-image: url('https://materials-direct.com/wp-content/uploads/2024/07/shutterstock_218519482-dark.jpg?id=39228');
     background-size: cover;
     background-repeat: no-repeat;
@@ -24,9 +27,12 @@
     &__heading {
         padding: 0 1rem;
         font-weight: 300;
-        margin-bottom: 3rem;
+        margin-bottom: 1rem;
         font-size: 1.7rem;
         line-height: 2.6rem;
+        @include breakpoints.iphone {
+        margin-bottom: 3rem;
+        }
         @include breakpoints.tablet {
             font-size: 1.8rem;
             line-height: 2.7rem;
@@ -45,17 +51,20 @@
     }
     &__card-icon {
         width: 100%;
+        margin-right: 0;
         @include breakpoints.iphone {
             width: 16%;
+            margin-right: 6%;
         }
-        margin-right: 6%;
     }
     &__card-icon-img {
         transition: all 0.13s ease-in;
         width: 50px;
-        margin-bottom: 1.5rem;
-        margin-top: 1.2rem;
+        margin-bottom: 0.2rem;
+        margin-top: 0.75rem;
         @include breakpoints.iphone {
+            margin-bottom: 1.5rem;
+            margin-top: 1.2rem;
             width: 100%;
             margin-bottom: 0;
         }
@@ -65,9 +74,11 @@
         width: 100%;
         text-align: center;
         color: white;
+        padding: 0 0.8rem;
         @include breakpoints.iphone {
             width: 78%;
             text-align: left;
+            padding: 0;
         }
     }
     &__card-content::before {

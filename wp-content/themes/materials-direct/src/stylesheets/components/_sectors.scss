@@ -2,7 +2,10 @@
 @use "../abstracts/variables";
 
 .sectors {
-    padding: 3rem 0;
+    padding: 0.5rem 0 2.5rem 0;
+    @include breakpoints.tablet {
+        padding: 3rem 0;
+    }
     text-align: center;
     &__subtitle::after {
         background: variables.$primary-color;

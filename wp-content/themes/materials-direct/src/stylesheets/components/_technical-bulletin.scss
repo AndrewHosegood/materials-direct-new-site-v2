@@ -6,7 +6,10 @@
     padding: 2.25rem 0 3.1rem 0;
     &__subheading {
         color: variables.$primary-color;
-        font-size: 1.36rem;
+        font-size: 1.19rem;
+        @include breakpoints.iphone {
+            font-size: 1.36rem;
+        }
         @include breakpoints.desktop {
             font-size: 1.45rem;
         }
@@ -17,8 +20,12 @@
     }
     &__heading {
         color: white;
-        font-size: 2.7rem;
-        line-height: 3.4rem;
+        font-size: 2.2rem;
+        line-height: 3.1rem;
+        @include breakpoints.iphone {
+            font-size: 2.7rem;
+            line-height: 3.4rem;
+        }
         padding: 0;
         margin-bottom: 1rem;
     }
