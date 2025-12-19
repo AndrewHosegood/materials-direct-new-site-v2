@@ -1256,7 +1256,7 @@ function add_custom_price_cart_item_data_secure($cart_item_data, $product_id) {
     if($shape_type === "rolls"){
         $stock_quantity = $product->get_stock_quantity() / $roll_length_v;
     } else {
-        $stock_quantity = $product->get_stock_quantity(); // I NEED TO DIVIDE THIS VALUE BY ROLL LENGTH OR FOR MY TEST EXAMPLE '8'
+        $stock_quantity = $product->get_stock_quantity(); 
     }
 
     $sheets_required = $sheet_result['sheets_required'];
@@ -1277,6 +1277,7 @@ function add_custom_price_cart_item_data_secure($cart_item_data, $product_id) {
     $shipments_session = WC()->session->get('custom_shipments', []);
     $is_scheduled = $allow_credit && !empty($shipments_session) && array_sum(array_column($shipments_session, 'parts')) == $quantity;
 
+    $despatch_string = ''; // thurdsay retrieve discount rate
     $despatch_notes = '';
     $backorder_data = [];
     $is_backorder = false;
@@ -1294,6 +1295,7 @@ function add_custom_price_cart_item_data_secure($cart_item_data, $product_id) {
     if ($is_scheduled) {
         $cart_item_data['custom_inputs']['is_scheduled'] = $is_scheduled; // wednesday amend
         $cart_item_data['custom_inputs']['roll_length'] = $roll_length_v; // wednesday amend
+        $despatch_string = ''; // thurdsay retrieve discount rate
         $despatch_notes = '';
         $scheduled_shipments = $shipments_session;
         $enhanced_shipments = [];
@@ -1304,6 +1306,12 @@ function add_custom_price_cart_item_data_secure($cart_item_data, $product_id) {
             $despatch_ymd = "$yyyy-$mm-$dd";
 
             $lead_time_label = get_shipment_lead_time_label($despatch_ymd);
+
+            error_log("Lead Time Label: " . $lead_time_label);
+
+            $discount_label = get_shipment_lead_time_discount($despatch_ymd); // thurdsay retrieve discount rate
+
+            error_log("Discount Label: " . $discount_label); // thurdsay retrieve discount rate
 
             // new code for new teusday cofc delivery options
             $feeAppendix = '';
@@ -1327,14 +1335,20 @@ function add_custom_price_cart_item_data_secure($cart_item_data, $product_id) {
             // new code for new teusday cofc delivery options
 
             $formatted_line = number_format($s['parts']) . " parts to be despatched on {$despatch_date} {$lead_time_label}" . $feeAppendix;
+
+            $formatted_line_discount = number_format($s['parts']) . ", " . $despatch_date .", ". $discount_label .", ". implode(', ', $feeParts) . ", "; // thurdsay retrieve discount rate
+
+            error_log("Formatted Line Discount: " . $formatted_line_discount);
+
             //$formatted_line = number_format($s['parts']) . " parts to be despatched on {$despatch_date} {$lead_time_label}";
             $despatch_notes .= $formatted_line . "\n";
-
+            $despatch_string .= $formatted_line_discount; // thurdsay retrieve discount rate
             $enhanced_shipments[] = [
                 'date'            => $despatch_date,
                 'parts'           => $s['parts'],
                 'lead_time_label' => $lead_time_label
             ];
+
         }
 
         $per_part_base = $base_total_price_no_disc / $quantity;
@@ -1513,6 +1527,7 @@ function add_custom_price_cart_item_data_secure($cart_item_data, $product_id) {
         'shipments' => $shipments,
         'total_del_weight' => $total_del_weight,
         'despatch_notes' => $despatch_notes,
+        'despatch_string' =>  $despatch_string, // thurdsay retrieve discount rate
         'is_backorder' => $is_backorder,
         'backorder_data' => $backorder_data,
         'stock_quantity' => $stock_quantity,
@@ -1522,6 +1537,8 @@ function add_custom_price_cart_item_data_secure($cart_item_data, $product_id) {
         $cart_item_data['custom_inputs']['is_scheduled'] = true;
         //$cart_item_data['custom_inputs']['scheduled_shipments'] = $scheduled_shipments;
         $cart_item_data['custom_inputs']['scheduled_shipments'] = $enhanced_shipments;
+        error_log("Enhanced Shipments:\n" . print_r($enhanced_shipments, true));
+        error_log("Lead Time Label:\n" . $lead_time_label);
     }
 
     // Clear custom_shipments and custom_qty sessions for scheduled orders
@@ -1529,9 +1546,9 @@ function add_custom_price_cart_item_data_secure($cart_item_data, $product_id) {
         WC()->session->set('custom_shipments', []);
         WC()->session->set('custom_qty', null);
     }
-    echo "<pre>";
-    print_r($cart_item_data['custom_inputs']);
-    echo "</pre>";
+    // echo "<pre>";
+    // print_r($cart_item_data['custom_inputs']);
+    // echo "</pre>";
 
     return $cart_item_data;
 }
@@ -1753,6 +1770,9 @@ function save_sheets_required_to_order_item($item, $cart_item_key, $values, $ord
     }
     if (isset($values['custom_inputs']['despatch_notes'])) {
         $item->add_meta_data('despatch_notes', $values['custom_inputs']['despatch_notes'], true);
+    }
+    if (isset($values['custom_inputs']['despatch_string'])) {
+        $item->add_meta_data('despatch_string', $values['custom_inputs']['despatch_string'], true);
     }
     if (isset($values['custom_inputs']['total_del_weight'])) {
         $item->add_meta_data('total_del_weight', $values['custom_inputs']['total_del_weight'], true);
@@ -2692,7 +2712,7 @@ function reset_custom_shipments_callback() {
 // RESET BUTTON
 
 
-//Delivery options lead time helper
+// Delivery options lead time helper
 /**
  * Return formatted lead-time + discount string for a despatch date.
  */
@@ -2734,4 +2754,34 @@ function get_shipment_lead_time_label( $despatch_ymd ) {
 
     return $label;
 }
-//Delivery options lead time helper
+// Delivery options lead time helper
+
+
+// Delivery Options Discount helper
+function get_shipment_lead_time_discount( $despatch_ymd ) {
+    $today_d            = date( 'Y-m-d' );
+    $today_ts_d        = strtotime( $today_d );
+    $despatch_ts_d     = strtotime( $despatch_ymd );
+    $calendar_days_d    = floor( ( $despatch_ts_d - $today_ts_d ) / 86400 );
+
+    if ( $calendar_days_d <= 1 ) {
+        $disc_d  = 0;
+    } elseif ( $calendar_days_d <= 4 ) {
+        $disc_d  = 0.015;
+    } elseif ( $calendar_days_d <= 6 ) {
+        $disc_d  = 0.02;
+    } elseif ( $calendar_days_d <= 11 ) {
+        $disc_d  = 0.025;
+    } elseif ( $calendar_days_d <= 13 ) {
+        $disc_d  = 0.03;
+    } elseif ( $calendar_days_d <= 29 ) {
+        $disc_d  = 0.035;
+    } elseif ( $calendar_days_d <= 34 ) {
+        $disc_d  = 0.04;
+    } else {
+        $disc_d  = 0.05;
+    }
+
+    return $disc_d;
+}
+// Delivery Options Discount helper
