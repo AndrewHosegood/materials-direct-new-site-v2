@@ -6,7 +6,9 @@
  *
  * @package Materials_Direct
  */
-
+?>
+<!-- TEMPLATE DEBUG: <?php echo basename(__FILE__); ?> -->
+<?php
 get_header();
 ?>
 

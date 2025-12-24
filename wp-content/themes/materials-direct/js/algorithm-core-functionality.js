@@ -340,7 +340,6 @@ function updateDatepickerMinDate() {
     
      // Calculate the delivery options price
     function calculateScheduledPrice() {
-
         const selectedTab = $('input[name="tabs_input"]:checked').val();
         if (selectedTab === 'custom-shape-drawing') {
             const pdfPath = $('#pdf_path').val().trim();
@@ -382,6 +381,7 @@ function updateDatepickerMinDate() {
                 if (response.success) {
                     const price = response.data.price;
                     const per_part = response.data.per_part;
+                    const per_part_base = response.data.per_part_base;
                     const sheetsRequired = response.data.sheets_required || 1;
                     const sheet_width_mm = response.data.sheet_width_mm;
                     const sheet_length_mm = response.data.sheet_length_mm;
@@ -641,6 +641,7 @@ function updateDatepickerMinDate() {
                     if (response.success) {
                         const price = response.data.price;
                         const adjustedPrice = response.data.per_part;
+                        //alert("adjustedPrice: " + adjustedPrice); // THIS VALUE MUST BE PASSED TO #CCP HIDDEN FIELD
                         const sheetsRequired = response.data.sheets_required || 1;
                         const isBackorder = response.data.is_backorder || false;
                         const sheet_width_mm = response.data.sheet_width_mm;
@@ -649,6 +650,9 @@ function updateDatepickerMinDate() {
                         const roll_length = response.data.roll_length;
 
                         console.log("isBackorder: " + isBackorder);
+
+                        // add per part cost to hidden field 
+                        $('#cpp').val(adjustedPrice);
 
                         /* AH rolls fix 9.12.2025 */
                         //const stock_quantity = response.data.stock_quantity; // this line!!!

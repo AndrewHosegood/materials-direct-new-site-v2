@@ -509,7 +509,9 @@ function custom_price_input_fields_prefill() {
             </div>
         </div>
         <div id="custom_price_display"></div>
-        <input type="hidden" id="custom_price" name="custom_price" value="">';
+        <input type="hidden" id="custom_price" name="custom_price" value="">
+        <input type="hidden" id="cpp" name="cost_per_part" value="">';
+
 
         echo '<div class="product-page__stages-heading"><h3 class="product-page__stages-heading-content two">Enter your delivery address</h3></div>';
 
@@ -650,7 +652,6 @@ function calculate_secure_price() {
     }
     $per_part_price = $total_price / $qty;
 
-    error_log($per_part_price);
 
     // Dynamically calculate sheets required
     $sheet_result = calculate_sheets_required(
@@ -674,6 +675,7 @@ function calculate_secure_price() {
     /* AH rolls fix 9.12.2025 */
     
     // $is_backorder = $sheets_required > $stock_quantity;
+
 
 
     // SEND DATA TO algorith-core-functionality.js
@@ -813,10 +815,12 @@ function calculate_scheduled_price_func() {
     $sheet_result = calculate_sheets_required($sheet_width_mm, $sheet_length_mm, $width, $length, $qty, $product_id);
     $sheets_required = $sheet_result['sheets_required'];
     $is_backorder = false; // No backorder for scheduled deliveries
+    error_log("Per Part Base 2: " . $per_part_base);
 
     wp_send_json_success([
         'price' => round($total_scheduled_price, 2),
         'per_part' => round($total_scheduled_price / $qty, 6), // Higher precision for per_part
+        'per_part_base' => $per_part_base,
         'total_optional_fees' => $total_optional_fees, //new cofc delivery options
         'sheets_required' => $sheets_required,
         'stock_quantity' => $stock_quantity,
@@ -1139,6 +1143,11 @@ function add_custom_price_cart_item_data_secure($cart_item_data, $product_id) {
     if (isset($_POST['dxf_path']) && !empty($_POST['dxf_path'])) {
         $cart_item_data['custom_inputs']['dxf_path'] = sanitize_text_field($_POST['dxf_path']);
     }
+
+    if (isset($_POST['cost_per_part']) && !empty($_POST['cost_per_part'])) {
+        $cart_item_data['custom_inputs']['cost_per_part'] = sanitize_text_field($_POST['cost_per_part']);
+    }
+    error_log("Cost Per Part (Sent To Cart)" . $cart_item_data['custom_inputs']['cost_per_part']);
 
     $product = wc_get_product($product_id);
     if (!$product) {
@@ -1782,6 +1791,9 @@ function save_sheets_required_to_order_item($item, $cart_item_key, $values, $ord
     }
     if (isset($values['custom_inputs']['per_part'])) {
         $item->add_meta_data('per_part', $values['custom_inputs']['per_part'], true);
+    }
+    if (isset($values['custom_inputs']['cost_per_part'])) {
+        $item->add_meta_data('cost_per_part', $values['custom_inputs']['cost_per_part'], true);
     }
     if (isset($values['custom_inputs']['price'])) {
         $item->add_meta_data('price', $values['custom_inputs']['price'], true);
