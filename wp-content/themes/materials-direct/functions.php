@@ -472,7 +472,27 @@ add_filter( 'woocommerce_customer_has_shipping_address', '__return_false' );
 
 
 
-
+add_filter( 'woocommerce_email_styles', 'custom_woocommerce_email_table_styles' );
+function custom_woocommerce_email_table_styles( $css ) {
+	$css .= "
+		#template_body table.email-order-details  {
+			border: 1px solid #ccc !important;
+		}
+	";
+	/*
+	$css .= "
+		#template_body table.email-order-details th,
+		#template_body table.email-order-details td,
+		#template_body table.order-item-data td,
+		#template_body table.order-totals th,
+		#template_body table.order-totals td {
+			border: 2px solid #ccc !important;
+			padding: 5px !important;
+		}
+	";
+	*/
+	return $css;
+}
 
 
 
