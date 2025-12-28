@@ -443,16 +443,25 @@ require_once('includes/product-page-one-shipment-schedule-shipments-buttons.php'
 require_once('includes/show-hide-credit-account-links-in-header.php');
 /* Toggle show/hide credit account related links in header */
 
-/* DELIVERY OPTIONS FUNCTIONS */
-require_once('includes/split_schedule_add_to_calendar.php');
+/* Remove get the app from emails */
+require_once('includes/remove-get-the-app-from-emails.php');
+/* Remove get the app from emails */
+
 /* END CUSTOM FUNCTIONS */
 
-
+/* DELIVERY OPTIONS FUNCTIONS */
+require_once('includes/split_schedule_add_to_calendar.php');
+/* END DELIVERY OPTIONS FUNCTIONS */
 
 
 /* Custom voucher discount */
 require_once('includes/custom-voucher-system.php');
 /* Custom voucher discount */
+
+
+/* Email Template CSS Styling */
+require_once('includes/email-template-css-styling.php');
+/* Email Template CSS Styling */
 
 
 
@@ -461,6 +470,11 @@ require_once('includes/custom-voucher-system.php');
 // Forces customers to re-enter shipping details on every order, even when logged in
 // Need to test that this is ok to use long term
 add_filter( 'woocommerce_customer_has_shipping_address', '__return_false' );
+
+
+
+
+
 
 
 

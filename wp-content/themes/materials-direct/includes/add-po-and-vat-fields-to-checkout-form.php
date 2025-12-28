@@ -52,17 +52,6 @@ function custom_save_checkout_fields_hpos_safe( $order, $data ) {
         );
     }
 }
-// add_action('woocommerce_checkout_update_order_meta', 'custom_save_checkout_fields');
-
-// function custom_save_checkout_fields($order_id) {
-//     if (!empty($_POST['po_order_ref_no'])) {
-//         update_post_meta($order_id, '_po_order_ref_no', sanitize_text_field($_POST['po_order_ref_no']));
-//     }
-
-//     if (!empty($_POST['vat_tax_no'])) {
-//         update_post_meta($order_id, '_vat_tax_no', sanitize_text_field($_POST['vat_tax_no']));
-//     }
-// }
 
 
 // Display custom fields in admin order edit page
@@ -105,7 +94,8 @@ function custom_display_fields_on_thankyou($order) {
 
 
 // Add custom fields to WooCommerce emails (both admin and customer)
-add_action('woocommerce_email_after_order_table', 'custom_display_fields_in_emails', 10, 4);
+
+add_action('woocommerce_email_before_order_table', 'custom_display_fields_in_emails', 10, 4);
 
 function custom_display_fields_in_emails($order, $sent_to_admin, $plain_text, $email) {
     // Get the values from order meta
@@ -122,13 +112,58 @@ function custom_display_fields_in_emails($order, $sent_to_admin, $plain_text, $e
         }
     } else {
         // HTML version
-        echo '<h2>Additional Information</h2><ul>';
-        if ($po_ref) {
-            echo '<li><strong>PO/Order Ref. No.:</strong> ' . esc_html($po_ref) . '</li>';
-        }
         if ($vat_no) {
-            echo '<li><strong>VAT / TAX No.:</strong> ' . esc_html($vat_no) . '</li>';
+            echo '<h2 style="font-size: 20px; line-height: 22px; font-weight: bold; margin: 0 0 18px; text-align: left; color: #ef9003; margin: 0;"><strong>VAT/TAX No.:</strong> ' . esc_html($vat_no) . '</h2>';
         }
-        echo '</ul>';
+        if ($po_ref) {
+            echo '<h2 style="font-size: 20px; line-height: 22px; font-weight: bold; margin: 0 0 18px; text-align: left; color: #ef9003; margin: 0;"><strong>Customer PO:</strong> ' . esc_html($po_ref) . '</h2>';
+        }
+
     }
 }
+
+
+/*
+add_filter( 'woocommerce_email_order_details_heading', 'custom_email_order_heading_with_meta', 10, 3 );
+
+function custom_email_order_heading_with_meta( $heading, $order, $email ) {
+
+    if ( ! $order instanceof WC_Order ) {
+        return $heading;
+    }
+
+    $po_ref = $order->get_meta( '_po_order_ref_no' );
+    $vat_no = $order->get_meta( '_vat_tax_no' );
+
+    // Nothing to add
+    if ( ! $po_ref && ! $vat_no ) {
+        return $heading;
+    }
+
+    // Plain text emails
+    if ( $email && $email->is_plain_text() ) {
+        if ( $po_ref ) {
+            $heading .= "\nPO / Order Ref: " . $po_ref;
+        }
+        if ( $vat_no ) {
+            $heading .= "\nVAT / TAX No: " . $vat_no;
+        }
+        return $heading;
+    }
+
+    // HTML emails
+    $extra = '<br><span style="font-size:14px; font-weight:normal; color:#555;">';
+
+    if ( $po_ref ) {
+        $extra .= '<strong>PO / Order Ref:</strong> ' . esc_html( $po_ref ) . '<br>';
+    }
+
+    if ( $vat_no ) {
+        $extra .= '<strong>VAT / TAX No:</strong> ' . esc_html( $vat_no );
+    }
+
+    $extra .= '</span>';
+
+    return $heading . $extra;
+}
+*/

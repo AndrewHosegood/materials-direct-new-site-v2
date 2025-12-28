@@ -2131,10 +2131,10 @@ function save_shipping_address_to_order_item($item, $cart_item_key, $values, $or
 
 
 // DISPLAY SHIPPING ADDRESS/NOTES IN ORDER EMAILS
-
+/*
 add_action('woocommerce_email_customer_details', 'add_custom_shipping_address_below_billing', 25, 4);
 function add_custom_shipping_address_below_billing($order, $sent_to_admin, $plain_text, $email) {
-    // Loop through order items to find the first shipping address
+
     $shipping_address = null;
     $despatch_notes = null;
 
@@ -2148,7 +2148,7 @@ function add_custom_shipping_address_below_billing($order, $sent_to_admin, $plai
             $despatch_notes = $meta_despatch_notes;
         }
         if ($shipping_address || $despatch_notes) {
-            break; // Only show first item with data
+            break; 
         }
     }
 
@@ -2182,7 +2182,7 @@ echo '<div class="custom-order-details" style="margin-top:10px;">';
 
     }
 }
-
+*/
 // DISPLAY SHIPPING ADDRESS/NOTES IN ORDER EMAILS
 
 
