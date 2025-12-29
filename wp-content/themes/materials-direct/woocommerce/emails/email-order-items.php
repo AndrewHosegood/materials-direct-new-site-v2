@@ -19,6 +19,7 @@ use Automattic\WooCommerce\Utilities\FeaturesUtil;
 
 defined( 'ABSPATH' ) || exit;
 
+
 $margin_side = is_rtl() ? 'left' : 'right';
 
 $email_improvements_enabled = FeaturesUtil::feature_is_enabled( 'email_improvements' );
@@ -190,7 +191,7 @@ foreach ( $items as $item_id => $item ) :
 			?>
 		</td>
         <!-- ah remove quantity field on email -->
-		<!-- <td class="td font-family text-align-<?php echo esc_attr( $price_text_align ); ?>" style="vertical-align:middle;"> -->
+		<td class="td font-family text-align-<?php echo esc_attr( $price_text_align ); ?>" style="vertical-align:middle;"> 
 			<?php
 			// echo $email_improvements_enabled ? '&times;' : '';
 			// $qty          = $item->get_quantity();
@@ -203,7 +204,7 @@ foreach ( $items as $item_id => $item ) :
 			// }
 			// echo wp_kses_post( apply_filters( 'woocommerce_email_order_item_quantity', $qty_display, $item ) );
 			?>
-		<!-- </td> -->
+		</td>
          <!-- ah remove quantity field on email -->
 		<td class="td font-family text-align-<?php echo esc_attr( $price_text_align ); ?>" style="vertical-align:middle;">
 			<?php echo wp_kses_post( $order->get_formatted_line_subtotal( $item ) ); ?>

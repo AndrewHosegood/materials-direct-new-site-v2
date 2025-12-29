@@ -386,7 +386,6 @@ function custom_debug_entire_order($order_id) {
                     $message_3 .= '<p>Hi '.$order->get_billing_first_name().',<br>Thank you for your order.</p>';
                 }
 
-                // $message_3 .= '<p>Hi Andrew,<br>Thank you for your credit account order. Please ensure payments are made on time</p>';
                 $message_3 .= '<h2 style="font-family: Helvetica, Roboto, Arial, sans-serif; color: #ef9003; display: block; font-size: 18px; font-weight: bold; line-height: 130%; margin: 0 0 18px; text-align: left;">';
                 $message_3 .= 'Customer PO: '.$po_ref_no.'<br>';
                 $message_3 .= 'MD Order: #'.$order_id.' <br>';
@@ -431,8 +430,17 @@ function custom_debug_entire_order($order_id) {
                     if($order_count == 1){
                         $message_3 .= '<strong class="wc-item-meta-label" style="padding-right: 10px; float: left; margin-right: .25em; clear: both;">Part shape</strong>';
                         $message_3 .= '<p>'.$shape_type.'</p>';
+
+                        if(!empty($row['pdf_part_shape_link'])){
+                            $message_3 .= '<strong class="wc-item-meta-label" style="padding-right: 10px; float: left; margin-right: .25em; clear: both;">Upload .PDF Drawing</strong> <p><a href="'.$pdf_part_shape_link.'">'.$pdf.'</a></p>';
+                        }
+                        if(!empty($row['dxf_part_shape_link'])){
+                            $message_3 .= '<strong class="wc-item-meta-label" style="padding-right: 10px; float: left; margin-right: .25em; clear: both;">Upload .DXF Drawing</strong> <p><a href="'.$dxf_part_shape_link.'">'.$dxf.'</a></p>';
+                        }
+
                         $message_3 .= '<strong class="wc-item-meta-label" style="padding-right: 10px; float: left; margin-right: .25em; clear: both;">Width (mm)</strong>';
                         $message_3 .= '<p>'.$width.'</p>';
+
                         $message_3 .= '<strong class="wc-item-meta-label" style="padding-right: 10px; float: left; margin-right: .25em; clear: both;">Length (mm)</strong>';
                         $message_3 .= '<p>'.$length.'</p>';
                     }
@@ -585,27 +593,36 @@ function custom_debug_entire_order($order_id) {
                                 $my_shipping_response = $meta_shipping_total_2;
                                 $my_shipping_response_calc += $meta_shipping_total_2;
                             }
+                            
+                            // Get the fair values
+                            $prices = [
+                                'Manufacturers COFC'              => 10,
+                                'Materials Direct COFC'           => 12.50,
+                                'First Article Inspection Report' => 95,
+                            ];
 
-                            preg_match_all('/(?:[a-zA-Z ]+?COFC|FAIR)/', $mcofc_fair_string, $mcofc_matches);
+                            $mcofc_fair_numeric = $prices[$mcofc_fair_string] ?? 0;
+                            // preg_match_all('/(?:[a-zA-Z ]+?COFC|FAIR)/', $mcofc_fair_string, $mcofc_matches);
 
-                            $mcofc_fair_numeric = 0;
+                            // $mcofc_fair_numeric = 0;
     
-                            foreach ($mcofc_matches[0] as $mcofc_match) {
+                            // foreach ($mcofc_matches[0] as $mcofc_match) {
     
-                                if($mcofc_match == "Manufacturers COFC"){
-                                    $match_number = 10;
-                                    $match_value = $mcofc_match . "- £" . $match_number;
-                                } elseif($mcofc_match == "FAIR"){
-                                    $match_number = 95;
-                                    $match_value = $mcofc_match . "- £" . $match_number;
-                                } else {
-                                    $match_number = 12.50;
-                                    $match_value = $mcofc_match . "- £" . $match_number;
-                                }
+                            //     if($mcofc_match == "Manufacturers COFC"){
+                            //         $match_number = 10;
+                            //         $match_value = $mcofc_match . "- £" . $match_number;
+                            //     } elseif($mcofc_match == "First Article Inspection Report"){
+                            //         $match_number = 95;
+                            //         $match_value = $mcofc_match . "- £" . $match_number;
+                            //     } else {
+                            //         $match_number = 12.50;
+                            //         $match_value = $mcofc_match . "- £" . $match_number;
+                            //     }
     
-                                $mcofc_fair_numeric += $match_number;
+                            //     $mcofc_fair_numeric += $match_number;
     
-                            }
+                            // }
+                            // Get the fair values
 
                             $vat_amount = $cppnew + $my_shipping_response - $tf_3 + $md_value_final + $mcofc_fair_numeric - $voucher_percent; 
 
@@ -650,21 +667,28 @@ function custom_debug_entire_order($order_id) {
                             $message_3 .= '<p style="margin: 0; padding: 0;">Shipping Weight: '.$row['shipping_weights'].'kg</p>';
                             $message_3 .= '<p style="margin: 0; padding: 0;">Discount: '.$discount_rate.'%</p>';
 
-                            foreach ($mcofc_matches[0] as $mcofc_match) {
-                                if($mcofc_match == "Manufacturers COFC"){
-                                    $match_number = 10;
-                                    $match_value = $mcofc_match . "- £" . $match_number;
-                                } elseif($mcofc_match == "FAIR"){
-                                    $match_number = 95;
-                                    $match_value = $mcofc_match . "- £" . $match_number;
-                                } else {
-                                    $mcofc_match = ltrim($mcofc_match);
-                                    $match_number = 12.50;
-                                    $match_value = $mcofc_match . "- £" . $match_number;
-                                }
-                                $message_3 .= '<p style="margin: 0; padding: 0;">('.$match_value.') </p>';
-                            }
-
+                            // foreach ($mcofc_matches[0] as $mcofc_match) {
+                            //     if($mcofc_match == "Manufacturers COFC"){
+                            //         $match_number = 10;
+                            //         $match_value = $mcofc_match . "- £" . $match_number;
+                            //     } elseif($mcofc_match == "FAIR"){
+                            //         $match_number = 95;
+                            //         $match_value = $mcofc_match . "- £" . $match_number;
+                            //     } else {
+                            //         $mcofc_match = ltrim($mcofc_match);
+                            //         $match_number = 12.50;
+                            //         $match_value = $mcofc_match . "- £" . $match_number;
+                            //     }
+                            //     $message_3 .= '<p style="margin: 0; padding: 0;">('.$match_value.') </p>';
+                            // }
+                            if($mcofc_fair_numeric == "10.00"){
+                                $mcofc_fair_numeric_title = "Manufacturers COFC";
+                            } elseif($mcofc_fair_numeric == "95.00"){
+                                $mcofc_fair_numeric_title = "First Article Inspection Report";
+                            } else {
+                                $mcofc_fair_numeric_title = "Materials Direct COFC";
+                            }   
+                            $message_3 .= '<p style="margin: 0; padding: 0;">('.$mcofc_fair_numeric_title.' - £'.$mcofc_fair_numeric.') </p>';
                             $message_3 .= '<p style="margin: 0; padding: 0;"><strong style="color:#ef9003;">Products Purchased Subtotal: £'.$subtotal_display.'</strong></p>';
                             $message_3 .= '<p style="margin: 0; padding: 0;"><strong>Total Price: £'.number_format($total_final, 2).'</strong></p><br>';
 
