@@ -24,7 +24,7 @@ function add_order_number_to_admin_email_table($item_id, $item, $order, $plain_t
                 $total_del_weight = floatval(wp_kses_post($meta_data->value));
             }
             if ($meta_data->key === 'cost_per_part') {
-                echo $cost_per_part = floatval(wp_kses_post($meta_data->value));
+                $cost_per_part = floatval(wp_kses_post($meta_data->value));
             }
 
             if ($meta_data->key === '_advanced_woo_discount_item_total_discount') {
@@ -87,12 +87,12 @@ function add_order_number_to_admin_email_table($item_id, $item, $order, $plain_t
             $shipping_total = $order->get_shipping_total(); // This is the shipping cost (excl. tax)
             $shipping_calc = $shipping_total / $num_dates;
 
-            echo "<p>Shipping: " . $shipping_total . "</p>";
+            //echo "<p>Shipping: " . $shipping_total . "</p>";
 
             echo '<ul class="delivery-options-list">';
 
             if ($num_dates >= 2) {
-                echo '<strong style="width:100%; padding-right:10px; float:left; margin-right:.25em; margin-bottom:0.45em; clear:both;">Scheduled Deliveries: ' . $num_dates . '</strong>';
+                echo '<strong style="width:100%; padding-right:10px; float:left; margin-right:.25em; margin-bottom:0.45em; clear:both;">Scheduled Deliveries: </strong>';
             }
 
             foreach ($matches as $index => $match) {
