@@ -331,9 +331,9 @@ function custom_debug_entire_order($order_id) {
 
             } // end foreach
 
-            echo '<pre>';
-            print_r( $order->get_data() );
-            echo '</pre>';
+            // echo '<pre>';
+            // print_r( $order->get_data() );
+            // echo '</pre>';
 
         } // end foreach
     } else {
@@ -432,10 +432,10 @@ function custom_debug_entire_order($order_id) {
                         $message_3 .= '<p>'.$shape_type.'</p>';
 
                         if(!empty($row['pdf_part_shape_link'])){
-                            $message_3 .= '<strong class="wc-item-meta-label" style="padding-right: 10px; float: left; margin-right: .25em; clear: both;">Upload .PDF Drawing</strong> <p><a href="'.$pdf_part_shape_link.'">'.$pdf.'</a></p>';
+                            $message_3 .= '<strong class="wc-item-meta-label" style="padding-right: 10px; float: left; margin-right: .25em; clear: both;">Upload .PDF Drawing</strong> <p><a href="'.$pdf_url.'">'.$pdf_file_name.'</a></p>';
                         }
                         if(!empty($row['dxf_part_shape_link'])){
-                            $message_3 .= '<strong class="wc-item-meta-label" style="padding-right: 10px; float: left; margin-right: .25em; clear: both;">Upload .DXF Drawing</strong> <p><a href="'.$dxf_part_shape_link.'">'.$dxf.'</a></p>';
+                            $message_3 .= '<strong class="wc-item-meta-label" style="padding-right: 10px; float: left; margin-right: .25em; clear: both;">Upload .DXF Drawing</strong> <p><a href="'.$dxf_url.'">'.$dxf_file_name.'</a></p>';
                         }
 
                         $message_3 .= '<strong class="wc-item-meta-label" style="padding-right: 10px; float: left; margin-right: .25em; clear: both;">Width (mm)</strong>';
@@ -713,15 +713,8 @@ function custom_debug_entire_order($order_id) {
                     $ah_final_vat_result = ($ah_final_vat * $tax_rate) / 100;
                     /* Calculate the final VAT for display */
 
-                    // $message_3 .= '<p style="margin: 0; padding: 0;">Qty: 2,000</p>';
-                    // $message_3 .= '<p style="margin: 0; padding: 0;">Dispatch Date: 28th December 2025</p>';
-                    // $message_3 .= '<p style="margin: 0; padding: 0;">Details: 2,000 parts to be dispatched in/on 28th December 2025</p>';
-                    // $message_3 .= '<p style="margin: 0; padding: 0;">Shipping Weight: 0.043kg</p>';
-                    // $message_3 .= '<p style="margin: 0; padding: 0;">Discount: 0%</p>';
-                    // $message_3 .= '<p style="margin: 0; padding: 0;"><strong style="color:#ef9003;">Products Purchased Subtotal: £1,180.52</strong></p>';
-                    // $message_3 .= '<p style="margin: 0; padding: 0;"><strong>Total Price: £1,408.09</strong></p>';
-                    // $message_3 .= '<br>';
-                    $message_3 .= '</ul>';
+
+                $message_3 .= '</ul>';
                 $message_3 .= '</td>';
 
                 $message_3 .= '<td class="td" style="color: #636363; border: 1px solid #e5e5e5; text-align: center; vertical-align: middle; font-family: Helvetica, Roboto, Arial, sans-serif;">';
@@ -826,13 +819,13 @@ function custom_debug_entire_order($order_id) {
                 $message_3 .= '<tr>';
                 $message_3 .= '<td valign="top" width="50%" style="text-align: left; font-family: Helvetica, Roboto, Arial, sans-serif; border: 0; padding: 0;">';
                 $message_3 .= '<h2 style="color: #ef9003; display: block; font-family: Helvetica, Roboto, Arial, sans-serif; font-size: 18px; font-weight: bold; line-height: 130%; margin: 0 0 18px; text-align: left;">Billing address</h2>';
-                $message_3 .= '<address class="address" style="padding: 12px; color: #636363; border: 1px solid #e5e5e5;">'.$order->get_billing_first_name().' '.$order->get_billing_last_name().'<br>'.$order->get_billing_company().'<br>'.$order->get_billing_address_1().'<br>'.$order->get_billing_address_2().'<br>'.$order->get_billing_city().'<br>'.$order->get_billing_postcode().'<br><a href="tel:'.$billing_phone_link.'" style="color: #202020; font-weight: normal; text-decoration: underline;">'.$order->get_billing_phone().'</a><br>'.$order->get_billing_email().'</address>';
+                $message_3 .= '<address class="address" style="padding: 12px; color: #636363; border: 1px solid #e5e5e5;">'.$order->get_billing_first_name().'<br>'.$order->get_billing_last_name().'<br>'.$order->get_billing_company().'<br>'.$order->get_billing_address_1().'<br>'.$order->get_billing_address_2().'<br>'.$order->get_billing_city().'<br>'.$order->get_billing_postcode().'<br><a href="tel:'.$billing_phone_link.'" style="color: #202020; font-weight: normal; text-decoration: underline;">'.$order->get_billing_phone().'</a><br>'.$order->get_billing_email().'</address>';
                 $message_3 .= '</td>';
                 $message_3 .= '</tr>';
                 $message_3 .= '</tbody>';
                 $message_3 .= '</table>';
 
-
+                //echo $message_3;
 
                 $subject_3 = 'Order Acknowledgement[#' .$order_id. ']'; 
                 $headers_3 = array('Content-Type: text/html; charset=UTF-8');

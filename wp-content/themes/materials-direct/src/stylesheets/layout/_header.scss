@@ -128,10 +128,16 @@
         }
     }
     &__mail:hover {
-        background: variables.$secondary-color
+        background: variables.$secondary-color;
+        @include breakpoints.iphone {
+            background: transparent;
+        }
     }
     &__phone:hover {
-        background: variables.$secondary-color
+        background: variables.$secondary-color;
+        @include breakpoints.iphone {
+            background: transparent;
+        }
     }
     &__icon-link {
         color: white;

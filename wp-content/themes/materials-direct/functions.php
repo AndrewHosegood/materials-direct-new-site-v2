@@ -447,21 +447,24 @@ require_once('includes/show-hide-credit-account-links-in-header.php');
 require_once('includes/remove-get-the-app-from-emails.php');
 /* Remove get the app from emails */
 
-/* END CUSTOM FUNCTIONS */
-
-/* DELIVERY OPTIONS FUNCTIONS */
-require_once('includes/split_schedule_add_to_calendar.php');
-/* END DELIVERY OPTIONS FUNCTIONS */
-
-
 /* Custom voucher discount */
+/* I need to test that this works correctly */
 require_once('includes/custom-voucher-system.php');
 /* Custom voucher discount */
-
 
 /* Email Template CSS Styling */
 require_once('includes/email-template-css-styling.php');
 /* Email Template CSS Styling */
+
+/* END CUSTOM FUNCTIONS */
+
+/* DELIVERY OPTIONS FUNCTIONS */
+require_once('includes/admin-email-split-schedule-data.php');
+require_once('includes/split_schedule_add_to_calendar.php');
+/* END DELIVERY OPTIONS FUNCTIONS */
+
+
+
 
 
 
@@ -481,27 +484,36 @@ add_filter( 'woocommerce_customer_has_shipping_address', '__return_false' );
 
 
 
-add_filter( 'woocommerce_email_styles', 'custom_woocommerce_email_table_styles' );
-function custom_woocommerce_email_table_styles( $css ) {
-	$css .= "
-		#template_body table.email-order-details  {
-			border: 1px solid #ccc !important;
-		}
-	";
-	/*
-	$css .= "
-		#template_body table.email-order-details th,
-		#template_body table.email-order-details td,
-		#template_body table.order-item-data td,
-		#template_body table.order-totals th,
-		#template_body table.order-totals td {
-			border: 2px solid #ccc !important;
-			padding: 5px !important;
-		}
-	";
-	*/
-	return $css;
+
+add_filter( 'woocommerce_order_item_get_formatted_meta_data', 'hide_specific_order_item_meta_keys', 10, 2 );
+function hide_specific_order_item_meta_keys( $formatted_meta, $item ) {
+    // Only hide on frontend (thank you page, My Account, emails, etc.)
+    // Keep visible in admin for your reference
+    if ( is_admin() ) {
+        return $formatted_meta;
+    }
+
+    $keys_to_hide = array(
+        'despatch_string',
+        'Customer Shipping Weight(s)',
+        'cost_per_part',
+        'price',
+        'is_scheduled',
+        'roll_length',
+		'scheduled_shipments',
+        // Add any other internal keys here if needed
+    );
+
+    foreach ( $formatted_meta as $key => $meta ) {
+        if ( in_array( $meta->key, $keys_to_hide ) ) {
+            unset( $formatted_meta[ $key ] );
+        }
+    }
+
+    return $formatted_meta;
 }
+
+
 
 
 
