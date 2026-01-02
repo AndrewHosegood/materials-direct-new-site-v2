@@ -11,22 +11,24 @@ get_header();
 <!-- Map -->
 
 <!-- Content -->
-<div class="container contact__container">
+<section class="contact">
+    <div class="container contact__container">
 
-    <div class="contact__row">
-
-        <h3 class="contact__heading">Contact Materials Direct</h3>
-
-        <div class="contact__wrapper">
-            <?php the_content(); ?>
-		</div>
-
-    </div>
         <div class="contact__row">
-        <h3 class="contact__heading">General Enquiry</h3>
-         <?php echo do_shortcode('[contact-form-7 id="f3692bd" title="Contact Form Home Page"]'); ?>
+
+            <h3 class="contact__heading">Contact Materials Direct</h3>
+
+            <div class="contact__wrapper">
+                <?php the_content(); ?>
+            </div>
+
+        </div>
+            <div class="contact__row">
+            <h3 class="contact__heading">General Enquiry</h3>
+            <?php echo do_shortcode('[contact-form-7 id="f3692bd" title="Contact Form Home Page"]'); ?>
+        </div>
     </div>
-</div>
+</section>
 <!-- Content -->
 
 

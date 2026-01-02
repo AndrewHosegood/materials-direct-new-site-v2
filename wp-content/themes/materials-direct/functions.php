@@ -456,6 +456,10 @@ require_once('includes/custom-voucher-system.php');
 require_once('includes/email-template-css-styling.php');
 /* Email Template CSS Styling */
 
+// Popular Products Carousel
+require_once('includes/popular-products-carousel.php');
+// Popular Products Carousel
+
 /* END CUSTOM FUNCTIONS */
 
 /* DELIVERY OPTIONS FUNCTIONS */

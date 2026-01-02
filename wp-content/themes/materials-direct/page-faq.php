@@ -17,7 +17,7 @@ get_header();
 
 <!-- FAQs -->
 <div class="container faqs">
-    <h2 class="faqs__heading text-center">Frequently Asked Questions</h2>
+    <h1 class="faqs__heading text-center">Frequently Asked Questions</h1>
     <div class="faqs__accordion wp-faq-schema-wrap wp-faq-schema-accordion">
         <div class="faqs__ui-accordion wp-faq-schema-items ui-accordion ui-widget ui-helper-reset" role="tablist">
 
@@ -35,7 +35,7 @@ get_header();
                     aria-expanded="<?php echo $is_first ? 'true' : 'false'; ?>"
                     tabindex="0"
                 >
-                    <span class="ui-accordion-header-icon ui-icon ui-icon-triangle-1-s"></span>
+                    <span class="ui-accordion-header-icon ui-icon ui-icon-triangle-1-s"><i class="fa-solid fa-caret-right faqs__icon"></i></span>
                     <?php the_sub_field('question'); ?>
                 </h3>
 

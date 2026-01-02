@@ -103,5 +103,25 @@
 	<?php if(is_shop() || is_product_category()){ ?>
 		<?php include('includes/shop-page-banner.php'); ?>
 	<?php } ?>
+
+	<?php 
+	        if (is_shop() || is_product_category()) {
+			
+			echo '<div id="advanced-filter" class="filter-heading-background">';
+			echo '<div class="filter-content-wrapper">';
+			echo '<h4 class="filter-heading">Product Filter</h4>';
+			echo '<a class="filter-btn" href="/shop/">Reset</a>';
+			echo '<a class="filter-btn-hide" href="">Hide</a>';
+			echo '</div>';
+			echo '</div>';
+
+            echo '<div class="filter-wrapper">';
+			echo '<div class="filter-wrapper-inner">';
+			echo do_shortcode('[woof]');
+            
+			echo '</div>';
+			echo '</div>';
+        }
+?>		
 	
 	<!-- Conditionally display shop page banner -->

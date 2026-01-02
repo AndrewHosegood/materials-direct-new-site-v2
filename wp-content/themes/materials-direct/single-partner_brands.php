@@ -124,6 +124,13 @@ get_header();
   </div>
 </div>
 
+<div class="container">
+  <?php $short = '[popular_products_carousel]'; ?>
+  <?php echo do_shortcode($short); ?>
+</div>
+
+
+
 
 
 

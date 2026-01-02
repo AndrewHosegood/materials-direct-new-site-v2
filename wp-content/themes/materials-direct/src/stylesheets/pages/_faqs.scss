@@ -7,8 +7,8 @@
         font-size: 25.5px;
         line-height: 29px;
         @include breakpoints.tablet {
-            font-size: 44px;
-            line-height: 50px
+            font-size: 3.45rem;
+            line-height: 4rem;
         } 
     }
     &__heading::after {
@@ -27,18 +27,22 @@
     }
     &__ui-accordion &__ui-accordion-header {
         cursor: pointer;
-        font-size: 1rem;
+        font-size: 0.88rem;
         margin-bottom: 1px;
-        padding: 15px 15px 15px 30px;
+        padding: 25px 15px 25px 30px;
         border-radius: 0;
         background: #f5f5f5;
         margin-top: 0;
         border-width: 0px;
         font-weight: normal;
         border-width: 0px;
+        position: relative;
         &.ui-state-active{
             background: #1c394f;
             color: white;
+        }
+        &.ui-state-active span {
+            display: none;
         }
     }
     &__ui-accordion &__ui-accordion-header:focus {
@@ -57,6 +61,13 @@
                 margin: 0;
                 padding: 0;
         }
+    }
+    &__icon {
+        opacity: 0.45;
+        margin-right: 0.5rem;
+        position: absolute;
+        left: 0.8rem;
+        top: 2rem;
     }
 }
 

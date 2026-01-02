@@ -16,28 +16,12 @@
 <?php
 get_header();
 
-        if (is_shop() || is_product_category()) {
-			
-			echo '<div id="advanced-filter" class="filter-heading-background">';
-			echo '<div class="filter-content-wrapper">';
-			echo '<h4 class="filter-heading">Product Filter</h4>';
-			echo '<a class="filter-btn" href="/shop/">Reset</a>';
-			echo '<a class="filter-btn-hide" href="">Hide</a>';
-			echo '</div>';
-			echo '</div>';
 
-            echo '<div class="filter-wrapper">';
-			echo '<div class="filter-wrapper-inner">';
-			echo do_shortcode('[woof]');
-            
-			echo '</div>';
-			echo '</div>';
-        }
 
 ?>
 
 
-	<main id="primary" class="site-main container www">
+	<main id="primary" class="site-main container www1">
 
 		<?php
 		while ( have_posts() ) :
