@@ -4,6 +4,9 @@
 .manufacturing-latest-products {
     padding: 3.6rem 0;
     margin-bottom: 0;
+    &__container {
+        padding-bottom: 3.5rem;
+    }
     &__info-card {
         background-color: #e2e2e2;
         padding: 15px;

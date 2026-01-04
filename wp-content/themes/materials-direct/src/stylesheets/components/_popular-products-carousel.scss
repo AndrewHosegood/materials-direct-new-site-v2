@@ -7,7 +7,7 @@
     justify-content: center;
     align-items: center;
     width: 100%;
-    margin-bottom: 3rem;
+    margin-bottom: 4.2rem;
     &__item {
         width: 100%;
         @include breakpoints.iphone {
@@ -17,8 +17,21 @@
             width: 23.1%;
         }
         height: auto;
-        border: 1px solid #eeeeea;
+        //border: 1px solid #eeeeea;
         margin: 0px 0.8%;
+        min-height: auto;
+        @include breakpoints.iphone {
+            min-height: 450px;
+        }
+        @include breakpoints.laptop {
+            min-height: 470px;
+        }
+        @include breakpoints.desktop {
+            min-height: 490px;
+        }
+        display: flex;
+        flex-wrap: wrap;
+        flex-direction: column;
     }
     &__thumb {
         width: 100%;
@@ -29,6 +42,12 @@
     &__thumb .image_links {
         bottom: -3.8rem;
         transition: all 0.15s ease-in;
+    }
+    &__thumb .image_links {
+        width: 100%;
+    }
+    &__thumb a {
+        display: none !important;
     }
     &__thumb:hover .image_links {
         bottom: 0;
@@ -47,11 +66,14 @@
         bottom: 0;
     }
     &__details {
+        display: flex;
+        flex: 1;
+        flex-direction: column;
         min-height: 140px;
         width: auto;
         text-align:center;
         background: #e2e2e2;
-        padding: 15px 20px;
+        padding: 2px 20px;
     }
     &__details.lighter {
         background: #f5f5f4;
@@ -69,12 +91,16 @@
         font-size: 35px;
         line-height: 45px;
         text-align: center;
+        margin-bottom: 1.7rem;
+        margin-top: 5.35rem;
     }
     &__btn {
+        font-weight: 300;
         display: block;
         text-align: center;
         margin-top: 1rem;
-        padding: 8px 20px;
+        padding: 14px 20px;
+        border-radius: 0;
     }
     &__btn:hover {
         background: variables.$secondary-color;
@@ -103,7 +129,7 @@
     }
     & .image_links.double a {
         width: 50%;
-        display: inline-block;
+        display: inline-block !important;
         font-size: 13px;
         line-height: 18px;
         padding: 12px 0px;

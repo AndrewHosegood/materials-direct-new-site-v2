@@ -10,18 +10,10 @@
 get_header();
 ?>
 
-<!-- Banner -->
-<?php require_once('page-includes/sector/sector-banner.php'); ?>
-<!-- Banner -->
+<!-- Page Flexible Content -->
+<?php require_once('page-includes/flexible-content.php'); ?>
+<!-- Page Flexible Content -->
 
-<!-- 2 column content -->
-<?php require_once('page-includes/sector/sector-two-column.php'); ?>
-<!-- 2 column content -->
-
-
-<!-- Explore our product range -->
-<?php require_once('page-includes/sector/explore-our-range.php'); ?>
-<!-- Explore our product range -->
 
 
 <?php

@@ -1,0 +1,28 @@
+@use "../abstracts/breakpoints";
+@use "../abstracts/variables";
+.trusted-supplier {
+    background: #3d5369;
+    padding: 3.5rem 0 3.75rem 0;
+    &__heading {
+        color: variables.$primary-color;
+        font-size: 3rem;
+        line-height: 3.5rem;
+        font-weight: 300;
+    }
+    &__subheading {
+        color: white;
+        font-size: 2.15rem;
+        line-height: 2.7rem;
+        font-weight: 300;
+    }
+    &__logos {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        margin: 2rem 0;
+    }
+    &__logo {
+        width: 157px;
+        margin: 0 1.5%;
+    }
+}
