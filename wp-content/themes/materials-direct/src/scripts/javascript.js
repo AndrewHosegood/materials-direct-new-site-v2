@@ -7,7 +7,6 @@ jQuery(document).ready(function($){
         var $header_right = $('.header__right');
         var $main_navigation = $('.main-navigation');
         var $form = $('.is-search-form');
-        // var $header_cart_wrapper = $('#header-cart-wrapper');
         var scrollThreshold = 400;
         var throttleDelay = 100; // milliseconds
         var lastExecution = 0;
@@ -17,8 +16,6 @@ jQuery(document).ready(function($){
             if (now - lastExecution >= throttleDelay) {
                 lastExecution = now;
 
-                console.log($(window).scrollTop());
-
                 if ($(window).scrollTop() >= scrollThreshold) {
                     $header.addClass('header__main-fixed');
                     $header_container.addClass('header__main-container-fixed');
@@ -26,7 +23,6 @@ jQuery(document).ready(function($){
                     $header_right.addClass('header__right-fixed');
                     $main_navigation.addClass('header__main-navigation-fixed');
                     $form.addClass('header__is-search-form-fixed');
-                    //$header_cart_wrapper.addClass('header__cart-wrapper-fixed');
                 } else {
                     $header.removeClass('header__main-fixed');
                     $header_container.removeClass('header__main-container-fixed');
@@ -34,7 +30,6 @@ jQuery(document).ready(function($){
                     $header_right.removeClass('header__right-fixed');
                     $main_navigation.removeClass('header__main-navigation-fixed');
                     $form.removeClass('header__is-search-form-fixed');
-                    //$header_cart_wrapper.removeClass('header__cart-wrapper-fixed');
                 }
             }
         }
@@ -205,6 +200,9 @@ jQuery(document).ready(function($){
             $('#input_radius').closest("label").hide();
             $("#input_radius").val("");
             $('#input_qty_rolls').show();
+            $('#choose_inches').hide();
+            $("#use_inches").prop("checked", false);
+            $('#width_switch').text('Width (MM)');
         });
         $("#square_rectangle").click(function(){
             $('#circle-radius').closest(".product-page__tabs-label").removeClass("active");
@@ -221,6 +219,11 @@ jQuery(document).ready(function($){
             $('#input_radius').closest("label").hide();
             $("#input_radius").val("");
             $('#input_qty_rolls').hide();
+            $('#choose_inches').show();
+            $("#use_inches").prop("checked", false);
+            $('#width_switch').text('Width (MM)');
+            $('#input_width').attr('placeholder', 'Enter MM');
+            $('#input_length').attr('placeholder', 'Enter MM');
         });
         $("#stock_sheets").click(function(){
             $('#circle-radius').closest(".product-page__tabs-label").removeClass("active");
@@ -237,6 +240,9 @@ jQuery(document).ready(function($){
             $('#input_radius').closest("label").hide();
             $("#input_radius").val("");
             $('#input_qty_rolls').hide();
+            $('#choose_inches').hide();
+            $("#use_inches").prop("checked", false);
+            $('#width_switch').text('Width (MM)');
         });
         $("#circle-radius").click(function(){
             $('#pdf_upload_label').hide();
@@ -250,6 +256,10 @@ jQuery(document).ready(function($){
             $('#input_length').closest("label").hide();
             $('#input_radius').closest("label").show();
             $('#input_qty_rolls').hide();
+            $('#choose_inches').show();
+            $("#use_inches").prop("checked", false);
+            $('#radius_switch').text('Width (MM)');
+            //$('#input_radius').attr('placeholder', 'Enter MM');
         });
         $("#custom_drawing").click(function(){
             $('#pdf_upload_label').show();
@@ -264,6 +274,11 @@ jQuery(document).ready(function($){
             $('#input_radius').closest("label").hide();
             $("#input_radius").val("");
             $('#input_qty_rolls').hide();
+            $('#choose_inches').show();
+            $("#use_inches").prop("checked", false);
+            $('#width_switch').text('Width (MM)');
+            $('#input_width').attr('placeholder', 'Enter MM');
+            $('#input_length').attr('placeholder', 'Enter MM');
         });
         // hide/show file uploads when square rectangle/circle radius is clicked
 
@@ -338,6 +353,27 @@ jQuery(document).ready(function($){
         });
         // faqs accordion
 
+        // Inches calculations on product page
+        $('#use_inches').on('change', function () {
+
+            if ($(this).is(':checked')) {
+                $('#width_switch').text('Width (INCHES)');
+                $('#length_switch').text('Length (INCHES)');
+                $('#radius_switch').text('Radius (INCHES)');
+                $('#input_width').attr('placeholder', 'Enter Inches');
+                $('#input_length').attr('placeholder', 'Enter Inches');
+                $('#input_radius').attr('placeholder', 'Enter Inches');
+            } else {
+                $('#width_switch').text('Width (MM)');
+                $('#length_switch').text('Length (MM)');
+                $('#radius_switch').text('Radius (MM)');
+                $('#input_width').attr('placeholder', 'Enter MM');
+                $('#input_length').attr('placeholder', 'Enter MM');
+                $('#input_radius').attr('placeholder', 'Enter MM');
+            }
+
+        });
+
         // Owl Carousel
         $('.testimonials__carousel').owlCarousel({
             loop:true,
@@ -366,8 +402,8 @@ jQuery(document).ready(function($){
             autoplayTimeout: 3000,     
             autoplayHoverPause: true, 
             navText: [
-                '<span class="our-partners__nav-previous"><img src="http://localhost:8888//wp-content/themes/materials-direct/images/prev-1.svg" alt="Prev"></span>',
-                '<span class="our-partners__nav-next"><img src="http://localhost:8888//wp-content/themes/materials-direct/images/next-1.svg" alt="Next"></span>'
+                '<span class="our-partners__nav-previous"><img src="/wp-content/themes/materials-direct/images/prev-1.svg" alt="Prev"></span>',
+                '<span class="our-partners__nav-next"><img src="/wp-content/themes/materials-direct/images/next-1.svg" alt="Next"></span>'
             ],
             responsive:{
                 0:{
@@ -392,8 +428,8 @@ jQuery(document).ready(function($){
             autoplayTimeout: 3000,     
             autoplayHoverPause: true, 
             navText: [
-                '<span class="our-partners__nav-previous"><img src="http://localhost:8888//wp-content/themes/materials-direct/images/prev-1.svg" alt="Prev"></span>',
-                '<span class="our-partners__nav-next"><img src="http://localhost:8888//wp-content/themes/materials-direct/images/next-1.svg" alt="Next"></span>'
+                '<span class="our-partners__nav-previous"><img src="/wp-content/themes/materials-direct/images/prev-1.svg" alt="Prev"></span>',
+                '<span class="our-partners__nav-next"><img src="/wp-content/themes/materials-direct/images/next-1.svg" alt="Next"></span>'
             ],
             responsive:{
                 0:{

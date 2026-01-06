@@ -55,6 +55,9 @@
         font-weight: 400;
         height: 33px;
     }
+    &__input::placeholder {
+        color: #999;
+    }
     &__input:focus-visible {
         outline: 0;
     }
