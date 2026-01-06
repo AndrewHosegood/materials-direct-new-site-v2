@@ -323,7 +323,7 @@ function custom_price_input_fields_prefill() {
         <!-- Price Inputs -->
         <div class="product-page__grey-panel">
 
-        <p class="product-page__square-rectangle-message"><i class="fa-solid fa-circle-info product-page__square-rectangle-message-icon"></i> You are asking us to manufacture a <span id="tabs_status_message">custom shape</span><span id="tabs_status_message_2">. The roll length is <span id="tabs_status_message_3">'.$roll_length_v.'</span> metres</span>. Enter your values below</p>
+        <p class="product-page__square-rectangle-message"><i class="fa-solid fa-circle-info product-page__square-rectangle-message-icon"></i> You are asking us to manufacture a <span id="tabs_status_message">custom shape</span>. Enter your values below</p>
 
         <!-- File Upload Fields -->
         <div id="pdf_upload_container">
@@ -345,10 +345,12 @@ function custom_price_input_fields_prefill() {
         <p class="product-page__drawing-guide-text">Download the drawing guide to help you with your pad and gasket design</p>
         </div>
 
-        <label class="product-page__input-wrap-radius">Radius (MM): <input class="product-page__input" type="number" id="input_radius" name="custom_radius"></label>
+        <label id="choose_inches" class="product-page__input-wrap" style="display: block;"><input type="checkbox" id="use_inches" name="inches" value="1">Choose Inches</label>
 
-        <label class="product-page__input-wrap">Width (MM): <input class="product-page__input" type="number" id="input_width" name="custom_width" min="0.01" step="0.01" required></label>
-        <label class="product-page__input-wrap"><span class="product-page__rolls-label-text-1">Length (MM):</span> <input class="product-page__input" type="number" id="input_length" name="custom_length" min="0.01" step="0.01" required></label>
+        <label class="product-page__input-wrap-radius"><span id="radius_switch">Radius (MM):</span> <input class="product-page__input" type="number" id="input_radius" name="custom_radius"></label>
+
+        <label class="width product-page__input-wrap"><span id="width_switch">Width (MM):</span> <input class="product-page__input" type="number" id="input_width" name="custom_width" min="0.01" step="0.01" required></label>
+        <label class="length product-page__input-wrap"><span id="length_switch" class="product-page__rolls-label-text-1">Length (MM):</span> <input class="product-page__input" type="number" id="input_length" name="custom_length" min="0.01" step="0.01" required></label>
         <label style="position:relative;" class="product-page__input-wrap"><span class="product-page__rolls-label-text-2">Total number of parts:</span> <input class="product-page__input" type="number" id="input_qty" name="custom_qty" value="1" min="1" step="1" required></label>
         </div>';
 
