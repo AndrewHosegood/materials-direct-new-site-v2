@@ -10,12 +10,18 @@
 get_header();
 ?>
 
+
+<!-- Page Flexible Content -->
+<?php require_once('page-includes/flexible-content.php'); ?>
+<!-- Page Flexible Content -->
+
+
 <!-- Banner -->
-<?php require_once('page-includes/sector/sector-banner.php'); ?>
+<?php //require_once('page-includes/sector/sector-banner.php'); ?>
 <!-- Banner -->
 
 <!-- 2 column content -->
-<?php require_once('page-includes/sector/sector-two-column.php'); ?>
+<?php //require_once('page-includes/sector/sector-two-column.php'); ?>
 <!-- 2 column content -->
 
 

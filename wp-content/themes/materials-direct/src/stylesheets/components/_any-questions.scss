@@ -92,6 +92,7 @@
     & form {
         display: flex;
         flex-wrap: wrap;
+        position: relative;
     }
     & form &__form-input-1 p {
         padding: 0;
@@ -110,6 +111,11 @@
         margin-top: 1.5rem;
         text-align: left;
         float: left;
+    }
+    & form .wpcf7-spinner {
+        position: absolute;
+        left: 120px;
+        margin-top: 2rem;
     }
     & p {
         width: 100%;

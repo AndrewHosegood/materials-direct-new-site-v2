@@ -524,6 +524,52 @@
             </section>  
 
             
+        <?php } elseif(get_row_layout() == 'dark_three_column_panel_custom'){ ?>
+
+            <section class="wide-range-of-services__custom text-center">
+
+                <?php if(get_sub_field('dark_3_column_large_heading')){ ?>
+                    <div class="container wide-range-of-services__container"> 
+                        <h3 class="wide-range-of-services__extra-heading"><?php the_sub_field('dark_3_column_large_heading'); ?></h3>
+                        <div class="wide-range-of-services__extra">
+                            <p class="wide-range-of-services__extra-content-left"><?php the_sub_field('dark_3_column_large_content_left'); ?></p>
+                            <p class="wide-range-of-services__extra-content-right"><?php the_sub_field('dark_3_column_large_content_right'); ?></p>
+                        </div>
+                    </div>
+                <?php } ?>
+
+                <h3 class="wide-range-of-services__heading-large"><?php the_sub_field('dark_3_column_panel_heading'); ?></h3> 
+                <div class="container wide-range-of-services__container">   
+                    <h3 class="wide-range-of-services__content"><?php the_sub_field('dark_3_column_panel_subheading'); ?></h3>
+                </div>
+                <div class="container wide-range-of-services__container three-column-grid grid-gap-three">
+
+
+                <?php if (have_rows('dark_3_column_card')) : ?>
+                    <?php while (have_rows('dark_3_column_card')) : the_row(); ?>
+
+
+                        <div class="wide-range-of-services__link">
+                            <div class="wide-range-of-services__card">
+                                <div class="wide-range-of-services__card-icon">
+                                    <?php $icon = get_sub_field('dark_3_column_card_icon'); ?>
+                                    <img width="300" height="300" src="<?php echo $icon['url'] ?>" class="wide-range-of-services__card-icon-img wp-post-image" alt="<?php echo $icon['alt'] ?>" >                                    
+                                </div>
+                                <div class="wide-range-of-services__card-content">
+                                    <h4 class="wide-range-of-services__card-content-heading"><?php the_sub_field('dark_3_column_card_heading'); ?></h4>
+                                    <p><?php the_sub_field('dark_3_column_card_content'); ?></p>
+                                </div>
+                            </div>
+                        </div>
+
+
+                    <?php endwhile; ?>
+                <?php endif; ?> 
+
+                    
+                </div>
+            </section>
+
         <?php } elseif(get_row_layout() == 'quality_assured'){ ?>
 
             <?php $link_4 = get_sub_field('quality_assured_fc_link'); ?>
@@ -705,7 +751,7 @@
                             aria-hidden="<?php echo $is_first ? 'false' : 'true'; ?>"
                             style="display: <?php echo $is_first ? 'block' : 'none'; ?>;"
                         >
-                            <p><?php the_sub_field('answer_list'); ?></p>
+                            <span><?php the_sub_field('answer_list'); ?></span>
                         </div>
 
                         <?php endwhile; ?>

@@ -46,52 +46,54 @@
 			</div>
 		</div>
 
-		<div class="header__main-container">		
-			<div class="site-branding header__left">
-				<?php the_custom_logo(); ?>
-			</div>
-			<div class="header__right">
+		<div class="header__main">
+			<div class="header__main-container">		
+				<div class="site-branding header__left">
+					<?php the_custom_logo(); ?>
+				</div>
+				<div class="header__right">
 
-			<!-- 
-			<div id="nav-icon4">
-				<span></span>
-				<span></span>
-				<span></span>
-			</div>
-			 -->
+				<!-- 
+				<div id="nav-icon4">
+					<span></span>
+					<span></span>
+					<span></span>
+				</div>
+				-->
 
-				<nav id="site-navigation" class="main-navigation">
-					<!-- <button class="menu-toggle" aria-controls="primary-menu" aria-expanded="false"><?php //esc_html_e( 'Primary Menu', 'materials-direct' ); ?></button> -->
-
-
-					<?php
-					wp_nav_menu(
-						array(
-							'theme_location' => 'menu-1',
-							'menu_id'        => 'primary-menu',
-							'menu_class'     => 'sf-menu header__main-menu',
-						)
-					);
-					?>
-				</nav>
-
-				<?php if ( function_exists( 'WC' ) ) : ?>
-				<?php 
-					$cart_count = 0;
-					if ( WC()->cart && is_object( WC()->cart ) && method_exists( WC()->cart, 'get_cart' ) ) {
-						$cart_count = count( WC()->cart->get_cart() );
-					}
-					?>
-					<a href="/basket/" id="header-cart-wrapper" class="header__cart-wrapper">
-						<img class="header__cart-icon" src="<?php echo esc_url( get_template_directory_uri() . '/images/cart-icon.png' ); ?>" alt="Cart">
-						<span class="header__cart-count"><?php echo esc_html( $cart_count ); ?></span>
-					</a>
-				<?php endif; ?>
-
-				
+					<nav id="site-navigation" class="main-navigation">
+						<!-- <button class="menu-toggle" aria-controls="primary-menu" aria-expanded="false"><?php //esc_html_e( 'Primary Menu', 'materials-direct' ); ?></button> -->
 
 
-				<?php echo do_shortcode('[ivory-search id="112" title="Custom Search Form"]'); ?>
+						<?php
+						wp_nav_menu(
+							array(
+								'theme_location' => 'menu-1',
+								'menu_id'        => 'primary-menu',
+								'menu_class'     => 'sf-menu header__main-menu',
+							)
+						);
+						?>
+					</nav>
+
+					<?php if ( function_exists( 'WC' ) ) : ?>
+					<?php 
+						$cart_count = 0;
+						if ( WC()->cart && is_object( WC()->cart ) && method_exists( WC()->cart, 'get_cart' ) ) {
+							$cart_count = count( WC()->cart->get_cart() );
+						}
+						?>
+						<a href="/basket/" id="header-cart-wrapper" class="header__cart-wrapper">
+							<img class="header__cart-icon" src="<?php echo esc_url( get_template_directory_uri() . '/images/cart-icon.png' ); ?>" alt="Cart">
+							<span class="header__cart-count"><?php echo esc_html( $cart_count ); ?></span>
+						</a>
+					<?php endif; ?>
+
+					
+
+
+					<?php echo do_shortcode('[ivory-search id="112" title="Custom Search Form"]'); ?>
+				</div>
 			</div>
 		</div>
 

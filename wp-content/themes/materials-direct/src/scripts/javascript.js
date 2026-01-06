@@ -1,4 +1,45 @@
 jQuery(document).ready(function($){
+
+        // Header onsroll event
+        var $header = $('.header__main');
+        var $header_container = $('.header__main-container');
+        var $header_left = $('.header__left');
+        var $header_right = $('.header__right');
+        var $main_navigation = $('.main-navigation');
+        var $form = $('.is-search-form');
+        // var $header_cart_wrapper = $('#header-cart-wrapper');
+        var scrollThreshold = 400;
+        var throttleDelay = 100; // milliseconds
+        var lastExecution = 0;
+        function onScrollThrottled() {
+            var now = Date.now();
+
+            if (now - lastExecution >= throttleDelay) {
+                lastExecution = now;
+
+                console.log($(window).scrollTop());
+
+                if ($(window).scrollTop() >= scrollThreshold) {
+                    $header.addClass('header__main-fixed');
+                    $header_container.addClass('header__main-container-fixed');
+                    $header_left.addClass('header__left-fixed');
+                    $header_right.addClass('header__right-fixed');
+                    $main_navigation.addClass('header__main-navigation-fixed');
+                    $form.addClass('header__is-search-form-fixed');
+                    //$header_cart_wrapper.addClass('header__cart-wrapper-fixed');
+                } else {
+                    $header.removeClass('header__main-fixed');
+                    $header_container.removeClass('header__main-container-fixed');
+                    $header_left.removeClass('header__left-fixed');
+                    $header_right.removeClass('header__right-fixed');
+                    $main_navigation.removeClass('header__main-navigation-fixed');
+                    $form.removeClass('header__is-search-form-fixed');
+                    //$header_cart_wrapper.removeClass('header__cart-wrapper-fixed');
+                }
+            }
+        }
+        $(window).on('scroll', onScrollThrottled);
+
         // Burger menu
         $('#nav-icon4').click(function(){
             $(this).toggleClass('open');
