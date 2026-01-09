@@ -19,33 +19,63 @@
         line-height: 1.7rem;
     }
     & .product-name .variation .variation-WidthMM p {
-        display: inline;
+        display: inline-block;
         padding: 0;
-        line-height: 2.4rem;
+        line-height: 2rem;
     }
+    
     & .product-name .variation .variation-LengthMM {
         line-height: 1.7rem;
     }
     & .product-name .variation .variation-LengthMM p {
-        display: inline;
+        display: inline-block;
         padding: 0;
-        line-height: 1.9rem;
+        line-height: 1.7rem;
     }
+
+    & .product-name .variation .variation-Totalnumberofrolls {
+        line-height: 1.7rem;
+    }
+    & .product-name .variation .variation-Totalnumberofrolls p {
+        display: inline-block;
+        padding: 0;
+        line-height: 1.7rem;
+    }
+
+    & .product-name .variation .variation-RadiusMM {
+        line-height: 1.7rem;
+    }
+    & .product-name .variation .variation-RadiusMM p {
+        display: inline-block;
+        padding: 0;
+        line-height: 1.7rem;
+    }
+
+    & .product-name .variation .variation-RadiusINCHES {
+        line-height: 1.7rem;
+    }
+    & .product-name .variation .variation-RadiusINCHES p {
+        display: inline-block;
+        padding: 0;
+        line-height: 1.7rem;
+    }
+    
     & .product-name .variation .variation-Totalnumberofparts {
         line-height: 1.7rem;
     }
     & .product-name .variation .variation-Totalnumberofparts p {
-        display: inline;
+        display: inline-block;
         padding: 0;
-        line-height: 1.9rem;
+        margin-top: 0;
     }
     & .product-name .variation .variation-DeliveryTime p {
         display: inline;
         padding: 0;
     }
     & .product-name .variation .variation-SheetsRequired p {
-        display: inline;
+        display: inline-block;
         padding: 0;
+        margin-top: 0.15rem;
     }
 
     & .product-name .variation .variation-DespatchNotes {
@@ -62,27 +92,27 @@
         line-height: 1.7rem;
     }
     & .product-name .variation .variation-ManufacturersCOFC p {
-        display: inline;
+        display: inline-block;
         padding: 0;
-        line-height: 1.9rem;
+        margin-top: 0rem;
     }
 
     & .product-name .variation .variation-MaterialsDirectCOFC {
         line-height: 1.7rem;
     }
     & .product-name .variation .variation-MaterialsDirectCOFC p {
-        display: inline;
+        display: inline-block;
         padding: 0;
-        line-height: 1.9rem;
+        margin-top: 0rem;
     }
 
     & .product-name .variation .variation-FirstArticleInspectionReport {
         line-height: 1.7rem;
     }
     & .product-name .variation .variation-FirstArticleInspectionReport p {
-        display: inline;
+        display: inline-block;
         padding: 0;
-        line-height: 1.9rem;
+        margin-top: 0rem;
     }
     
     & .product-name .variation .variation-CustomerShippingWeights {
@@ -110,9 +140,20 @@
         display: inline;
         padding: 0;
     }
-    & .product-name .variation .variation-RadiusMM p {
-        display: inline;
+    & .product-name .variation .variation-Partshape p {
+        display: inline-block;
         padding: 0;
+        margin-top: 0.15rem;
+    }
+    & .product-name .variation .variation-WidthINCHES p {
+        display: inline-block;
+        padding: 0;
+        margin-top: 0.15rem;
+    }
+    & .product-name .variation .variation-LengthINCHES p {
+        display: inline-block;
+        padding: 0;
+        margin-top: 0.22rem;
     }
     & .product-name .variation dt {
         margin-right: 0.5rem;

@@ -18,6 +18,7 @@ function disable_width_length_qty_if_credit_account() {
 
                     // Disable fields after generate_price click for credit users
                     $('#input_width, #input_length, #input_qty, #input_radius').prop('readonly', true);
+                    $('#use_inches').prop('disabled', true);
 
 					//product-page__grey-panel
                 });

@@ -183,6 +183,12 @@ jQuery(document).ready(function($){
             $('.header__mobile-contact-link a').toggleClass('active');
 
         });
+
+        // hide these elements on page load
+        $('#cont_width_inches').hide();
+        $('#cont_length_inches').hide();
+        $('#cont_radius_inches').hide();
+        $('#choose_inches_radius').hide();
     
         // hide/show file uploads when square rectangle/circle radius is clicked
         $("#rolls").click(function(){
@@ -199,10 +205,14 @@ jQuery(document).ready(function($){
             $('#input_length').closest("label").show();
             $('#input_radius').closest("label").hide();
             $("#input_radius").val("");
+            $("#input_radius_inches").val("");
             $('#input_qty_rolls').show();
-            $('#choose_inches').hide();
             $("#use_inches").prop("checked", false);
-            $('#width_switch').text('Width (MM)');
+            $('#cont_radius_inches').hide();
+            $('#cont_width_inches').hide();
+            $('#cont_length_inches').hide();
+            $('#choose_inches').hide();
+            $('#choose_inches_radius').hide();
         });
         $("#square_rectangle").click(function(){
             $('#circle-radius').closest(".product-page__tabs-label").removeClass("active");
@@ -218,12 +228,17 @@ jQuery(document).ready(function($){
             $('#input_length').closest("label").show();
             $('#input_radius').closest("label").hide();
             $("#input_radius").val("");
+            $("#input_radius_inches").val("");
+            $('#choose_inches_radius').hide();
+            $("#input_width_inches").val("");
+            $("#input_length_inches").val("");
             $('#input_qty_rolls').hide();
-            $('#choose_inches').show();
             $("#use_inches").prop("checked", false);
-            $('#width_switch').text('Width (MM)');
-            $('#input_width').attr('placeholder', 'Enter MM');
-            $('#input_length').attr('placeholder', 'Enter MM');
+            $('#cont_radius_inches').hide();
+            $('#cont_width_inches').hide();
+            $('#cont_length_inches').hide();
+            $('#choose_inches').show();
+            $('#choose_inches_radius').hide();
         });
         $("#stock_sheets").click(function(){
             $('#circle-radius').closest(".product-page__tabs-label").removeClass("active");
@@ -239,10 +254,15 @@ jQuery(document).ready(function($){
             $('#input_length').closest("label").show();
             $('#input_radius').closest("label").hide();
             $("#input_radius").val("");
+            $("#input_radius_inches").val("");
+            $('#choose_inches_radius').hide();
             $('#input_qty_rolls').hide();
-            $('#choose_inches').hide();
             $("#use_inches").prop("checked", false);
-            $('#width_switch').text('Width (MM)');
+            $('#cont_radius_inches').hide();
+            $('#cont_width_inches').hide();
+            $('#cont_length_inches').hide();
+            $('#choose_inches').hide();
+            $('#choose_inches_radius').hide();
         });
         $("#circle-radius").click(function(){
             $('#pdf_upload_label').hide();
@@ -255,11 +275,20 @@ jQuery(document).ready(function($){
             $('#input_width').closest("label").hide();
             $('#input_length').closest("label").hide();
             $('#input_radius').closest("label").show();
+            $("#input_radius").prop('disabled', false);
+            $("#input_radius_inches").prop('disabled', false);
+            $('#choose_inches_radius').show();
+            $('#choose_inches').hide();
             $('#input_qty_rolls').hide();
-            $('#choose_inches').show();
             $("#use_inches").prop("checked", false);
-            $('#radius_switch').text('Width (MM)');
-            //$('#input_radius').attr('placeholder', 'Enter MM');
+            $('.width-inches.product-page__input-wrap').css('display', 'none');
+            $('.length-inches.product-page__input-wrap').css('display', 'none');
+            $('.radius.product-page__input-wrap').addClass('radius-show');
+            $('#cont_radius_inches').hide();
+            $('#cont_width_inches').hide();
+            $('#cont_length_inches').hide();
+            $('#choose_inches').hide();
+            $('#choose_inches_radius').show();
         });
         $("#custom_drawing").click(function(){
             $('#pdf_upload_label').show();
@@ -273,12 +302,18 @@ jQuery(document).ready(function($){
             $('#input_length').closest("label").show();
             $('#input_radius').closest("label").hide();
             $("#input_radius").val("");
+            $("#input_radius_inches").val("");
+            $("#input_radius_inches").prop('disabled', true);
+            $('#choose_inches_radius').hide();
+            $("#input_width_inches").val("");
+            $("#input_length_inches").val("");
             $('#input_qty_rolls').hide();
-            $('#choose_inches').show();
             $("#use_inches").prop("checked", false);
-            $('#width_switch').text('Width (MM)');
-            $('#input_width').attr('placeholder', 'Enter MM');
-            $('#input_length').attr('placeholder', 'Enter MM');
+            $('#cont_width_inches').hide();
+            $('#cont_length_inches').hide();
+            $('#cont_radius_inches').hide();
+            $('#choose_inches').show();
+            $('#choose_inches_radius').hide();
         });
         // hide/show file uploads when square rectangle/circle radius is clicked
 
@@ -313,6 +348,41 @@ jQuery(document).ready(function($){
             $("#generate_price").prop("disabled", false);
         });
         // add width and length values based on circle radius input
+
+        // add inch values to width field
+        $('#input_width_inches').on('keyup', function() {
+            var inch_width_keyup_value = $(this).val() * 25.4;
+            console.log(inch_width_keyup_value);
+            $("#input_width").val(inch_width_keyup_value);
+            $("#generate_price").prop("disabled", false);
+        });
+        // add inch values to width field
+
+        // add inch values to length field
+        $('#input_length_inches').on('keyup', function() {
+            var inch_length_keyup_value = $(this).val() * 25.4;
+            console.log(inch_length_keyup_value);
+            $("#input_length").val(inch_length_keyup_value);
+            $("#generate_price").prop("disabled", false);
+        });
+        // add inch values to length field
+
+        // add inch values to length field
+        $('#input_radius_inches').on('keyup', function() {
+            var value = $(this).val().trim(); // remove accidental spaces
+            console.log(value);
+            var inch_radius_keyup_value = '';
+            if (value !== '') {
+                inch_radius_keyup_value = value * 25.4 * 2;
+            } else {
+                return; // stop here if empty
+            }
+            console.log(inch_radius_keyup_value);
+            $("#input_length").val(inch_radius_keyup_value);
+            $("#input_width").val(inch_radius_keyup_value);
+            $("#generate_price").prop("disabled", false);
+        });
+        // add inch values to length field
 
         // add quantity value based on rolls quantity input
         var rollLength = parseFloat($('#tabs_status_message_3').text());
@@ -354,24 +424,58 @@ jQuery(document).ready(function($){
         // faqs accordion
 
         // Inches calculations on product page
-        $('#use_inches').on('change', function () {
 
+        $('#use_inches').on('click', function () {
+                $('#input_width').val("");
+                $('#input_length').val("");
+                $('#input_radius').val("");
+                $('#input_qty').val("");
+        });
+
+        $('#use_inches_radius').on('click', function () {
+                $('#input_width').val("");
+                $('#input_length').val("");
+                $('#input_radius').val("");
+                $('#input_qty').val("");
+        });
+
+        $('#use_inches_radius').on('change', function () {
             if ($(this).is(':checked')) {
-                $('#width_switch').text('Width (INCHES)');
-                $('#length_switch').text('Length (INCHES)');
-                $('#radius_switch').text('Radius (INCHES)');
-                $('#input_width').attr('placeholder', 'Enter Inches');
-                $('#input_length').attr('placeholder', 'Enter Inches');
-                $('#input_radius').attr('placeholder', 'Enter Inches');
+                $('.product-page__input-wrap-radius').hide();
+                $('#cont_radius_inches').show();
             } else {
-                $('#width_switch').text('Width (MM)');
-                $('#length_switch').text('Length (MM)');
-                $('#radius_switch').text('Radius (MM)');
-                $('#input_width').attr('placeholder', 'Enter MM');
-                $('#input_length').attr('placeholder', 'Enter MM');
-                $('#input_radius').attr('placeholder', 'Enter MM');
+                $('.product-page__input-wrap-radius').show();
+                $('#cont_radius_inches').hide();
             }
+        });
 
+        $('#use_inches').on('change', function () {
+            if ($(this).is(':checked')) {
+                $('#cont_width_inches').show();
+                $('#cont_length_inches').show();
+                $('#cont_width_mm').hide();
+                $('#cont_length_mm').hide();
+            } else {
+                $('#cont_width_inches').hide();
+                $('#cont_length_inches').hide();
+                $('#cont_width_mm').show();
+                $('#cont_length_mm').show();
+            }
+            // if ($(this).is(':checked')) {
+            //     $('#width_switch').text('Width (INCHES)');
+            //     $('#length_switch').text('Length (INCHES)');
+            //     $('#radius_switch').text('Radius (INCHES)');
+            //     $('#input_width').attr('placeholder', 'Enter Inches');
+            //     $('#input_length').attr('placeholder', 'Enter Inches');
+            //     $('#input_radius').attr('placeholder', 'Enter Inches');
+            // } else {
+            //     $('#width_switch').text('Width (MM)');
+            //     $('#length_switch').text('Length (MM)');
+            //     $('#radius_switch').text('Radius (MM)');
+            //     $('#input_width').attr('placeholder', 'Enter MM');
+            //     $('#input_length').attr('placeholder', 'Enter MM');
+            //     $('#input_radius').attr('placeholder', 'Enter MM');
+            // }
         });
 
         // Owl Carousel

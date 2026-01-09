@@ -593,16 +593,9 @@ function updateDatepickerMinDate() {
                     return;
                 }
             }
-            const INCH_TO_MM = 25.4;
-            const useInches = $('#use_inches').is(':checked');
-            const conversionFactor = useInches ? INCH_TO_MM : 1;
 
-            const width = parseFloat($('#input_width').val()) * conversionFactor;
-            const length = parseFloat($('#input_length').val()) * conversionFactor;
-
-            // const width = parseFloat($('#input_width').val() * inchConversion);
-            // const length = parseFloat($('#input_length').val() * inchConversion);
-
+            const width = parseFloat($('#input_width').val());
+            const length = parseFloat($('#input_length').val());
             const qty = parseInt($('#input_qty').val());
             const discount_rate = parseFloat($('#input_discount_rate').val());
             const shipping_address = validateShippingAddress();

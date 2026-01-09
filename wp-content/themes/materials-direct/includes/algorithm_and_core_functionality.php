@@ -323,7 +323,7 @@ function custom_price_input_fields_prefill() {
         <!-- Price Inputs -->
         <div class="product-page__grey-panel">
 
-        <p class="product-page__square-rectangle-message"><i class="fa-solid fa-circle-info product-page__square-rectangle-message-icon"></i> You are asking us to manufacture a <span id="tabs_status_message">custom shape</span>. Enter your values below</p>
+        <p class="product-page__square-rectangle-message"><i class="fa-solid fa-circle-info product-page__square-rectangle-message-icon"></i> You are asking us to manufacture a <span id="tabs_status_message">custom shape</span><span id="tabs_status_message_2">. The roll length is <span id="tabs_status_message_3">'.$roll_length_v.'</span> metres</span>. Enter your values below</p>
 
         <!-- File Upload Fields -->
         <div id="pdf_upload_container">
@@ -345,12 +345,17 @@ function custom_price_input_fields_prefill() {
         <p class="product-page__drawing-guide-text">Download the drawing guide to help you with your pad and gasket design</p>
         </div>
 
-        <label id="choose_inches" class="product-page__input-wrap" style="display: block;"><input type="checkbox" id="use_inches" name="inches" value="1">Choose Inches</label>
+        <label id="choose_inches" class="product-page__input-wrap" style="width: 100%;"><input type="checkbox" id="use_inches" name="conversion_factor" value="25.4">Choose Inches</label>
+         <label id="choose_inches_radius" class="product-page__input-wrap" style="width: 100%;"><input type="checkbox" id="use_inches_radius" name="conversion_factor_radius" value="25.4">Choose Inches (Radius)</label>
 
-        <label class="product-page__input-wrap-radius"><span id="radius_switch">Radius (MM):</span> <input class="product-page__input" type="number" id="input_radius" name="custom_radius"></label>
+        <label id="cont_radius_inches" class="product-page__input-wrap-radius">Radius (INCHES): <input class="product-page__input" type="number" id="input_radius_inches" name="custom_radius_inches" min="0.01" step="any"></label> 
+        <label class="product-page__input-wrap-radius">Radius (MM): <input class="product-page__input" type="number" id="input_radius" name="custom_radius" min="0.01" step="any"></label>
 
-        <label class="width product-page__input-wrap"><span id="width_switch">Width (MM):</span> <input class="product-page__input" type="number" id="input_width" name="custom_width" min="0.01" step="0.01" required></label>
-        <label class="length product-page__input-wrap"><span id="length_switch" class="product-page__rolls-label-text-1">Length (MM):</span> <input class="product-page__input" type="number" id="input_length" name="custom_length" min="0.01" step="0.01" required></label>
+        <label id="cont_width_inches" class="product-page__input-wrap">Width (INCHES): <input class="product-page__input" type="number" id="input_width_inches" name="custom_width_inches" min="0.01" step="any"></label>
+        <label id="cont_length_inches" class="product-page__input-wrap">Length (INCHES): <input class="product-page__input" type="number" id="input_length_inches" name="custom_length_inches" min="0.01" step="any"></label>
+
+        <label id="cont_width_mm" class="product-page__input-wrap">Width (MM): <input class="product-page__input" type="number" id="input_width" name="custom_width" min="0.01" step="any" required></label>
+        <label id="cont_length_mm" class="product-page__input-wrap"><span class="product-page__rolls-label-text-1">Length (MM):</span> <input class="product-page__input" type="number" id="input_length" name="custom_length" min="0.01" step="any" required></label>
         <label style="position:relative;" class="product-page__input-wrap"><span class="product-page__rolls-label-text-2">Total number of parts:</span> <input class="product-page__input" type="number" id="input_qty" name="custom_qty" value="1" min="1" step="1" required></label>
         </div>';
 
@@ -1207,7 +1212,12 @@ function add_custom_price_cart_item_data_secure($cart_item_data, $product_id) {
     $sheet_length_mm = $product->get_length() * 10; 
     $sheet_width_mm = $product->get_width() * 10;
     $part_width_mm = floatval($_POST['custom_width']);
+    $part_width_inches = floatval($_POST['custom_width_inches']);
     $part_length_mm = floatval($_POST['custom_length']);
+    $part_length_inches = floatval($_POST['custom_length_inches']);
+    $custom_radius_inches = floatval($_POST['custom_radius_inches']);
+    
+
     $quantity = intval($_POST['custom_qty']);
     $product_weight = $product->get_weight();
     $discount_rate = isset($_POST['custom_discount_rate']) ? floatval($_POST['custom_discount_rate']) : 0;
@@ -1529,7 +1539,11 @@ function add_custom_price_cart_item_data_secure($cart_item_data, $product_id) {
 
     $cart_item_data['custom_inputs'] = array_merge($cart_item_data['custom_inputs'], [
         'width' => floatval($_POST['custom_width']),
+        'width_inches' => floatval($_POST['custom_width_inches']),
         'length' => floatval($_POST['custom_length']),
+        'length_inches' => floatval($_POST['custom_length_inches']),
+        'custom_radius_inches' => floatval($_POST['custom_radius_inches']),
+        'custom_radius' => floatval($_POST['custom_radius']),
         'qty' => intval($_POST['custom_qty']),
         'shape_type' => $shape_type,
         'discount_rate' => floatval($_POST['custom_discount_rate']),
@@ -1543,6 +1557,7 @@ function add_custom_price_cart_item_data_secure($cart_item_data, $product_id) {
         'backorder_data' => $backorder_data,
         'stock_quantity' => $stock_quantity,
     ]);
+
 
     if ($is_scheduled) {
         $cart_item_data['custom_inputs']['is_scheduled'] = true;
@@ -1773,8 +1788,20 @@ function save_sheets_required_to_order_item($item, $cart_item_key, $values, $ord
     if (isset($values['custom_inputs']['width'])) {
         $item->add_meta_data('width', $values['custom_inputs']['width'], true);
     }
+    if (isset($values['custom_inputs']['width_inches'])) {
+        $item->add_meta_data('width_inches', $values['custom_inputs']['width_inches'], true);
+    }
     if (isset($values['custom_inputs']['length'])) {
         $item->add_meta_data('length', $values['custom_inputs']['length'], true);
+    }
+    if (isset($values['custom_inputs']['length_inches'])) {
+        $item->add_meta_data('length_inches', $values['custom_inputs']['length_inches'], true);
+    }
+    if (isset($values['custom_inputs']['custom_radius'])) {
+        $item->add_meta_data('custom_radius', $values['custom_inputs']['custom_radius'], true);
+    }
+    if (isset($values['custom_inputs']['custom_radius_inches'])) {
+        $item->add_meta_data('custom_radius_inches', $values['custom_inputs']['custom_radius_inches'], true);
     }
     if (isset($values['custom_inputs']['qty'])) {
         $item->add_meta_data('qty', $values['custom_inputs']['qty'], true);
@@ -1862,15 +1889,6 @@ function show_custom_input_details_in_cart($item_data, $cart_item) {
             ];
         }
 
-        // Dynamically Display Radius Value
-         if ($cart_item['custom_inputs']['shape_type'] == "circle-radius") {
-            $width_value = $cart_item['custom_inputs']['width'] / 2;
-            $item_data[] = [
-                'name' => 'Radius (MM)',
-                'value' => $width_value
-            ];
-         }
-
         // PDF Drawing (if present)
         if (isset($cart_item['custom_inputs']['pdf_path']) && !empty($cart_item['custom_inputs']['pdf_path'])) {
             $item_data[] = [
@@ -1887,11 +1905,54 @@ function show_custom_input_details_in_cart($item_data, $cart_item) {
             ];
         }
 
+        // Dynamically Display Radius Value (MM)
+        // ONLY when shape is circle-radius AND custom_radius_inches is 0 or empty
+        if (
+            isset($cart_item['custom_inputs']['shape_type']) &&
+            $cart_item['custom_inputs']['shape_type'] === 'circle-radius' &&
+            (
+                !isset($cart_item['custom_inputs']['custom_radius_inches']) ||
+                (float) $cart_item['custom_inputs']['custom_radius_inches'] === 0.0
+            )
+        ) {
+            if (isset($cart_item['custom_inputs']['width']) && (float) $cart_item['custom_inputs']['width'] > 0) {
+                $width_value = (float) $cart_item['custom_inputs']['width'] / 2;
+
+                $item_data[] = [
+                    'name'  => 'Radius (MM)',
+                    'value' => $width_value
+                ];
+            }
+        }
+
+
+        // Dynamically Display Radius Value
+        // if ($cart_item['custom_inputs']['shape_type'] == "circle-radius") {
+        
+        // $width_value = $cart_item['custom_inputs']['width'] / 2;
+        //     $item_data[] = [
+        //         'name' => 'Radius (MM)',
+        //         'value' => $width_value
+        //     ];
+
+        // }
+
         // Width
         if (isset($cart_item['custom_inputs']['width'])) {
             $item_data[] = [
                 'name' => 'Width (MM)',
                 'value' => $cart_item['custom_inputs']['width']
+            ];
+        }
+
+        // Width Inches
+        if (
+            isset($cart_item['custom_inputs']['width_inches']) &&
+            (float) $cart_item['custom_inputs']['width_inches'] > 0
+        ) {
+            $item_data[] = [
+                'name'  => 'Width (INCHES)',
+                'value' => $cart_item['custom_inputs']['width_inches']
             ];
         }
 
@@ -1903,13 +1964,27 @@ function show_custom_input_details_in_cart($item_data, $cart_item) {
             ];
         }
 
-        // Quantity
-        // if (isset($cart_item['custom_inputs']['qty'])) {
-        //     $item_data[] = [
-        //         'name' => 'Total number of parts',
-        //         'value' => $cart_item['custom_inputs']['qty']
-        //     ];
-        // }
+        // Length Inches
+        if (
+            isset($cart_item['custom_inputs']['length_inches']) &&
+            (float) $cart_item['custom_inputs']['length_inches'] > 0
+        ) {
+            $item_data[] = [
+                'name'  => 'Length (INCHES)',
+                'value' => $cart_item['custom_inputs']['length_inches']
+            ];
+        }
+
+        // Custom Radius Inches
+        if (
+            isset($cart_item['custom_inputs']['custom_radius_inches']) &&
+            (float) $cart_item['custom_inputs']['custom_radius_inches'] > 0
+        ) {
+            $item_data[] = [
+                'name'  => 'Radius (INCHES)',
+                'value' => $cart_item['custom_inputs']['custom_radius_inches']
+            ];
+        }
 
 
         if ($cart_item['custom_inputs']['shape_type'] === "rolls") {
@@ -2133,10 +2208,10 @@ function save_shipping_address_to_order_item($item, $cart_item_key, $values, $or
 
 
 // DISPLAY SHIPPING ADDRESS/NOTES IN ORDER EMAILS
-/*
+
 add_action('woocommerce_email_customer_details', 'add_custom_shipping_address_below_billing', 25, 4);
 function add_custom_shipping_address_below_billing($order, $sent_to_admin, $plain_text, $email) {
-
+    // Loop through order items to find the first shipping address
     $shipping_address = null;
     $despatch_notes = null;
 
@@ -2150,7 +2225,7 @@ function add_custom_shipping_address_below_billing($order, $sent_to_admin, $plai
             $despatch_notes = $meta_despatch_notes;
         }
         if ($shipping_address || $despatch_notes) {
-            break; 
+            break; // Only show first item with data
         }
     }
 
@@ -2184,7 +2259,7 @@ echo '<div class="custom-order-details" style="margin-top:10px;">';
 
     }
 }
-*/
+
 // DISPLAY SHIPPING ADDRESS/NOTES IN ORDER EMAILS
 
 

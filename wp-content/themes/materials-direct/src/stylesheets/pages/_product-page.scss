@@ -16,6 +16,8 @@
         margin-bottom: 0.6rem;
     }
     &__grey-panel {
+        display: flex;
+        flex-wrap: wrap;
         background: #efefef;
         padding: 1.1rem;
         margin: 0 0 1.5rem 0;
@@ -35,8 +37,9 @@
             font-size: 0.9rem;
         }
         @include breakpoints.iphone {
-            width: 32.6%;
+            width: 32%;
             margin-top: 0rem;
+            margin-right: 1.33%;
         }
         display: inline-block;
         font-weight: 600;
@@ -44,6 +47,7 @@
     &__input-wrap-radius {
         color: variables.$secondary-color;
         width: 65.2%;
+        margin-right: 1.33%;
         display: inline-block;
         font-weight: 600;
         font-size: 0.9rem;

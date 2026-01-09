@@ -48,7 +48,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </label>
 
     <label class="product-page__input-wrap">
-        Width (MM):
+        <span id="width_label">Width (MM)</span>:
         <input
             class="product-page__input"
             type="number"
@@ -62,7 +62,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </label>
 
     <label class="product-page__input-wrap">
-        Length (MM):
+        <span id="length_label">Length (MM)</span>:
         <input
             class="product-page__input"
             type="number"
@@ -100,39 +100,43 @@ jQuery(function ($) {
 
     const INCH_TO_MM = 25.4;
 
-    function updatePlaceholders() {
+    function updateUI() {
+
         if ($('#use_inches').is(':checked')) {
+
+            $('#width_label').text('Width (INCHES)');
+            $('#length_label').text('Length (INCHES)');
+
             $('#input_width').attr('placeholder', 'Width Inches');
             $('#input_length').attr('placeholder', 'Length Inches');
+
         } else {
+
+            $('#width_label').text('Width (MM)');
+            $('#length_label').text('Length (MM)');
+
             $('#input_width').removeAttr('placeholder');
             $('#input_length').removeAttr('placeholder');
+
         }
     }
 
     // Run on page load (important after POST)
-    updatePlaceholders();
+    updateUI();
 
+    // Handle checkbox toggle
     $('#use_inches').on('change', function () {
 
-if ($(this).is(':checked')) {
+        if ($(this).is(':checked')) {
+            // Clear values when switching to inches
+            $('#input_width').val('');
+            $('#input_length').val('');
+        }
 
-    // Clear values when switching to inches
-    $('#input_width').val('');
-    $('#input_length').val('');
-
-    $('#input_width').attr('placeholder', 'Width Inches');
-    $('#input_length').attr('placeholder', 'Length Inches');
-
-    } else {
-
-        $('#input_width').removeAttr('placeholder');
-        $('#input_length').removeAttr('placeholder');
-
-    }
-
+        updateUI();
     });
 
+    // Convert inches → mm before submit
     $('#generate_price').on('click', function () {
 
         if ($('#use_inches').is(':checked')) {

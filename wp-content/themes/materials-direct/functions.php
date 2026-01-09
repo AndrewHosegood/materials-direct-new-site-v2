@@ -460,6 +460,10 @@ require_once('includes/email-template-css-styling.php');
 require_once('includes/popular-products-carousel.php');
 // Popular Products Carousel
 
+// style up meta labels on thankyou page and admin orders page
+require_once('includes/meta-labels-admin-orders-and-thankyou-page.php');
+// style up meta labels on thankyou page and admin orders page
+
 /* END CUSTOM FUNCTIONS */
 
 /* DELIVERY OPTIONS FUNCTIONS */
@@ -477,47 +481,6 @@ require_once('includes/split_schedule_add_to_calendar.php');
 // Forces customers to re-enter shipping details on every order, even when logged in
 // Need to test that this is ok to use long term
 add_filter( 'woocommerce_customer_has_shipping_address', '__return_false' );
-
-
-
-
-
-
-
-
-
-
-
-
-add_filter( 'woocommerce_order_item_get_formatted_meta_data', 'hide_specific_order_item_meta_keys', 10, 2 );
-function hide_specific_order_item_meta_keys( $formatted_meta, $item ) {
-    // Only hide on frontend (thank you page, My Account, emails, etc.)
-    // Keep visible in admin for your reference
-    if ( is_admin() ) {
-        return $formatted_meta;
-    }
-
-    $keys_to_hide = array(
-        'despatch_string',
-        'Customer Shipping Weight(s)',
-        'cost_per_part',
-        'price',
-        'is_scheduled',
-        'roll_length',
-		'scheduled_shipments',
-        // Add any other internal keys here if needed
-    );
-
-    foreach ( $formatted_meta as $key => $meta ) {
-        if ( in_array( $meta->key, $keys_to_hide ) ) {
-            unset( $formatted_meta[ $key ] );
-        }
-    }
-
-    return $formatted_meta;
-}
-
-
 
 
 
