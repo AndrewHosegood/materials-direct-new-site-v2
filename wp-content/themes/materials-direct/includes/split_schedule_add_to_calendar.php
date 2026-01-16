@@ -42,9 +42,9 @@ function custom_debug_entire_order($order_id) {
     }
 
     // Prevent duplicate execution on page refresh
-    // if ($order->get_meta('_split_schedules_processed') === 'yes') {
-    //     return;
-    // }
+    if ($order->get_meta('_split_schedules_processed') === 'yes') {
+         return;
+    }
 
     // Billing details (with defaults)
     $billing_firstname = $order->get_billing_first_name() ?: '';
@@ -151,6 +151,16 @@ function custom_debug_entire_order($order_id) {
 
             $delivery_count = count($matches);
 
+            $stock_quantity = $item->get_meta('stock_quantity');
+            //$item->get_meta('is_backorder')
+            if($stock_quantity <= 0){
+                $my_backorder = 1;
+            } else {
+                $my_backorder = 0;
+            }
+
+            echo $my_backorder;
+
             foreach ($matches as $index => $match) {
                 $schedule_qty  = (int) str_replace(',', '', $match[1]);
                 //$dates_count = 9999;
@@ -213,7 +223,7 @@ function custom_debug_entire_order($order_id) {
                         'discount_rate'         => $discount_rate_v,
                         'voucher_code'          => 0,
                         'voucher_percent'       => 0,
-                        'on_backorder'          => $item->get_meta('is_backorder'),
+                        'on_backorder'          => $my_backorder,
                         'cost_per_part'         => $item->get_meta('price'),
                         'cost_per_part_raw'     => $item->get_meta('cost_per_part'),
                         'split_schedule'        => 1,
@@ -331,9 +341,9 @@ function custom_debug_entire_order($order_id) {
 
             } // end foreach
 
-            // echo '<pre>';
-            // print_r( $order->get_data() );
-            // echo '</pre>';
+            echo '<pre>';
+            print_r( $order->get_data() );
+            echo '</pre>';
 
         } // end foreach
     } else {

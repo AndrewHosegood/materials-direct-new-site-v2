@@ -415,10 +415,6 @@ require_once('includes/add-download-datasheet-product-page.php');
 require_once('includes/add-custom-id-to-tabs-on-product-page.php');
 /* add custom id to woocoomerce default tabs on product page */
 
-/* Disable payment gateway items when the user has a credit account */
-require_once('includes/payment-gateway-disable-items-for-credit-account.php');
-/* Disable payment gateway items when the user has a credit account */
-
 /* Remove paynow buttons on thankyou page */
 require_once('includes/remove-paynow-buttons-on-thankyou-page.php');
 /* Remove paynow buttons on thankyou page */
@@ -467,8 +463,22 @@ require_once('includes/meta-labels-admin-orders-and-thankyou-page.php');
 /* END CUSTOM FUNCTIONS */
 
 /* DELIVERY OPTIONS FUNCTIONS */
-require_once('includes/admin-email-split-schedule-data.php');
-require_once('includes/split_schedule_add_to_calendar.php');
+require_once('includes/add_split_schedule_status_to_woocommerce_orders.php'); // *
+require_once('includes/split_schedule_calendar.php'); // *
+require_once('includes/split_schedule_admin.php'); // *
+//require_once('includes/admin-email-split-schedule-data.php'); // for displaying the split schedule breakdown on the emails
+require_once('includes/admin-email-split-schedule-data-v3.php');
+require_once('includes/enqueue-ajax-for-calendar-admin.php'); // Enqueue ajax for calendar admin *
+require_once('includes/ajax-for-calendar-admin-new.php'); // Enqueue ajax for calendar admin *
+require_once('includes/ajax-for-calendar-admin-merged-dates.php'); // Enqueue ajax for calendar admin *
+require_once('includes/ajax-for-calendar-admin-single.php'); // Enqueue ajax for calendar admin *
+require_once('includes/ajax-for-calendar-admin-multiple.php'); // Enqueue ajax for calendar admin *
+require_once('includes/ajax-for-calendar-admin-select-shipments.php'); // Enqueue ajax for calendar admin *
+require_once('includes/ajax-for-calendar-admin-tracking-number.php'); // Enqueue ajax for calendar admin *
+require_once('includes/ajax-for-calendar-admin-tracking-url.php'); // Enqueue ajax for calendar admin *
+require_once('includes/show-final-dispatch-action.php'); // Enqueue ajax for calendar admin *
+require_once('includes/split_schedule_add_to_calendar.php'); // *
+require_once('includes/payment-gateway-disable-items-for-credit-account.php'); // *
 /* END DELIVERY OPTIONS FUNCTIONS */
 
 

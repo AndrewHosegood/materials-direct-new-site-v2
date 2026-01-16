@@ -66,6 +66,12 @@ function filter_admin_order_item_meta( $formatted_meta, $item ) {
 
         // Display the Cost Per Part
         if ( $meta->display_key === 'cost_per_part' ) {
+
+            // if ( is_email() && $meta->display_key === 'Cost Per Part' ) {
+            //     unset( $formatted_meta[ $meta_id ] );
+            //     continue;
+            // }
+
             $formatted_meta[ $meta_id ]->display_key = 'Cost Per Part';
         }
         // End display the Cost Per Part

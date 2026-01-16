@@ -297,19 +297,19 @@ function custom_price_input_fields_prefill() {
         <!-- Tabs -->
         <ul class="product-page__tabs">
 
-        <li class="product-page__tabs-list"><label class="product-page__tabs-label">Custom Shape (Drawing)
+        <li class="product-page__tabs-list"><label class="product-page__tabs-label">Custom Shape<br>(Drawing)
         <input class="product-page__tabs-input" name="tabs_input" type="radio" value="custom-shape-drawing" checked="checked" id="custom_drawing" tabindex="1">
         </label></li>
 
-        <li class="product-page__tabs-list"><label class="product-page__tabs-label">Circle Radius
+        <li class="product-page__tabs-list"><label class="product-page__tabs-label">Circle<br>Radius
         <input class="product-page__tabs-input" name="tabs_input" type="radio" value="circle-radius" id="circle-radius" tabindex="0">
         </label></li>
 
-        <li class="product-page__tabs-list"><label class="product-page__tabs-label">Square Rectangle
+        <li class="product-page__tabs-list"><label class="product-page__tabs-label">Square<br>Rectangle
         <input class="product-page__tabs-input" name="tabs_input" type="radio" value="square-rectangle" id="square_rectangle" tabindex="0">
         </label></li>
 
-        <li class="product-page__tabs-list"><label class="product-page__tabs-label">Stock Sheets
+        <li class="product-page__tabs-list"><label class="product-page__tabs-label">Stock<br>Sheets
         <input class="product-page__tabs-input" name="tabs_input" type="radio" value="stock-sheets" id="stock_sheets" tabindex="0">
         </label></li>
 
@@ -682,7 +682,7 @@ function calculate_secure_price() {
     /* AH rolls fix 9.12.2025 */
     
     // $is_backorder = $sheets_required > $stock_quantity;
-
+    error_log("is_backorder (1): " . $is_backorder);
 
 
     // SEND DATA TO algorith-core-functionality.js
@@ -1537,6 +1537,9 @@ function add_custom_price_cart_item_data_secure($cart_item_data, $product_id) {
         $cart_item_data['custom_inputs']['total_price'] = $server_total_price;
     }
 
+    error_log("is_backorder (2): " . $is_backorder);
+    error_log("Stock Quantity: (from add_custom_price_cart_item_data_secure)" . $stock_quantity);
+
     $cart_item_data['custom_inputs'] = array_merge($cart_item_data['custom_inputs'], [
         'width' => floatval($_POST['custom_width']),
         'width_inches' => floatval($_POST['custom_width_inches']),
@@ -1833,6 +1836,9 @@ function save_sheets_required_to_order_item($item, $cart_item_key, $values, $ord
     if (isset($values['custom_inputs']['roll_length'])) {
         $item->add_meta_data('roll_length', $values['custom_inputs']['roll_length'], true);
     }
+    if (isset($values['custom_inputs']['stock_quantity'])) {
+        $item->add_meta_data('stock_quantity', $values['custom_inputs']['stock_quantity'], true);
+    }
     if (isset($values['custom_inputs']['is_backorder']) && $values['custom_inputs']['is_backorder']) {
         $backorder_data = $values['custom_inputs']['backorder_data'];
         $item->add_meta_data('parts_backorder', $backorder_data['parts_backorder'], true);
@@ -2113,7 +2119,11 @@ function apply_secure_custom_price($cart) {
                 $price_per_sheet = isset($cart_item['custom_inputs']['price']) ? floatval($cart_item['custom_inputs']['price']) : 0;
                 if ($price_per_sheet <= 0) {
                     $total_price = calculate_product_price($product_id, $width, $length, $qty, $discount_rate, $shape_type);
-                    $price_per_sheet = $sheets_required > 0 ? $total_price / $sheets_required : $total_price;
+                    try {
+                        $price_per_sheet = $sheets_required > 0 ? $total_price / $sheets_required : $total_price;
+                    } catch (TypeError $e) {
+                        error_log('Price calculation TypeError: ' . $e->getMessage());
+                    }
                 }
             }
 

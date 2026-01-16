@@ -1,6 +1,6 @@
 <?php
 /*
-Template Name: PDF Generation For Admin (New Version 3)
+Template Name: PDF Generation For Admin (New Version 4)
 */
 
 $domain = $_SERVER['HTTP_HOST'];
@@ -360,9 +360,9 @@ try {
             }
 
 
-            if($rolls_value == "Rolls"){
-                $schedule_qty = $schedule_qty * $rolls_length;
-            }
+            // if($rolls_value == "Rolls"){
+            //     $schedule_qty = $schedule_qty * $rolls_length;
+            // }
 
 
 
@@ -634,7 +634,7 @@ try {
             
 
             $sch = '<br><br>Schedule: ' .$row['schedule'];
-            $str = "<br><br>Unit price does not include any fair or manufacturers COFC" . $mcf_v;
+            $str = "<br><br>Unit price does not include any fair or manufacturers COFC";
             //collect the values for product Description
 
             //collect the values for the invoice numbers on merged dates
@@ -679,7 +679,10 @@ try {
             $invoice_details_html .= '<td>' . $row['sku'] . '</td>';
             //$invoice_details_html .= '<td>' . $title . $ps . $dra . $dxf . $wdt . $wdti . $lgt . $lgti . $rad . "<br>" . $mcofc_fair_formatted . $scd . $sch . $str .'New Total: '. $newtotal . '<br>cppnew: ' .$cppnew. '<br>My Shipping Response: ' .$my_shipping_response. '<br>Vat Display: ' .$vat_display. '<br>tf_3: ' .$tf_3. '<br>md_value: ' .$md_value. '<br>mcofc_fair_value_display: ' .$mcofc_fair_value_display. '<br>mcf_v: ' .$mcf_v. '<br>MCOFC Fair Value: ' .$mcofc_fair_value. '<br>Discount Code Value New: ' . $discount_code_value_new .  '</td>';
             //$invoice_details_html .= '<td>' . $title . $ps . $dra . $dxf . $wdt . $wdti . $lgt . $lgti . $rad . $mcf . $scd . $sch . $str . "<br>MCOFC Fair: " . $mcofc_fair_string . '</td>';
-            $invoice_details_html .= '<td>' . $title . $ps . $dra . $dxf . $wdt . $lgt . $wdti . $lgti . $rad . "<br>" . $mcofc_fair_formatted . $sch . $str .  '</td>';
+            //$invoice_details_html .= '<td>' . $title . $ps . $dra . $dxf . $wdt . $lgt . $wdti . $lgti . $rad . "<br>" . $mcofc_fair_formatted . $sch . $str .  '</td>';
+            // $rolls_value = $row['rolls_value'];
+            // $rolls_length = $row['rolls_length'];
+            $invoice_details_html .= '<td>' . $title . $ps . $dra . $dxf . $wdt . $lgt . $wdti . $lgti . $rad . "<br>" . $mcofc_fair_formatted . $sch . $str . "<br>total_final: " . $total_final . "<br> cppnew: " . $cppnew . "<br>my_shipping_response: " . $my_shipping_response . "<br>vat_display: " .$vat_display. "<br>tf_3: " .$tf_3. "<br>md_value: " .$md_value. "<br>mcofc_fair_value_display: " .$mcofc_fair_value_display. "<br>voucher_percent: " .$voucher_percent. "<br>total_1: " .$total_1. "<br>discount_amount: " .$discount_amount. "<br>on_backorder: " .$row['on_backorder']. "<br>Rolls Value: " .$rolls_value. "<br>Rolls Length: " .$rolls_length.  '</td>'; 
             //$invoice_details_html .= '<td>' . $row['title'] . '<br>Part shape: ' . $part_shape  . '<br>Width (MM): ' . $width . '<br>Length (MM): ' . $length . '<br><br>Schedule: ' .$row['schedule'] . '</td>';
 
             $invoice_details_html .= '<td>' . $row['schedule_qty'] . '</td>';
