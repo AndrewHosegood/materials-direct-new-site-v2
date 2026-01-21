@@ -871,9 +871,10 @@ function save_single_product_shipping() {
         ];
         WC()->session->set('custom_shipping_address', $shipping_address);
         wp_send_json_success(['message' => 'Shipping address saved successfully.']);
-    } else {
-        wp_send_json_error(['message' => '<span>Please fill in all required shipping address fields.</span>']);
-    }
+    } 
+    // else {
+    //     wp_send_json_error(['message' => '<span>Please fill in all required shipping address fields.</span>']);
+    // }
 }
 // 3b NEW AJAX HANDLER FOR SAVING SHIPPING ADDRESS FOR SINGLE PRODUCTS
 
@@ -901,6 +902,9 @@ add_action('wp_enqueue_scripts', function() {
 
 // HELPER FUNCTION TO GROUP SHIPPING DATA BY DISPATCH DATE
 function group_shipping_by_date($cart) {
+
+   //error_log("Group Shipping By Date Triggered");
+
     $shipping_by_date = [];
 
     foreach ($cart->get_cart() as $cart_item) {
@@ -917,7 +921,7 @@ function group_shipping_by_date($cart) {
                     $portion_parts = $shipment['parts'];
                     $ratio = $portion_parts / $qty;
                     $portion_weight = $total_del_weight * $ratio;
-
+                    //error_log("Shipping BY Date Quantity: " . $shipping_by_date[$date]['quantity']);
                     if (isset($shipping_by_date[$date])) {
                         $shipping_by_date[$date]['quantity'] += 1;
                         $shipping_by_date[$date]['total_del_weight'] += $portion_weight;
@@ -929,6 +933,8 @@ function group_shipping_by_date($cart) {
                         ];
                     }
                 }
+                //error_log("Scheduled Group Shipping BY Date Triggered");
+                //error_log(print_r($shipping_by_date[$date], true));
             } elseif (isset($cart_item['custom_inputs']['shipments'])) {
                 $shipments = $cart_item['custom_inputs']['shipments'];
                 if (is_array($shipments)) {
@@ -984,6 +990,8 @@ function group_shipping_by_date($cart) {
     }
 
     return $shipping_by_date;
+    //error_log("Shipping By Date: " . $shipping_by_date);
+    //error_log("Final Shiiping By Date Triggered");
 }
 // HELPER FUNCTION TO GROUP SHIPPING DATA BY DISPATCH DATE
 
@@ -1316,7 +1324,8 @@ function add_custom_price_cart_item_data_secure($cart_item_data, $product_id) {
     if ($is_scheduled) {
         $cart_item_data['custom_inputs']['is_scheduled'] = $is_scheduled; // wednesday amend
         $cart_item_data['custom_inputs']['roll_length'] = $roll_length_v; // wednesday amend
-        $despatch_string = ''; // thurdsay retrieve discount rate
+        $despatch_dates = '';
+        $despatch_string = ''; 
         $despatch_notes = '';
         $scheduled_shipments = $shipments_session;
         $enhanced_shipments = [];
@@ -1357,13 +1366,17 @@ function add_custom_price_cart_item_data_secure($cart_item_data, $product_id) {
 
             $formatted_line = number_format($s['parts']) . " parts to be despatched on {$despatch_date} {$lead_time_label}" . $feeAppendix;
 
-            $formatted_line_discount = number_format($s['parts']) . ", " . $despatch_date .", ". $discount_label .", ". implode(', ', $feeParts) . ", "; // thurdsay retrieve discount rate
+            $formatted_line_discount = number_format($s['parts']) . ", " . $despatch_date .", ". $discount_label .", ". implode(', ', $feeParts) . ", ";
+            //$formatted_line_date = $despatch_date . ", "; 
 
             error_log("Formatted Line Discount: " . $formatted_line_discount);
+            
 
             //$formatted_line = number_format($s['parts']) . " parts to be despatched on {$despatch_date} {$lead_time_label}";
             $despatch_notes .= $formatted_line . "\n";
             $despatch_string .= $formatted_line_discount; // thurdsay retrieve discount rate
+            $ah_despatch_date .= $formatted_line_date;
+            //error_log("AH Despatch Dates: " . $ah_despatch_date);
             $enhanced_shipments[] = [
                 'date'            => $despatch_date,
                 'parts'           => $s['parts'],
@@ -1537,8 +1550,141 @@ function add_custom_price_cart_item_data_secure($cart_item_data, $product_id) {
         $cart_item_data['custom_inputs']['total_price'] = $server_total_price;
     }
 
+    // Collect the dates from scheduled orders V1
+    /*
+    $current_dates = [];
+
+    if ($is_scheduled) {
+        foreach ($scheduled_shipments as $s) {
+            $current_dates[] = $s['date'];
+        }
+    } else {
+        if (is_array($shipments)) {
+            $current_dates = $shipments; 
+        } elseif (is_string($shipments) && !empty($shipments)) {
+            $current_dates = [$shipments]; 
+        }
+    }
+
+    $all_dates = [];
+
+    foreach (WC()->cart->get_cart() as $cart_item) {
+        if (isset($cart_item['custom_inputs']['is_scheduled']) && $cart_item['custom_inputs']['is_scheduled']) {
+            // Scheduled item – dates stored in scheduled_shipments
+            if (isset($cart_item['custom_inputs']['scheduled_shipments'])) {
+                $all_dates = array_merge($all_dates, array_column($cart_item['custom_inputs']['scheduled_shipments'], 'date'));
+            }
+        } else {
+            // Non-scheduled item – dates stored in shipments
+            $item_shipments = $cart_item['custom_inputs']['shipments'] ?? '';
+            if (is_array($item_shipments)) {
+                $all_dates = array_merge($all_dates, $item_shipments);
+            } elseif (is_string($item_shipments) && !empty($item_shipments)) {
+                $all_dates[] = $item_shipments;
+            }
+        }
+    }
+
+    $all_dates = array_merge($all_dates, $current_dates);
+
+    $ah_despatch_date = implode(', ', $all_dates);
+
+    foreach (WC()->cart->get_cart() as $cart_item_key => $cart_item) {
+        WC()->cart->cart_contents[$cart_item_key]['custom_inputs']['despatch_date'] = $ah_despatch_date;
+    }
+
+    $cart_item_data['custom_inputs']['despatch_date'] = $ah_despatch_date;
+
+    error_log("All Combined Despatch Dates (across whole cart): " . $ah_despatch_date);
+    */
+    // Collect the dates from scheduled orders V1
+
+
+    // Collect the dates from scheduled orders v2
+    $current_dates = [];
+
+    if ($is_scheduled) {
+        // Scheduled: dates come from the session / enhanced_shipments
+        if (!empty($enhanced_shipments)) {
+            $current_dates = array_column($enhanced_shipments, 'date');
+        }
+    } else {
+        // Non-scheduled: use the $shipments value that was set earlier
+        if (is_array($shipments)) {
+            $current_dates = $shipments; // partial or full backorder (array of dates)
+        } elseif (is_string($shipments) && !empty(trim($shipments))) {
+            $current_dates = [trim($shipments)]; // single date string
+        }
+        // If no date (very rare edge case), $current_dates remains empty
+    }
+
+    // Optional debug to confirm current item's dates are captured
+    error_log("Current item despatch dates: " . print_r($current_dates, true));
+
+
+
+    // Collect ALL existing despatch dates from items already in the cart
+    $all_dates = [];
+
+    foreach (WC()->cart->get_cart() as $cart_item) {
+        if (isset($cart_item['custom_inputs']['is_scheduled']) && $cart_item['custom_inputs']['is_scheduled']) {
+            // Scheduled item – pull dates from scheduled_shipments
+            if (isset($cart_item['custom_inputs']['scheduled_shipments'])) {
+                $all_dates = array_merge($all_dates, array_column($cart_item['custom_inputs']['scheduled_shipments'], 'date'));
+            }
+        } else {
+            // Non-scheduled item – pull dates from shipments
+            $item_shipments = $cart_item['custom_inputs']['shipments'] ?? '';
+            if (is_array($item_shipments)) {
+                $all_dates = array_merge($all_dates, $item_shipments);
+            } elseif (is_string($item_shipments) && !empty(trim($item_shipments))) {
+                $all_dates[] = trim($item_shipments);
+            }
+        }
+    }
+
+    // Add the current item's dates
+    $all_dates = array_merge($all_dates, $current_dates);
+
+    // Safety: remove any empty/invalid entries
+    $all_dates = array_filter($all_dates, function($date) {
+        return !empty(trim($date));
+    });
+
+    // Count occurrences
+    $counts = array_count_values($all_dates);
+
+    // Build aggregated array
+    $aggregated = [];
+    foreach ($counts as $date => $qty) {
+        $aggregated[$date] = ['qty' => (int)$qty];
+    }
+
+    // Sort chronologically
+    uksort($aggregated, function($a, $b) {
+        $da = DateTime::createFromFormat('d/m/Y', $a);
+        $db = DateTime::createFromFormat('d/m/Y', $b);
+        if (!$da || !$db) {
+            return strcmp($a, $b);
+        }
+        return $da <=> $db;
+    });
+
+    // Update ALL cart items (existing + current) with the full aggregated array
+    foreach (WC()->cart->get_cart() as $cart_item_key => $cart_item) {
+        WC()->cart->cart_contents[$cart_item_key]['custom_inputs']['despatch_date'] = $aggregated;
+    }
+    $cart_item_data['custom_inputs']['despatch_date'] = $aggregated;
+
+    // Debug
+    error_log("All collected dates (raw): " . print_r($all_dates, true));
+    error_log("Aggregated Despatch Dates (across whole cart): " . print_r($aggregated, true));
+    // Collect the dates from scheduled orders v2
+
+
     error_log("is_backorder (2): " . $is_backorder);
     error_log("Stock Quantity: (from add_custom_price_cart_item_data_secure)" . $stock_quantity);
+    error_log("Total Del Weight: " . $total_del_weight);
 
     $cart_item_data['custom_inputs'] = array_merge($cart_item_data['custom_inputs'], [
         'width' => floatval($_POST['custom_width']),
@@ -1559,6 +1705,7 @@ function add_custom_price_cart_item_data_secure($cart_item_data, $product_id) {
         'is_backorder' => $is_backorder,
         'backorder_data' => $backorder_data,
         'stock_quantity' => $stock_quantity,
+        'despatch_date' => $aggregated,  // this will now be the combined list
     ]);
 
 
@@ -1718,9 +1865,17 @@ function add_custom_shipping_to_order($order, $data) {
     $shipping_by_date = group_shipping_by_date($cart);
 
     // Sum the shipping costs
+    $shipping_meta = [];
     $total_shipping = 0;
+
     foreach ($shipping_by_date as $date => $data) {
+
+        $final_shipping = floatval($data['final_shipping']);
+        error_log("Shipping (3 new): " . $final_shipping);
+
         $total_shipping += floatval($data['final_shipping']);
+
+        $shipping_meta[$date] = $final_shipping;
     }
 
     if ($total_shipping > 0) {
@@ -1729,6 +1884,15 @@ function add_custom_shipping_to_order($order, $data) {
         $shipping_item->set_method_id('custom_shipping_method');
         $shipping_item->set_method_title('Shipping Total');
         $shipping_item->set_total($total_shipping);
+
+        // Add meta safely now
+        foreach ($shipping_meta as $date => $amount) {
+            $shipping_item->add_meta_data(
+                'ah_shipping_cost',
+                wc_format_decimal($amount),
+                false
+            );
+        }
 
         // Add the shipping item to the order
         $order->add_item($shipping_item);
@@ -1838,6 +2002,9 @@ function save_sheets_required_to_order_item($item, $cart_item_key, $values, $ord
     }
     if (isset($values['custom_inputs']['stock_quantity'])) {
         $item->add_meta_data('stock_quantity', $values['custom_inputs']['stock_quantity'], true);
+    }
+    if (isset($values['custom_inputs']['despatch_date'])) {
+        $item->add_meta_data('despatch_date', $values['custom_inputs']['despatch_date'], true);
     }
     if (isset($values['custom_inputs']['is_backorder']) && $values['custom_inputs']['is_backorder']) {
         $backorder_data = $values['custom_inputs']['backorder_data'];
@@ -2483,6 +2650,8 @@ function display_custom_inputs_on_product_page() {
             $total_del_weight = $totalSqCm * floatval($product_weight) * $quantity * 1.03;
             $final_shipping = calculate_shipping_cost($total_del_weight, $country);
         }
+
+
 
 
         // Output styled results

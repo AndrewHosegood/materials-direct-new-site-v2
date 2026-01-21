@@ -460,6 +460,12 @@ require_once('includes/popular-products-carousel.php');
 require_once('includes/meta-labels-admin-orders-and-thankyou-page.php');
 // style up meta labels on thankyou page and admin orders page
 
+// style up meta labels on thankyou page and admin orders page
+require_once('includes/currency-fetch.php');
+// style up meta labels on thankyou page and admin orders page
+
+
+
 /* END CUSTOM FUNCTIONS */
 
 /* DELIVERY OPTIONS FUNCTIONS */

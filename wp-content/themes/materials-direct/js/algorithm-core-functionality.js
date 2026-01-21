@@ -265,10 +265,10 @@ jQuery(document).ready(function($) {
         const zip_postal = $('#input_zip_postal').val().trim();
         const country = $('#input_country').val();
         
-        if (!street_address || !city || !county_state || !zip_postal || !country) {
-            $('#custom_price_display').html('<span class="product-page__backorder-message">Please fill in all required shipping address fields.</span>');
-            return false;
-        }
+        // if (!street_address || !city || !county_state || !zip_postal || !country) {
+        //     $('#custom_price_display').html('<span class="product-page__backorder-message">Please fill in all required shipping address fields.</span>');
+        //     return false;
+        // }
         return {
             street_address,
             address_line2: $('#input_address_line2').val().trim(),
@@ -345,6 +345,11 @@ function updateDatepickerMinDate() {
             const pdfPath = $('#pdf_path').val().trim();
             if (!pdfPath) {
                 $('#custom_price_display').html('<span class="product-page__backorder-message"><p class="product-page__backorder-message-text">Please upload a .PDF drawing before calculating the price.</p></span>');
+                return;
+            }
+            const dxfPath = $('#dxf_path').val().trim();
+            if (!dxfPath) {
+                $('#custom_price_display').html('<span class="product-page__backorder-message"><p class="product-page__backorder-message-text">Please upload a .DXF drawing before calculating the price.</p></span>');
                 return;
             }
         }
@@ -589,7 +594,14 @@ function updateDatepickerMinDate() {
             if (selectedTab === 'custom-shape-drawing') {
                 const pdfPath = $('#pdf_path').val().trim();
                 if (!pdfPath) {
+                    $('#input_width, #input_length, #input_qty, #input_radius').prop('readonly', false);
                     $('#custom_price_display').html('<span class="product-page__backorder-message"><p class="product-page__backorder-message-text">Please upload a .PDF drawing before calculating the price.</p></span>');
+                    return;
+                }
+                const dxfPath = $('#dxf_path').val().trim();
+                if (!dxfPath) {
+                    $('#input_width, #input_length, #input_qty, #input_radius').prop('readonly', false);
+                    $('#custom_price_display').html('<span class="product-page__backorder-message"><p class="product-page__backorder-message-text">Please upload a .DXF drawing before calculating the price.</p></span>');
                     return;
                 }
             }

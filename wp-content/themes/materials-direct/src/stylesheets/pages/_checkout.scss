@@ -262,3 +262,9 @@
     font-size: 0.9rem;
     line-height: 1.4rem;
 }
+.woocommerce form .form-row.woocommerce-validated input.input-text, .woocommerce form .form-row.woocommerce-validated select {
+    border-color: variables.$primary-color;
+}
+.woocommerce form .form-row.woocommerce-validated .select2-container:not(.select2-container--open) .select2-selection {
+    border-color: variables.$primary-color;
+}

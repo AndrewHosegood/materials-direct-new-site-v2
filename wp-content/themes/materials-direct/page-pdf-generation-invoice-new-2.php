@@ -428,8 +428,12 @@ try {
 
             if($flag == 1){
                 $my_shipping_response = $shipping_display_new / $meta_qty;
+                //echo "Flag is 1";
+                //exit;
             } else {
                 $my_shipping_response = $shipping_display_new;
+                //echo "Flag is 0";
+                //exit;
             }
 
 
@@ -682,7 +686,7 @@ try {
             //$invoice_details_html .= '<td>' . $title . $ps . $dra . $dxf . $wdt . $lgt . $wdti . $lgti . $rad . "<br>" . $mcofc_fair_formatted . $sch . $str .  '</td>';
             // $rolls_value = $row['rolls_value'];
             // $rolls_length = $row['rolls_length'];
-            $invoice_details_html .= '<td>' . $title . $ps . $dra . $dxf . $wdt . $lgt . $wdti . $lgti . $rad . "<br>" . $mcofc_fair_formatted . $sch . $str . "<br>total_final: " . $total_final . "<br> cppnew: " . $cppnew . "<br>my_shipping_response: " . $my_shipping_response . "<br>vat_display: " .$vat_display. "<br>tf_3: " .$tf_3. "<br>md_value: " .$md_value. "<br>mcofc_fair_value_display: " .$mcofc_fair_value_display. "<br>voucher_percent: " .$voucher_percent. "<br>total_1: " .$total_1. "<br>discount_amount: " .$discount_amount. "<br>on_backorder: " .$row['on_backorder']. "<br>Rolls Value: " .$rolls_value. "<br>Rolls Length: " .$rolls_length.  '</td>'; 
+            $invoice_details_html .= '<td>' . $title . $ps . $dra . $dxf . $wdt . $lgt . $wdti . $lgti . $rad . "<br>" . $mcofc_fair_formatted . $sch . $str . "<br>total_final: " . $total_final . "<br> cppnew: " . $cppnew . "<br>my_shipping_response: " . $my_shipping_response . "<br>vat_display: " .$vat_display. "<br>tf_3: " .$tf_3. "<br>md_value: " .$md_value. "<br>mcofc_fair_value_display: " .$mcofc_fair_value_display. "<br>voucher_percent: " .$voucher_percent. "<br>total_1: " .$total_1. "<br>discount_amount: " .$discount_amount. "<br>on_backorder: " .$row['on_backorder']. "<br>Rolls Value: " .$rolls_value. "<br>Rolls Length: " .$rolls_length. "<br>Duplicate Date Count: " .$duplicate_date_count. "<br>My Shipping Response: " .$my_shipping_response. '<br>Meta Quantity: ' .$meta_qty.  '</td>'; 
             //$invoice_details_html .= '<td>' . $row['title'] . '<br>Part shape: ' . $part_shape  . '<br>Width (MM): ' . $width . '<br>Length (MM): ' . $length . '<br><br>Schedule: ' .$row['schedule'] . '</td>';
 
             $invoice_details_html .= '<td>' . $row['schedule_qty'] . '</td>';

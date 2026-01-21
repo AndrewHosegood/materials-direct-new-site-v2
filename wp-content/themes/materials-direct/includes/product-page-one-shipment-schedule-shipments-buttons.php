@@ -24,9 +24,9 @@ function one_shipment_scheduled_shipment_buttons_shortcode() {
 					<a class="has-tooltip product-page__delivery-options-button-disabled" id="split_schedule_dispatch_2" data-tooltip="Only available with a Credit Account. (Fill in the Credit Account Application at the top of the page)." disabled=""><p class="product-page__delivery-options-button-text">Disabled</p>Scheduled Shipments</a>
 				</div>
 			</div>
-		<?php } else { ?>
-			<p style="color: red;">WE ARE LOGGED IN WITH A CREDIT ACCOUNT</p>
-		<?php }
+		<?php }  ?>
+			
+		<?php 
 
 	} else { ?>
 		<div>

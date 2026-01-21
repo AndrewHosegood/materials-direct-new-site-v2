@@ -71,6 +71,12 @@
     color: #fff !important;
     font-weight: 600;
 }
+.single-product .woocommerce-variation-price .price {
+    color: variables.$primary-color !important;
+    margin-bottom: 1rem;
+    display: block;
+    font-weight: 700;
+}
 .product-page__tabs-list.active {
     background: variables.$primary-color !important;
 }

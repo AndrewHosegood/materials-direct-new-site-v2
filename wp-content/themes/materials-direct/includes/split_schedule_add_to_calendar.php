@@ -1,7 +1,7 @@
 <?php
-add_action('woocommerce_thankyou', 'custom_debug_entire_order', 10, 1);
+add_action('woocommerce_thankyou', 'split_schedule_insert_data', 10, 1);
 
-function custom_debug_entire_order($order_id) {
+function split_schedule_insert_data($order_id) {
     global $wpdb;
     $domain = $_SERVER['HTTP_HOST'];
     $table_name = $wpdb->prefix . 'split_schedule_orders';
@@ -60,14 +60,7 @@ function custom_debug_entire_order($order_id) {
     $order_items = $order->get_items();
     $scheduled_item_index = 0; // To generate unique invoice suffix
     $has_inserted = false;
-    
-    // foreach ($fees as $fee) {
-
-    //     if ($fee->get_name() === 'Shipping Total') {
-    //         $custom_fee_total = $fee->get_total();
-    //         break;
-    //     }
-    // }   
+      
 
     if($order){
         foreach ($order_items as $item_id => $item) {
@@ -77,6 +70,7 @@ function custom_debug_entire_order($order_id) {
             }
 
             $despatch_string = trim($item->get_meta('despatch_string'));
+            echo "Despatch String: " . $despatch_string;
 
             if (empty($despatch_string)) {
                 continue;
@@ -116,6 +110,26 @@ function custom_debug_entire_order($order_id) {
             $delivery_count = 0;
             $schedule = 0;
             $loop_iteration = 0;
+
+            // shipping
+            $shipping_costs = [];
+
+            foreach ( $order->get_items( 'shipping' ) as $shipping_item ) {
+                $meta_values = $shipping_item->get_meta( 'ah_shipping_cost', false );
+            
+                foreach ( $meta_values as $meta ) {
+                    $shipping_costs[] = (float) $meta->value;
+                }
+            }
+
+
+
+            //$meta_shipping_qty = count($shipping_costs);
+
+            // Lets calculate the meta shipping quantity
+            $shipments_new   = $item->get_meta('despatch_date', true);
+            //print_r($meta_shipping_qty);
+
             
 
             $discount_meta = $item->get_meta('_advanced_woo_discount_item_total_discount', true);
@@ -159,7 +173,7 @@ function custom_debug_entire_order($order_id) {
                 $my_backorder = 0;
             }
 
-            echo $my_backorder;
+            //echo $my_backorder;
 
             foreach ($matches as $index => $match) {
                 $schedule_qty  = (int) str_replace(',', '', $match[1]);
@@ -169,6 +183,14 @@ function custom_debug_entire_order($order_id) {
                 $discount_rate = (float) $match[3];
                 $discount_rate_v = $discount_rate * 100;
                 $fees_section  = trim($match[4]); // May contain multiple fees separated by commas
+
+                // lets extract the meta shipping values
+                if (isset($shipments_new[$my_date])) {
+                    $shipment_data = $shipments_new[$my_date];
+                    $meta_shipping_qty = $shipment_data['qty'];
+                    //echo '<br>' . $meta_shipping_qty . '<br>';
+                }
+                // lets extract the meta shipping values
 
                 $loop_iteration++;
 
@@ -208,6 +230,10 @@ function custom_debug_entire_order($order_id) {
 
                 $last = ($loop_iteration === $delivery_count) ? 1 : 0;
 
+                $delivery_shipping = isset($shipping_costs[$index]) 
+                    ? $shipping_costs[$index] 
+                    : ($delivery_count > 0 ? $shipping_total / $delivery_count : $shipping_total);
+
                 // Final simplified data array
                 $data = [
                         'invoice_no'            => $invoice_no,
@@ -241,8 +267,8 @@ function custom_debug_entire_order($order_id) {
                         'shipping_unique'       => $shipping_total,
                         'shipping_weights'      => $item->get_meta('total_del_weight'), 
                         'shipping_duplicates'   => 0, 
-                        'meta_shipping_qty'     => $delivery_count,
-                        'meta_shipping_total'   => $shipping_total,
+                        'meta_shipping_qty'     => $meta_shipping_qty, // get the count of the weight values
+                        'meta_shipping_total'   => $delivery_shipping, //get the weights values
                         'dimension_type'        => 'mm',
                         'width'                 => $width,
                         'length'                => $length,
@@ -341,9 +367,9 @@ function custom_debug_entire_order($order_id) {
 
             } // end foreach
 
-            echo '<pre>';
-            print_r( $order->get_data() );
-            echo '</pre>';
+            // echo '<pre>';
+            // print_r( $order->get_data() );
+            // echo '</pre>';
 
         } // end foreach
     } else {
@@ -871,9 +897,9 @@ function custom_debug_entire_order($order_id) {
         wc_print_notices();
     }
 
-    // echo '<pre>';
-    // print_r( $order->get_data() );
-    // echo '</pre>';
+    echo '<pre>';
+    print_r( $order->get_data() );
+    echo '</pre>';
 
 }
 

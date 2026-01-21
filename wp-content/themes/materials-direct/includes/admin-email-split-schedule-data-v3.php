@@ -19,9 +19,39 @@ function add_order_number_to_admin_email_table($item_id, $item, $order, $plain_t
 
     $get_discount = $item->get_meta('_advanced_woo_discount_item_total_discount', true);
 
+    /* lets get the $delivery_shipping total values */
+    $shipments_new   = $item->get_meta('despatch_date', true);
+
+    $shipment_qty_map = [];
+
+    if (is_array($shipments_new)) {
+        foreach ($shipments_new as $date_key => $data) {
+            $shipment_qty_map[$date_key] = isset($data['qty']) ? (int) $data['qty'] : 1;
+        }
+    }
+
+    // (Optional debug - remove later)
     // echo "<pre>";
-    // print_r($get_discount);
+    // print_r($shipment_qty_map);
     // echo "</pre>";
+
+
+
+    //Get the individual shipping costs - 16.50, 82.50
+    $shipping_costs = [];
+
+    foreach ( $order->get_items( 'shipping' ) as $shipping_item ) {
+        $meta_values = $shipping_item->get_meta( 'ah_shipping_cost', false );
+
+        foreach ( $meta_values as $meta ) {
+            $shipping_costs[] = (float) $meta->value;
+        }
+    }
+    // echo "<pre>";
+    // print_r($shipping_costs);
+    // echo "</pre>";
+    /* lets get the $delivery_shipping total values */
+
 
 
 
@@ -32,16 +62,6 @@ function add_order_number_to_admin_email_table($item_id, $item, $order, $plain_t
     }
 
 
-    // if (!empty($cart_discount_lines)) {
-    //     $total_cart_discount = 0;
-    //     foreach ($cart_discount_lines as $line) {
-    //         $total_cart_discount += $line['amount'];
-    //     }
-    //     if (count($cart_discount_lines) > 1) {
-    //     }
-    // }
-
-    
 
     if (empty($despatch_string)) {
         return;
@@ -61,32 +81,29 @@ function add_order_number_to_admin_email_table($item_id, $item, $order, $plain_t
     }
 
 
+    // Calculate per-delivery weight (only if we have a valid total_del_weight and at least one date)
+    $per_delivery_weight = ($total_del_weight !== null && $num_dates > 0) 
+        ? round($total_del_weight / $num_dates, 12) 
+        : null;
 
+    // Extract despatch_notes lines into an array (one per scheduled delivery)
+    $notes_lines = [];
+    if (!empty($despatch_notes)) {
 
+        $lines = preg_split('/\r\n|\r|\n/', trim($despatch_notes));
 
-        // Calculate per-delivery weight (only if we have a valid total_del_weight and at least one date)
-        $per_delivery_weight = ($total_del_weight !== null && $num_dates > 0) 
-            ? round($total_del_weight / $num_dates, 12) 
-            : null;
-
-        // Extract despatch_notes lines into an array (one per scheduled delivery)
-        $notes_lines = [];
-        if (!empty($despatch_notes)) {
-
-            $lines = preg_split('/\r\n|\r|\n/', trim($despatch_notes));
-
-            foreach ($lines as $line) {
-                $line = trim($line);
-                if (!empty($line)) {
-                    $notes_lines[] = $line;
-                }
+        foreach ($lines as $line) {
+            $line = trim($line);
+            if (!empty($line)) {
+                $notes_lines[] = $line;
             }
-        }  
+        }
+    }  
 
 
-        $shipping_total = $order->get_shipping_total(); 
-        //$shipping_calc = $shipping_total / $num_dates / $total_product_lines; // lets temporarily add in $total_product_lines (but need to get dynamic shipping values coming in as a proper fix)
-         $shipping_calc = $shipping_total / 5;
+    $shipping_total = $order->get_shipping_total(); 
+    //$shipping_calc = $shipping_total / $num_dates / $total_product_lines; // lets temporarily add in $total_product_lines (but need to get dynamic shipping values coming in as a proper fix)
+    $shipping_calc = $shipping_total / $num_dates;
 
     echo '<ul class="delivery-options-list">';
 
@@ -94,10 +111,27 @@ function add_order_number_to_admin_email_table($item_id, $item, $order, $plain_t
         echo '<br><strong style="width:100%; padding-right:10px; float:left; margin-right:.25em; margin-bottom:0.45em; clear:both;">Scheduled Deliveries:</strong>';
     }
 
+    // new code
+    $delivery_shipping_map = [];
+
+    foreach ($matches as $i => $match) {
+
+        if (isset($shipping_costs[$i])) {
+            $delivery_shipping_map[$i] = $shipping_costs[$i];
+        } else {
+            // Fallback: evenly distribute remaining shipping if mismatch
+            $delivery_shipping_map[$i] = $shipping_total / max(1, count($matches));
+        }
+    }
+    // new code
+    
     foreach ($matches as $index => $match) {
+
+        $delivery_shipping = $delivery_shipping_map[$index] ?? ($shipping_total / $num_dates);
 
         $qty = str_replace(',', '', $match[1]);
         $date_str = $match[2];
+        $meta_qty = $shipment_qty_map[$date_str] ?? 1;
         $discount = $match[3];
         $desc = trim($match[4]);
 
@@ -115,7 +149,7 @@ function add_order_number_to_admin_email_table($item_id, $item, $order, $plain_t
         $formatted_date = $date ? $date->format('jS F Y') : $date_str;
 
         $discount_percent = (floatval($discount) * 100) . '%';
-        $discount_raw = (floatval($discount) * 100);
+        $discount_raw = (floatval($discount) * 100);  
 
         if (!empty($desc)) {
             $desc = preg_replace('/\s£/', ' - £', $desc);
@@ -141,8 +175,16 @@ function add_order_number_to_admin_email_table($item_id, $item, $order, $plain_t
         $voucher_percent = $subtotal_after_discount * $voucher_discount;
         // Calculate the voucher discount
 
+        // calculate delivery shipping based on meta quantity
+        if($meta_qty > 1){
+            $my_shipping_response = $delivery_shipping / $meta_qty;
+        } else {
+            $my_shipping_response = $delivery_shipping;
+        }
+        // calculate delivery shipping based on meta quantity
+
         // Calculate VAT
-        $total_vat = $subtotal_after_discount - $tf_3 + $shipping_calc + $cofc_total - $voucher_percent; //** 
+        $total_vat = $subtotal_after_discount - $tf_3 + $my_shipping_response + $cofc_total - $voucher_percent; // was $delivery_shipping
         $total_vat_display = $total_vat * 0.2;
         // Calculate VAT
 
@@ -155,7 +197,7 @@ function add_order_number_to_admin_email_table($item_id, $item, $order, $plain_t
         // Calculate VAT based on country (i need to get the tax rate to make this work)
 
         // Calculate Final Total
-        $final_total = $subtotal_after_discount - $tf_3 + $shipping_calc + $total_vat_display + $cofc_total - $voucher_percent; //** 
+        $final_total = $subtotal_after_discount - $tf_3 + $my_shipping_response + $total_vat_display + $cofc_total - $voucher_percent; //** 
 
         echo '<li class="delivery-options-list__li">Qty: ' . esc_html($qty) . '</li>';
         echo '<li class="delivery-options-list__li">Dispatch Date: ' . esc_html($formatted_date) . '</li>';
@@ -174,18 +216,26 @@ function add_order_number_to_admin_email_table($item_id, $item, $order, $plain_t
 
 
  
-        // echo '<li class="delivery-options-list__li">1. subtotal_after_discount: ' . esc_html($subtotal_after_discount) . '</li>';
-        // echo '<li class="delivery-options-list__li">2. tf_3: ' . esc_html($tf_3) . '</li>';
-        echo '<li class="delivery-options-list__li">3. shipping_calc: ' . esc_html($shipping_calc) . '</li>';
-        // echo '<li class="delivery-options-list__li">4. cofc_total: ' . esc_html($cofc_total) . '</li>';
-        // echo '<li class="delivery-options-list__li">5. Voucher Percent: ' . esc_html($voucher_percent) . '</li>';
+        echo '<li class="delivery-options-list__li">1. subtotal_after_discount: ' . esc_html($subtotal_after_discount) . '</li>';
+        echo '<li class="delivery-options-list__li">2. tf_3: ' . esc_html($tf_3) . '</li>';
+        echo '<li class="delivery-options-list__li">3. shipping_calc: ' . esc_html($my_shipping_response) . '</li>';
+        echo '<li class="delivery-options-list__li">4. shipping_costs: ' . esc_html($delivery_shipping) . '</li>';
+        echo '<li class="delivery-options-list__li">5. total_vat_display: ' . esc_html($total_vat_display) . '</li>';
+        echo '<li class="delivery-options-list__li">6. cofc_total: ' . esc_html($cofc_total) . '</li>';
+        echo '<li class="delivery-options-list__li">7. Voucher Percent: ' . esc_html($voucher_percent) . '</li>';
+        echo '<li class="delivery-options-list__li">num_dates: ' . esc_html($num_dates) . '</li><br>';
+
+
+
+
+
         // echo '<li class="delivery-options-list__li">Cart Discount Amount: ' . esc_html($cart_discount_amount) . '</li>';
         // echo '<li class="delivery-options-list__li">subtotal_after_discount: ' . esc_html($subtotal_after_discount) . '</li>';
         // echo '<li class="delivery-options-list__li">Cart Discount Percent: ' . esc_html($cart_discount_percent) . '</li>';
-        echo '<li class="delivery-options-list__li">num_dates: ' . esc_html($num_dates) . '</li><br>';
+        
         // echo '<li class="delivery-options-list__li">shipping total: ' . esc_html($shipping_total) . '</li>';
         // echo '<li class="delivery-options-list__li">Product Count: ' . esc_html($total_product_lines) . '</li>';
-        // echo '<li class="delivery-options-list__li">total_vat_display: ' . esc_html($total_vat_display) . '</li>';
+        
         // echo '<li class="delivery-options-list__li">Total VAT: ' . esc_html($total_vat) . '</li><br>';
         
         
