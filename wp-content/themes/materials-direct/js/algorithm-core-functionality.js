@@ -347,11 +347,6 @@ function updateDatepickerMinDate() {
                 $('#custom_price_display').html('<span class="product-page__backorder-message"><p class="product-page__backorder-message-text">Please upload a .PDF drawing before calculating the price.</p></span>');
                 return;
             }
-            const dxfPath = $('#dxf_path').val().trim();
-            if (!dxfPath) {
-                $('#custom_price_display').html('<span class="product-page__backorder-message"><p class="product-page__backorder-message-text">Please upload a .DXF drawing before calculating the price.</p></span>');
-                return;
-            }
         }
         const width = parseFloat($('#input_width').val());
         const length = parseFloat($('#input_length').val());
@@ -594,14 +589,7 @@ function updateDatepickerMinDate() {
             if (selectedTab === 'custom-shape-drawing') {
                 const pdfPath = $('#pdf_path').val().trim();
                 if (!pdfPath) {
-                    $('#input_width, #input_length, #input_qty, #input_radius').prop('readonly', false);
                     $('#custom_price_display').html('<span class="product-page__backorder-message"><p class="product-page__backorder-message-text">Please upload a .PDF drawing before calculating the price.</p></span>');
-                    return;
-                }
-                const dxfPath = $('#dxf_path').val().trim();
-                if (!dxfPath) {
-                    $('#input_width, #input_length, #input_qty, #input_radius').prop('readonly', false);
-                    $('#custom_price_display').html('<span class="product-page__backorder-message"><p class="product-page__backorder-message-text">Please upload a .DXF drawing before calculating the price.</p></span>');
                     return;
                 }
             }
@@ -611,6 +599,10 @@ function updateDatepickerMinDate() {
             const qty = parseInt($('#input_qty').val());
             const discount_rate = parseFloat($('#input_discount_rate').val());
             const shipping_address = validateShippingAddress();
+            const currency_rate = $('#currency_rate_sum').val();
+            console.log("currency rate: " + currency_rate);
+            const currency_symbol =  $('#currency_rate_symbol').val();
+            console.log("currency symbol: " + currency_symbol);
 
             if (!shipping_address) return;
 
@@ -644,6 +636,8 @@ function updateDatepickerMinDate() {
                     length: length,
                     qty: qty,
                     discount_rate: discount_rate,
+                    currency_rate: currency_rate,
+                    currency_symbol: currency_symbol,
                     nonce: ajax_params.nonce,
                     ...shipping_address,
                     shape_type: selectedTab
@@ -659,8 +653,12 @@ function updateDatepickerMinDate() {
                         const sheet_length_mm = response.data.sheet_length_mm;
                         const border = parseFloat(response.data.border_around || 0.2) * 10;
                         const roll_length = response.data.roll_length;
+                        //const rate   = parseFloat(response.data.currency_rate) || 1;
+                        //const symbol = response.data.currency_symbol || '£';
 
-                        console.log("isBackorder: " + isBackorder);
+                        //console.log("isBackorder: " + isBackorder);
+                        //console.log("currency_rate: " + rate);
+                        //console.log("Symbol: " + symbol);
 
                         // add per part cost to hidden field 
                         $('#cpp').val(adjustedPrice);
@@ -756,7 +754,7 @@ function updateDatepickerMinDate() {
                             calcPartialbackorderFinal = (calcPartialbackorderdiscount_1 + calcPartialbackorderdiscount_2).toFixed(2);
                             cart_price = calcPartialbackorderFinal / sheetsRequired; 
 
-                            priceHtml = '<div class="product-page__display-price-outer"><div><h4 class="product-page__display-price-heading">Here is your instant quote</h4></div><div class="product-page__display-price-inner"><div class="product-page__display-price">Cost per part: <span class="product-page__display-price-text">£' + adjustedPrice.toFixed(2) + '<span style="font-size: 0.82rem; font-weight: 400;"> (£' + backorder_adjustedPriceDisplay.toFixed(2) + ' for backorder parts)</span></span></div><div class="product-page__display-price">Total part costs: <span class="product-page__display-price-text">£' + calcPartialbackorderFinal + '</span></div></div></div>';
+                            priceHtml = '<div class="product-page__display-price-outer"><div><h4 class="product-page__display-price-heading">Here is your instant quote</h4></div><div class="product-page__display-price-inner"><div class="product-page__display-price">Cost per part: <span class="product-page__display-price-text">£' + (adjustedPrice * currency_rate).toFixed(2) + '<span style="font-size: 0.82rem; font-weight: 400;"> (' + currency_symbol + "" + (backorder_adjustedPriceDisplay * currency_rate).toFixed(2) + ' for backorder parts)</span></span></div><div class="product-page__display-price">Total part costs: <span class="product-page__display-price-text">' + currency_symbol + "" + (calcPartialbackorderFinal * currency_rate).toFixed(2) + '</span></div></div></div>';
                         
                             if(selectedTab === 'rolls'){
                                 priceHtml += '<div class="product-page__backorder-message"><p class="product-page__backorder-message-text"><strong>Notice:</strong> This order exceeds current stock, it requires an additional ' + sheets_backorder + ' rolls to be back ordered. We are able to despatch: ' + able_to_dispatch + ' rolls within ' + discount_display + '. Please allow 35 Days to complete the back ordered items. A 5% discount will apply to these parts.</p></div>';
@@ -767,11 +765,11 @@ function updateDatepickerMinDate() {
 
                         } else if (isBackorder && stock_quantity <= 0) {
                             // Full backorder case (stock_quantity <= 0)
-                            priceHtml = '<div class="product-page__display-price-outer"><div><h4 class="product-page__display-price-heading">Here is your instant quote</h4></div><div class="product-page__display-price-inner"><div class="product-page__display-price">Cost per part: <span class="product-page__display-price-text">£' + adjustedPrice.toFixed(2) + '</span></div><div class="product-page__display-price">Total part costs: <span class="product-page__display-price-text">£zz' + price.toFixed(2) + '</span></div></div></div>';
+                            priceHtml = '<div class="product-page__display-price-outer"><div><h4 class="product-page__display-price-heading">Here is your instant quote</h4></div><div class="product-page__display-price-inner"><div class="product-page__display-price">Cost per part: <span class="product-page__display-price-text">' + currency_symbol + '' + (adjustedPrice * currency_rate).toFixed(2) + '</span></div><div class="product-page__display-price">Total part costs: <span class="product-page__display-price-text">' + currency_symbol + "" + (price * currency_rate).toFixed(2) + '</span></div></div></div>';
                             priceHtml += '<div class="product-page__backorder-message"><p class="product-page__backorder-message-text"><strong>Notice:</strong> This order is currently on backorder only. Please allow 35 Days for complete order fulfillment with a 5% discount applied to the total order.</p></div>';
                         } else {
                             // No backorder case
-                            priceHtml = '<div class="product-page__display-price-outer"><div><h4 class="product-page__display-price-heading">Here is your instant quote</h4></div><div class="product-page__display-price-inner"><div class="product-page__display-price">Cost per part: <span class="product-page__display-price-text">£' + adjustedPrice.toFixed(2) + '</span></div><div class="product-page__display-price">Total part costs: <span class="product-page__display-price-text">£' + price.toFixed(2) + '</span></div></div></div>';
+                            priceHtml = '<div class="product-page__display-price-outer"><div><h4 class="product-page__display-price-heading">Here is your instant quote</h4></div><div class="product-page__display-price-inner"><div class="product-page__display-price">Cost per part: <span class="product-page__display-price-text">' + currency_symbol + '' + (adjustedPrice * currency_rate).toFixed(2) + '</span></div><div class="product-page__display-price">Total part costs: <span class="product-page__display-price-text">' + currency_symbol + "" + (price * currency_rate).toFixed(2) + '</span></div></div></div>';
                         }
 
 

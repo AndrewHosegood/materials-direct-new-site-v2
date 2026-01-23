@@ -170,6 +170,50 @@
     & .site-main {
         padding: 3rem 0rem;
     }
+    & .cart__currency-switcher {
+        display: flex;
+        flex-wrap: wrap;
+        text-align: right;
+    }
+    & .cart__currency-switcher-text {
+        font-size: 0.63rem;
+        font-weight: 700;
+        width: 100%;
+        line-height: 1.45rem;
+        padding: 0.7rem 0.05rem 1.8rem 0;
+    }
+    & .cart__currency-switcher-box {
+        width: 135px;
+        display: flex;
+        justify-content: space-evenly;
+        margin-left: auto;
+    }
+    & .cart__currency-switcher-link {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background: variables.$primary-color;
+        color: white;
+        width: 30px;
+        height: 30px;
+        margin-left: 15px;
+        border-radius: 1.2rem;
+        font-weight: 600;
+        font-size: 0.85rem;
+    }
+    & .cart__currency-switcher-link.active-currency {
+        background: variables.$secondary-color;
+    }
+    & .currency_notice {
+        display: block;
+        clear: both;
+        font-size: 10px;
+        font-weight: bold;
+        text-align: right;
+        position: relative;
+        padding-top: 0;
+        margin-top: -0.2rem;
+    }
 }
 
 .woocommerce-cart th.product-price, .woocommerce-cart td.product-price, .woocommerce-cart th.product-quantity, .woocommerce-cart td.product-quantity {
@@ -189,10 +233,11 @@
 //   width: 120px;
 // }
 .woocommerce .shop_table .product-thumbnail a img {
-  width: 120px;
+  width: 100%;
 }
 .woocommerce .shop_table .product-thumbnail {
-    max-width: 117px;
+    max-width: 75px;
+    padding: 1.36rem;
 }
 .woocommerce .shop_table .product-remove {
     max-width: 48px;
@@ -212,7 +257,7 @@
     
 }
 .woocommerce .shop_table .product-remove a.remove {
-    margin: 5px 25px 0 0;
+    margin: 0px 25px 0 0;
     width: auto;
     height: auto;
     display: inline-block;
@@ -221,7 +266,7 @@
     line-height: inherit;
     background: variables.$secondary-color;
     border-radius: 0;
-    padding: 0.4rem 0.9rem;
+    padding: 0.6rem 0.9rem;
 }
 .woocommerce table.shop_table .product-subtotal {
     width: 145px;

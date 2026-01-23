@@ -100,6 +100,26 @@
 	</header><!-- #masthead -->
 
 
+	<?php 
+	/*
+	$currency_rate =  get_currency_rate();
+	$currency_symbol = get_currency_symbol();
+	$currency = get_current_currency();
+	$current_currency = WC()->session->get( 'currency' );
+	echo "Currency Rate: " . $currency_rate . "<br>";
+	echo "Currency Symbol: " . $currency_symbol . "<br>";
+	echo "Currency: " . $currency . "<br>";
+	if ( $current_currency ) {
+        echo 'Current currency: ' . esc_html( $current_currency );
+    } else {
+        echo 'No currency set in session yet.';
+    }
+		*/
+	?>
+	<!-- <a href="?unset_currency=1" id="unset_session">UNSET</a> -->
+
+
+
 	<!-- Conditionally display shop page banner -->
 
 	<?php if(is_shop() || is_product_category()){ ?>

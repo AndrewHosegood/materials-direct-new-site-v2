@@ -399,10 +399,6 @@ require_once('includes/my-accounts-page-custom-banner.php');
 require_once('includes/cofc-logic-for-cart-page.php');
 /* Add logic for calculating COFC fees on cart page */
 
-/* Add currency switcher and subtitle to product page */
-require_once('includes/add-currency-switcher-to-product-page.php');
-/* Add currency switcher and subtitle to product page */
-
 /* Add view products link and need help link to product page */
 require_once('includes/add-view-product-details-link-and-need-help-link.php');
 /* Add view products link and need help link to product page */
@@ -460,9 +456,26 @@ require_once('includes/popular-products-carousel.php');
 require_once('includes/meta-labels-admin-orders-and-thankyou-page.php');
 // style up meta labels on thankyou page and admin orders page
 
-// style up meta labels on thankyou page and admin orders page
+// Fetch the currency from the API
 require_once('includes/currency-fetch.php');
-// style up meta labels on thankyou page and admin orders page
+// Fetch the currency from the API
+
+/* Add currency switcher and subtitle to product page */
+require_once('includes/add-currency-switcher-to-product-page.php');
+/* Add currency switcher and subtitle to product page */
+
+// Fetch the currency from the API
+require_once('includes/add-currency-switcher-to-cart.php');
+// Fetch the currency from the API
+
+// Currency switcher session logic
+require_once('includes/currency-switcher-session-logic.php');
+// Currency switcher session logic
+
+// Import duty notice in cart
+require_once('includes/import-duty-notice-cart.php');
+// Import duty notice in cart
+
 
 
 

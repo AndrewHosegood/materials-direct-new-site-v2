@@ -287,6 +287,15 @@ function custom_price_input_fields_prefill() {
     $is_full_backorder = $stock_quantity <= 0;
     $roll_length = floatval(get_field('roll_length', $product_id) ?: 0);
     $roll_length_v = $roll_length / 1000;
+
+    // Get the currency switcher ID
+    if($_GET['set_currency'] === 'USD'){
+        $currency_switcher_id = '1384';
+    } elseif($_GET['set_currency'] === 'EUR'){
+        $currency_switcher_id = '1386';
+    } else {
+        $currency_switcher_id = '1385';
+    }
     
 
     // Existing form for non-single products
@@ -339,6 +348,10 @@ function custom_price_input_fields_prefill() {
         
         <input type="hidden" id="pdf_path" name="pdf_path" value="">
         <input type="hidden" id="dxf_path" name="dxf_path" value="">
+        <input type="hidden" id="currency_rate" name="currency_rate" value="'.$_GET['set_currency'].'">
+        <input type="hidden" id="currency_id" name="currency_id" value="'.$currency_switcher_id.'">
+        <input type="hidden" id="currency_rate_sum" name="currency_rate_sum" value="'.get_currency_rate().'">
+        <input type="hidden" id="currency_rate_symbol" name="currency_rate_symbol" value="'.get_currency_symbol().'">
 
         <div id="drawing_guide" class="product-page__drawing-guide">
         <a href="/wp-content/uploads/2025/10/DrawinGuide2025.pdf" target="_blank" class="product-page__drawing-guide-btn">Download here</a>
@@ -585,8 +598,16 @@ function calculate_secure_price() {
     $is_product_single = function_exists('get_field') ? get_field('is_product_single', $product_id) : false;
 
     $roll_length = function_exists('get_field') ? floatval(get_field('roll_length', $product_id)) : false;
-    //$roll_length = floatval(get_field('roll_length', $product_id));
+
     $roll_length_v = ($roll_length > 0) ? $roll_length / 1000 : 0;
+
+    //$currency_value = (float) get_field('currency_rate_to_gbp', 1350);
+
+    // get the currency value
+    //$usd_id = 1386;
+    //$currency_symbol      = get_field('currency_symbol', $usd_id);
+    //$currency_rate_to_gbp = get_field('currency_rate_to_gbp', $usd_id);
+    // get the currency value
 
     if ($is_product_single) {
         $product = wc_get_product($product_id);
@@ -611,6 +632,8 @@ function calculate_secure_price() {
     $qty = intval($_POST['qty']);
     $discount_rate = floatval($_POST['discount_rate']);
     $shape_type = sanitize_text_field($_POST['shape_type'] ?? 'custom-shape-drawing');
+    $currency_rate = floatval($_POST['currency_rate']);
+    $currency_symbol = $_POST['currency_symbol'];
 
     if (!is_numeric($product_id) || $width <= 0 || $length <= 0 || $qty < 1 || !is_numeric($discount_rate)) {
         wp_send_json_error(['message' => 'Invalid input values.']);
@@ -680,9 +703,18 @@ function calculate_secure_price() {
         $is_backorder = $sheets_required > $stock_quantity;
     }
     /* AH rolls fix 9.12.2025 */
+
+    //$currency_rate_value  = get_currency_rate();
+    //$currency_symbol_value = get_currency_symbol();
+
     
     // $is_backorder = $sheets_required > $stock_quantity;
-    error_log("is_backorder (1): " . $is_backorder);
+    //error_log("is_backorder (1): " . $is_backorder);
+    //error_log("Currency Rate Value: " . $currency_rate_value);
+    //error_log("Currency Symbol Value: " . $currency_symbol_value);
+    //error_log("Currency Value: " . $currency_rate_to_gbp);
+    error_log("Currency Rate xxx: " . $currency_rate);
+    error_log("Currency Symbol: " . $currency_symbol);
 
 
     // SEND DATA TO algorith-core-functionality.js
@@ -697,7 +729,9 @@ function calculate_secure_price() {
         'entered_quantity' => $qty,
         'discount_rate' => $discount_rate,
         'border_around' => $border_around,
-        'roll_length' => $roll_length_v
+        'roll_length' => $roll_length_v,
+        'currency_rate'  => (float) $currency_rate,
+        'currency_symbol'=> $currency_symbol,
     ]);
 }
 // 3. SECURE PRICE CALCULATION IN PHP

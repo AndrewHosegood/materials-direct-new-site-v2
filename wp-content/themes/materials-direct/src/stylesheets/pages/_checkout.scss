@@ -245,6 +245,43 @@
     & .custom-shipping-address h3 {
         padding: 0 0 0.15rem 0;
     }
+        & .cart__currency-switcher {
+        display: flex;
+        flex-wrap: wrap;
+        text-align: right;
+    }
+    & .cart__currency-switcher-text {
+        font-size: 0.63rem;
+        font-weight: 700;
+        width: 100%;
+        line-height: 1.45rem;
+        padding: 0.7rem 0.05rem 1.8rem 0;
+    }
+    & .cart__currency-switcher-box {
+        width: 135px;
+        display: flex;
+        justify-content: space-evenly;
+        margin-left: auto;
+    }
+    & .cart__currency-switcher-link {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background: variables.$primary-color;
+        color: white;
+        width: 30px;
+        height: 30px;
+        margin-left: 15px;
+        border-radius: 1.2rem;
+        font-weight: 600;
+        font-size: 0.85rem;
+    }
+    & .cart__currency-switcher-link.active-currency {
+        background: variables.$secondary-color;
+    }
+    & .currency-disclaimer {
+        font-size: 0.7rem;
+    }
 }
 
 

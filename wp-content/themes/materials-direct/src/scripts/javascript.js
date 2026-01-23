@@ -424,21 +424,18 @@ jQuery(document).ready(function($){
         // faqs accordion
 
         // Inches calculations on product page
-
         $('#use_inches').on('click', function () {
                 $('#input_width').val("");
                 $('#input_length').val("");
                 $('#input_radius').val("");
                 $('#input_qty').val("");
         });
-
         $('#use_inches_radius').on('click', function () {
                 $('#input_width').val("");
                 $('#input_length').val("");
                 $('#input_radius').val("");
                 $('#input_qty').val("");
         });
-
         $('#use_inches_radius').on('change', function () {
             if ($(this).is(':checked')) {
                 $('.product-page__input-wrap-radius').hide();
@@ -448,7 +445,6 @@ jQuery(document).ready(function($){
                 $('#cont_radius_inches').hide();
             }
         });
-
         $('#use_inches').on('change', function () {
             if ($(this).is(':checked')) {
                 $('#cont_width_inches').show();
@@ -461,22 +457,15 @@ jQuery(document).ready(function($){
                 $('#cont_width_mm').show();
                 $('#cont_length_mm').show();
             }
-            // if ($(this).is(':checked')) {
-            //     $('#width_switch').text('Width (INCHES)');
-            //     $('#length_switch').text('Length (INCHES)');
-            //     $('#radius_switch').text('Radius (INCHES)');
-            //     $('#input_width').attr('placeholder', 'Enter Inches');
-            //     $('#input_length').attr('placeholder', 'Enter Inches');
-            //     $('#input_radius').attr('placeholder', 'Enter Inches');
-            // } else {
-            //     $('#width_switch').text('Width (MM)');
-            //     $('#length_switch').text('Length (MM)');
-            //     $('#radius_switch').text('Radius (MM)');
-            //     $('#input_width').attr('placeholder', 'Enter MM');
-            //     $('#input_length').attr('placeholder', 'Enter MM');
-            //     $('#input_radius').attr('placeholder', 'Enter MM');
-            // }
         });
+        // Inches calculations on product page
+
+        // Currency switcher active link
+        $('.product-page__currency-switcher-link').on('click', function () {
+            $(this).toggleClass("active-currency");
+        });
+        // Currency switcher active link
+
 
         // Owl Carousel
         $('.testimonials__carousel').owlCarousel({
