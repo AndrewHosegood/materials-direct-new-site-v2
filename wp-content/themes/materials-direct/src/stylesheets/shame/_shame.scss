@@ -100,3 +100,11 @@
     border-radius: 0 !important;
 }
 /* Cart page */
+
+@media screen and (max-width: 782px) {
+    html #wpadminbar {
+        height: 46px;
+        min-width: 240px;
+        position:fixed;
+    }
+}

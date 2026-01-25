@@ -32,11 +32,19 @@
         width: 100%;
         background: white;
         z-index: 9;
+        top: 20px;
+        transition: top 0.25s ease, box-shadow 0.25s ease, background-color 0.25s ease;
     }
     &__main-fixed {
         position: fixed;
         z-index: 9999;
         border-bottom: 1px solid rgb(226, 226, 226);
+        top: 32px;
+    }
+    @media screen and (max-width: 782px) {
+        &__main-fixed {
+            top: 45px;
+        }
     }
     &__main-container {
         display: flex;

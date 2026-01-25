@@ -228,3 +228,30 @@ do_action( 'woocommerce_before_cart' ); ?>
 </div>
 
 <?php do_action( 'woocommerce_after_cart' ); ?>
+
+<!-- Convert shipping to current currency rate -->
+<script>
+	let shipping_rate = <?php echo json_encode(get_currency_rate()); ?>;
+	let currency_symbol = <?php echo json_encode(get_currency_symbol()); ?>;
+    let $priceEl = jQuery('#shipping_method .woocommerce-Price-amount bdi');
+
+    if ($priceEl.length) {
+
+        // Get text, remove currency symbol, convert to float
+        let currentPrice = parseFloat(
+            $priceEl.text().replace('£', '').trim()
+        );
+
+        if (!isNaN(currentPrice)) {
+
+            // Multiply and round to 2 decimals
+            let newPrice = (currentPrice * shipping_rate).toFixed(2);
+
+            // Replace displayed value
+            $priceEl.html(
+                '<span class="woocommerce-Price-currencySymbol">'+currency_symbol+'</span>' + newPrice
+            );
+        }
+    }
+</script>
+<!-- End convert shipping to current currency rate -->

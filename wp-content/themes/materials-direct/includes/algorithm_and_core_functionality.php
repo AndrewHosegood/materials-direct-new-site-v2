@@ -518,7 +518,7 @@ function custom_price_input_fields_prefill() {
 
         // Display the Calculate Price button
 
-        echo '<button type="button" class="product-page__generate-price" id="generate_price">Calculate Price</button>';
+        echo '<button type="button" class="product-page__generate-price" id="generate_price">Get Price</button>';
 
         // Display the Calculate Price button
 
@@ -1831,11 +1831,15 @@ function display_shipments_section_cart() {
     if (!empty($shipping_by_date)) {
         echo '<div class="shipments-section" style="margin-bottom: 20px;">';
         echo '<p class="cart_totals__shipment"><strong>Shipments:</strong></p>';
+
         foreach ($shipping_by_date as $date => $data) {
             $shipping_cost = floatval($data['final_shipping']);
+            $shipping_rate = get_currency_rate();
+            $currency_symbol = get_currency_symbol();
             if ($shipping_cost > 0) {
-                $formatted_cost = wc_price($shipping_cost);
-                echo '<p class="cart_totals__shipment-details">Dispatch ' . esc_html($date) . ' (' . $formatted_cost . ')</p>';
+                //$formatted_cost = wc_price($shipping_cost);
+                $formatted_cost = round($shipping_cost * $shipping_rate, 2);
+                echo '<p class="cart_totals__shipment-details">Dispatch ' . esc_html($date) .'('. $currency_symbol . '' . $formatted_cost . ')</p>';
             }
         }
         echo '</div>';
