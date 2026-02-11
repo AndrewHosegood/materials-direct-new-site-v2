@@ -347,17 +347,26 @@ function updateDatepickerMinDate() {
                 $('#custom_price_display').html('<span class="product-page__backorder-message"><p class="product-page__backorder-message-text">Please upload a .PDF drawing before calculating the price.</p></span>');
                 return;
             }
+            const dxfPath = $('#dxf_path').val().trim();
+            if (!dxfPath) {
+                $('#custom_price_display').html('<span class="product-page__backorder-message"><p class="product-page__backorder-message-text">Please upload a .DXF drawing before calculating the price.</p></span>');
+                return;
+            }
         }
         const width = parseFloat($('#input_width').val());
         const length = parseFloat($('#input_length').val());
         const qty = parseInt($('#input_qty').val());
         const shipping_address = validateShippingAddress();
+        const currency_rate = $('#currency_rate_sum').val();
+        console.log("currency rate (ss): " + currency_rate);
+        const currency_symbol =  $('#currency_rate_symbol').val();
+        console.log("currency symbol (ss): " + currency_symbol);
 
         if (!shipping_address) return;
 
         // Client-side validation for price calculation
         if (isNaN(width) || isNaN(length) || isNaN(qty) || width <= 0 || length <= 0 || qty < 1) {
-            $('#custom_price_display').html('Please enter valid positive Width, Length, and Quantity.');
+            $('#custom_price_display').html('<small>Please enter valid positive Width, Length, and Quantity.</small>');
             return;
         }
 
@@ -387,7 +396,7 @@ function updateDatepickerMinDate() {
                     const sheet_length_mm = response.data.sheet_length_mm;
                     const border = parseFloat(response.data.border_around) * 10;
 
-                    let priceHtml = '<div class="product-page__display-price-outer"><div><h4 class="product-page__display-price-heading">Here is your instant quote</h4></div><div class="product-page__display-price-inner"><div class="product-page__display-price">Cost per part: <span class="product-page__display-price-text">£' + per_part.toFixed(2) + '</span></div><div class="product-page__display-price">Total part costs: <span class="product-page__display-price-text">£' + price.toFixed(2) + '</span></div></div></div>';
+                    let priceHtml = '<div class="product-page__display-price-outer"><div><h4 class="product-page__display-price-heading">Here is your instant quote</h4></div><div class="product-page__display-price-inner"><div class="product-page__display-price">Cost per part: <span class="product-page__display-price-text">' + currency_symbol + '' + (per_part * currency_rate).toFixed(2) + '</span></div><div class="product-page__display-price">Total part costs?: <span class="product-page__display-price-text">' + currency_symbol + "" + (price * currency_rate).toFixed(2) + '</span></div></div></div>';
                     priceHtml += '<div class="product-page__backorder-message"><p class="product-page__backorder-message-text"><strong>Notice:</strong> This is a scheduled delivery order with varying discounts applied based on despatch dates.</p></div>';
 
                     $('#custom_price_display').html(priceHtml);
@@ -592,6 +601,11 @@ function updateDatepickerMinDate() {
                     $('#custom_price_display').html('<span class="product-page__backorder-message"><p class="product-page__backorder-message-text">Please upload a .PDF drawing before calculating the price.</p></span>');
                     return;
                 }
+                const dxfPath = $('#dxf_path').val().trim();
+                if (!dxfPath) {
+                    $('#custom_price_display').html('<span class="product-page__backorder-message"><p class="product-page__backorder-message-text">Please upload a .DXF drawing before calculating the price.</p></span>');
+                    return;
+                }
             }
 
             const width = parseFloat($('#input_width').val());
@@ -608,7 +622,7 @@ function updateDatepickerMinDate() {
 
             // Client-side validation for price calculation
             if (isNaN(width) || isNaN(length) || isNaN(qty) || width <= 0 || length <= 0 || qty < 1) {
-                $('#custom_price_display').html('Please enter valid positive Width, Length, and Quantity.');
+                $('#custom_price_display').html('<small>Please enter valid positive Width, Length, and Quantity.</small>');
                 return;
             }
 

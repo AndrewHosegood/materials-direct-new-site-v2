@@ -1,0 +1,9 @@
+.address-lookup {
+    &__text {
+        font-size: 0.8rem;
+        line-height: 1.2rem;
+    }
+    &__search-field::placeholder {
+        color: #999;
+    }
+}

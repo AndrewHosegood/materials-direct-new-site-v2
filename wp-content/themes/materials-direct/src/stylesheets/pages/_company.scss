@@ -1,0 +1,426 @@
+@use "../abstracts/breakpoints";
+@use "../abstracts/variables";
+
+.company-precision-cut {
+    padding: 2rem 0;
+    &__heading {
+        padding: 0;
+        line-height: 3.3rem;
+        text-align: center;
+    }
+    &__subheading {
+        font-weight: 700;
+        color: variables.$primary-color;
+        padding: 0;
+        line-height: 3.1rem;
+        margin-bottom: 2.2rem;
+        font-size: 2.6rem;
+        text-align: center;
+    }
+    &__container {
+        border-top: 1px solid variables.$primary-color;
+        border-bottom: 1px solid variables.$primary-color;
+        padding: 2.5rem 0;
+        display: flex;
+        flex-wrap: wrap;
+    }
+    &__left p {
+        padding: 0;
+    }
+    &__left {
+        width: 100%;
+        @include breakpoints.laptop {
+            width: 31%;
+        }
+        font-weight: 700;
+        font-size: 1.08rem;
+        line-height: 1.75rem;
+        margin-right: 2%;
+        padding-top: 0.1rem;
+    }
+    &__right {
+        width: 100%;
+         @include breakpoints.laptop {
+            width: 67%;
+         }
+    }
+    &__right p {
+        padding-top: 0;
+    }
+    &__btn {
+        background: variables.$primary-color;
+        color: white;
+        padding: 1.1rem 1.5rem;
+        border-radius: 0.2rem;
+        margin-top: 1rem;
+        display: inline-block;
+        font-weight: 600;
+        font-size: 0.9rem;
+        font-weight: 300;
+    }
+}
+
+.company-history {
+    padding: 2rem 0;
+    &__heading {
+        padding: 0;
+        line-height: 3.3rem;
+        text-align: center;
+    }
+    &__subheading {
+        font-weight: 700;
+        color: variables.$primary-color;
+        padding: 0;
+        line-height: 3.1rem;
+        margin-bottom: 2.2rem;
+        font-size: 2.6rem;
+        text-align: center;
+    }
+    &__container {
+        padding: 1.3rem 0;
+        @include breakpoints.laptop {
+            padding: 2.5rem 0;
+        }
+        display: flex;
+        flex-wrap: wrap;
+    }
+    &__left {
+        width: 100%;
+        margin-right: 0%;
+        margin-bottom: 1.5rem;
+        @include breakpoints.laptop {
+            width: 49%;
+             margin-right: 1%;
+             margin-bottom: 0;
+        }
+        font-weight: 700;
+        font-size: 1.08rem;
+        line-height: 1.75rem;
+        padding-top: 0.1rem;
+    }
+    &__right {
+        width: 100%;
+        margin-left: 0%;
+        @include breakpoints.laptop {
+            width: 49%;
+            margin-left: 1%;
+        }
+    }
+    &__right p {
+        padding-top: 0;
+    }
+    &__btn {
+        background: variables.$primary-color;
+        color: white;
+        padding: 1.1rem 1.5rem;
+        border-radius: 0.2rem;
+        margin-top: 1rem;
+        display: inline-block;
+        font-weight: 600;
+        font-size: 0.9rem;
+        font-weight: 300;
+    }
+    &__highlight {
+        color: variables.$primary-color;
+        font-weight: 700;
+    }
+}
+
+.company-our-mission {
+    background: variables.$primary-color;
+    padding: 2rem 0;
+    &__heading {
+        font-size: 2.2rem;
+        color: white;
+        padding: 0;
+        line-height: 3.3rem;
+        text-align: center;
+        margin-bottom: 1rem;
+    }
+    &__container {
+        display: flex;
+        flex-wrap: wrap;
+    }
+    &__card {
+        width: 100%;
+        margin: 0 0%;
+        @include breakpoints.iphone-small {
+        width: 48%;
+        margin: 0 1%;
+        }
+        @include breakpoints.tablet {
+            width: 23%;
+            margin: 0 1%;
+        }
+        text-align: center;
+    }
+    &__content {
+        color: white;
+        font-size: 0.84rem;
+        font-weight: 300;
+    }
+    &__icon {
+        margin: 0.8rem 0;
+    }
+}
+
+.company-a-division-of {
+    padding: 2rem 0;
+    @include breakpoints.iphone {
+        padding: 3.3rem 0;
+    }
+    &__heading {
+        font-size: 1.9rem;
+        line-height: 2.7rem;
+        @include breakpoints.iphone {
+            font-size: 2.75rem;
+            line-height: 3.4rem;
+        }
+        padding-top:0;
+    }
+    &__container {
+        display: flex;
+        flex-wrap: wrap;
+    }
+    &__content p {
+        padding-top: 0
+    }
+    &__card:nth-child(1) {
+        display: flex;
+        flex-wrap:wrap;
+        width: 100%;
+        margin-right: 0%;
+        @include breakpoints.tablet {
+            width: 48%;
+            margin-right: 2%;
+        }
+    }
+    &__card:nth-child(1) &__icon {
+        width: 50%;
+        border: 2.5px solid white
+    }
+    &__card:nth-child(2) {
+        width: 100%;
+        margin-left: 0%;
+        margin-top: 2rem;
+        @include breakpoints.tablet {
+            width: 48%;
+            margin-left: 2%;
+            margin-top: 0;
+        }
+    }
+    &__btn {
+        background: variables.$primary-color;
+        color: white;
+        padding: 1.1rem 1.5rem;
+        border-radius: 0.2rem;
+        margin-top: 1rem;
+        display: inline-block;
+        font-weight: 600;
+        font-size: 0.9rem;
+        font-weight: 300;
+    }
+}
+
+.company-delivering {
+    background: #f0f0f0;
+    background-image: url('/wp-content/uploads/2026/01/global-shipping-scaled-new.jpg');
+    background-repeat:no-repeat;
+    background-position:bottom;
+    background-size: 1000px;
+    padding: 3rem 0 20rem 0;
+    @include breakpoints.iphone {
+        background-size: 1400px;
+         padding: 3rem 0 30rem 0;
+    }
+    &__heading {
+        font-size: 2rem;
+        line-height: 2.8rem;
+        @include breakpoints.iphone {
+            font-size: 2.75rem;
+            line-height: 3.3rem;
+        }
+    }
+    &__container {
+        text-align: center;
+        max-width: 800px;
+    }
+    &__highlight {
+        color: variables.$primary-color;
+        font-weight: 700;
+    }
+}
+
+.company-we-care {
+    padding: 2rem 0;
+    @include breakpoints.tablet {
+        padding: 5rem 0;
+    }
+    //background-image: url('/wp-content/uploads/2026/01/large-foliage-tropical-leaf-with-dark-green-texture.jpg');
+    background-repeat:no-repeat;
+    background-size: cover;
+    &__heading {
+        color: #fff;
+        font-size: 2rem;
+        line-height: 2.8rem;
+        margin-bottom: 1rem;
+        @include breakpoints.iphone {
+            font-size: 2.75rem;
+            line-height: 3.3rem;
+            margin-bottom: 1;
+        }
+         @include breakpoints.tablet {
+            margin-bottom: 0;
+         }
+        padding-bottom: 0;
+    }
+    &__content {
+        color: white;
+        max-width: 800px;
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+    }
+    &__highlight {
+        color: variables.$primary-color;
+        font-weight: 700;
+    }
+}
+
+.company-supporting {
+    padding: 2rem 0;
+    @include breakpoints.iphone {
+        padding: 4.4rem 0;
+    }
+    background: black;
+    text-align: center;
+    background-image: none;
+    @include breakpoints.laptop {
+        background-image: url('/wp-content/uploads/2026/01/ABB-Formula-E-Michelin-a-presente-le-nouveau-MICHELIN-Pilot-Sport.webp');
+    }
+    background-repeat: no-repeat;
+    background-position: bottom left;
+    background-size: 46%;
+    &__heading {
+        font-size: 2rem;
+        line-height: 2.8rem;
+        margin-bottom: 1rem;
+        @include breakpoints.iphone {
+            font-size: 2.75rem;
+            line-height: 3.3rem;
+            margin-bottom: 0;
+        }
+        color: white;
+        padding-bottom: 0.2rem;
+    }
+    &__heading-bold {
+        color: variables.$primary-color;
+        font-weight: 700;
+        padding: 0;
+        line-height: 2rem;
+        @include breakpoints.iphone {
+            line-height: 2.8rem;
+        }
+        margin-bottom:2rem;
+    }
+    &__below-heading {
+        text-align: left;
+        color: #fff;
+        font-size: 2rem;
+        line-height: 2.8rem;
+        text-align:center;
+        @include breakpoints.iphone {
+            font-size: 2.25rem;
+            line-height: 3.2rem;
+            text-align: center;
+        }
+        @include breakpoints.laptop {
+            text-align: left;
+        }
+        font-weight: 300;
+        padding: 0;
+    }
+    &__below-content {
+        text-align: left;
+        color: white;
+    }
+    &__content {
+        color: white;
+    }
+    &__content p {
+        padding-top: 0;
+    }
+    &__columns {
+        display: flex;
+        flex-wrap:wrap;
+        margin-top: 3.3rem;
+    }
+    &__left {
+        width: 100%;
+        margin-right: 0%;
+        display:none;
+        @include breakpoints.laptop {
+            display:block;
+            width: 49%;
+            margin-right: 1%;
+        }
+    }
+    &__right {
+        width: 100%;
+        margin-left: 0%;
+        @include breakpoints.laptop {
+            width: 49%;
+            margin-left: 1%;
+        }
+    }
+}
+
+.company-manufacturing {
+    padding: 3rem 0;
+    @include breakpoints.iphone {
+        padding: 4rem 0;
+    }
+    @include breakpoints.tablet {
+        padding: 6rem 0;
+    }
+    background: #f7f7f7;
+    &__heading {
+        padding: 0;
+        font-size: 2rem;
+        line-height: 2.5rem;
+        @include breakpoints.iphone {
+            font-size: 2.95rem;
+            line-height: 3.5rem;
+        }
+    }
+    &__heading::after {
+        background: variables.$primary-color;
+        content: "";
+        width: 25%;
+        height: 1px;
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+        margin-top: 2.1rem;
+        margin-bottom: 1.5rem;
+    }
+    &__content {
+        max-width: 800px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+    &__content-icons {
+        margin-top: 3rem;
+        display: grid;
+        grid-gap: 0.5rem;
+        grid-template-columns: repeat(2,1fr);
+        @include breakpoints.tablet {
+            margin-top: 4rem;
+            grid-template-columns: repeat(3,1fr);
+        }
+        @include breakpoints.laptop {
+            margin-top: 5rem;
+            grid-template-columns: repeat(4,1fr);
+        }
+    }
+}

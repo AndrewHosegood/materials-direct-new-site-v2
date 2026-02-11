@@ -12,6 +12,10 @@ function inject_custom_jquery_for_product_dimensions() {
         return;
     }
 
+    if ($product->get_status() !== 'publish') {
+        return;
+    }
+
     // Get the border
     $item_border = floatval(get_field('border_around', $product_id)) * 10;
     $allowed_border = $item_border * 2;

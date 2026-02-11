@@ -214,7 +214,7 @@ function view_admin_content() {
                         </form>
                         ';
 
-
+                        $calendar_search = $_GET['calendar__search'] ?? '';
                         $status_select_disable = '
                         <form action="" method="post" class="calendar__form-disable">
                         <select class="calendar__select-status" name="status" style="pointer-events: none; color:#999;">
@@ -222,7 +222,7 @@ function view_admin_content() {
                         </select>
                         <input type="hidden" name="id" value="' . $id . '">
                         <input type="hidden" name="order_no" value="' . $order_no . '">
-                        <a class="calender__btn-update" href="/wp-admin/admin.php?page=view_admin&calendar__search='.$_GET['calendar__search'].'&Search=search">Update</a>
+                        <a class="calender__btn-update" href="/wp-admin/admin.php?page=view_admin&calendar__search='.$calendar_search.'&Search=search">Update</a>
                         </form>
                         ';
                         // HTML for status select dropdown
@@ -277,12 +277,14 @@ function view_admin_content() {
                             <td <?php echo $status_bg; ?>><?php echo $order_no; ?></td>
                             <td <?php echo $status_bg; ?>>
                                 <?php 
-                                    if($date_seen_counter[$order_no][$date]> 1){
+                                    if (
+                                        isset($date_seen_counter[$order_no]) &&
+                                        isset($date_seen_counter[$order_no][$date]) &&
+                                        $date_seen_counter[$order_no][$date] > 1
+                                    ) {
                                         echo "YES";
-                                    } elseif(empty($date_seen_counter[$order_no][$date])){
-                                        echo "NO";
                                     } else {
-                                        echo "YES";
+                                        echo "NO";
                                     }
                                 ?>
                             </td>

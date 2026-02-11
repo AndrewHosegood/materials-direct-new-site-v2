@@ -30,9 +30,10 @@
     }
     &__input-wrap {
         color: variables.$secondary-color;
-        width: 100%;
+        width: 48.5%;
         font-size: 0.815rem;
         margin-top: 0.6rem;
+        margin-right: 1.5%;
         @include breakpoints.tablet {
             font-size: 0.9rem;
         }
@@ -43,6 +44,16 @@
         }
         display: inline-block;
         font-weight: 600;
+    }
+    &__input-wrap.part-qty {
+            width: 98%;
+            margin-top: 0.5rem;
+            margin-right: 2%;
+            @include breakpoints.iphone {
+                width: 32%;
+                margin-top: 0rem;
+                margin-right: 1.33%;
+            }
     }
     &__input-wrap-radius {
         color: variables.$secondary-color;
@@ -82,6 +93,18 @@
     &__generate-price.hide {
         display: none;
     }
+    &__reset {
+        padding: 0.75rem 1.2rem;
+        float: right;
+        background: #6c7681;
+        margin-top: 6px;
+        font-size: 0.77rem;
+        @include breakpoints.iphone {
+            margin-top: 15px;
+            font-size: 0.89rem;
+        }
+        margin-right: 0;
+    }
     &__label {
         font-weight: 600;
         color: variables.$secondary-color;
@@ -98,10 +121,14 @@
         padding: .5rem;
         font-weight: 400;
         font-size: 0.9rem;
-        background: white;
+        // background: white;
+        background: #f8f6f6;
         border: 1px solid #dedede;
         width: 100%;
         outline: 0;
+    }
+    &__calc-input::placeholder {
+        color: #666;
     }
     &__calc-input-small {
         width: 100%;
@@ -153,7 +180,10 @@
         margin-bottom: 0.6rem;
     }
     &__discount-table-title {
-        font-size: 1.15rem;
+        font-size: 1rem;
+        @include breakpoints.iphone {
+            font-size: 1.15rem;
+        }
         font-weight: 600;
         padding: 0;
     }
@@ -231,12 +261,17 @@
         display: inline-block;
     }
     &__shipments-btn {
-        //background: variables.$secondary-color;
+        border-radius: 2.2rem;
+        margin-top: 6px;
         background: #6c7681;
         color: white;
         font-weight: 400;
-        padding: 0.85rem 1.3rem;
-        font-size: 0.92rem;
+        padding: 0.75rem 1.2rem;
+        font-size: 0.77rem;
+        @include breakpoints.iphone {
+            margin-top: 15px;
+            font-size: 0.89rem;
+        }
     }
     &__shipments-btn.active {
         background: variables.$primary-color;
@@ -281,6 +316,10 @@
         background-size: 24px 24px;
     }
     &__order-info-message-1 {
+        font-size: 0.77rem;
+        @include breakpoints.iphone {
+            font-size: 0.83rem;
+        }
         width: 100%;
         font-weight: 600;
         padding: 0.4rem 0.8rem;
@@ -288,9 +327,17 @@
         color: white;
     }
     &__order-info-message-2 {
+        font-size: 0.7rem;
+        @include breakpoints.iphone {
+            font-size: 0.83rem;
+        }
         padding: 1rem 0 1rem 0.8rem;
     }
     &__order-info-message-3 {
+        font-size: 0.7rem;
+        @include breakpoints.iphone {
+            font-size: 0.83rem;
+        }
         padding: 1rem 0 1rem 0.8rem;
     }
     &__file-upload-label {
@@ -314,7 +361,10 @@
         justify-content: space-between;
         align-items: center;
         width: 100%;
-        margin: 1rem 0 1rem 0;
+        margin: 0rem 0 0.4rem 0;
+        @include breakpoints.iphone {
+            margin: 1rem 0 1rem 0;
+        }
     }
     &__drawing-guide-btn {
         background: variables.$primary-color;
@@ -544,7 +594,12 @@
     }
     &__square-rectangle-message {
         font-weight: 700;
-        font-size: 0.86rem;
+        font-size: 0.8rem;
+        line-height: 1.5;
+        @include breakpoints.tablet {
+            font-size: 0.86rem;
+            line-height: 1.7;
+        }
         padding: 0 0 0.5rem 0;
     }
     &__square-rectangle-message-icon {
@@ -561,18 +616,32 @@
         margin: -0.4rem 0 1rem 0;
     }
     &__optional-fees-title {
-        font-size: 1.1rem;
+        font-size: 0.78rem;
+        margin-top: -0.7rem;
+        @include breakpoints.iphone {
+            font-size: 1.1rem;
+            margin-top: 0;
+        }
+        line-height: 1.4rem;
         font-weight: 600;
         padding: 0;
+        margin-bottom: 0.6rem;
     }
     &__checkbox-label {
-        width: 48.5%;
+        width: 100%;
+        margin-right: 0%;
+        padding: .15rem .7rem 0.15rem .7rem;
+        @include breakpoints.iphone {
+            padding: .4rem .7rem 0.4rem .7rem;
+        }
+        @include breakpoints.tablet {
+            width: 48.5%;
+            margin-right: 1.5%;
+        }
         float: left;
         margin-bottom: 1rem;
         margin-bottom: .6rem;
         background: #eee;
-        padding: .4rem .7rem 0.4rem .7rem;
-        margin-right: 1.5%;
         border-radius: .3rem;
         border: 2px solid white;
         box-shadow: 1px 1px 3px rgba(0, 0, 0, .3);
@@ -585,13 +654,22 @@
     &__checkbox-title {
         padding: 0;
         font-weight: 700;
-        line-height: 0.98rem;
         margin-top: .5rem;
-        margin-bottom: 0.2rem;
+        margin-bottom: -0.2rem;
+        font-size: 0.78rem;
+        line-height: 0.9rem;
+        @include breakpoints.iphone {
+            font-size: 0.835rem;
+            line-height: 0.98rem;
+            margin-bottom: 0.2rem;
+        }
     }
     &__checkbox-heading {
         font-weight: 700;
-        font-size: 0.8rem;
+        font-size: 0.78rem;
+        @include breakpoints.iphone {
+            font-size: 0.8rem;
+        }
     }
     &__checkbox-price {
         font-weight: 400;
@@ -885,7 +963,10 @@
 }
 
 .single-product .site-main {
-    margin-top: 3rem;
+    margin-top: 1.5rem;
+    @include breakpoints.iphone {
+        margin-top: 3rem;
+    }
 }
 
 .woocommerce div.product form.cart .button {
@@ -925,6 +1006,10 @@
 }
 .custom-price-calc__input {
 	padding: 0.5rem;
+    -webkit-appearance: none;
+    appearance: none;
+    border-radius: 0;
+    background-clip: padding-box;
 }
 .single .wp-block-woocommerce-product-price {
 	display: none;
@@ -949,6 +1034,15 @@
 
 #custom_price_display .product-page__backorder-message {
     margin: 0.8rem 0 0.1rem 0;
+    display: block;
+}
+#custom_price_display small {
+    font-size: 0.88rem;
+    background-color: #f8d7da;
+    color: #721c24;
+    padding: 10px;
+    border: 1px solid #f5c6cb;
+    border-radius: 4px;
     display: block;
 }
 .ran-out-of-credits {
@@ -1077,3 +1171,13 @@ div#order_info_box #parts_remaining {
     margin-bottom: 0.7rem;
     line-height: 1.5rem;
 }
+
+/* Fix select menus in IOS */
+#input_country {
+    -webkit-appearance: none;
+    appearance: none;
+    border-radius: 0;
+    -webkit-border-radius: 0;
+    background-clip: padding-box;
+}
+/* Fix select menus in IOS */

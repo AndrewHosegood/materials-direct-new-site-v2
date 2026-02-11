@@ -1,0 +1,79 @@
+@use "../abstracts/breakpoints";
+@use "../abstracts/variables";
+
+.search {
+    &__title {
+        padding: 0;
+        font-size: 2.2rem;
+    }
+    &__results {
+        display: grid;
+        grid-gap: 0.75rem;
+        grid-template-columns: repeat(1,1fr);
+        @include breakpoints.iphone {
+            grid-template-columns: repeat(2,1fr);
+        }
+        @include breakpoints.laptop {
+            grid-template-columns: repeat(3,1fr);
+        }
+    }
+    &__results-card {
+        display: flex;
+        flex-wrap: wrap;
+        width: 100%;
+        height: auto;
+        position:relative;
+    }
+    &__results-thumb {
+        width: 100%;
+        height: auto;
+        position: relative;
+    }
+    &__results-content {
+        width: 100%;
+        height: auto;
+        position: relative;
+    }
+    &__results-title-content {
+        text-align: center;
+        background: #efefef;
+    }
+    &__results-heading a {
+        font-size: 1.15rem;
+        line-height: 1.6rem;
+    }
+    &__results-title {
+        font-size: 1.1em;
+        padding: 1.05rem 1.05rem 0.3rem 1.05rem;
+        line-height: 1.75rem;
+    }
+    &__results-sku {
+        padding: 0 0 1rem 0;
+    }
+    &__results-btn {
+        width: 100%;
+        text-align: center;
+        padding: 0.55rem 1rem;
+        margin-top: 0;
+        position: absolute;
+        bottom: 0;
+    }
+}
+
+.is-advanced-search {
+    display: flex;
+    position: absolute;
+    top: 0.65rem;
+    right: 3rem;
+    font-weight: 500;
+    font-size: 0.75rem;
+    color: white;
+    background: variables.$primary-color;
+    padding: 0.2rem 0.5rem;
+    border-radius: 0.5rem;
+    padding: 0.2rem 0.5rem 0.2rem 0.35rem;
+}
+
+// .page-template-page-custom-product-search .woocommerce-shop__short-description {
+//     margin: 1rem 0 1rem 0;
+// }

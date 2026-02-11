@@ -1,0 +1,45 @@
+@use "../abstracts/breakpoints";
+@use "../abstracts/variables";
+
+.woocommerce nav.woocommerce-pagination {
+    margin: 0 0 3rem 0;
+    & ul {
+        border: 0;
+        padding: 3px;
+        border-radius: 3px;
+        background: #eee;
+        background-image: url('/wp-content/themes/materials-direct/images/stripes_3_b.png');
+    }
+    & ul.page-numbers li {
+        border-right: 2px solid transparent;
+    }
+    & ul.page-numbers li .page-numbers {
+        padding: 0.5rem 0.8rem;
+        width: 35px;
+        display: flex;
+        justify-content: center;
+    }
+    & ul.page-numbers li .page-numbers.current {
+        background: variables.$secondary-color;
+        color: #eee;
+        padding: 0.5rem 0.8rem;
+        border-radius: 0.3rem;
+        width: 35px;
+    }
+    & ul li a:hover {
+        background: variables.$primary-color;
+        color: white;
+        border-radius: 4px;
+    }
+    & ul li a.next:hover {
+        background: transparent;
+        color: variables.$secondary-color;
+        width: 35px;
+    }
+    & ul li a.prev:hover {
+        background: transparent;
+        color: variables.$secondary-color;
+        width: 35px;
+    }
+}
+

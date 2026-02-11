@@ -800,7 +800,7 @@ function send_restore_notification_email($cart_group_id, $customer_email) {
             </html>';
 
         $headers = ['Content-Type' => 'text/html; charset=UTF-8'];
-        $to = 'jordank@materials-direct.com, andrewh@materials-direct.com';
+        $to = 'andrewh@materials-direct.com';
 
         // Send email
         $sent = wp_mail($to, $subject, $message, $headers);

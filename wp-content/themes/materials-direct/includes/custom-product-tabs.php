@@ -71,43 +71,50 @@ function custom_description_tab_content() {
 function custom_features_tab_content() {
     ?>
     <div class="woocommerce-tabs__mkd-grid">
-        <div class="woocommerce-tabs__mkd-grid-row">
-            <div class="woocommerce-tabs__mkd-grid-col-6">
-                <?php if( have_rows('specifications') ): ?>
-                <h3 class="woocommerce-tabs__mkd-grid-heading">Features</h3>
-                <?php while ( have_rows('specifications') ) : the_row(); ?>
-                <div class="woocommerce-tabs__feat-blck">
+        <div class="woocommerce-tabs__mkd-grid-row"><!-- woocommerce-tabs__feat-blck --> <!-- <h3 class="woocommerce-tabs__mkd-grid-heading">Features</h3>  -->
 
-                    <?php if(get_sub_field('group_heading')): ?>
-                    <h3 class="woocommerce-tabs__mkd-grid-subheading"><?php the_sub_field('group_heading'); ?></h3>
-                    <?php endif; ?>
-                        
-                    <?php if( have_rows('list_items') ): ?>
-        
-                    <ul class="features">
-                    <?php while ( have_rows('list_items') ) : the_row(); ?>
-                        <li><?php the_sub_field('secification_item'); ?></li>
-                    <?php endwhile; ?>
-                    </ul>
-                    <?php endif; ?>
+            <!-- FIRST BLOCK -->
+            <div class="woocommerce-tabs__mkd-grid-col-6">
+
+                <?php the_field('specification_table'); ?>
+                <?php //if( have_rows('specifications') ): ?>
+                    <!--
+                <div class="woocommerce-tabs__specs">
+                    <h3 class="woocommerce-tabs__mkd-grid-heading">Features</h3>
+                        <ul class="woocommerce-tabs__fullFeats">
+                            <?php //while ( have_rows('specifications') ) : the_row(); ?>
+
+                                <li><?php //the_sub_field('secification_item'); ?></li>
+
+                            <?php //endwhile; ?>
+                        </ul>
+                </div>
+                -->
+                <?php //endif; ?>
+
             </div>
-            <?php endwhile; ?>
-            <?php endif; ?>
-            </div>
+            <!-- FIRST BLOCK -->
+
+
+
+            <!-- SECOND BLOCK -->
             <div class="woocommerce-tabs__mkd-grid-col-6">
                 <?php if( have_rows('spec_highlight_list') ): ?>
                 <div class="woocommerce-tabs__specs">
-                <h3 class="woocommerce-tabs__mkd-grid-heading">Recommended Uses</h3>
-                <ul class="woocommerce-tabs__fullFeats">
-                    <?php while ( have_rows('spec_highlight_list') ) : the_row(); ?>
+                    <h3 class="woocommerce-tabs__mkd-grid-heading">Recommended Uses</h3>
+                        <ul class="woocommerce-tabs__fullFeats">
+                            <?php while ( have_rows('spec_highlight_list') ) : the_row(); ?>
 
-                        <li><?php the_sub_field('sh_list_item'); ?></li>
+                                <li><?php the_sub_field('sh_list_item'); ?></li>
 
-                    <?php endwhile; ?>
-                </ul>
+                            <?php endwhile; ?>
+                        </ul>
+                </div>
+                <?php endif; ?>
             </div>
-            <?php endif; ?>
-        </div>
+            <!-- SECOND BLOCK -->
+
+        
     </div>
     </div>
     <?php
@@ -115,6 +122,7 @@ function custom_features_tab_content() {
 
 function custom_technical_data_tab_content() {
 
+the_field('technical_data_table'); 
 
 if( have_rows('add_technical_data') ): 
     while( have_rows('add_technical_data') ): the_row();
@@ -124,7 +132,7 @@ if( have_rows('add_technical_data') ):
             ?>
             <h5 class="product-page__technical-data-title"><?php the_sub_field('technical_table_title');  ?></h5>
 
-            <?php the_sub_field('technical_table_content_new'); ?>
+            <?php the_sub_field('technical_data_table'); ?>
 
         <?php endif; // end layout check ?>
 

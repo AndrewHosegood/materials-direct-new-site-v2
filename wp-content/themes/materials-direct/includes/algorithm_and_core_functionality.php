@@ -259,6 +259,7 @@ function custom_price_input_fields_prefill() {
         // Output shipping address form for single products
         echo '<div id="shipping-address-form">
             <h3 class="product-page__subheading">Item(s) shipping address<span class="gfield_required gfield_required_asterisk">*</span></h3>
+            <p class="address-lookup__text" style="">Please ensure your shipping address is entered correctly here. Your order may be cancelled if an incorrect country has been entered. See our <a target="_blank" href="/terms-and-conditions/#shipping">terms and conditions</a> for more information.</p>
             <label class="custom-price-calc__label"><input class="product-page__calc-input" type="text" id="input_street_address" name="custom_street_address" placeholder="Street Address" value="' . $street_address . '" required></label>
             <label class="custom-price-calc__label"><input class="product-page__calc-input" type="text" id="input_address_line2" name="custom_address_line2" placeholder="Address Line 2" value="' . $address_line2 . '"></label>
             <label class="custom-price-calc__label"><input class="product-page__calc-input product-page__calc-input-small" type="text" id="input_city" name="custom_city" placeholder="City" value="' . $city . '" required></label>
@@ -289,14 +290,16 @@ function custom_price_input_fields_prefill() {
     $roll_length_v = $roll_length / 1000;
 
     // Get the currency switcher ID
-    if($_GET['set_currency'] === 'USD'){
+    if (isset($_GET['set_currency']) && $_GET['set_currency'] === 'USD') {
         $currency_switcher_id = '1384';
-    } elseif($_GET['set_currency'] === 'EUR'){
+    } elseif (isset($_GET['set_currency']) && $_GET['set_currency'] === 'EUR') {
         $currency_switcher_id = '1386';
     } else {
         $currency_switcher_id = '1385';
     }
+
     
+    $set_currency = $_GET['set_currency'] ?? '';
 
     // Existing form for non-single products
     echo '<div class="product-page__stages-heading"><h3 class="product-page__stages-heading-content one">Tell us what to manufacture and give us your delivery date</h3></div>
@@ -348,7 +351,8 @@ function custom_price_input_fields_prefill() {
         
         <input type="hidden" id="pdf_path" name="pdf_path" value="">
         <input type="hidden" id="dxf_path" name="dxf_path" value="">
-        <input type="hidden" id="currency_rate" name="currency_rate" value="'.$_GET['set_currency'].'">
+        
+        <input type="hidden" id="currency_rate" name="currency_rate" value="'.esc_attr($set_currency).'">
         <input type="hidden" id="currency_id" name="currency_id" value="'.$currency_switcher_id.'">
         <input type="hidden" id="currency_rate_sum" name="currency_rate_sum" value="'.get_currency_rate().'">
         <input type="hidden" id="currency_rate_symbol" name="currency_rate_symbol" value="'.get_currency_symbol().'">
@@ -358,8 +362,14 @@ function custom_price_input_fields_prefill() {
         <p class="product-page__drawing-guide-text">Download the drawing guide to help you with your pad and gasket design</p>
         </div>
 
-        <label id="choose_inches" class="product-page__input-wrap" style="width: 100%;"><input type="checkbox" id="use_inches" name="conversion_factor" value="25.4">Choose Inches</label>
-         <label id="choose_inches_radius" class="product-page__input-wrap" style="width: 100%;"><input type="checkbox" id="use_inches_radius" name="conversion_factor_radius" value="25.4">Choose Inches (Radius)</label>
+        <div id="choose_inches" class="product-page__input-wrap unstyled centered" style="width: 100%;">
+            <input type="checkbox" id="use_inches" class="styled-checkbox" name="conversion_factor" value="25.4">
+            <label>Choose Inches</label>
+        </div>
+        <div id="choose_inches_radius" class="product-page__input-wrap unstyled centered" style="width: 100%;">
+            <input type="checkbox" id="use_inches_radius" class="styled-checkbox" name="conversion_factor_radius" value="25.4">
+            <label>Choose Inches (Radius)</label>
+        </div>
 
         <label id="cont_radius_inches" class="product-page__input-wrap-radius">Radius (INCHES): <input class="product-page__input" type="number" id="input_radius_inches" name="custom_radius_inches" min="0.01" step="any"></label> 
         <label class="product-page__input-wrap-radius">Radius (MM): <input class="product-page__input" type="number" id="input_radius" name="custom_radius" min="0.01" step="any"></label>
@@ -369,7 +379,7 @@ function custom_price_input_fields_prefill() {
 
         <label id="cont_width_mm" class="product-page__input-wrap">Width (MM): <input class="product-page__input" type="number" id="input_width" name="custom_width" min="0.01" step="any" required></label>
         <label id="cont_length_mm" class="product-page__input-wrap"><span class="product-page__rolls-label-text-1">Length (MM):</span> <input class="product-page__input" type="number" id="input_length" name="custom_length" min="0.01" step="any" required></label>
-        <label style="position:relative;" class="product-page__input-wrap"><span class="product-page__rolls-label-text-2">Total number of parts:</span> <input class="product-page__input" type="number" id="input_qty" name="custom_qty" value="1" min="1" step="1" required></label>
+        <label style="position:relative;" class="product-page__input-wrap part-qty"><span class="product-page__rolls-label-text-2">Total number of parts:</span> <input class="product-page__input" type="number" id="input_qty" name="custom_qty" value="1" min="1" step="1" required></label>
         </div>';
 
 
@@ -379,29 +389,35 @@ function custom_price_input_fields_prefill() {
 
             <h4 class="product-page__optional-fees-title">Do you require these addons with your product?</h4>
 
-            <label class="product-page__checkbox-label">
+            <div class="product-page__checkbox-label unstyled">
                 <p class="product-page__checkbox-title">Add Manufacturers COFC</p>
-                <input type="checkbox" name="add_manufacturers_COFC" value="10" id="add_manufacturers_COFC">
+                <input type="checkbox" name="add_manufacturers_COFC" value="10" class="styled-checkbox" id="add_manufacturers_COFC">
+                <label>
                 <span class="product-page__checkbox-heading">Manufacturers COFC <span class="product-page__checkbox-price">£10</span>
                     <span class="cfc__tooltip" data-tooltip="A Manufacturers Certificate of Conformity (MCOFC) is a document that manufacturers issue to confirm that a product has been made to a specific standard and meets quality and regulatory requirements.">?</span>
                 </span>
-            </label><br>
+                </label>
+            </div><br>
 
-            <label id="fair_label" class="product-page__checkbox-label">
+            <div id="fair_label" class="product-page__checkbox-label unstyled">
                 <p class="product-page__checkbox-title">Add First Article Inspection Report</p>
-                <input type="checkbox" name="add_fair" value="95" id="add_fair">
+                <input type="checkbox" name="add_fair" value="95" class="styled-checkbox" id="add_fair">
+                <label>
                 <span class="product-page__checkbox-heading">FAIR <span class="product-page__checkbox-price">£95</span>
                     <span class="cfc__tooltip" data-tooltip="A First Article Inspection Report (FAIR) or ISIR is the first item we make for the customer and measure to confirm all dimensions meet the drawing and tolerances.">?</span>
                 </span>
-            </label><br>
+                </label>
+            </div><br>
 
-            <label class="product-page__checkbox-label">
+            <div class="product-page__checkbox-label unstyled">
                 <p class="product-page__checkbox-title">Add Materials Direct COFC?</p>
-                <input type="checkbox" name="add_materials_direct_COFC" value="12.50" id="add_materials_direct_COFC">
+                <input type="checkbox" name="add_materials_direct_COFC" value="12.50" class="styled-checkbox" id="add_materials_direct_COFC">
+                <label>
                 <span class="product-page__checkbox-heading">Materials Direct COFC <span class="product-page__checkbox-price">£12.50</span>
                     <span class="cfc__tooltip" data-tooltip="A certificate from Materials Direct confirming that the part meets the criteria ordered (RoHS and REACH compliant).">?</span>
                 </span>
-            </label>
+                </label>
+            </div>
 
         </div></div>';
         // END MOCOF FAIR CONTENT
@@ -436,8 +452,8 @@ function custom_price_input_fields_prefill() {
 
         // display the is shipment button -  if the user has a credit account
         if (is_user_logged_in() && $allow_credit && !is_admin()) {
-                echo '<div id="shipments_display" style="display: none; padding: 0.4rem 0.99rem; background: #efefef; border: 2px solid #ddd;"><a href="#" id="add_shipments" class="product-page__shipments-btn" style="margin-bottom: 5px; margin-top: 15px; border-radius: 2.2rem; font-size:0.89rem;">Add Shipment(s)</a>
-                    <a id="reset_button" style="padding: 0.75rem 1.2rem; float: right; background: #6c7681; margin-top: 15px; font-size:0.89rem; margin-right: 0;" class="product-page__generate-price" href="#">Reset</a>
+                echo '<div id="shipments_display" style="display: none; padding: 0.4rem 0.99rem; background: #efefef; border: 2px solid #ddd;"><a href="#" id="add_shipments" class="product-page__shipments-btn">Add Shipment(s)</a>
+                    <a id="reset_button" class="product-page__generate-price product-page__reset" href="#">Reset</a>
                     <div id="order_info_box" class="product-page__order-info-box delivery-options-active">';
                         echo '<p class="product-page__order-info-message-1">Click on Add Shipment(s) to select a lead time</p>';
                         echo '<p class="product-page__order-info-message-2">Remaining parts to assign to a delivery date:</p>
@@ -541,7 +557,9 @@ function custom_price_input_fields_prefill() {
             echo '<div id="shipping-address-form">';
         }
         
-        echo '<h3 class="product-page__subheading">Item(s) shipping address<span class="gfield_required gfield_required_asterisk">*</span></h3>
+        echo '<input style="margin-top: 1rem;" name="address_lookup" id="address_lookup" type="text" value="" class="product-page__calc-input address-lookup__search-field" tabindex="41" placeholder="Start by entering your address details here..." aria-invalid="false" role="combobox" aria-describedby="pca-country-button-help-text pca-help-text" aria-autocomplete="list" aria-expanded="false" autocomplete="off">
+            <h3 class="product-page__subheading">Item(s) shipping address<span class="gfield_required gfield_required_asterisk">*</span></h3>
+            <p class="address-lookup__text" style="">Please ensure your shipping address is entered correctly here. Your order may be cancelled if an incorrect country has been entered. See our <a target="_blank" href="/terms-and-conditions/#shipping">terms and conditions</a> for more information.</p>
             <label class="custom-price-calc__label"><input class="product-page__calc-input" type="text" id="input_street_address" name="custom_street_address" placeholder="Street Address" value="' . $street_address . '" required></label>
             <label class="custom-price-calc__label"><input class="product-page__calc-input" type="text" id="input_address_line2" name="custom_address_line2" placeholder="Address Line 2" value="' . $address_line2 . '"></label>
             <label class="custom-price-calc__label"><input class="product-page__calc-input product-page__calc-input-small" type="text" id="input_city" name="custom_city" placeholder="City" value="' . $city . '" required></label>
@@ -1039,9 +1057,41 @@ function calculate_shipping_cost($total_del_weight, $country) {
     // Define cost tiers for each country or group of countries
     $cost_tiers = [
         'United Kingdom' => [
-            [0, 30, 16.50],
-            [30, 50, 36.50],
-            [50, PHP_INT_MAX, 82.50],
+            [0, 10, 13.29],
+            [10, 15, 18.76],
+            [15, 20, 24.23],
+            [20, 25, 29.70],
+            [25, 30, 35.71],
+            [30, 35, 41.20],
+            [35, 40, 46.69],
+            [40, 45, 52.19],
+            [45, 50, 57.68],
+            [50, 60, 68.66],
+            [60, 70, 79.63],
+            [70, 80, 90.63],
+            [80, 90, 101.60],
+            [90, 100, 112.58],
+            [100, 110, 123.57],
+            [110, 120, 134.55],
+            [120, 130, 145.53],
+            [130, 140, 156.52],
+            [140, 150, 167.50],
+            [150, 160, 178.47],
+            [160, 170, 189.47],
+            [170, 180, 200.44],
+            [180, 190, 211.42],
+            [190, 200, 222.41],
+            [200, 210, 233.39],
+            [210, 220, 244.37],
+            [220, 230, 255.36],
+            [230, 240, 266.34],
+            [240, 250, 277.31],
+            [250, 260, 288.29],
+            [260, 270, 299.28],
+            [270, 280, 310.26],
+            [280, 290, 321.23],
+            [290, 299, 331.13],
+            [299, PHP_INT_MAX, 341.13],
         ],
         'Europe_1' => [ // Shared tiers for France, Germany, Monaco
             [0, 1, 54.18],
@@ -1739,6 +1789,7 @@ function add_custom_price_cart_item_data_secure($cart_item_data, $product_id) {
         'is_backorder' => $is_backorder,
         'backorder_data' => $backorder_data,
         'stock_quantity' => $stock_quantity,
+        'allow_credit' => $allow_credit,
         'despatch_date' => $aggregated,  // this will now be the combined list
     ]);
 
@@ -2237,6 +2288,9 @@ function show_custom_input_details_in_cart($item_data, $cart_item) {
                 'name' => 'Customer Shipping Weight(s)',
                 'value' => round((float)$cart_item['custom_inputs']['total_del_weight'], 3) . "kg"
             ];
+            // echo "<pre>";
+            // print_r($cart_item['custom_inputs']);
+            // echo "</pre>";
         }
 
     }
@@ -2623,8 +2677,18 @@ function display_custom_inputs_on_product_page() {
         return;
     }
 
-    $sheet_length_mm = $product->get_length() * 10; // cm → mm
-    $sheet_width_mm = $product->get_width() * 10;   // cm → mm
+    $length = $product->get_length();
+    $width  = $product->get_width();
+
+    if (!is_numeric($length) || !is_numeric($width)) {
+        return; // dimensions missing → do nothing
+    }
+
+    //$sheet_length_mm = $product->get_length() * 10; // cm → mm
+    //$sheet_width_mm = $product->get_width() * 10;   // cm → mm
+    $sheet_length_mm = (float) $length * 10;
+    $sheet_width_mm  = (float) $width  * 10;
+
     $part_length_mm = isset($_POST['custom_length']) ? floatval($_POST['custom_length']) : 0;
     $part_width_mm = isset($_POST['custom_width']) ? floatval($_POST['custom_width']) : 0;
     $quantity = isset($_POST['custom_qty']) ? intval($_POST['custom_qty']) : 0;
@@ -2812,6 +2876,8 @@ function save_shipment_callback() {
 
     WC()->session->set('custom_shipments', $shipments);
 
+    WC()->session->set('custom_shipments_last_activity', time()); //Update the last activity timestamp to reset the 15-minute timer
+
     $new_total = array_sum(array_column($shipments, 'parts'));
     $remaining = $custom_qty - $new_total;
     $total_fees = array_sum(array_column($shipments, 'total_fee')); //new cofc delivery options
@@ -2860,6 +2926,7 @@ function save_shipment_callback() {
                 <?php } ?>
             </tbody>
         </table>
+        <?php $custom_shipments = WC()->session->get( 'custom_shipments', [] ); echo "<pre class='aaa'>"; print_r($custom_shipments); echo "</pre>"; ?>
     </div>
     <?php
     $table_html = ob_get_clean();
@@ -3091,3 +3158,21 @@ function get_shipment_lead_time_discount( $despatch_ymd ) {
     return $disc_d;
 }
 // Delivery Options Discount helper
+
+// make sure scheduled delivery 'custom_shipment' session is destroyed after 15 minutes
+add_action('init', 'cleanup_expired_custom_shipments');
+
+function cleanup_expired_custom_shipments() {
+    if (!function_exists('WC') || !WC()->session) {
+        return;
+    }
+
+    $last_activity = WC()->session->get('custom_shipments_last_activity');
+
+    // If timestamp exists and is older than 15 minutes (900 seconds)
+    if ($last_activity && (time() - $last_activity > 600)) {
+        WC()->session->set('custom_shipments', []);
+        WC()->session->__unset('custom_shipments_last_activity');
+    }
+}
+// make sure scheduled delivery 'custom_shipment' session is destroyed after 15 minutes

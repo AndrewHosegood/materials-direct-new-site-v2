@@ -1,12 +1,14 @@
 jQuery(document).ready(function($){
-
+        
         // Header onsroll event
         var $header = $('.header__main');
         var $header_container = $('.header__main-container');
         var $header_left = $('.header__left');
         var $header_right = $('.header__right');
         var $main_navigation = $('.main-navigation');
-        var $form = $('.is-search-form');
+        var $ajax_search_container = $('#custom-search-results');
+        //var $form = $('.is-search-form');
+        var $form = $('.header__search-result-container');
         var scrollThreshold = 400;
         var throttleDelay = 100; // milliseconds
         var lastExecution = 0;
@@ -23,6 +25,7 @@ jQuery(document).ready(function($){
                     $header_right.addClass('header__right-fixed');
                     $main_navigation.addClass('header__main-navigation-fixed');
                     $form.addClass('header__is-search-form-fixed');
+                    $ajax_search_container.addClass('header__search-result-scroll');
                 } else {
                     $header.removeClass('header__main-fixed');
                     $header_container.removeClass('header__main-container-fixed');
@@ -30,10 +33,15 @@ jQuery(document).ready(function($){
                     $header_right.removeClass('header__right-fixed');
                     $main_navigation.removeClass('header__main-navigation-fixed');
                     $form.removeClass('header__is-search-form-fixed');
+                    $ajax_search_container.removeClass('header__search-result-scroll');
                 }
             }
         }
         $(window).on('scroll', onScrollThrottled);
+    
+        // on page load enable the generate price button
+        $("#generate_price").prop("disabled", false);
+        // on page load enable the generate price button
 
         // Burger menu
         $('#nav-icon4').click(function(){
@@ -327,7 +335,6 @@ jQuery(document).ready(function($){
         // Change price to 'calculating' when 'add shipments' is clicked
 
         // force users to enter 3 or more in width and length field
-        /*
         $('#input_qty').on('keyup', function() {
             let lengthVal2 = $("#input_length").val();
             let widthVal2 = $("#input_width").val();
@@ -336,7 +343,6 @@ jQuery(document).ready(function($){
                 $("#generate_price").prop("disabled", true);
             }
 	    });
-        */
         // force users to enter 3 or more in width and length field
 
         // add width and length values based on circle radius input
@@ -466,6 +472,75 @@ jQuery(document).ready(function($){
         });
         // Currency switcher active link
 
+        // Delivery Options Modal Validation
+        $(document).on('input', '.parts-input', function () {
+            
+            let value = $(this).val();
+            let cleanValue = value.replace(/[^0-9]/g, '');
+            cleanValue = cleanValue.replace(/^0+/, '');
+            console.log("value:" + value);
+            console.log("cleanValue:" + cleanValue);
+            if (cleanValue === "") {
+                cleanValue = "";
+            }
+            if (value !== cleanValue) {
+                $(this).val(cleanValue);
+            }
+            if (cleanValue.length > 0) {
+                $(".delivery-options-modal__submit").addClass("show");
+            } else {
+                $(".delivery-options-modal__submit").removeClass("show");
+            }
+	    });
+        // Delivery Options Modal Validation
+
+        // Adjust final smooth scroll position by 100px
+        
+        jQuery(function ($) {
+            var headerOffset = 300;
+            var scrollSpeed = 600;
+
+            $('a[href*="#"]:not([href="#"])').not('.wc-tabs a').on('click', function (e) {
+                var target = $(this.hash);
+
+                if (target.length) {
+                    e.preventDefault();
+
+                    $('html, body').animate({
+                        scrollTop: target.offset().top - headerOffset
+                    }, scrollSpeed);
+                }
+            });
+
+            if (window.location.hash) {
+                var target = $(window.location.hash);
+
+                if (target.length) {
+                    $('html, body').animate({
+                        scrollTop: target.offset().top - headerOffset
+                    }, scrollSpeed);
+                }
+            }
+        });
+        
+        // Adjust final smooth scroll position by 100px
+
+        // click event for header Advanced Search
+        $('#custom-product-search-input').on('keyup', function () {
+            if ($(window).width() > 960 && $('#custom-product-search-input').next('.injected-content').length === 0) {
+                $('#custom-product-search-input').after('<div class="injected-content"><a class="is-advanced-search" href="/shop/#advanced-filter"><i class="fa-solid fa-magnifying-glass-plus"></i><span>Advanced search</span></a></div>');
+            }
+        });
+        // click event for header Advanced Search
+
+        /* Category filter show/hide */
+        jQuery('.filter-btn-hide').on('click', function(event) {
+            event.preventDefault(); // Prevent the default link behavior
+            $('.filter-wrapper-inner').fadeToggle('slow');
+            var currentText = $(this).text();
+            $(this).text(currentText === 'Hide' ? 'Show' : 'Hide');
+        });
+        /* Category filter show/hide */
 
         // Owl Carousel
         $('.testimonials__carousel').owlCarousel({

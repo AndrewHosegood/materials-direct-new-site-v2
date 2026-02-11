@@ -285,3 +285,94 @@
         margin-bottom: 0.7rem;
     }
 }
+
+.company-banner {
+    height: 220px;
+    @include breakpoints.iphone {
+        height: 420px;
+    }
+    @include breakpoints.laptop {
+        height: 559px;
+    }
+    &__container {
+        width: 100%;
+        height: 220px;
+        @include breakpoints.iphone {
+            height: 420px;
+        }
+        @include breakpoints.laptop {
+            height: 559px;
+        }
+        background-repeat:no-repeat;
+        background-size: cover;
+    }
+    & .item {
+        width: 100%;
+        height: 220px;
+        @include breakpoints.iphone {
+            height: 420px;
+        }
+        @include breakpoints.laptop {
+            height: 559px;
+        }
+    }
+    &__content {
+        display: flex;
+        flex-wrap: wrap;
+        flex-direction: column;
+        justify-content: center;
+        height: auto;
+        @include breakpoints.iphone {
+            height: 420px;
+        }
+        @include breakpoints.laptop {
+            height: 559px;
+        }
+        color: white;
+        text-align: center;
+        left: 0;
+        right: 0;
+        top: 0;
+        bottom: 0;
+        padding: 1.29rem 0 1.29rem 0;
+    }
+    &__heading {
+        margin-bottom: 0.7rem;
+        font-size: 2.2rem;
+        line-height: 3.1rem;
+        @include breakpoints.iphone {
+            font-size: 2.3rem;
+            line-height: 2.8rem;
+        }
+        @include breakpoints.tablet {
+            font-size: 3.35rem;
+            line-height: 3.7rem;
+        }
+    }
+    &__heading span {
+        display: block;
+        font-size: 1.45rem;
+        line-height: 2rem;
+         @include breakpoints.iphone {
+            font-size: 1.6rem;
+            line-height: 2.1rem;
+         }
+        @include breakpoints.tablet {
+            font-size: 2.7rem;
+            line-height: 2.9rem;
+        }
+        margin: 1rem 0 1rem 0;
+        padding:0 1rem;
+    }
+    &__subheading {
+        font-size: 0.9rem;
+        line-height: 1.6rem;
+        @include breakpoints.laptop {
+            font-size: 1.2rem;
+            line-height: 1.9rem;
+        }
+        max-width: 800px;
+        font-weight: 300;
+        padding: 0 1rem;
+    }
+}

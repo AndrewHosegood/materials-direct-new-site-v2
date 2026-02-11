@@ -227,7 +227,13 @@ add_action( 'wp_enqueue_scripts', function() {
 
 
 
+
+
 /* BEGIN CUSTOM FUNCTIONS */
+
+// FORCE CORRECT FROM ADDRESS FOR CUSTOM EMAILS 
+require_once('includes/force-correct-from-address.php');
+// FORCE CORRECT FROM ADDRESS FOR CUSTOM EMAILS 
 
 // Generate and display PPP for testing
 require_once('includes/acf_global_options.php');
@@ -334,10 +340,6 @@ require_once('includes/delivery-options-modal-and-button.php');
 // add creditor user role
 require_once('includes/add-creditor-user-role.php');
 // add creditor user role
-
-// add credit account balance info to product page
-require_once('includes/add-credit-account-fund-status-to-product-page.php');
-// add credit account balance info to product page
 
 // hide the 'despatch within' select menu on the product page
 require_once('includes/hide-despatch-within-if-credit-account.php');
@@ -476,15 +478,56 @@ require_once('includes/currency-switcher-session-logic.php');
 require_once('includes/import-duty-notice-cart.php');
 // Import duty notice in cart
 
+// Fix header admin bar styling when logged in
+require_once('includes/fix-header-for-admin-bar.php');
+// Fix header admin bar styling when logged in
 
+// Add loqate javacript to head on product page
+require_once('includes/add-loqate-javascript-to-head.php');
+// Add loqate javacript to head on product page
+
+// Add markeplace price action button to the dashboard
+require_once('includes/google-marketplace-price.php');
+// Add markeplace price action button to the dashboard
+
+// Custom Ivory Search
+require_once('includes/custom-ivory-search.php');
+// Custom Ivory Search
+
+// Capture Cart Contents
+require_once('includes/capture_cart_v9.php');
+// Capture Cart Contents
+
+/* TEMPORARILY REMOVE LOAD TEXTDOMAIN WARNING THAT ARE FLOODING MY LOGS */
+require_once('includes/remove_load_textdomain_logs.php');
+/* TEMPORARILY REMOVE LOAD TEXTDOMAIN WARNING THAT ARE FLOODING MY LOGS */
+
+// change price in schema.org json file 
+/* NEED TO SWITCH THIS ON DURING GO LIVE PROCESS */
+//require_once('includes/update_price_in_schema_json_file.php');
+// change price in schema.org json file 
+
+add_filter('redirect_canonical', function($redirect_url, $requested_url) {
+    // Disable canonical redirect only on the custom product search page when a search term is present
+    if (is_page('product-search') && isset($_GET['q'])) {
+        return false;
+    }
+    return $redirect_url;
+}, 10, 2);
+
+// Tell Bing and Google NOT to index my staging site
+add_action('send_headers', function () {
+    header('X-Robots-Tag: noindex, nofollow, noarchive', true);
+});
+// Tell Bing and Google NOT to index my staging site
 
 
 /* END CUSTOM FUNCTIONS */
 
 /* DELIVERY OPTIONS FUNCTIONS */
-require_once('includes/add_split_schedule_status_to_woocommerce_orders.php'); // *
-require_once('includes/split_schedule_calendar.php'); // *
-require_once('includes/split_schedule_admin.php'); // *
+require_once('includes/add_split_schedule_status_to_woocommerce_orders.php');
+require_once('includes/split_schedule_calendar.php');
+require_once('includes/split_schedule_admin.php');
 //require_once('includes/admin-email-split-schedule-data.php'); // for displaying the split schedule breakdown on the emails
 require_once('includes/admin-email-split-schedule-data-v3.php');
 require_once('includes/enqueue-ajax-for-calendar-admin.php'); // Enqueue ajax for calendar admin *
@@ -496,12 +539,11 @@ require_once('includes/ajax-for-calendar-admin-select-shipments.php'); // Enqueu
 require_once('includes/ajax-for-calendar-admin-tracking-number.php'); // Enqueue ajax for calendar admin *
 require_once('includes/ajax-for-calendar-admin-tracking-url.php'); // Enqueue ajax for calendar admin *
 require_once('includes/show-final-dispatch-action.php'); // Enqueue ajax for calendar admin *
-require_once('includes/split_schedule_add_to_calendar.php'); // *
-require_once('includes/payment-gateway-disable-items-for-credit-account.php'); // *
+require_once('includes/split_schedule_add_to_calendar.php');
+require_once('includes/payment-gateway-disable-items-for-credit-account-v2.php'); // disable payment gateway options if logged in as credit account user
+require_once('includes/add-credit-account-fund-status-to-product-page.php'); // display credit account funs details on product page
+require_once('includes/send-credit-arrears-emails.php'); // send an email if the customers runs out of credit
 /* END DELIVERY OPTIONS FUNCTIONS */
-
-
-
 
 
 
@@ -510,12 +552,6 @@ require_once('includes/payment-gateway-disable-items-for-credit-account.php'); /
 // Forces customers to re-enter shipping details on every order, even when logged in
 // Need to test that this is ok to use long term
 add_filter( 'woocommerce_customer_has_shipping_address', '__return_false' );
-
-
-
-
-
-
 
 
 

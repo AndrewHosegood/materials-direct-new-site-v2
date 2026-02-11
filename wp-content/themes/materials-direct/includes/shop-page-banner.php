@@ -19,3 +19,31 @@
         </ul>
     </div>
 </section>
+
+<?php
+/*
+$shop_page_categrory_heading = 'Shop';
+
+if ( is_product_category() ) {
+    $term = get_queried_object();
+    if ( $term && ! is_wp_error( $term ) ) {
+        $shop_page_categrory_heading = $term->name;
+    }
+}
+elseif ( is_shop() && isset($_GET['product_cat']) ) {
+    $slug = sanitize_text_field($_GET['product_cat']);
+    $term = get_term_by('slug', $slug, 'product_cat');
+
+    if ( $term && ! is_wp_error( $term ) ) {
+        $shop_page_categrory_heading = $term->name;
+    }
+}
+    */
+?>
+
+
+<!-- <section class="shop-banner-mobile">
+    <div class="shop-banner-mobile__container">
+        <h1><?php //echo $shop_page_categrory_heading; ?></h1>
+    </div>
+</section> -->

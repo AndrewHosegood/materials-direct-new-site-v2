@@ -4,6 +4,10 @@
 .shop-banner {
     background: #475562;
     padding: 2rem 4.9vw;
+    display: none;
+    @include breakpoints.tablet {
+        display: block;
+    }
     @include breakpoints.desktop {
         padding: 2rem 4rem;
     }
@@ -129,7 +133,7 @@
         height: 36px;
         margin-right:0.5rem;
         font-weight: 500;
-        font-size: 1.8vw;
+        font-size: 1.05rem;
         @include breakpoints.laptop {
             font-size: 1.6vw;
         }
@@ -148,7 +152,7 @@
         height: 36px;
         margin-right:0.5rem;
         font-weight: 500;
-        font-size: 1.8vw;
+        font-size: 1.05rem;
         @include breakpoints.laptop {
             font-size: 1.6vw;
         }
@@ -167,7 +171,7 @@
         height: 36px;
         margin-right:0.5rem;
         font-weight: 500;
-        font-size: 1.8vw;
+        font-size: 1.05rem;
         @include breakpoints.laptop {
             font-size: 1.6vw;
         }

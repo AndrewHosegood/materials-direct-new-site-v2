@@ -3,25 +3,35 @@ add_action('wp_ajax_update_order_status', 'update_order_status');
 
 function update_order_status() {
 
-    global $wpdb;
+        global $wpdb;
 
     $domain = $_SERVER['HTTP_HOST'];
 
     $http = "https"; //change to https for staging and live
 
-    //require_once('/home/customer/www/materials-direct.com/public_html/wp-content/themes/creative-mon/pdf-generation/examples/tcpdf_include.php');
+     require_once('/kunden/homepages/2/d4298640024/htdocs/newbuild/wp-content/themes/materials-direct/pdf-generation/examples/tcpdf_include.php');
+
+     
     
-    if($domain == "localhost:8888"){
-        require_once('/Applications/MAMP/htdocs/materials-direct-new/wp-content/themes/creative-mon/pdf-generation/examples/tcpdf_include.php');
-    } else {
-        require_once('/kunden/homepages/2/d4298640024/htdocs/wp-content/themes/creative-mon/pdf-generation/examples/tcpdf_include.php');
-    }
-    
+    // if($domain == "localhost:8888"){
+    //     require_once('/Applications/MAMP/htdocs/materials-direct-new/wp-content/themes/materials-direct/pdf-generation/examples/tcpdf_include.php');
+    // } else {
+    //     require_once('/kunden/homepages/2/d4298640024/htdocs/newbuild/wp-content/themes/materials-direct/pdf-generation/examples/tcpdf_include.php');
+    // }
+  
+     
+
     date_default_timezone_set('Europe/London');
 
     $pdf_date = date('jS F Y');
 
     // Retrieve order ID and status from AJAX request
+    // $id = '135';
+    // $status = 'dispatch';
+    // $order_no = '1339';
+    // $new_date = '2026-03-16';
+    // $is_merged = '';
+
     $id = $_POST['id'];
     $status = $_POST['status'];
     $order_no = $_POST['order_no'];
@@ -36,7 +46,7 @@ function update_order_status() {
 
     $order = wc_get_order($order_no);
   	$customer_email_send = $order->get_billing_email();
-  	$admin_email_send = "pauls@materials-direct.com, andrewh@materials-direct.com";
+  	$admin_email_send = "andrewh@materials-direct.com";
     $totals_html = '';
     $mcf_v_sum = 0;
     $subtotal_sum = 0;
@@ -110,8 +120,17 @@ function update_order_status() {
 
 
             // Get the voucher discount rate
-            $voucher_discount = $order->get_meta('_voucher_discount'); // Retrieve the meta value
+            //$voucher_discount = $order->get_meta('_voucher_discount'); // Retrieve the meta value
             // Get the voucher discount rate
+
+            if ( $order instanceof WC_Order ) {
+                $voucher_discount = $order->get_meta('_voucher_discount') ?: 0;
+            } else {
+                // Optional logging for debug
+                error_log("PDF Invoice: Order not found for order_no = $order_no");
+            }
+
+
 
             // Get the tax rates
             $tax_rates = [];
@@ -135,7 +154,7 @@ function update_order_status() {
             /* Old query */ 
             //$sql = $wpdb->prepare("SELECT * FROM $table_name WHERE id = %d", $id);
             /* Old query */ 
-
+            
             if($is_merged == 1){
                 $sql = $wpdb->prepare(
                     "SELECT * FROM $table_name WHERE order_no = %d AND is_merged = %s AND date = %s",
@@ -204,14 +223,16 @@ function update_order_status() {
 
 
                     // Path to save the PDF
-                    //require_once('/home/customer/www/materials-direct.com/public_html/wp-content/themes/creative-mon/pdf-generation/examples/tcpdf_include.php');
-                    //$tempFilePath1 = '/home/customer/www/materials-direct.com/public_html/wp-content/themes/creative-mon/pdf-generation/pdf/Materials-Direct-DELIVERY-NOTE-' . $pdf_filename . '-' . $formatted_date_pdf . '-1.pdf';
+
+                    $tempFilePath1 = '/kunden/homepages/2/d4298640024/htdocs/newbuild/wp-content/themes/materials-direct/pdf-generation/pdf/Materials-Direct-DELIVERY-NOTE-' . $pdf_filename . '-' . $formatted_date_pdf . '-1.pdf';
                     
-                    if ($domain == "localhost:8888") {
-                        $tempFilePath1 = '/Applications/MAMP/htdocs/materials-direct-new/wp-content/themes/creative-mon/pdf-generation/pdf/Materials-Direct-DELIVERY-NOTE-' . $pdf_filename . '-' . $formatted_date_pdf . '-1.pdf';
-                    } else {
-                        $tempFilePath1 = '/kunden/homepages/2/d4298640024/htdocs/wp-content/themes/creative-mon/pdf-generation/pdf/Materials-Direct-DELIVERY-NOTE-' . $pdf_filename . '-' . $formatted_date_pdf . '-1.pdf';
-                    }
+                    // if ($domain == "localhost:8888") {
+                    //     $tempFilePath1 = '/Applications/MAMP/htdocs/materials-direct-new/wp-content/themes/creative-mon/pdf-generation/pdf/Materials-Direct-DELIVERY-NOTE-' . $pdf_filename . '-' . $formatted_date_pdf . '-1.pdf';
+                    // } else {
+                    //     $tempFilePath1 = '/kunden/homepages/2/d4298640024/htdocs/newbuild/wp-content/themes/materials-direct/pdf-generation/pdf/Materials-Direct-DELIVERY-NOTE-' . $pdf_filename . '-' . $formatted_date_pdf . '-1.pdf';
+                    // }
+                  
+                    
                     
 
                     class MDPDF extends TCPDF {
@@ -424,6 +445,10 @@ function update_order_status() {
 
                     $pdf1->writeHTML($html, true, false, true, false, '');
 
+                    if (ob_get_level()) {
+                        ob_end_clean();
+                    }
+
                     // Output PDF to file
                     $pdf1->Output($tempFilePath1, 'F');
 
@@ -435,14 +460,17 @@ function update_order_status() {
                     /* INVOICE PDF */
 
                     // === Create second PDF: Invoice ===
-                    //require_once('/home/customer/www/materials-direct.com/public_html/wp-content/themes/creative-mon/pdf-generation/examples/tcpdf_include.php');
-                    //$tempFilePath2 = '/home/customer/www/materials-direct.com/public_html/wp-content/themes/creative-mon/pdf-generation/pdf/Materials-Direct-INVOICE-' . $pdf_filename . '-' . $formatted_date_pdf . '-2.pdf';
+
+                    $tempFilePath2 = '/kunden/homepages/2/d4298640024/htdocs/newbuild/wp-content/themes/materials-direct/pdf-generation/pdf/Materials-Direct-INVOICE-' . $pdf_filename . '-' . $formatted_date_pdf . '-2.pdf';
+
                     
-                    if ($domain == "localhost:8888") {
-                        $tempFilePath2 = '/Applications/MAMP/htdocs/materials-direct-new/wp-content/themes/creative-mon/pdf-generation/pdf/Materials-Direct-INVOICE-' . $pdf_filename . '-' . $formatted_date_pdf . '-2.pdf';
-                    } else {
-                        $tempFilePath2 = '/kunden/homepages/2/d4298640024/htdocs/wp-content/themes/creative-mon/pdf-generation/pdf/Materials-Direct-INVOICE-' . $pdf_filename . '-' . $formatted_date_pdf . '-2.pdf';
-                    }
+                    
+                    // if ($domain == "localhost:8888") {
+                    //     $tempFilePath2 = '/Applications/MAMP/htdocs/materials-direct-new/wp-content/themes/creative-mon/pdf-generation/pdf/Materials-Direct-INVOICE-' . $pdf_filename . '-' . $formatted_date_pdf . '-2.pdf';
+                    // } else {
+                    //     $tempFilePath2 = '/kunden/homepages/2/d4298640024/htdocs/newbuild/wp-content/themes/materials-direct/pdf-generation/pdf/Materials-Direct-INVOICE-' . $pdf_filename . '-' . $formatted_date_pdf . '-2.pdf';
+                    // }
+                    
                     
 
                     class MDPDF2 extends TCPDF {
@@ -709,6 +737,7 @@ function update_order_status() {
                         //$shipping_display_sum += $shipping_display_new;
 
                         $voucher_percent = $cppnew * $voucher_discount;
+                        //$voucher_percent = '';
 
                         $total_delivery_count = $order_count * $delivery_count;
 
@@ -723,6 +752,7 @@ function update_order_status() {
 
 
                         $vat_amount = $cppnew + $mcofc_fair_value_display + $my_shipping_response - $tf_3 - $voucher_percent;
+                        //$vat_amount = 100;
 
 
                         if($country == "United Kingdom"){
@@ -740,6 +770,7 @@ function update_order_status() {
 
                         // calculate totals
                         $total_final = $cppnew + $my_shipping_response + $vat_display - $tf_3 + $md_value + $mcofc_fair_value_display - $voucher_percent;
+                        //$total_final = 100;
                         $newtotal = floor($total_final * 100) / 100; // Total inc VAT
                         $total_sum += $newtotal;
                         // calculate totals
@@ -1111,6 +1142,10 @@ function update_order_status() {
 
                     $pdf2->writeHTML($html2, true, false, true, false, '');
 
+                    if (ob_get_level()) {
+                        ob_end_clean();
+                    }
+
                     // Output PDF to file
                     $pdf2->Output($tempFilePath2, 'F');
 
@@ -1296,7 +1331,7 @@ function update_order_status() {
 
 
                     // send an email to patrice once the schedule is marked as despatch
-                    $to = "andrewh@materials-direct.com, patrices@materials-direct.com";
+                    $to = "andrewh@materials-direct.com";
                     $subject = 'Order part '.$schedule.' for #'.$order_no.' has now been marked ready for despatch';
                     $message = 'Hi Patrice. For your information, '.$schedule.' for #'.$order_no.' has now been marked ready for despatch';
                     $headers = array('Content-Type: text/html; charset=UTF-8');
@@ -1329,7 +1364,13 @@ function update_order_status() {
 
     // Always exit to avoid further execution
     wp_die();
+
+
+
+
 }
+
+
 
 add_action('wp_ajax_fetch_search_results', 'fetch_search_results');
 function fetch_search_results() {

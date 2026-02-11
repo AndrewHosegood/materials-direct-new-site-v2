@@ -30,6 +30,9 @@ function remove_specific_order_item_meta($formatted_meta, $item) {
 		if ($meta->key === 'qty') {
             $formatted_meta[$key]->display_key = 'Total number of parts'; // Change the label
         }
+        if ($meta->key === 'ah_shipping_cost') {
+            $formatted_meta[$key]->display_key = 'Shipping Cost'; // Change the label
+        }
     }
     
     return $formatted_meta; // Return the modified meta data

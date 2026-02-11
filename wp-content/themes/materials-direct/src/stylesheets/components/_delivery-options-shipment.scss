@@ -1,3 +1,4 @@
+@use "../abstracts/breakpoints";
 @use "../abstracts/variables";
 
 .delivery-options-shipment {
@@ -5,11 +6,15 @@
     margin-top: 1rem;
     width: 100%;
     &__title {
-        font-size:0.86rem;
+        font-size:0.77rem;
+        line-height: 0.9rem;
+        @include breakpoints.iphone {
+            font-size:0.86rem;
+            line-height: 1.1rem;
+        }
         font-weight:600;
         background: white;
         padding: 10px;
-        line-height: 1.1rem;
         vertical-align: middle;
         border-right: 1px solid #ddd;
     }
@@ -17,12 +22,15 @@
         width: 250px;
     }
     &__display &__display-inner {
+        font-size: 0.77rem;
+        @include breakpoints.iphone {
+            font-size: 0.87rem;
+        }
         background: variables.$secondary-color;
         padding: 1.2rem;
         color: white;
         text-align:center;
         font-weight: 300;
-        font-size: 0.87rem;
     }
     &__display-results {
         background: variables.$secondary-color;

@@ -90,9 +90,14 @@
 					<?php endif; ?>
 
 					
+					<div id="custom-search-container" class="header__search-result-container">
+						<i class="fa-solid fa-magnifying-glass header__search-result-icon"></i>
+						<img class="header__custom-search-results-spinner" style="display:none;" src="https://materials-direct.com/wp-content/plugins/add-search-to-menu-premium/public/images/spinner.gif"> 
+						<input type="text" id="custom-product-search-input" class="header__search-bar" placeholder="Search products..." autocomplete="off">
+						<div id="custom-search-results" class="header__search-result" style="display:none;"></div>
+					</div>
 
-
-					<?php echo do_shortcode('[ivory-search id="112" title="Custom Search Form"]'); ?>
+					<?php //echo do_shortcode('[ivory-search id="112" title="Custom Search Form"]'); ?>
 				</div>
 			</div>
 		</div>
@@ -114,7 +119,15 @@
     } else {
         echo 'No currency set in session yet.';
     }
-		*/
+	*/
+
+	// $custom_shipments = WC()->session->get( 'custom_shipments', [] );
+	// $custom_qty = WC()->session->get( 'custom_qty' );	
+	//echo "Custom Shipments: " . $custom_shipments . "<br>";
+	// echo "<pre>";
+	// print_r($custom_shipments);
+	// echo "</pre>";
+	// echo "Custom Qty: " . $custom_qty;
 	?>
 	<!-- <a href="?unset_currency=1" id="unset_session">UNSET</a> -->
 
@@ -127,12 +140,17 @@
 	<?php } ?>
 
 	<?php 
-	        if (is_shop() || is_product_category()) {
+	    if (is_shop() || is_product_category() || is_page(5149)) {
 			
 			echo '<div id="advanced-filter" class="filter-heading-background">';
 			echo '<div class="filter-content-wrapper">';
 			echo '<h4 class="filter-heading">Product Filter</h4>';
-			echo '<a class="filter-btn" href="/shop/">Reset</a>';
+			if(is_page(5149)){
+				echo '<a class="filter-btn" href="/product-search/">Reset</a>';
+			} else {
+				echo '<a class="filter-btn" href="/shop/">Reset</a>';
+			}
+			
 			echo '<a class="filter-btn-hide" href="">Hide</a>';
 			echo '</div>';
 			echo '</div>';

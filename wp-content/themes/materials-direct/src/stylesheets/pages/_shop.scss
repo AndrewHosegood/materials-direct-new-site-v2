@@ -61,6 +61,7 @@
     &__short-description {
         text-align: center;
         margin: 1rem 0 3.7rem 0;
+        width: 100%;
     }
     &__short-description ul li {
         border-bottom: 1px solid gainsboro;
@@ -125,11 +126,6 @@
         bottom: -3.8rem;
         z-index: 99;
     }
-    // &__image-links.active {
-    //     animation-name: image_links_active;
-    //     animation-duration: 0.5s;
-    //     animation-fill-mode: forwards;
-    // }
     &__image-links-link {
         color: white;
         width: 50%;
@@ -163,10 +159,32 @@
     & .woocommerce-products-header {
         display: none;
     }
+    & .woocommerce-products-header {
+        display: none;
+    }
 }
 
 @keyframes image_links_active {
   from {bottom: -3.8rem;}
   to {bottom: 0rem;}
+}
+
+.woocommerce-page {
+    & .woocommerce-products-header {
+        display: none;
+    }
+    & ul.products li.product .button {
+        background: variables.$primary-color;
+        color: white;
+        font-weight: 400;
+        text-align: center;
+        display:block;
+        width: 100%;
+        position: absolute;
+        bottom: 0;
+        font-size: .87rem;
+        padding: .9rem;
+        font-weight: 300;
+    }
 }
 
