@@ -144,16 +144,18 @@ $total_pages = ceil($total / $per_page);
             $base_url      = remove_query_arg('paged', $current_url);
             $paginate_base = add_query_arg('paged', '%#%', $base_url);
         ?>
-            <div class="pagination" style="text-align:center; margin:3rem 0;">
+            <div class="pagination">
+                <div class="pagination__container">
                 <?= paginate_links([
                     'base'      => $paginate_base,
                     'format'    => '',
                     'current'   => $paged,
                     'total'     => $total_pages,
-                    'prev_text' => '&laquo; Previous',
-                    'next_text' => 'Next &raquo;',
+                    'prev_text' => '←',
+                    'next_text' => '→',
                     'type'      => 'plain',
                 ]) ?>
+                </div>
             </div>
         <?php endif; ?>
 

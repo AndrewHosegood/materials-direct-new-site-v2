@@ -180,16 +180,13 @@ defined( 'ABSPATH' ) || exit;
                     $raw = WC()->cart->get_total();
                     $raw = preg_replace("/[^0-9.]/", "", $raw) * get_currency_rate();
                     $raw = number_format((float)$raw, 2, '.', '');
-                    $shipping_address = WC()->session->get('custom_shipping_address');
-                    if($shipping_address){
-                        $checkout_country = $shipping_address['country'];
-                        if ($checkout_country !== 'GBP') {
-                            echo get_currency_symbol().$raw . ' <br/><small class="currency-disclaimer"><strong>(Payment will be made in GBP for a total of: '.WC()->cart->get_total().')</strong></small>';
-                        } else {
-                            echo get_currency_symbol().$raw;
-                        }
-                    }
 
+					if (get_current_currency() !== 'GBP') {
+						echo get_currency_symbol().$raw . ' <br/><small class="currency-disclaimer"><strong>(Payment will be made in GBP for a total of: '.WC()->cart->get_total().')</strong></small>';
+					} else {
+						echo get_currency_symbol().$raw;
+					}
+                    
                 ?>
             </td>
 		</tr>

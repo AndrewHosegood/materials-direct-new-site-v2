@@ -13,7 +13,7 @@ function display_order_object_on_thankyou_page($order_id) {
     // echo '</pre>';
 
     // Display sheets_required for each item
-    echo '<h2>Debug: Sheets Required per Item</h2>';
+    echo '<h4>Debug: Order Object</h4>';
     //echo '<pre>';
     foreach ($order->get_items() as $item_id => $item) {
         $product_name = $item->get_name();

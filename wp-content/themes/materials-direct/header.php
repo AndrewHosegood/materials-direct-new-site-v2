@@ -104,23 +104,17 @@
 
 	</header><!-- #masthead -->
 
+	<?php 
+	// $shipping_address = WC()->session->get('custom_shipping_address');
+	// if ($checkout_country !== 'United Kingdom') {
+	// 	echo "We are United Kingdon";
+	// } else {
+	// 	echo "We are something else";
+	// }
+	?>
+
 
 	<?php 
-	/*
-	$currency_rate =  get_currency_rate();
-	$currency_symbol = get_currency_symbol();
-	$currency = get_current_currency();
-	$current_currency = WC()->session->get( 'currency' );
-	echo "Currency Rate: " . $currency_rate . "<br>";
-	echo "Currency Symbol: " . $currency_symbol . "<br>";
-	echo "Currency: " . $currency . "<br>";
-	if ( $current_currency ) {
-        echo 'Current currency: ' . esc_html( $current_currency );
-    } else {
-        echo 'No currency set in session yet.';
-    }
-	*/
-
 	// $custom_shipments = WC()->session->get( 'custom_shipments', [] );
 	// $custom_qty = WC()->session->get( 'custom_qty' );	
 	//echo "Custom Shipments: " . $custom_shipments . "<br>";
@@ -145,6 +139,7 @@
 			echo '<div id="advanced-filter" class="filter-heading-background">';
 			echo '<div class="filter-content-wrapper">';
 			echo '<h4 class="filter-heading">Product Filter</h4>';
+
 			if(is_page(5149)){
 				echo '<a class="filter-btn" href="/product-search/">Reset</a>';
 			} else {
@@ -162,6 +157,6 @@
 			echo '</div>';
 			echo '</div>';
         }
-?>		
+	?>		
 	
 	<!-- Conditionally display shop page banner -->

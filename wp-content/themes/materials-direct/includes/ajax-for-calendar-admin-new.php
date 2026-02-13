@@ -9,15 +9,13 @@ function update_order_status() {
 
     $http = "https"; //change to https for staging and live
 
-     require_once('/kunden/homepages/2/d4298640024/htdocs/newbuild/wp-content/themes/materials-direct/pdf-generation/examples/tcpdf_include.php');
+     //require_once('/kunden/homepages/2/d4298640024/htdocs/newbuild/wp-content/themes/materials-direct/pdf-generation/examples/tcpdf_include.php');
 
-     
-    
-    // if($domain == "localhost:8888"){
-    //     require_once('/Applications/MAMP/htdocs/materials-direct-new/wp-content/themes/materials-direct/pdf-generation/examples/tcpdf_include.php');
-    // } else {
-    //     require_once('/kunden/homepages/2/d4298640024/htdocs/newbuild/wp-content/themes/materials-direct/pdf-generation/examples/tcpdf_include.php');
-    // }
+    if($domain == "localhost:8888"){
+        require_once('/Applications/MAMP/htdocs/materials-direct-new/wp-content/themes/materials-direct/pdf-generation/examples/tcpdf_include.php');
+    } else {
+        require_once('/kunden/homepages/2/d4298640024/htdocs/newbuild/wp-content/themes/materials-direct/pdf-generation/examples/tcpdf_include.php');
+    }
   
      
 
@@ -224,13 +222,13 @@ function update_order_status() {
 
                     // Path to save the PDF
 
-                    $tempFilePath1 = '/kunden/homepages/2/d4298640024/htdocs/newbuild/wp-content/themes/materials-direct/pdf-generation/pdf/Materials-Direct-DELIVERY-NOTE-' . $pdf_filename . '-' . $formatted_date_pdf . '-1.pdf';
+                    //$tempFilePath1 = '/kunden/homepages/2/d4298640024/htdocs/newbuild/wp-content/themes/materials-direct/pdf-generation/pdf/Materials-Direct-DELIVERY-NOTE-' . $pdf_filename . '-' . $formatted_date_pdf . '-1.pdf';
                     
-                    // if ($domain == "localhost:8888") {
-                    //     $tempFilePath1 = '/Applications/MAMP/htdocs/materials-direct-new/wp-content/themes/creative-mon/pdf-generation/pdf/Materials-Direct-DELIVERY-NOTE-' . $pdf_filename . '-' . $formatted_date_pdf . '-1.pdf';
-                    // } else {
-                    //     $tempFilePath1 = '/kunden/homepages/2/d4298640024/htdocs/newbuild/wp-content/themes/materials-direct/pdf-generation/pdf/Materials-Direct-DELIVERY-NOTE-' . $pdf_filename . '-' . $formatted_date_pdf . '-1.pdf';
-                    // }
+                    if ($domain == "localhost:8888") {
+                        $tempFilePath1 = '/Applications/MAMP/htdocs/materials-direct-new/wp-content/themes/creative-mon/pdf-generation/pdf/Materials-Direct-DELIVERY-NOTE-' . $pdf_filename . '-' . $formatted_date_pdf . '-1.pdf';
+                    } else {
+                        $tempFilePath1 = '/kunden/homepages/2/d4298640024/htdocs/newbuild/wp-content/themes/materials-direct/pdf-generation/pdf/Materials-Direct-DELIVERY-NOTE-' . $pdf_filename . '-' . $formatted_date_pdf . '-1.pdf';
+                    }
                   
                     
                     
@@ -461,15 +459,15 @@ function update_order_status() {
 
                     // === Create second PDF: Invoice ===
 
-                    $tempFilePath2 = '/kunden/homepages/2/d4298640024/htdocs/newbuild/wp-content/themes/materials-direct/pdf-generation/pdf/Materials-Direct-INVOICE-' . $pdf_filename . '-' . $formatted_date_pdf . '-2.pdf';
+                    //$tempFilePath2 = '/kunden/homepages/2/d4298640024/htdocs/newbuild/wp-content/themes/materials-direct/pdf-generation/pdf/Materials-Direct-INVOICE-' . $pdf_filename . '-' . $formatted_date_pdf . '-2.pdf';
 
                     
                     
-                    // if ($domain == "localhost:8888") {
-                    //     $tempFilePath2 = '/Applications/MAMP/htdocs/materials-direct-new/wp-content/themes/creative-mon/pdf-generation/pdf/Materials-Direct-INVOICE-' . $pdf_filename . '-' . $formatted_date_pdf . '-2.pdf';
-                    // } else {
-                    //     $tempFilePath2 = '/kunden/homepages/2/d4298640024/htdocs/newbuild/wp-content/themes/materials-direct/pdf-generation/pdf/Materials-Direct-INVOICE-' . $pdf_filename . '-' . $formatted_date_pdf . '-2.pdf';
-                    // }
+                    if ($domain == "localhost:8888") {
+                        $tempFilePath2 = '/Applications/MAMP/htdocs/materials-direct-new/wp-content/themes/creative-mon/pdf-generation/pdf/Materials-Direct-INVOICE-' . $pdf_filename . '-' . $formatted_date_pdf . '-2.pdf';
+                    } else {
+                        $tempFilePath2 = '/kunden/homepages/2/d4298640024/htdocs/newbuild/wp-content/themes/materials-direct/pdf-generation/pdf/Materials-Direct-INVOICE-' . $pdf_filename . '-' . $formatted_date_pdf . '-2.pdf';
+                    }
                     
                     
 
@@ -681,10 +679,7 @@ function update_order_status() {
                             $discount_rate = 0;
                         }
             
-            
-                        if($rolls_value == "Rolls"){
-                            $schedule_qty = $schedule_qty * $rolls_length;
-                        }
+        
 
                         //calculate subtotal
                         $total_1 = $cost_per_part_raw * $schedule_qty;
@@ -946,7 +941,8 @@ function update_order_status() {
                         // Invoice Details (Second Table)
                         $invoice_details_html .= '<tr>';
                         $invoice_details_html .= '<td>' . $row['sku'] . '</td>';
-                        $invoice_details_html .= '<td>' . $title . $ps . $dra . $dxf . $wdt . $wdti . $lgt . $lgti . $rad . "<br>" . $mcofc_fair_formatted . $sch . $str . '</td>';
+                        //$invoice_details_html .= '<td>' . $title . $ps . $dra . $dxf . $wdt . $wdti . $lgt . $lgti . $rad . "<br>" . $mcofc_fair_formatted . $sch . $str . '</td>';
+                        $invoice_details_html .= '<td>' . $title . $ps . $dra . $dxf . $wdt . $lgt . $wdti . $lgti . $rad . "<br>" . $mcofc_fair_formatted . $sch . $str . "<br>Scheduled Qty: " . $schedule_qty . "<br> cost_per_part_raw: " . $cost_per_part_raw . "<br>discount_rate: " . $discount_rate . "<br>total_1: " .$total_1. "<br>cpp " .$cpp. "<br>cppnew: " .$cppnew. "<br>Rolls Length: " .$rolls_length.  '</td>'; 
                         //$invoice_details_html .= '<td>' . $title . $ps . $dra . $dxf . $wdt . $wdti . $lgt . $lgti . $rad . "<br>" . $mcofc_fair_formatted . $scd . $sch . $str . '</td>';
                         //$invoice_details_html .= '<td>' . $row['title'] . '<br>Part shape: ' . $part_shape  . '<br>Width (MM): ' . $width . '<br>Length (MM): ' . $length . '<br><br>Schedule: ' .$row['schedule'] . '</td>';
 

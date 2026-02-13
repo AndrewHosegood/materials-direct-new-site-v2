@@ -1211,6 +1211,7 @@ function calculate_shipping_cost($total_del_weight, $country) {
 // 5. CREATE CART ITEM DATA AND STORE AS SESSION
 
 add_filter('woocommerce_add_cart_item_data', 'add_custom_price_cart_item_data_secure', 10, 2);
+
 function add_custom_price_cart_item_data_secure($cart_item_data, $product_id) {
     $is_product_single = function_exists('get_field') ? get_field('is_product_single', $product_id) : false;
     $roll_length = floatval(get_field('roll_length', $product_id));
@@ -1407,7 +1408,7 @@ function add_custom_price_cart_item_data_secure($cart_item_data, $product_id) {
 
     if ($is_scheduled) {
         $cart_item_data['custom_inputs']['is_scheduled'] = $is_scheduled; // wednesday amend
-        $cart_item_data['custom_inputs']['roll_length'] = $roll_length_v; // wednesday amend
+        //$cart_item_data['custom_inputs']['roll_length'] = $roll_length_v; // wednesday amend
         $despatch_dates = '';
         $despatch_string = ''; 
         $despatch_notes = '';
@@ -1790,6 +1791,7 @@ function add_custom_price_cart_item_data_secure($cart_item_data, $product_id) {
         'backorder_data' => $backorder_data,
         'stock_quantity' => $stock_quantity,
         'allow_credit' => $allow_credit,
+        'roll_length' => $roll_length_v,
         'despatch_date' => $aggregated,  // this will now be the combined list
     ]);
 
@@ -2219,11 +2221,13 @@ function show_custom_input_details_in_cart($item_data, $cart_item) {
         }
 
         // Length
-        if (isset($cart_item['custom_inputs']['length'])) {
-            $item_data[] = [
-                'name' => 'Length (MM)',
-                'value' => $cart_item['custom_inputs']['length']
-            ];
+        if ($cart_item['custom_inputs']['shape_type'] !== "rolls") {
+            if (isset($cart_item['custom_inputs']['length'])) {
+                $item_data[] = [
+                    'name' => 'Length (MM)',
+                    'value' => $cart_item['custom_inputs']['length']
+                ];
+            }
         }
 
         // Length Inches
@@ -2235,6 +2239,19 @@ function show_custom_input_details_in_cart($item_data, $cart_item) {
                 'name'  => 'Length (INCHES)',
                 'value' => $cart_item['custom_inputs']['length_inches']
             ];
+        }
+
+        // Roll Length
+        if ($cart_item['custom_inputs']['shape_type'] === "rolls") {
+            if (
+                isset($cart_item['custom_inputs']['roll_length']) &&
+                (float) $cart_item['custom_inputs']['roll_length'] > 0
+            ) {
+                $item_data[] = [
+                    'name'  => 'Roll Length (Metres)',
+                    'value' => $cart_item['custom_inputs']['roll_length']
+                ];
+            }
         }
 
         // Custom Radius Inches

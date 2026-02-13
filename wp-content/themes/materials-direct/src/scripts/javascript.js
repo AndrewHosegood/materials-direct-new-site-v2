@@ -197,7 +197,8 @@ jQuery(document).ready(function($){
         $('#cont_length_inches').hide();
         $('#cont_radius_inches').hide();
         $('#choose_inches_radius').hide();
-    
+        //$('#cont_length_mm .rollsLengthInput').remove();
+        
         // hide/show file uploads when square rectangle/circle radius is clicked
         $("#rolls").click(function(){
             $('#circle-radius').closest(".product-page__tabs-label").removeClass("active");
@@ -247,6 +248,7 @@ jQuery(document).ready(function($){
             $('#cont_length_inches').hide();
             $('#choose_inches').show();
             $('#choose_inches_radius').hide();
+            $('#cont_length_mm .rollsLengthInput').remove();
         });
         $("#stock_sheets").click(function(){
             $('#circle-radius').closest(".product-page__tabs-label").removeClass("active");
@@ -271,6 +273,7 @@ jQuery(document).ready(function($){
             $('#cont_length_inches').hide();
             $('#choose_inches').hide();
             $('#choose_inches_radius').hide();
+            $('#cont_length_mm .rollsLengthInput').remove();
         });
         $("#circle-radius").click(function(){
             $('#pdf_upload_label').hide();
@@ -297,6 +300,7 @@ jQuery(document).ready(function($){
             $('#cont_length_inches').hide();
             $('#choose_inches').hide();
             $('#choose_inches_radius').show();
+            $('#cont_length_mm .rollsLengthInput').remove();
         });
         $("#custom_drawing").click(function(){
             $('#pdf_upload_label').show();
@@ -322,6 +326,7 @@ jQuery(document).ready(function($){
             $('#cont_radius_inches').hide();
             $('#choose_inches').show();
             $('#choose_inches_radius').hide();
+            $('#cont_length_mm .rollsLengthInput').remove();
         });
         // hide/show file uploads when square rectangle/circle radius is clicked
 

@@ -498,6 +498,14 @@ require_once('includes/custom-ivory-search.php');
 require_once('includes/capture_cart_v9.php');
 // Capture Cart Contents
 
+// Get the roll length value and inject a div element into the rolls tab field
+require_once('includes/rolls-tab-inject-rolls-length-data.php');
+// Get the roll length value and inject a div element into the rolls tab field
+
+// Conditionally add styling to woccommerce notice if is_scheduled exists
+require_once('includes/conditionally-add-styling-if-is-schedule-exists.php');
+// Conditionally add styling to woccommerce notice if is_scheduled exists
+
 /* TEMPORARILY REMOVE LOAD TEXTDOMAIN WARNING THAT ARE FLOODING MY LOGS */
 require_once('includes/remove_load_textdomain_logs.php');
 /* TEMPORARILY REMOVE LOAD TEXTDOMAIN WARNING THAT ARE FLOODING MY LOGS */
@@ -522,6 +530,8 @@ add_action('send_headers', function () {
 // Tell Bing and Google NOT to index my staging site
 
 
+
+
 /* END CUSTOM FUNCTIONS */
 
 /* DELIVERY OPTIONS FUNCTIONS */
@@ -541,7 +551,7 @@ require_once('includes/ajax-for-calendar-admin-tracking-url.php'); // Enqueue aj
 require_once('includes/show-final-dispatch-action.php'); // Enqueue ajax for calendar admin *
 require_once('includes/split_schedule_add_to_calendar.php');
 require_once('includes/payment-gateway-disable-items-for-credit-account-v2.php'); // disable payment gateway options if logged in as credit account user
-require_once('includes/add-credit-account-fund-status-to-product-page.php'); // display credit account funs details on product page
+require_once('includes/add-credit-account-fund-status-to-product-page.php'); // display credit account fund details on product page
 require_once('includes/send-credit-arrears-emails.php'); // send an email if the customers runs out of credit
 /* END DELIVERY OPTIONS FUNCTIONS */
 
@@ -581,7 +591,7 @@ function inject_hover_image_in_related_products() {
 /* TEMPORARY FUNCTIONS */
 
 // validation for product width and length
-// require_once('includes/display-order-object-on-thankyou-page.php');
+require_once('includes/display-order-object-on-thankyou-page.php');
 // validation for product width and length
 
 // Temporary - display acf is_single_product on product page

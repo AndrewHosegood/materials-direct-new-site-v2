@@ -897,42 +897,10 @@ function split_schedule_insert_data($order_id) {
         wc_print_notices();
     }
 
-    echo '<pre>';
-    print_r( $order->get_data() );
-    echo '</pre>';
+    // echo '<pre>';
+    // print_r( $order->get_data() );
+    // echo '</pre>';
 
 }
-
-
-/* USE THIS CODE ON THE PAGE PDF GENERATION INVOICE */
-/*
-$mcofc_fair_string = 'Manufacturers COFC,, First Article Inspection Report,,  Materials Direct COFC,, ';
-
-$mcofc_fair_formatted = '';
-
-if (!empty($mcofc_fair_string)) {
-
-    $mcofc_fair_array = array_filter(
-        array_map('trim', explode(',', $mcofc_fair_string)),
-        function ($value) {
-            return $value !== '';
-        }
-    );
-
-    $mcofc_fair_array = array_map(function ($value) {
-        if ($value === "Manufacturers COFC") {
-            return '(' . $value . ' - £10)';
-        } elseif ($value === "First Article Inspection Report") {
-            return '(' . $value . ' - £95)';
-        } else {
-            return '(' . $value . ' - £12.50)';
-        }
-    }, $mcofc_fair_array);
-
-    $mcofc_fair_formatted = implode('<br>', $mcofc_fair_array);
-}
-
-echo $mcofc_fair_formatted;
-*/
 
 

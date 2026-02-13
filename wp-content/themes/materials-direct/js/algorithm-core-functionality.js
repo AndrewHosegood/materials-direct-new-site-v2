@@ -395,9 +395,21 @@ function updateDatepickerMinDate() {
                     const sheet_width_mm = response.data.sheet_width_mm;
                     const sheet_length_mm = response.data.sheet_length_mm;
                     const border = parseFloat(response.data.border_around) * 10;
+                    const selectedTab = $('input[name="tabs_input"]:checked').val();
 
-                    let priceHtml = '<div class="product-page__display-price-outer"><div><h4 class="product-page__display-price-heading">Here is your instant quote</h4></div><div class="product-page__display-price-inner"><div class="product-page__display-price">Cost per part: <span class="product-page__display-price-text">' + currency_symbol + '' + (per_part * currency_rate).toFixed(2) + '</span></div><div class="product-page__display-price">Total part costs?: <span class="product-page__display-price-text">' + currency_symbol + "" + (price * currency_rate).toFixed(2) + '</span></div></div></div>';
-                    priceHtml += '<div class="product-page__backorder-message"><p class="product-page__backorder-message-text"><strong>Notice:</strong> This is a scheduled delivery order with varying discounts applied based on despatch dates.</p></div>';
+                    let priceHtml = '<div class="product-page__display-price-outer"><div><h4 class="product-page__display-price-heading">Here is your instant quote</h4></div><div class="product-page__display-price-inner"><div class="product-page__display-price">Cost per part: <span class="product-page__display-price-text">' + currency_symbol + '' + (per_part * currency_rate).toFixed(2) + '</span></div><div class="product-page__display-price">Total part costs: <span class="product-page__display-price-text">' + currency_symbol + "" + (price * currency_rate).toFixed(2) + '</span></div></div></div>';
+                        priceHtml += '<div class="product-page__backorder-message"><p class="product-page__backorder-message-text"><strong>Notice:</strong> This is a scheduled delivery order with varying discounts applied based on despatch dates.</p></div>';
+
+                    /*
+                    if(selectedTab === 'rolls'){
+                        let priceHtml = '<div class="product-page__display-price-outer"><div><h4 class="product-page__display-price-heading">Here is your instant quote</h4></div><div class="product-page__display-price-inner"><div class="product-page__display-price">Cost per metre: <span class="product-page__display-price-text">' + currency_symbol + '' + (per_part * currency_rate).toFixed(2) + '</span></div><div class="product-page__display-price">Total roll costs: <span class="product-page__display-price-text">' + currency_symbol + "" + (price * currency_rate).toFixed(2) + '</span></div></div></div>';
+                        priceHtml += '<div class="product-page__backorder-message"><p class="product-page__backorder-message-text"><strong>Notice:</strong> This is a scheduled delivery order with varying discounts applied based on despatch dates.</p></div>';
+                    } else {
+                        let priceHtml = '<div class="product-page__display-price-outer"><div><h4 class="product-page__display-price-heading">Here is your instant quote</h4></div><div class="product-page__display-price-inner"><div class="product-page__display-price">Cost per part: <span class="product-page__display-price-text">' + currency_symbol + '' + (per_part * currency_rate).toFixed(2) + '</span></div><div class="product-page__display-price">Total part costs: <span class="product-page__display-price-text">' + currency_symbol + "" + (price * currency_rate).toFixed(2) + '</span></div></div></div>';
+                        priceHtml += '<div class="product-page__backorder-message"><p class="product-page__backorder-message-text"><strong>Notice:</strong> This is a scheduled delivery order with varying discounts applied based on despatch dates.</p></div>';
+                    }
+                    */
+
 
                     $('#custom_price_display').html(priceHtml);
 
@@ -783,7 +795,12 @@ function updateDatepickerMinDate() {
                             priceHtml += '<div class="product-page__backorder-message"><p class="product-page__backorder-message-text"><strong>Notice:</strong> This order is currently on backorder only. Please allow 35 Days for complete order fulfillment with a 5% discount applied to the total order.</p></div>';
                         } else {
                             // No backorder case
-                            priceHtml = '<div class="product-page__display-price-outer"><div><h4 class="product-page__display-price-heading">Here is your instant quote</h4></div><div class="product-page__display-price-inner"><div class="product-page__display-price">Cost per part: <span class="product-page__display-price-text">' + currency_symbol + '' + (adjustedPrice * currency_rate).toFixed(2) + '</span></div><div class="product-page__display-price">Total part costs: <span class="product-page__display-price-text">' + currency_symbol + "" + (price * currency_rate).toFixed(2) + '</span></div></div></div>';
+                            
+                            if(selectedTab === 'rolls'){
+                                priceHtml = '<div class="product-page__display-price-outer"><div><h4 class="product-page__display-price-heading">Here is your instant quote</h4></div><div class="product-page__display-price-inner"><div class="product-page__display-price">Cost per metre: <span class="product-page__display-price-text">' + currency_symbol + '' + (adjustedPrice / roll_length * currency_rate).toFixed(2) + '</span></div><div class="product-page__display-price">Total roll costs: <span class="product-page__display-price-text">' + currency_symbol + "" + (price * currency_rate).toFixed(2) + '</span></div></div></div>';
+                            } else {
+                                priceHtml = '<div class="product-page__display-price-outer"><div><h4 class="product-page__display-price-heading">Here is your instant quote</h4></div><div class="product-page__display-price-inner"><div class="product-page__display-price">Cost per part: <span class="product-page__display-price-text">' + currency_symbol + '' + (adjustedPrice * currency_rate).toFixed(2) + '</span></div><div class="product-page__display-price">Total part costs: <span class="product-page__display-price-text">' + currency_symbol + "" + (price * currency_rate).toFixed(2) + '</span></div></div></div>';
+                            }
                         }
 
 
