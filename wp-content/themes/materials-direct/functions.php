@@ -443,7 +443,7 @@ require_once('includes/remove-get-the-app-from-emails.php');
 
 /* Custom voucher discount */
 /* I need to test that this works correctly */
-require_once('includes/custom-voucher-system.php');
+require_once('includes/custom-voucher-system-new.php');
 /* Custom voucher discount */
 
 /* Email Template CSS Styling */
@@ -591,7 +591,7 @@ function inject_hover_image_in_related_products() {
 /* TEMPORARY FUNCTIONS */
 
 // validation for product width and length
-require_once('includes/display-order-object-on-thankyou-page.php');
+// require_once('includes/display-order-object-on-thankyou-page.php');
 // validation for product width and length
 
 // Temporary - display acf is_single_product on product page

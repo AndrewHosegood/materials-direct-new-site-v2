@@ -897,9 +897,9 @@ function split_schedule_insert_data($order_id) {
         wc_print_notices();
     }
 
-    // echo '<pre>';
-    // print_r( $order->get_data() );
-    // echo '</pre>';
+    echo '<pre>';
+    print_r( $order->get_data() );
+    echo '</pre>';
 
 }
 

@@ -1,0 +1,32 @@
+.voucher-discount {
+    &__td {
+        width: 235px;
+    }
+    &__link {
+        font-weight: 600;
+        text-decoration: underline;
+        cursor: pointer;
+        color: black;
+    }
+    &__field {
+        display:inline;
+        margin: 0; 
+        width:135px; 
+        padding: 0.15rem 0.25rem;
+        font-size: 0.78rem;
+        font-weight: 300;
+        border: 1px solid #ddd;
+    }
+    &__btn {
+        padding:0.2rem 0.7rem; 
+        font-size:0.8rem; 
+        background:#2d3e4f; 
+        margin:0;
+        color: white;
+        font-weight: 300;
+    }
+}
+
+.woocommerce-checkout .voucher-discount-toggle {
+    background: #eeeeee;
+}
