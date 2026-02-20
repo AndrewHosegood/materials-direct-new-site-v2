@@ -109,6 +109,7 @@
             line-height: 1.25rem;
     }
     &__submit {
+        cursor: pointer;
         background: variables.$primary-color;
         color: white;
         text-transform: uppercase;
@@ -119,6 +120,9 @@
         @include breakpoints.iphone {
             font-size: 1rem;
         }
+    }
+    &__submit:hover {
+        background: variables.$secondary-color;
     }
     &__submit.show {
         display: block;

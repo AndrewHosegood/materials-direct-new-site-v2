@@ -53,29 +53,29 @@ function add_modal_to_product_page_footer() {
 
                         <h4 class="product-page__optional-fees-title">Do you require these addons with your product?</h4>
 
-                        <label class="product-page__checkbox-label">
+                        <div class="product-page__checkbox-label">
                             <p class="product-page__checkbox-title">Add Manufacturers COFC</p>
-                            <input type="checkbox" name="add_manufacturers_COFC_ss" value="10" id="add_manufacturers_COFC_ss">
-                            <span class="product-page__checkbox-heading">Manufacturers COFC <span class="product-page__checkbox-price">£10</span>
+                            <input type="checkbox" name="add_manufacturers_COFC_ss" value="10" id="add_manufacturers_COFC_ss" class="styled-checkbox-cofc">
+                            <label style="display: block;" for="add_manufacturers_COFC_ss" class="product-page__checkbox-heading">Manufacturers COFC <span class="product-page__checkbox-price">£10</span>
                                 <span class="cfc__tooltip" data-tooltip="A Manufacturers Certificate of Conformity (MCOFC) is a document that manufacturers issue to confirm that a product has been made to a specific standard and meets quality and regulatory requirements.">?</span>
-                            </span>
-                        </label><br>
+                            </label>
+                        </div><br>
 
-                        <label id="fair_label_credit_account" class="product-page__checkbox-label">
+                        <div id="fair_label_credit_account" class="product-page__checkbox-label">
                             <p class="product-page__checkbox-title">Add First Article Inspection Report</p>
-                            <input type="checkbox" name="add_fair_ss" value="95" id="add_fair_ss">
-                            <span class="product-page__checkbox-heading">FAIR <span class="product-page__checkbox-price">£95</span>
+                            <input type="checkbox" name="add_fair_ss" value="95" id="add_fair_ss" class="styled-checkbox-cofc">
+                            <label style="display: block;" for="add_fair_ss" class="product-page__checkbox-heading">FAIR <span class="product-page__checkbox-price">£95</span>
                                 <span class="cfc__tooltip" data-tooltip="A First Article Inspection Report (FAIR) or ISIR is the first item we make for the customer and measure to confirm all dimensions meet the drawing and tolerances.">?</span>
-                            </span>
-                        </label><br>
+                            </label>
+                        </div><br>
 
-                        <label class="product-page__checkbox-label">
+                        <div class="product-page__checkbox-label">
                             <p class="product-page__checkbox-title">Add Materials Direct COFC?</p>
-                            <input type="checkbox" name="add_materials_direct_COFC_ss" value="12.50" id="add_materials_direct_COFC_ss">
-                            <span class="product-page__checkbox-heading">Materials Direct COFC <span class="product-page__checkbox-price">£12.50</span>
+                            <input type="checkbox" name="add_materials_direct_COFC_ss" value="12.50" id="add_materials_direct_COFC_ss" class="styled-checkbox-cofc">
+                            <label style="display: block;" for="add_materials_direct_COFC_ss" class="product-page__checkbox-heading">Materials Direct COFC <span class="product-page__checkbox-price">£12.50</span>
                                 <span class="cfc__tooltip" data-tooltip="A certificate from Materials Direct confirming that the part meets the criteria ordered (RoHS and REACH compliant).">?</span>
-                            </span>
-                        </label>
+                            </label>
+                        </div>
 
                     </div></div>
                     <!-- COFC FAIR CONTENT -->

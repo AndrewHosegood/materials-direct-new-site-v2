@@ -216,14 +216,14 @@ function add_order_number_to_admin_email_table($item_id, $item, $order, $plain_t
 
 
  
-        echo '<li class="delivery-options-list__li">1. subtotal_after_discount: ' . esc_html($subtotal_after_discount) . '</li>';
-        echo '<li class="delivery-options-list__li">2. tf_3: ' . esc_html($tf_3) . '</li>';
-        echo '<li class="delivery-options-list__li">3. shipping_calc: ' . esc_html($my_shipping_response) . '</li>';
-        echo '<li class="delivery-options-list__li">4. shipping_costs: ' . esc_html($delivery_shipping) . '</li>';
-        echo '<li class="delivery-options-list__li">5. total_vat_display: ' . esc_html($total_vat_display) . '</li>';
-        echo '<li class="delivery-options-list__li">6. cofc_total: ' . esc_html($cofc_total) . '</li>';
-        echo '<li class="delivery-options-list__li">7. Voucher Percent: ' . esc_html($voucher_percent) . '</li>';
-        echo '<li class="delivery-options-list__li">num_dates: ' . esc_html($num_dates) . '</li><br>';
+        // echo '<li class="delivery-options-list__li">1. subtotal_after_discount: ' . esc_html($subtotal_after_discount) . '</li>';
+        // echo '<li class="delivery-options-list__li">2. tf_3: ' . esc_html($tf_3) . '</li>';
+        // echo '<li class="delivery-options-list__li">3. shipping_calc: ' . esc_html($my_shipping_response) . '</li>';
+        // echo '<li class="delivery-options-list__li">4. shipping_costs: ' . esc_html($delivery_shipping) . '</li>';
+        // echo '<li class="delivery-options-list__li">5. total_vat_display: ' . esc_html($total_vat_display) . '</li>';
+        // echo '<li class="delivery-options-list__li">6. cofc_total: ' . esc_html($cofc_total) . '</li>';
+        // echo '<li class="delivery-options-list__li">7. Voucher Percent: ' . esc_html($voucher_percent) . '</li>';
+        // echo '<li class="delivery-options-list__li">num_dates: ' . esc_html($num_dates) . '</li><br>';
 
 
 

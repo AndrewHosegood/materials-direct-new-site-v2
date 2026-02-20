@@ -1,3 +1,6 @@
+@use "../abstracts/breakpoints";
+@use "../abstracts/variables";
+
 .voucher-discount {
     &__td {
         width: 235px;
@@ -16,6 +19,9 @@
         font-size: 0.78rem;
         font-weight: 300;
         border: 1px solid #ddd;
+    }
+    &__field:focus-visible {
+        outline: 2px solid variables.$primary-color;
     }
     &__btn {
         padding:0.2rem 0.7rem; 

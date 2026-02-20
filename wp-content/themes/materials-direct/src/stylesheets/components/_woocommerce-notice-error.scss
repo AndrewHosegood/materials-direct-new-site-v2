@@ -16,5 +16,39 @@
     margin-bottom: 1.3rem;
 }
 .woocommerce-message {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: stretch;
+    font-size: 0.91rem;
+    line-height: 1.05rem;
     outline: 0;
+    text-align: center;
+    padding: 1.3em 2em 1.3em 3.5em;
+    @include breakpoints.iphone {
+        text-align: left;
+    }
+    & .button {
+        display: block;
+        width: 100%;
+        text-align: center;
+        margin-top: 0.6rem;
+        background: transparent;
+        padding: 0;
+        margin-left: auto;
+        @include breakpoints.iphone {
+            width: auto;
+            margin-top: 0;
+        }
+    }
+    &::before {
+        top: 1.3rem;
+    }
+    & .restore-item {
+        margin-left: 0.5rem;
+        color: #515151;
+        font-weight: 700;
+        text-decoration: underline;
+        display: inline-block;
+    }
 }

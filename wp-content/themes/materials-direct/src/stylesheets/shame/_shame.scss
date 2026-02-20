@@ -66,6 +66,12 @@
   border-radius: 20px;
   margin-top: 0;
   display: inline-block;
+  width: 100%;
+  text-align: center;
+  @include breakpoints.iphone {
+    width: auto;
+    text-align: left;
+  }
 }
 .single-product div.product .stock a {
     color: #fff !important;
@@ -89,6 +95,11 @@
 .product-page__input-wrap.radius-show {
     display: block !important;
 }
+@media (max-width: 960px) {
+    .product-page__tabs {
+        background-image: unset !important;
+    }
+}
 /* Product page */
 
 /* Cart page */
@@ -99,6 +110,14 @@
     font-weight: 600 !important;
     border-radius: 0 !important;
 }
+.woocommerce-message a {
+    margin-top: 0;
+}
+.page-id-9 {
+    & th.product-remove {
+        border-top: 0 !important;
+    }
+}    
 /* Cart page */
 
 @media screen and (max-width: 782px) {

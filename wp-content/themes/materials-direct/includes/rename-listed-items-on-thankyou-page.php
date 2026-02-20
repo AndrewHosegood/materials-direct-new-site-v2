@@ -24,6 +24,9 @@ function remove_specific_order_item_meta($formatted_meta, $item) {
 		if ($meta->key === 'width') {
             $formatted_meta[$key]->display_key = 'Width (MM)'; // Change the label
         }
+        if ($meta->key === 'roll_length') {
+            $formatted_meta[$key]->display_key = 'Roll Length'; // Change the label
+        }
 		if ($meta->key === 'length') {
             $formatted_meta[$key]->display_key = 'Length (MM)'; // Change the label
         }

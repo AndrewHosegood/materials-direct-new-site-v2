@@ -364,11 +364,11 @@ function custom_price_input_fields_prefill() {
 
         <div id="choose_inches" class="product-page__input-wrap unstyled centered" style="width: 100%;">
             <input type="checkbox" id="use_inches" class="styled-checkbox" name="conversion_factor" value="25.4">
-            <label>Choose Inches</label>
+            <label for="use_inches">Choose Inches</label>
         </div>
         <div id="choose_inches_radius" class="product-page__input-wrap unstyled centered" style="width: 100%;">
             <input type="checkbox" id="use_inches_radius" class="styled-checkbox" name="conversion_factor_radius" value="25.4">
-            <label>Choose Inches (Radius)</label>
+            <label for="use_inches_radius">Choose Inches (Radius)</label>
         </div>
 
         <label id="cont_radius_inches" class="product-page__input-wrap-radius">Radius (INCHES): <input class="product-page__input" type="number" id="input_radius_inches" name="custom_radius_inches" min="0.01" step="any"></label> 
@@ -452,7 +452,12 @@ function custom_price_input_fields_prefill() {
 
         // display the is shipment button -  if the user has a credit account
         if (is_user_logged_in() && $allow_credit && !is_admin()) {
-                echo '<div id="shipments_display" style="display: none; padding: 0.4rem 0.99rem; background: #efefef; border: 2px solid #ddd;"><a href="#" id="add_shipments" class="product-page__shipments-btn">Add Shipment(s)</a>
+                $post_id = get_the_ID();
+                $sold_as_roll_length_value = get_field('sold_as_roll_length', $post_id);
+                if (!empty($sold_as_roll_length_value)) {
+                    $sold_as_roll_length = $sold_as_roll_length_value;
+                }
+                echo '<div id="shipments_display" style="display: none; padding: 0.4rem 0.99rem; background: #efefef; border: 2px solid #ddd;"><a href="#" id="add_shipments" data-id="'.$sold_as_roll_length.'" class="product-page__shipments-btn">Add Shipment(s)</a>
                     <a id="reset_button" class="product-page__generate-price product-page__reset" href="#">Reset</a>
                     <div id="order_info_box" class="product-page__order-info-box delivery-options-active">';
                         echo '<p class="product-page__order-info-message-1">Click on Add Shipment(s) to select a lead time</p>';
@@ -724,16 +729,7 @@ function calculate_secure_price() {
 
     //$currency_rate_value  = get_currency_rate();
     //$currency_symbol_value = get_currency_symbol();
-
-    
     // $is_backorder = $sheets_required > $stock_quantity;
-    //error_log("is_backorder (1): " . $is_backorder);
-    //error_log("Currency Rate Value: " . $currency_rate_value);
-    //error_log("Currency Symbol Value: " . $currency_symbol_value);
-    //error_log("Currency Value: " . $currency_rate_to_gbp);
-    error_log("Currency Rate xxx: " . $currency_rate);
-    error_log("Currency Symbol: " . $currency_symbol);
-
 
     // SEND DATA TO algorith-core-functionality.js
     wp_send_json_success([
@@ -874,7 +870,7 @@ function calculate_scheduled_price_func() {
     $sheet_result = calculate_sheets_required($sheet_width_mm, $sheet_length_mm, $width, $length, $qty, $product_id);
     $sheets_required = $sheet_result['sheets_required'];
     $is_backorder = false; // No backorder for scheduled deliveries
-    error_log("Per Part Base 2: " . $per_part_base);
+
 
     wp_send_json_success([
         'price' => round($total_scheduled_price, 2),
@@ -955,8 +951,6 @@ add_action('wp_enqueue_scripts', function() {
 // HELPER FUNCTION TO GROUP SHIPPING DATA BY DISPATCH DATE
 function group_shipping_by_date($cart) {
 
-   //error_log("Group Shipping By Date Triggered");
-
     $shipping_by_date = [];
 
     foreach ($cart->get_cart() as $cart_item) {
@@ -973,7 +967,7 @@ function group_shipping_by_date($cart) {
                     $portion_parts = $shipment['parts'];
                     $ratio = $portion_parts / $qty;
                     $portion_weight = $total_del_weight * $ratio;
-                    //error_log("Shipping BY Date Quantity: " . $shipping_by_date[$date]['quantity']);
+
                     if (isset($shipping_by_date[$date])) {
                         $shipping_by_date[$date]['quantity'] += 1;
                         $shipping_by_date[$date]['total_del_weight'] += $portion_weight;
@@ -985,8 +979,7 @@ function group_shipping_by_date($cart) {
                         ];
                     }
                 }
-                //error_log("Scheduled Group Shipping BY Date Triggered");
-                //error_log(print_r($shipping_by_date[$date], true));
+
             } elseif (isset($cart_item['custom_inputs']['shipments'])) {
                 $shipments = $cart_item['custom_inputs']['shipments'];
                 if (is_array($shipments)) {
@@ -1042,8 +1035,7 @@ function group_shipping_by_date($cart) {
     }
 
     return $shipping_by_date;
-    //error_log("Shipping By Date: " . $shipping_by_date);
-    //error_log("Final Shiiping By Date Triggered");
+
 }
 // HELPER FUNCTION TO GROUP SHIPPING DATA BY DISPATCH DATE
 
@@ -1247,7 +1239,6 @@ function add_custom_price_cart_item_data_secure($cart_item_data, $product_id) {
     if (isset($_POST['cost_per_part']) && !empty($_POST['cost_per_part'])) {
         $cart_item_data['custom_inputs']['cost_per_part'] = sanitize_text_field($_POST['cost_per_part']);
     }
-    error_log("Cost Per Part (Sent To Cart)" . $cart_item_data['custom_inputs']['cost_per_part']);
 
     $product = wc_get_product($product_id);
     if (!$product) {
@@ -1419,14 +1410,8 @@ function add_custom_price_cart_item_data_secure($cart_item_data, $product_id) {
             $despatch_date = $s['date']; // dd/mm/yyyy
             list($dd, $mm, $yyyy) = explode('/', $despatch_date);
             $despatch_ymd = "$yyyy-$mm-$dd";
-
             $lead_time_label = get_shipment_lead_time_label($despatch_ymd);
-
-            error_log("Lead Time Label: " . $lead_time_label);
-
             $discount_label = get_shipment_lead_time_discount($despatch_ymd); // thurdsay retrieve discount rate
-
-            error_log("Discount Label: " . $discount_label); // thurdsay retrieve discount rate
 
             // new code for new teusday cofc delivery options
             $feeAppendix = '';
@@ -1453,15 +1438,12 @@ function add_custom_price_cart_item_data_secure($cart_item_data, $product_id) {
 
             $formatted_line_discount = number_format($s['parts']) . ", " . $despatch_date .", ". $discount_label .", ". implode(', ', $feeParts) . ", ";
             //$formatted_line_date = $despatch_date . ", "; 
-
-            error_log("Formatted Line Discount: " . $formatted_line_discount);
             
 
             //$formatted_line = number_format($s['parts']) . " parts to be despatched on {$despatch_date} {$lead_time_label}";
             $despatch_notes .= $formatted_line . "\n";
             $despatch_string .= $formatted_line_discount; // thurdsay retrieve discount rate
             $ah_despatch_date .= $formatted_line_date;
-            //error_log("AH Despatch Dates: " . $ah_despatch_date);
             $enhanced_shipments[] = [
                 'date'            => $despatch_date,
                 'parts'           => $s['parts'],
@@ -1680,7 +1662,6 @@ function add_custom_price_cart_item_data_secure($cart_item_data, $product_id) {
 
     $cart_item_data['custom_inputs']['despatch_date'] = $ah_despatch_date;
 
-    error_log("All Combined Despatch Dates (across whole cart): " . $ah_despatch_date);
     */
     // Collect the dates from scheduled orders V1
 
@@ -1702,9 +1683,6 @@ function add_custom_price_cart_item_data_secure($cart_item_data, $product_id) {
         }
         // If no date (very rare edge case), $current_dates remains empty
     }
-
-    // Optional debug to confirm current item's dates are captured
-    error_log("Current item despatch dates: " . print_r($current_dates, true));
 
 
 
@@ -1761,15 +1739,7 @@ function add_custom_price_cart_item_data_secure($cart_item_data, $product_id) {
     }
     $cart_item_data['custom_inputs']['despatch_date'] = $aggregated;
 
-    // Debug
-    error_log("All collected dates (raw): " . print_r($all_dates, true));
-    error_log("Aggregated Despatch Dates (across whole cart): " . print_r($aggregated, true));
     // Collect the dates from scheduled orders v2
-
-
-    error_log("is_backorder (2): " . $is_backorder);
-    error_log("Stock Quantity: (from add_custom_price_cart_item_data_secure)" . $stock_quantity);
-    error_log("Total Del Weight: " . $total_del_weight);
 
     $cart_item_data['custom_inputs'] = array_merge($cart_item_data['custom_inputs'], [
         'width' => floatval($_POST['custom_width']),
@@ -1800,8 +1770,6 @@ function add_custom_price_cart_item_data_secure($cart_item_data, $product_id) {
         $cart_item_data['custom_inputs']['is_scheduled'] = true;
         //$cart_item_data['custom_inputs']['scheduled_shipments'] = $scheduled_shipments;
         $cart_item_data['custom_inputs']['scheduled_shipments'] = $enhanced_shipments;
-        error_log("Enhanced Shipments:\n" . print_r($enhanced_shipments, true));
-        error_log("Lead Time Label:\n" . $lead_time_label);
     }
 
     // Clear custom_shipments and custom_qty sessions for scheduled orders
@@ -1934,9 +1902,11 @@ function display_shipments_section_checkout() {
         echo '<p class="cart_totals__shipment"><strong>Shipments:</strong></p>';
         foreach ($shipping_by_date as $date => $data) {
             $shipping_cost = floatval($data['final_shipping']);
+            $shipping_rate = get_currency_rate();
+            $currency_symbol = get_currency_symbol();
             if ($shipping_cost > 0) {
-                $formatted_cost = wc_price($shipping_cost);
-                echo '<p class="cart_totals__shipment-details">Dispatch ' . esc_html($date) . ' (' . $formatted_cost . ')</p>';
+                $formatted_cost = round($shipping_cost * $shipping_rate, 2);
+                echo '<p class="cart_totals__shipment-details">Dispatch ' . esc_html($date) .'('. $currency_symbol . '' . $formatted_cost . ')</p>';
             }
         }
         echo '</div>';
@@ -1962,7 +1932,6 @@ function add_custom_shipping_to_order($order, $data) {
     foreach ($shipping_by_date as $date => $data) {
 
         $final_shipping = floatval($data['final_shipping']);
-        error_log("Shipping (3 new): " . $final_shipping);
 
         $total_shipping += floatval($data['final_shipping']);
 
@@ -2379,7 +2348,6 @@ function apply_secure_custom_price($cart) {
             }
 
             if ($is_backorder && !empty($cart_item['custom_inputs']['backorder_data'])) {
-                //error_log('We triggered the backorder');
                 $backorder_data = $cart_item['custom_inputs']['backorder_data'];
                 // Use the backorder total if valid
                 if (isset($backorder_data['backorder_total']) && $backorder_data['backorder_total'] > 0) {
@@ -2390,7 +2358,6 @@ function apply_secure_custom_price($cart) {
                     $price_per_sheet = $sheets_required > 0 ? $total_price / $sheets_required : $total_price;
                 }
             } else {
-                //error_log('We triggered the else');
                 // Use stored price per sheet if available, otherwise recalculate
                 $price_per_sheet = isset($cart_item['custom_inputs']['price']) ? floatval($cart_item['custom_inputs']['price']) : 0;
                 if ($price_per_sheet <= 0) {
@@ -2918,9 +2885,7 @@ function save_shipment_callback() {
                         <td class="delivery-options-shipment__display-inner" colspan="4">There are no <span>shipments.</span></td>
                     </tr>
                 <?php } else { ?>
-                <?php //error_log("Shipments: " . print_r($shipments)) ?>
                         <?php foreach ($shipments as $index => $shipment) {
-                            //error_log("Shipment: " . print_r($shipment));
                             $despatch_ymd = date('Y-m-d', strtotime(str_replace('/', '-', $shipment['date'])));
                             $lead_time_label = get_shipment_lead_time_label($despatch_ymd);
                             $fee_display = $shipment['total_fee'] > 0 ? '+ £' . number_format($shipment['total_fee'], 2) : 'None';
@@ -2943,7 +2908,7 @@ function save_shipment_callback() {
                 <?php } ?>
             </tbody>
         </table>
-        <?php $custom_shipments = WC()->session->get( 'custom_shipments', [] ); echo "<pre class='aaa'>"; print_r($custom_shipments); echo "</pre>"; ?>
+        
     </div>
     <?php
     $table_html = ob_get_clean();
@@ -3003,9 +2968,7 @@ function delete_shipment() {
                         <td class="delivery-options-shipment__display-inner" colspan="4">There are no <span>shipments.</span></td>
                     </tr>
                 <?php } else { ?>
-                <?php //error_log("Shipments: " . print_r($shipments)) ?>
                         <?php foreach ($shipments as $index => $shipment) {
-                            //error_log("Shipment: " . print_r($shipment));
                             $despatch_ymd = date('Y-m-d', strtotime(str_replace('/', '-', $shipment['date'])));
                             $lead_time_label = get_shipment_lead_time_label($despatch_ymd);
                             $fee_display = $shipment['total_fee'] > 0 ? '+ £' . number_format($shipment['total_fee'], 2) : 'None';

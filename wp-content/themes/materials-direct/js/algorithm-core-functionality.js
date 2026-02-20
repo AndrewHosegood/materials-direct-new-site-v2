@@ -280,9 +280,13 @@ jQuery(document).ready(function($) {
     }
 
 
-    // New code for dynamic jquery picker
 
-    // NEW: Helper to get last shipment date (parses from table, returns Date or null)
+
+
+// New code for dynamic jquery picker
+
+// NEW: Helper to get last shipment date (parses from table, returns Date or null)
+/* GETS THE LAST SHIPMENT DATE ENTERED IN THE MODAL POPUP */
 function getLastShipmentDate() {
     const tbodyRows = $('.delivery-options-shipment tbody tr');
     for (let i = tbodyRows.length - 1; i >= 0; i--) { // Scan backward for last real row
@@ -299,7 +303,10 @@ function getLastShipmentDate() {
     return null; // No shipments
 }
 
-// NEW: Helper to get base minDate (1 for normal, 36 for backorder)
+
+// Helper to get base minDate (1 for normal, 36 for backorder)
+/* IF THE PRODUCT IS INSTOCK WE CAN CHOOSE NEXT DAY IN THE CALENDAR  */
+/* IF THE PRODUCT IS ON BACKORDER WE CAN ONLY CHOOSE A DAY THAT IS 35 DAYS IN ADVANCE  */
 function getBaseMinDate() {
     const inputSelector = 'input[name="despatch_date"]'; // Active input in modal
     if ($(inputSelector).attr('id') === 'delivery_date_backorder') {
@@ -308,16 +315,19 @@ function getBaseMinDate() {
     return 1; // Normal base
 }
 
+
+
 // UPDATED: Helper to update datepicker minDate dynamically (+2 days after last shipment)
 function updateDatepickerMinDate() {
     const inputSelector = 'input[name="despatch_date"]';
     const lastDate = getLastShipmentDate();
+    console.log("lastDate: " + lastDate);
     let newMinDate;
 
     if (lastDate) {
         // UPDATED: minDate = 2 days after last shipment date (for manufacturing buffer)
         const nextDay = new Date(lastDate);
-        nextDay.setDate(lastDate.getDate() + 2); // +2 days
+        nextDay.setDate(lastDate.getDate() + 1); // +1 day
         newMinDate = nextDay; // Date object for datepicker
     } else {
         // Fallback to base (days from today)
@@ -337,6 +347,10 @@ function updateDatepickerMinDate() {
 
 
     // End new code for dynamic jquery picker
+
+
+
+
     
      // Calculate the delivery options price
     function calculateScheduledPrice() {
@@ -436,6 +450,15 @@ function updateDatepickerMinDate() {
     // Toggle modal on clicking Add Shipments button
     $('#add_shipments').on('click', function(e) {
         e.preventDefault();
+        $('.product-page__tabs .product-page__tabs-list').hide(); 
+        
+        var shipmentId = $(this).data('id');
+
+        if (shipmentId !== undefined && shipmentId !== '') {
+            $('.product-page__tabs').css('background-image', 'url(/wp-content/themes/materials-direct/images/tabbed-menu-background.png)'); 
+        } else {
+            $('.product-page__tabs').css('background-image', 'url(/wp-content/themes/materials-direct/images/tabbed-menu-background-2.png)'); 
+        }
         // NEW: AJAX fetch fresh remaining parts from session
         $.ajax({
             url: ajax_params.ajax_url,
@@ -736,6 +759,9 @@ function updateDatepickerMinDate() {
                         }
 
 
+                        console.log("sheetsRequired: " + sheetsRequired);
+
+
                         // Calculate price per sheet for the hidden field
                         let cart_price = price / sheetsRequired;
 
@@ -779,6 +805,7 @@ function updateDatepickerMinDate() {
                             calcPartialbackorderdiscount_2 = parts_backorder * backorder_adjustedPriceDisplay;
                             calcPartialbackorderFinal = (calcPartialbackorderdiscount_1 + calcPartialbackorderdiscount_2).toFixed(2);
                             cart_price = calcPartialbackorderFinal / sheetsRequired; 
+                            
 
                             priceHtml = '<div class="product-page__display-price-outer"><div><h4 class="product-page__display-price-heading">Here is your instant quote</h4></div><div class="product-page__display-price-inner"><div class="product-page__display-price">Cost per part: <span class="product-page__display-price-text">£' + (adjustedPrice * currency_rate).toFixed(2) + '<span style="font-size: 0.82rem; font-weight: 400;"> (' + currency_symbol + "" + (backorder_adjustedPriceDisplay * currency_rate).toFixed(2) + ' for backorder parts)</span></span></div><div class="product-page__display-price">Total part costs: <span class="product-page__display-price-text">' + currency_symbol + "" + (calcPartialbackorderFinal * currency_rate).toFixed(2) + '</span></div></div></div>';
                         
@@ -824,6 +851,7 @@ function updateDatepickerMinDate() {
                         $('#custom_price').val(cart_price);
                         $('#shipments_display').fadeToggle();
                         $('#parts_remaining').text(qty);
+                        console.log();
 
                         
 
@@ -856,6 +884,7 @@ function updateDatepickerMinDate() {
                         }
 
                         $('input[name="quantity"]').val(sheetsRequired); 
+
                         
                     } else {
                         $('#custom_price_display').html('<span class="product-page__backorder-message"><p class="product-page__backorder-message-text">Error: ' + (response.data.message || 'Unable to calculate price.') + '</p></span>');

@@ -17,6 +17,12 @@
 
 defined( 'ABSPATH' ) || exit;
 
+// Custom logic
+$currency_rate   = get_currency_rate();
+$currency_symbol = get_currency_symbol();
+$is_gbp          = ( get_current_currency() === 'GBP' );
+// End custom logic
+
 ?>
 <div class="cart_totals <?php echo ( WC()->customer->has_calculated_shipping() ) ? 'calculated_shipping' : ''; ?>">
 
@@ -31,10 +37,9 @@ defined( 'ABSPATH' ) || exit;
 			<td data-title="<?php esc_attr_e( 'Subtotal', 'woocommerce' ); ?>">
                 <?php //wc_cart_totals_subtotal_html(); ?>
                 <?php
-				$raw = WC()->cart->get_cart_subtotal();
-				$raw = preg_replace("/[^0-9.]/", "", $raw) * get_currency_rate();
-				$raw = number_format((float)$raw, 2, '.', '');
-				echo get_currency_symbol().$raw;
+				$subtotal_raw = (float) WC()->cart->get_subtotal();
+                $converted_subtotal = $subtotal_raw * $currency_rate;
+                echo $currency_symbol . number_format( $converted_subtotal, 2, '.', '' );
 				?>
             </td>
 		</tr>
@@ -44,24 +49,11 @@ defined( 'ABSPATH' ) || exit;
 				<th><?php wc_cart_totals_coupon_label( $coupon ); ?></th>
 				<td data-title="<?php echo esc_attr( wc_cart_totals_coupon_label( $coupon, false ) ); ?>">
                     <?php //wc_cart_totals_coupon_html( $coupon ); 
-                    		ob_start();
-                            wc_cart_totals_coupon_html( $coupon );
-                            $coupon_html = ob_get_clean();
-
-
-                            preg_match("/-?[\d,\.]+/", $coupon_html, $matches);
-                            $coupon_value_str = $matches[0];
-
-                    
-                            $coupon_value_float = floatval(str_replace(',', '', $coupon_value_str));
-
-                    
-                            $coupon_final_value = $coupon_value_float * get_currency_rate();
-
-                        
-                            echo "-" . get_currency_symbol() . number_format($coupon_final_value, 2, '.', '');
+					$discount_raw = WC()->cart->get_coupon_discount_amount( $code );
+                    $converted_discount = abs( (float) $discount_raw ) * $currency_rate;
+                    echo '-' . $currency_symbol . number_format( $converted_discount, 2, '.', '' );
                     ?>
-                    </td>
+                </td>
 			</tr>
 		<?php endforeach; ?>
 
@@ -85,7 +77,13 @@ defined( 'ABSPATH' ) || exit;
 		<?php foreach ( WC()->cart->get_fees() as $fee ) : ?>
 			<tr class="fee">
 				<th><?php echo esc_html( $fee->name ); ?></th>
-				<td data-title="<?php echo esc_attr( $fee->name ); ?>"><?php wc_cart_totals_fee_html( $fee ); ?></td>
+				<td data-title="<?php echo esc_attr( $fee->name ); ?>">
+					<?php //wc_cart_totals_fee_html( $fee ); ?>
+					<?php
+                    $fee_converted = (float) $fee->amount * $currency_rate;
+                    echo $currency_symbol . number_format( $fee_converted, 2, '.', '' );
+                    ?>
+				</td>
 			</tr>
 		<?php endforeach; ?>
 
@@ -104,13 +102,13 @@ defined( 'ABSPATH' ) || exit;
 					?>
 					<tr class="tax-rate tax-rate-<?php echo esc_attr( sanitize_title( $code ) ); ?>">
 						<th><?php echo esc_html( $tax->label ) . $estimated_text; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></th>
-						<td data-title="<?php echo esc_attr( $tax->label ); ?>"><?php //echo wp_kses_post( $tax->formatted_amount ); ?>
+						<td data-title="<?php echo esc_attr( $tax->label ); ?>">
+						<?php //echo wp_kses_post( $tax->formatted_amount ); ?>
                         <?php
-							$raw = WC()->cart->get_taxes_total();
-							$raw = preg_replace("/[^0-9.]/", "", $raw) * get_currency_rate();
-							$raw = number_format((float)$raw, 2, '.', '');
-							echo get_currency_symbol().$raw;
-						?>
+                            $tax_raw = (float) $tax->amount;
+                            $converted_tax = $tax_raw * $currency_rate;
+                            echo $currency_symbol . number_format( $converted_tax, 2, '.', '' );
+                        ?>
                     </td>
 					</tr>
 					<?php
@@ -119,12 +117,12 @@ defined( 'ABSPATH' ) || exit;
 				?>
 				<tr class="tax-total">
 					<th><?php echo esc_html( WC()->countries->tax_or_vat() ) . $estimated_text; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></th>
-					<td data-title="<?php echo esc_attr( WC()->countries->tax_or_vat() ); ?>"><?php //wc_cart_totals_taxes_total_html(); ?>
+					<td data-title="<?php echo esc_attr( WC()->countries->tax_or_vat() ); ?>">
+					<?php //wc_cart_totals_taxes_total_html(); ?>
                     <?php
-					$raw = WC()->cart->get_taxes_total();
-					$raw = preg_replace("/[^0-9.]/", "", $raw) * get_currency_rate();
-					$raw = number_format((float)$raw, 2, '.', '');
-					echo get_currency_symbol().$raw;
+						$taxes_total_raw = (float) WC()->cart->get_taxes_total( false, false );
+                        $converted_taxes = $taxes_total_raw * $currency_rate;
+                        echo $currency_symbol . number_format( $converted_taxes, 2, '.', '' );
 					?>
                 
                 </td>
@@ -140,11 +138,24 @@ defined( 'ABSPATH' ) || exit;
 			<th><?php esc_html_e( 'Total', 'woocommerce' ); ?></th>
 			<td data-title="<?php esc_attr_e( 'Total', 'woocommerce' ); ?>">
                 <?php //wc_cart_totals_order_total_html(); ?>
-                <?php
-                $raw = WC()->cart->get_total();
-                $raw = preg_replace("/[^0-9.]/", "", $raw) * get_currency_rate();
-                $raw = number_format((float)$raw, 2, '.', '');
-                echo get_currency_symbol().$raw;
+				<?php
+                $total_raw = (float) WC()->cart->get_total( 'edit' ); // prefer raw float if available
+                if ( ! $total_raw && is_string( WC()->cart->get_total() ) ) {
+                    // fallback – rare case
+                    $total_raw = (float) WC()->cart->get_total();
+                }
+                $converted_total = $total_raw * $currency_rate;
+
+                echo $currency_symbol . number_format( $converted_total, 2, '.', '' );
+
+                if ( ! $is_gbp ) {
+                    echo '<br><small class="currency-disclaimer"><strong>';
+                    printf(
+                        esc_html__( '(Payment will be made in GBP for a total of: %s)', 'woocommerce' ),
+                        WC()->cart->get_total()
+                    );
+                    echo '</strong></small>';
+                }
                 ?>
             </td>
 		</tr>

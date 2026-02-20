@@ -361,21 +361,47 @@ jQuery(document).ready(function($){
         // add width and length values based on circle radius input
 
         // add inch values to width field
-        $('#input_width_inches').on('keyup', function() {
-            var inch_width_keyup_value = $(this).val() * 25.4;
-            console.log(inch_width_keyup_value);
-            $("#input_width").val(inch_width_keyup_value);
-            $("#generate_price").prop("disabled", false);
+        $('#input_width_inches').on('input', function() {
+            var inches = parseFloat($(this).val());
+
+            if (!isNaN(inches)) {
+                var mm = (inches * 25.4).toFixed(2); // 2 decimal places
+                console.log("Value: " + mm);
+                $("#input_width").val(mm);
+                $("#generate_price").prop("disabled", false);
+            } else {
+                $("#input_width").val('');
+                $("#generate_price").prop("disabled", true);
+            }
         });
+        // $('#input_width_inches').on('keyup', function() {
+        //     var inch_width_keyup_value = $(this).val() * 25.4;
+        //     console.log("Value: " + inch_width_keyup_value);
+        //     $("#input_width").val(inch_width_keyup_value);
+        //     $("#generate_price").prop("disabled", false);
+        // });
         // add inch values to width field
 
         // add inch values to length field
-        $('#input_length_inches').on('keyup', function() {
-            var inch_length_keyup_value = $(this).val() * 25.4;
-            console.log(inch_length_keyup_value);
-            $("#input_length").val(inch_length_keyup_value);
-            $("#generate_price").prop("disabled", false);
+        $('#input_length_inches').on('input', function() {
+            var inches_2 = parseFloat($(this).val());
+
+            if (!isNaN(inches_2)) {
+                var mm_2 = (inches_2 * 25.4).toFixed(2); // 2 decimal places
+                console.log("Value: " + mm_2);
+                $("#input_length").val(mm_2);
+                $("#generate_price").prop("disabled", false);
+            } else {
+                $("#input_length").val('');
+                $("#generate_price").prop("disabled", true);
+            }
         });
+        // $('#input_length_inches').on('keyup', function() {
+        //     var inch_length_keyup_value = $(this).val() * 25.4;
+        //     console.log(inch_length_keyup_value);
+        //     $("#input_length").val(inch_length_keyup_value);
+        //     $("#generate_price").prop("disabled", false);
+        // });
         // add inch values to length field
 
         // add inch values to length field

@@ -21,9 +21,6 @@ function override_tax_location_with_session($location, $tax_class) {
             $location[2] = $shipping_address['zip_postal']; // Postcode
             $location[3] = $shipping_address['city']; // City
 
-            if (defined('WP_DEBUG') && WP_DEBUG) {
-                error_log("override_tax_location_with_session: Forced tax location country to {$country_code}");
-            }
         }
     }
     return $location;

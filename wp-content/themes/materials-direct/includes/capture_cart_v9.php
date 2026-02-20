@@ -87,7 +87,6 @@ function get_cart_capture_data() {
 
 // CREATE CUSTOM POST TYPE
 function register_capture_cart_cpt() {
-    error_log('Registering capture_cart post type');
     register_post_type('capture_cart', [
         'labels' => [
             'name' => 'Captured Carts',
@@ -828,9 +827,6 @@ add_action('woocommerce_before_calculate_totals', function ($cart) {
         if (isset($cart_item['custom_price']) && is_numeric($cart_item['custom_price']) && $cart_item['custom_price'] > 0) {
             $price = floatval($cart_item['custom_price']);
             $cart_item['data']->set_price($price);
-            error_log('Applying custom price for cart item ' . $cart_item_key . ': ' . $price);
-        } else {
-            error_log('No valid custom price for cart item ' . $cart_item_key . ': ' . (isset($cart_item['custom_price']) ? $cart_item['custom_price'] : 'unset'));
         }
     }
 }, 10, 1);
@@ -838,8 +834,6 @@ add_action('woocommerce_before_calculate_totals', function ($cart) {
 
 // DISPLAY META DATA IN CART
 add_filter('woocommerce_cart_item_name', function ($item_name, $cart_item, $cart_item_key) {
-
-    error_log('Cart item metadata for key ' . $cart_item_key . ': ' . print_r($cart_item['cart_metadata'] ?? [], true));
 
     // Define keys to hide from display
     $hidden_keys = [

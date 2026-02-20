@@ -265,9 +265,9 @@ require_once('includes/remove-breadcrumbs-from-product-page.php');
 require_once('includes/checkout-remove-different-shipping-address.php');
 // remove different shipping address option on checkout page
 
-// remove different shipping address option on checkout page
+// Add discount chart to product page
 require_once('includes/add-discount-chart-to-product-page.php');
-// remove different shipping address option on checkout page
+// Add discount chart to product page
 
 // Inject custom css in header for is_single_product
 require_once('includes/inject-custom-css-in-head-for-issingleproduct.php');
@@ -506,9 +506,18 @@ require_once('includes/rolls-tab-inject-rolls-length-data.php');
 require_once('includes/conditionally-add-styling-if-is-schedule-exists.php');
 // Conditionally add styling to woccommerce notice if is_scheduled exists
 
+// Helper function to convert currency shipping totals on cart/checkout
+require_once('includes/convert_shipping_currency_on_cart_checkout.php');
+// Helper function to convert currency shipping totals on cart/checkout
+
+// Helper function to convert currency shipping totals on cart/checkout
+require_once('includes/cart_custom_expiry.php');
+// Helper function to convert currency shipping totals on cart/checkout
+
 /* TEMPORARILY REMOVE LOAD TEXTDOMAIN WARNING THAT ARE FLOODING MY LOGS */
 require_once('includes/remove_load_textdomain_logs.php');
 /* TEMPORARILY REMOVE LOAD TEXTDOMAIN WARNING THAT ARE FLOODING MY LOGS */
+
 
 // change price in schema.org json file 
 /* NEED TO SWITCH THIS ON DURING GO LIVE PROCESS */
@@ -528,6 +537,20 @@ add_action('send_headers', function () {
     header('X-Robots-Tag: noindex, nofollow, noarchive', true);
 });
 // Tell Bing and Google NOT to index my staging site
+
+// change the shipping label on the cart and checkout page
+add_filter( 'woocommerce_shipping_package_name', 'custom_shipping_package_label', 10, 3 );
+
+function custom_shipping_package_label( $package_name, $i, $package ) {
+    return 'Shipping';
+}
+// change the shipping label on the cart and checkout page
+
+// Change the cross sells heading on the cart and checkout page
+add_filter( 'woocommerce_product_cross_sells_products_heading', function( $heading ) {
+    return 'You may also be interested in';
+});
+// Change the cross sells heading on the cart and checkout page
 
 
 
@@ -553,6 +576,7 @@ require_once('includes/split_schedule_add_to_calendar.php');
 require_once('includes/payment-gateway-disable-items-for-credit-account-v2.php'); // disable payment gateway options if logged in as credit account user
 require_once('includes/add-credit-account-fund-status-to-product-page.php'); // display credit account fund details on product page
 require_once('includes/send-credit-arrears-emails.php'); // send an email if the customers runs out of credit
+require_once('includes/clear_wc_sessions_when_user_vists_product_page.php'); // Clear the WC Sessions when a user first vists the product page
 /* END DELIVERY OPTIONS FUNCTIONS */
 
 
@@ -562,9 +586,6 @@ require_once('includes/send-credit-arrears-emails.php'); // send an email if the
 // Forces customers to re-enter shipping details on every order, even when logged in
 // Need to test that this is ok to use long term
 add_filter( 'woocommerce_customer_has_shipping_address', '__return_false' );
-
-
-
 
 
 

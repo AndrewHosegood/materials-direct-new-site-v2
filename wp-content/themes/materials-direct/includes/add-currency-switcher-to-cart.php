@@ -7,7 +7,7 @@ function inject_cart_currency_switcher() {
 	$currency = get_current_currency();
 	//echo "Currency cart page: " . $currency . "<br>";
 
-    echo '<div class="cart__currency-switcher" style="float: right;">';
+    echo '<div class="cart__currency-switcher">';
     echo '<div class="cart__currency-switcher-box">';
 
     echo '<a class="cart__currency-switcher-link ' . ($currency === 'USD' ? 'active-currency' : '') . '" href="?set_currency=USD">
@@ -34,7 +34,7 @@ function inject_cart_currency_switcher() {
 }
 
 // Hook into WooCommerce cart page (top of cart)
-add_action('woocommerce_before_cart', 'inject_cart_currency_switcher');
+add_action('woocommerce_before_cart', 'inject_cart_currency_switcher', 999);
 
 // Hook into WooCommerce checkout page (top of checkout, directly mirroring the cart position)
 add_action('woocommerce_before_checkout_form', 'inject_cart_currency_switcher');
