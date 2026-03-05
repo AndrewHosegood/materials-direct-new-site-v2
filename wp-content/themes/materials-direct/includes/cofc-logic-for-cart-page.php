@@ -53,37 +53,51 @@ function display_optional_fees_cart($item_data, $cart_item) {
 /**
  * Add optional fees to the cart totals based on checkboxes selected
  */
-add_action('woocommerce_cart_calculate_fees', 'add_optional_fee_costs');
+add_action('woocommerce_cart_calculate_fees', 'add_optional_fee_costs', 10);
 function add_optional_fee_costs() {
     if (is_admin() && !defined('DOING_AJAX')) {
         return;
     }
 
-    // Initialize grand total for all optional fees
-    $grand_total = 0;
+    // Detect if this is a restored cart
+    $is_restored_cart = false;
+    foreach (WC()->cart->get_cart() as $item) {
+        if (!empty($item['restored_from_capture'])) {
+            $is_restored_cart = true;
+            break;
+        }
+    }
 
-    // Loop through all cart items and sum ALL fees (per line item, no qty multiplier)
-    foreach (WC()->cart->get_cart() as $cart_item_key => $cart_item) {
-        // Existing non-credit fees
-        if (isset($cart_item['optional_fees'])) {
-            foreach ($cart_item['optional_fees'] as $key => $amount) {
-                if ($amount > 0) {
-                    $grand_total += floatval($amount);
-                }
+    // If restored → check if the fee already exists; if yes, skip to preserve it
+    if ($is_restored_cart) {
+        $existing_fees = WC()->cart->get_fees();
+        foreach ($existing_fees as $fee) {
+            if ($fee->name === 'All COFC\'s & FAIR\'s') {
+                error_log('Skipping add_optional_fee_costs — restored fee already exists');
+                return; // Preserve the fee added during restore
             }
         }
-        // NEW: Credit scheduled fees (from cart data)
+        // If no fee exists yet (rare edge case), let it proceed or log
+        error_log('No existing restored fee found — allowing normal fee calculation');
+    }
+
+    // Normal logic for non-restored carts (or restored but missing fee)
+    $grand_total = 0;
+    foreach (WC()->cart->get_cart() as $cart_item) {
+        if (isset($cart_item['optional_fees']) && is_array($cart_item['optional_fees'])) {
+            foreach ($cart_item['optional_fees'] as $amount) {
+                $grand_total += floatval($amount);
+            }
+        }
         if (isset($cart_item['custom_inputs']['total_optional_fees'])) {
             $grand_total += floatval($cart_item['custom_inputs']['total_optional_fees']);
         }
     }
 
-    // Add a single consolidated fee for ALL optional fees
     if ($grand_total > 0) {
-        WC()->cart->add_fee(
-            'All COFC\'s & FAIR\'s', // Custom label as requested
-            $grand_total,
-            true // taxable (set false if not taxable)
-        );
+        WC()->cart->add_fee('All COFC\'s & FAIR\'s', $grand_total, true);
+        error_log("Added normal optional fees total: £{$grand_total}");
+    } else if ($is_restored_cart) {
+        error_log('Restored cart but no fees to add — no fee will be present');
     }
 }

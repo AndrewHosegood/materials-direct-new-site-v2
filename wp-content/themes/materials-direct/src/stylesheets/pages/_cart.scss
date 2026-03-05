@@ -251,14 +251,11 @@
     & .shop_table .product-subtotal {
         display: none;
         @include breakpoints.tablet {
-            display: flex;
+            display: table-cell;
         }
     }
     & td.product-subtotal {
-        display: flex;
-        height: 27vh;
         vertical-align: middle;
-        display: flex;
         justify-content: center;
         align-items: center;
     }

@@ -555,6 +555,11 @@ add_filter( 'woocommerce_product_cross_sells_products_heading', function( $headi
 
 
 
+
+
+
+
+
 /* END CUSTOM FUNCTIONS */
 
 /* DELIVERY OPTIONS FUNCTIONS */
@@ -687,5 +692,12 @@ function display_wc_session_data_on_product_page() {
     echo '</div>';
 }
 */
+
+
+
+
+
+
+
 
 

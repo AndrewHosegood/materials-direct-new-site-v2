@@ -10,76 +10,87 @@ function get_cart_capture_data() {
     $results = [];  
 
     if (WC()->cart->get_cart_contents_count() > 0) {
-            foreach (WC()->cart->get_cart() as $cart_item_key => $cart_item) {
+        foreach (WC()->cart->get_cart() as $cart_item_key => $cart_item) {
 
-        if (empty($cart_item['custom_inputs']) || !is_array($cart_item['custom_inputs'])) {
-            continue;
+            // echo "<pre>";
+            // print_r($cart_item);
+            // echo "</pre>";
+
+            if (empty($cart_item['custom_inputs']) || !is_array($cart_item['custom_inputs'])) {
+                continue;
+            }
+
+            $inputs   = $cart_item['custom_inputs'];
+            $address  = $inputs['shipping_address'] ?? [];
+            $fees     = $cart_item['optional_fees'] ?? [];
+
+            $product       = $cart_item['data'];
+            $product_id    = $cart_item['product_id'];
+            $variation_id  = $cart_item['variation_id'] ?? 0;
+            $variation     = $cart_item['variation'] ?? [];
+            $quantity      = $cart_item['quantity'];
+            $product_name  = sanitize_text_field($product->get_name());
+            //$price         = wc_get_price_to_display($product);
+            $price =        $inputs['price'];
+            $total_price   = wc_format_decimal($price * $quantity, 2);
+            $thumb_image   = wp_get_attachment_image_url($product->get_image_id(), 'thumbnail') ?: 'https://placehold.co/150';
+            $live_shipping = WC()->session->get('live_shipping_by_date', []);
+  
+            $results[] = [
+                'product_id' => $product_id,
+                'variation_id' => $variation_id,
+                'variation' => $variation,
+                'product' => $product_name,
+                'thumb_image' => $thumb_image,
+                'Price' => wc_format_decimal($price, 2),
+                'Total Price' => $total_price,
+                'Quantity' => $quantity,
+
+                // === Meta mapping (NEW SITE → OLD STRUCTURE) ===
+                'Part shape' => sanitize_text_field($inputs['shape_type'] ?? ''),
+                'Width' => floatval($inputs['width'] ?? 0),
+                'Length' => floatval($inputs['length'] ?? 0),
+                'Radius' => floatval($inputs['custom_radius'] ?? 0),
+                'Notes' => sanitize_text_field($inputs['despatch_notes'] ?? ''),
+                'Shipping Weights' => floatval($inputs['total_del_weight'] ?? 0),
+                'Total number of parts' => intval($inputs['qty'] ?? 0),
+                'Manufacturers COFC' => floatval($fees['add_manufacturers_COFC'] ?? 0),
+                'First Article Inspection Report' => floatval($inputs['add_fair'] ?? 0),
+
+                'Width (Inch)' => floatval($inputs['width_inches'] ?? 0),
+                'Length (Inch)' => floatval($inputs['length_inches'] ?? 0),
+                'Radius (Inch)' => floatval($inputs['custom_radius_inches'] ?? 0),
+
+                'Cost Per Part' => floatval($inputs['cost_per_part'] ?? 0),
+                'Customer Shipping Weights' => floatval($inputs['total_del_weight'] ?? 0),
+
+                'Upload .DXF Drawing' => sanitize_text_field($inputs['dxf_path'] ?? ''),
+                'Upload .PDF Drawing' => sanitize_text_field($inputs['pdf_path'] ?? ''),
+
+                'Sheets Required' => intval($inputs['sheets_required'] ?? 0),
+                'shipping_total_raw' => floatval($inputs['final_shipping'] ?? 0),
+                'on_backorder' => intval($inputs['is_backorder'] ?? 0),
+                'raw_date' => sanitize_text_field($inputs['shipments'] ?? ''),
+                'discount_raw_new' => floatval($inputs['discount_rate'] ?? 0),
+                'cost_per_part_raw' => floatval($inputs['cost_per_part'] ?? 0),
+                'country_value' => sanitize_text_field($inputs['country'] ?? ''),
+                '_Shipping Total' => floatval($inputs['final_shipping'] ?? 0), // currently using this value
+                'shipping_by_date' => $live_shipping,
+                //'shipping_total_raw' => array_sum(array_column($live_shipping, 'final_shipping')),
+                'shipping_by_date' => $inputs['shipping_by_date'] ?? [],  // full array
+                'shipping_total_raw' => floatval($inputs['final_shipping_total'] ?? 0),
+
+                // === Address mapping ===
+                'Address-1' => sanitize_text_field($address['street_address'] ?? ''),
+                'Address-2' => sanitize_text_field($address['address_line2'] ?? ''),
+                'Address-3' => sanitize_text_field($address['city'] ?? ''),
+                'Address-4' => sanitize_text_field($address['county_state'] ?? ''),
+                'Address-5' => sanitize_text_field($address['zip_postal'] ?? ''),
+                'Address-6' => sanitize_text_field($address['country'] ?? ''),
+            ];
+  
+
         }
-
-        $inputs   = $cart_item['custom_inputs'];
-        $address  = $inputs['shipping_address'] ?? [];
-        $fees     = $cart_item['optional_fees'] ?? [];
-
-        $product       = $cart_item['data'];
-        $product_id    = $cart_item['product_id'];
-        $variation_id  = $cart_item['variation_id'] ?? 0;
-        $variation     = $cart_item['variation'] ?? [];
-        $quantity      = $cart_item['quantity'];
-        $product_name  = sanitize_text_field($product->get_name());
-        //$price         = wc_get_price_to_display($product);
-      	$price =        $inputs['price'];
-        $total_price   = wc_format_decimal($price * $quantity, 2);
-        $thumb_image   = wp_get_attachment_image_url($product->get_image_id(), 'thumbnail') ?: 'https://placehold.co/150';
-
-        $results[] = [
-            'product_id' => $product_id,
-            'variation_id' => $variation_id,
-            'variation' => $variation,
-            'product' => $product_name,
-            'thumb_image' => $thumb_image,
-            'Price' => wc_format_decimal($price, 2),
-            'Total Price' => $total_price,
-            'Quantity' => $quantity,
-
-            // === Meta mapping (NEW SITE → OLD STRUCTURE) ===
-            'Part shape' => sanitize_text_field($inputs['shape_type'] ?? ''),
-            'Width' => floatval($inputs['width'] ?? 0),
-            'Length' => floatval($inputs['length'] ?? 0),
-            'Radius' => floatval($inputs['custom_radius'] ?? 0),
-            'Notes' => sanitize_text_field($inputs['despatch_notes'] ?? ''),
-            'Shipping Weights' => floatval($inputs['total_del_weight'] ?? 0),
-            'Total number of parts' => intval($inputs['qty'] ?? 0),
-            'Manufacturers COFC' => floatval($fees['add_manufacturers_COFC'] ?? 0),
-            'First Article Inspection Report' => floatval($inputs['add_fair'] ?? 0),
-
-            'Width (Inch)' => floatval($inputs['width_inches'] ?? 0),
-            'Length (Inch)' => floatval($inputs['length_inches'] ?? 0),
-            'Radius (Inch)' => floatval($inputs['custom_radius_inches'] ?? 0),
-
-            'Cost Per Part' => floatval($inputs['cost_per_part'] ?? 0),
-            'Customer Shipping Weights' => floatval($inputs['total_del_weight'] ?? 0),
-
-            'Upload .DXF Drawing' => sanitize_text_field($inputs['dxf_path'] ?? ''),
-            'Upload .PDF Drawing' => sanitize_text_field($inputs['pdf_path'] ?? ''),
-
-            'Sheets Required' => intval($inputs['sheets_required'] ?? 0),
-            'shipping_total_raw' => floatval($inputs['final_shipping'] ?? 0),
-            'on_backorder' => intval($inputs['is_backorder'] ?? 0),
-            'raw_date' => sanitize_text_field($inputs['shipments'] ?? ''),
-            'discount_raw_new' => floatval($inputs['discount_rate'] ?? 0),
-            'cost_per_part_raw' => floatval($inputs['cost_per_part'] ?? 0),
-            'country_value' => sanitize_text_field($inputs['country'] ?? ''),
-            '_Shipping Total' => floatval($inputs['final_shipping'] ?? 0),
-
-            // === Address mapping ===
-            'Address-1' => sanitize_text_field($address['street_address'] ?? ''),
-            'Address-2' => sanitize_text_field($address['address_line2'] ?? ''),
-            'Address-3' => sanitize_text_field($address['city'] ?? ''),
-            'Address-4' => sanitize_text_field($address['county_state'] ?? ''),
-            'Address-5' => sanitize_text_field($address['zip_postal'] ?? ''),
-            'Address-6' => sanitize_text_field($address['country'] ?? ''),
-        ];
-    }
     }
 
     return $results;
@@ -106,7 +117,6 @@ add_action('init', 'register_capture_cart_cpt');
 
 // ADD CUSTOM ADMIN MENU PAGE
 function add_captured_carts_admin_menu() {
-    error_log('Adding Captured Carts admin menu');
     add_menu_page(
         'Captured Carts',
         'Captured Carts',
@@ -185,6 +195,7 @@ function display_captured_carts_table() {
                         <th style="font-size: 11.5px;"><strong>Image</strong></th>
                         <th style="font-size: 11.5px;"><strong>Cart Group ID</strong></th>
                         <th style="font-size: 11.5px;"><strong>Capture Date</strong></th>
+                      	<th style="font-size: 11.5px;"><strong>Shipping Fee</strong></th>
                         <th style="font-size: 11.5px;"><strong>Customer Shipping Weights</strong></th>
                         <th style="font-size: 11.5px;"><strong>Product</strong></th>
                         <th style="font-size: 11.5px;"><strong>Part Shape</strong></th> 
@@ -249,6 +260,8 @@ function display_captured_carts_table() {
                             $currently_showing = !empty($cart_item['_Currently Showing']) ? esc_html($cart_item['_Currently Showing']) : 'N/A';
                             $untitled = !empty($cart_item['_Untitled']) ? esc_html($cart_item['_Untitled']) : 'N/A';
                             $shipping_total = !empty($cart_item['_Shipping Total']) ? esc_html($cart_item['_Shipping Total']) : 'N/A';
+                            // $shipping_total_raw = !empty($cart_item['shipping_total_raw']) ? esc_html($cart_item['shipping_total_raw']) : 'N/A';
+                            //'shipping_by_date' => $inputs['shipping_by_date'] ?? []
                             $roll_length_metres = !empty($cart_item['Roll Length (Metres)']) ? esc_html($cart_item['Roll Length (Metres)']) : 'N/A';
                             $address_1 = !empty($cart_item['Address-1']) ? esc_html($cart_item['Address-1']) : 'N/A';
                             $address_2 = !empty($cart_item['Address-2']) ? esc_html($cart_item['Address-2']) : 'N/A';
@@ -265,6 +278,35 @@ function display_captured_carts_table() {
                                 <td style="font-size: 11.5px;"><img src="<?php echo esc_url($thumb_image); ?>" alt="<?php echo esc_attr($product_name); ?>" style="width: 50px; height: 50px; object-fit: cover;" /></td>
                                 <td style="font-size: 11.5px;"><?php echo esc_html($cart_group_id); ?></td>
                                 <td style="font-size: 11.5px;"><?php echo esc_html($capture_date); ?></td>
+                                <td style="font-size: 11.5px;">
+                                    <?php 
+                                        //echo esc_html($shipping_total); 
+                                    ?>
+                                    <?php
+                                        // Read directly from post meta (saved during capture)
+                                        $captured_shipments = get_post_meta($post_id, 'captured_shipments', true) ?: [];
+                                        $captured_total = get_post_meta($post_id, 'captured_shipping_total', true) ?: 'N/A';
+
+                                        if (!empty($captured_shipments) && is_array($captured_shipments)) {
+                                            $total = 0;
+                                            $display_lines = [];
+                                            foreach ($captured_shipments as $shipment) {
+                                                $date = $shipment['date'] ?? 'N/A';
+                                                $cost = floatval($shipment['final_shipping'] ?? 0);
+                                                $total += $cost;
+                                                $parts = !empty($shipment['parts']) ? number_format($shipment['parts']) . ' parts ' : '';
+                                                $label = !empty($shipment['lead_time_label']) ? $shipment['lead_time_label'] : '';
+                                                $display_lines[] = esc_html($date) . ' (' . wc_price($cost) . ') ' . $parts . $label;
+                                            }
+                                            echo implode('<br>', $display_lines);
+                                            echo '<br><strong>Total: ' . wc_price($total) . '</strong>';
+                                        } else {
+                                            // Fallback for old/legacy captured carts
+                                            $shipping_total_raw = !empty($cart_item['shipping_total_raw']) ? wc_price($cart_item['shipping_total_raw']) : 'N/A';
+                                            echo $shipping_total_raw;
+                                        }
+                                        ?>
+                                </td>
                                 <td style="font-size: 11.5px;"><?php echo esc_html($cpp); ?></td>
                                 <td style="font-size: 11.5px;"><?php echo esc_html($product_name); ?></td>
                                 <td style="font-size: 11.5px;"><?php echo esc_html($part_shape); ?></td>
@@ -309,7 +351,7 @@ function display_captured_carts_table() {
                     } else {
                         ?>
                         <tr>
-                            <td colspan="21">No captured carts found.</td>
+                            <td colspan="23">No captured carts found.</td>
                         </tr>
                         <?php
                     }
@@ -399,7 +441,6 @@ function add_to_cart_from_capture() {
         if (!WC()->session->has_session()) {
             WC()->session->set_customer_session_cookie(true);
             if (!WC()->session->has_session()) {
-                error_log('Failed to start WooCommerce session');
                 wp_send_json_error(['message' => 'Failed to start WooCommerce session.'], 500);
             }
         }
@@ -411,12 +452,10 @@ function add_to_cart_from_capture() {
 
 
         if ($product_id <= 0) {
-            error_log('Invalid product ID: ' . $product_id);
             wp_send_json_error(['message' => 'Invalid product ID.'], 400);
         }
-
+        
         $cart_item_data = [
-            '_gravity_form_lead' => isset($cart_item['gravity_form_lead']) ? $cart_item['gravity_form_lead'] : [],
             'restored_from_capture' => true,
             'cart_metadata' => [
                 'Upload .DXF Drawing' => isset($cart_item['Upload .DXF Drawing']) ? $cart_item['Upload .DXF Drawing'] : 'N/A',
@@ -448,24 +487,22 @@ function add_to_cart_from_capture() {
                 '_Shipping Total' => isset($cart_item['_Shipping Total']) ? $cart_item['_Shipping Total'] : 'N/A',
                 'Roll Length (Metres)' => isset($cart_item['Roll Length (Metres)']) ? $cart_item['Roll Length (Metres)'] : 'N/A',
                 'form_id' => isset($cart_item['form_id']) ? $cart_item['form_id'] : 'N/A', // Explicitly include form_id
+                'captured_optional_fees'     => floatval($cart_item['captured_optional_fees'] ?? 0),
             ],
         ];
 
+        
         
 
         // Set custom price with validation
         if (isset($cart_item['Total Price']) && is_numeric($cart_item['Total Price']) && floatval($cart_item['Total Price']) > 0 && $quantity > 0) {
             $custom_price = floatval($cart_item['Total Price']) / $quantity;
             $cart_item_data['custom_price'] = $custom_price;
-            //error_log('Using Total Price for custom_price: Total Price = ' . $cart_item['Total Price'] . ', Quantity = ' . $quantity . ', Custom Price = ' . $custom_price);
         } else {
-            //error_log('Invalid or missing Total Price for post ID ' . $post_id . ': ' . (isset($cart_item['Total Price']) ? $cart_item['Total Price'] : 'unset'));
             $product = wc_get_product($product_id);
             if ($product && $product->exists()) {
                 $cart_item_data['custom_price'] = floatval(wc_get_price_to_display($product));
-                //error_log('Falling back to product price: ' . $cart_item_data['custom_price']);
             } else {
-                //error_log('Product not found for ID: ' . $product_id);
                 wp_send_json_error(['message' => 'Unable to determine price for product ID ' . $product_id], 400);
             }
         }
@@ -474,7 +511,6 @@ function add_to_cart_from_capture() {
         // Validate product
         $product = wc_get_product($product_id);
         if (!$product || !$product->exists() || !$product->is_purchasable()) {
-            //error_log('Invalid or unpurchasable product: ' . $product_id);
             wp_send_json_error(['message' => 'Product is no longer available.'], 400);
         }
 
@@ -482,100 +518,148 @@ function add_to_cart_from_capture() {
         if ($variation_id > 0) {
             $variation_product = wc_get_product($variation_id);
             if (!$variation_product || !$variation_product->exists()) {
-                //error_log('Invalid variation: ' . $variation_id);
                 wp_send_json_error(['message' => 'Product variation is no longer available.'], 400);
             }
             // Validate variation attributes
             $variation_attributes = $variation_product->get_variation_attributes();
             foreach ($variation as $key => $value) {
                 if (!isset($variation_attributes[$key]) || ($variation_attributes[$key] !== '' && $variation_attributes[$key] !== $value)) {
-                    //error_log('Invalid variation attribute: ' . $key . ' => ' . $value);
                     wp_send_json_error(['message' => 'Invalid variation attributes.'], 400);
                 }
             }
         }
 
         // Attempt to add to cart
-        //error_log('Attempting to add to cart: Product ID ' . $product_id . ', Quantity: ' . $quantity . ', Variation ID: ' . $variation_id . ', Custom Price: ' . $cart_item_data['custom_price']);
         $cart_item_key = WC()->cart->add_to_cart($product_id, $quantity, $variation_id, $variation, $cart_item_data);
 
+
         if (!$cart_item_key) {
-            //error_log('Failed to add product to cart: ' . $product_id);
             wp_send_json_error(['message' => 'Failed to add item to cart.'], 500);
         }
+
+
+        // Force-set important flags/values after add (prevents loss)
+        WC()->cart->cart_contents[$cart_item_key]['restored_from_capture'] = true;
+        WC()->cart->cart_contents[$cart_item_key]['cart_metadata']['captured_optional_fees'] = 
+            floatval($cart_item['captured_optional_fees'] ?? 0);
+
 
         // Mark as restored
         update_post_meta($post_id, 'restored_to_cart', 'yes');
 
-        // Restore shipping details
-        $existing_shipments = WC()->session->get('shipments', []);
-        $shipment_data = [];
-        if (!empty($cart_item['Shipments']) && is_array($cart_item['Shipments'])) {
-            $date = date('d/m/Y', strtotime('+35 days'));
-            foreach ($cart_item['Shipments'] as $shipment) {
-                $shipment_data[$date] = [
-                    'qty' => intval($shipment['qty']),
-                    'weight' => isset($cart_item['Customer Shipping Weights']) ? floatval($cart_item['Customer Shipping Weights']) : 0,
-                    'shipping_total' => floatval($shipment['shipping_total']),
-                ];
-            }
-        }
-        if (!empty($shipment_data)) {
-            $existing_shipments[] = $shipment_data;
-            WC()->session->set('shipments', $existing_shipments);
-            error_log('Restored shipment data: ' . print_r($shipment_data, true));
-        } else {
-            error_log('No valid shipment data for post ID ' . $post_id);
-        }
 
-
-        // Check and restore address session variables
-        if (session_status() !== PHP_SESSION_ACTIVE) {
-            session_start();
-        }
-
+        // Restore address
         $address_fields = [
-            'street_address' => $cart_item['Address-1'],
-            'address_line_2' => $cart_item['Address-2'],
-            'city' => $cart_item['Address-3'],
-            'county' => $cart_item['Address-4'],
-            'postcode' => $cart_item['Address-5'],
-            'country' => $cart_item['Address-6'],
+            'street_address'   => $cart_item['Address-1'] ?? '',
+            'address_line2'    => $cart_item['Address-2'] ?? '',
+            'city'             => $cart_item['Address-3'] ?? '',
+            'county_state'     => $cart_item['Address-4'] ?? '',
+            'zip_postal'       => $cart_item['Address-5'] ?? '',
+            'country'          => $cart_item['Address-6'] ?? '',
         ];
 
-        $required_fields = ['street_address', 'city', 'postcode', 'country'];
+        $required_fields = ['street_address', 'city', 'zip_postal', 'country'];
         $is_valid_address = true;
+
         foreach ($required_fields as $key) {
             if (empty($address_fields[$key]) || $address_fields[$key] === 'N/A') {
                 $is_valid_address = false;
-                error_log("Invalid or missing captured address field: $key for post ID $post_id");
                 break;
             }
         }
 
         if ($is_valid_address) {
-            error_log('Restoring captured cart address to session for post ID ' . $post_id . ': ' . print_r($address_fields, true));
-            foreach ($address_fields as $session_key => $cart_value) {
-                $_SESSION[$session_key] = ($cart_value !== 'N/A' && !empty($cart_value)) ? sanitize_text_field($cart_value) : '';
-                error_log("Set session variable $session_key: " . $_SESSION[$session_key]);
-            }
+            // Store in WooCommerce session (this is what your display function expects)
+            WC()->session->set('custom_shipping_address', $address_fields);
+            
+            // Optional: Also set WooCommerce customer shipping fields for consistency
+            WC()->customer->set_shipping_address_1($address_fields['street_address']);
+            WC()->customer->set_shipping_address_2($address_fields['address_line2']);
+            WC()->customer->set_shipping_city($address_fields['city']);
+            WC()->customer->set_shipping_state($address_fields['county_state']);
+            WC()->customer->set_shipping_postcode($address_fields['zip_postal']);
+            WC()->customer->set_shipping_country($address_fields['country']); // Use ISO code if needed
+            
         } else {
-            error_log('Captured cart address is incomplete for post ID ' . $post_id . ', clearing session address variables');
-            foreach ($address_fields as $session_key => $cart_value) {
-                $_SESSION[$session_key] = '';
-                error_log("Cleared session variable $session_key due to incomplete address");
-            }
+            // Clear WC session key
+            WC()->session->set('custom_shipping_address', null);
+            
+            
+            // Optional: show error to user
             wp_send_json_error(['message' => 'Captured cart address is incomplete. Please update the address before proceeding.'], 400);
         }
+        // NEW CODE TO DISPLAY ADDRESS JUST ABOVE BASKET TOTALS
 
 
-        session_write_close();
+
+
+
+
+        /* GET THE SHIPMENTS DATA FOR DISPLAY ON THE CART PAGE AFTER RESTORE */
+        $display_shipments = [];
+
+        // Primary source: use captured_shipments saved during capture (from form JSON)
+        if (!empty($cart_item['captured_shipments']) && is_array($cart_item['captured_shipments'])) {
+            foreach ($cart_item['captured_shipments'] as $shipment) {
+                if (!empty($shipment['date'])) {
+                    $date = sanitize_text_field($shipment['date']);
+                    $display_shipments[$date] = [
+                        'final_shipping' => floatval($shipment['final_shipping'] ?? 0),
+                        'parts' => $shipment['parts'] ?? 0,
+                        'lead_time_label' => $shipment['lead_time_label'] ?? ''
+                    ];
+                }
+            }
+        }
+
+        // Optional fallback for very old captures (only dates from Notes — no cost)
+        if (empty($display_shipments) && !empty($cart_item['Notes'])) {
+            preg_match_all('/on (\d{2}\/\d{2}\/\d{4})/', $cart_item['Notes'], $matches);
+            foreach ($matches[1] as $date) {
+                $display_shipments[$date] = [
+                    'final_shipping' => 0,  // No reliable cost → show 0 or omit cost display
+                    'parts' => 0,
+                    'lead_time_label' => ''
+                ];
+            }
+            if (!empty($matches[1])) {
+                error_log('Fallback: extracted dates from Notes (no cost): ' . implode(', ', $matches[1]) . ' for post ID ' . $post_id);
+            }
+        }
+
+        // Save to cart item for display_shipments_section_cart() to read
+        if (!empty($display_shipments)) {
+            WC()->cart->cart_contents[$cart_item_key]['restored_shipments'] = $display_shipments;
+            error_log('Stored restored_shipments on cart item ' . $cart_item_key . ' for post ID ' . $post_id);
+        } else {
+            error_log('No valid dispatch dates found — skipping shipments storage for post ID ' . $post_id);
+        }
+       /* GET THE SHIPMENTS DATA FOR DISPLAY ON THE CART PAGE AFTER RESTORE */
+
+        
+
 
 
         WC()->cart->calculate_totals();
-        error_log('Cart totals calculated successfully');
 
-        // Send notification email to andrewh@materials-direct.com
+
+        /*
+        if ($captured_optional_fees > 0) {
+            WC()->cart->add_fee(
+                'All COFC\'s & FAIR\'s',
+                $captured_optional_fees,
+                true,  // taxable
+                ''     // no tax class
+            );
+            error_log('Restored optional fees total: £' . $captured_optional_fees . ' for post ID ' . $post_id);
+            $fees_after_add = WC()->cart->get_fees();
+            error_log('Fees after adding restored fee: ' . print_r($fees_after_add, true));
+            WC()->cart->calculate_totals();
+        }
+        */
+
+
+
 
 
 
@@ -637,7 +721,6 @@ add_action('wp_ajax_add_to_cart_from_capture', 'add_to_cart_from_capture');
 // SEND NOTIFICATION EMAIL ON CART RESTORATION
 function send_restore_notification_email($cart_group_id, $customer_email) {
     try {
-        error_log('Starting send_restore_notification_email for cart_group_id: ' . $cart_group_id);
 
         // Validate inputs
         if (empty($cart_group_id)) {
@@ -834,8 +917,6 @@ add_action('woocommerce_before_calculate_totals', function ($cart) {
 
 // DISPLAY META DATA IN CART
 add_filter('woocommerce_cart_item_name', function ($item_name, $cart_item, $cart_item_key) {
-
-    // Define keys to hide from display
     $hidden_keys = [
         'Sheets Required',
         'shipping_total_raw',
@@ -855,97 +936,97 @@ add_filter('woocommerce_cart_item_name', function ($item_name, $cart_item, $cart
         'rolls_value',
         'form_id',
         'Part shape',
+        'Cost Per Part',
+        'width_inch',
+        'length_inch',
     ];
 
     if (isset($cart_item['cart_metadata']) && is_array($cart_item['cart_metadata'])) {
         $metadata = $cart_item['cart_metadata'];
         $item_name .= '<dl class="cart-item-metadata">';
 
-
-        $form_id = isset($metadata['form_id']) ? $metadata['form_id'] : 'N/A';
-
-        // PART SHAPE
-        if ($form_id !== '19' && isset($metadata['Part shape']) && $metadata['Part shape'] !== 'N/A' && !empty($metadata['Part shape'])) {
+        // Pre-handled fields (unchanged)
+        if (!empty($metadata['Part shape']) && $metadata['Part shape'] !== 'N/A') {
             $item_name .= '<dt style="margin: 0.4rem 0"><strong>Part Shape:</strong> ' . esc_html($metadata['Part shape']) . '</dt>';
-        } elseif ($form_id === '19') {
-            error_log('Hiding Part Shape for cart item key ' . $cart_item_key . ' because form_id is 19');
         }
-        // PART SHAPE
-
-        // TOTAL NUMBER OF PARTS
-        // Display "Total number of parts" if it exists and is not empty or 'N/A'
-        if (isset($metadata['Total number of parts']) && $metadata['Total number of parts'] !== 'N/A' && !empty($metadata['Total number of parts'])) {
+        if (!empty($metadata['Width (MM)']) && $metadata['Width (MM)'] !== 'N/A') {
+            $item_name .= '<dt style="margin: 0.4rem 0"><strong>Width (MM):</strong> ' . esc_html($metadata['Width (MM)']) . '</dt>';
+        }
+        if (!empty($metadata['Length (MM)']) && $metadata['Length (MM)'] !== 'N/A' 
+            && !(isset($metadata['rolls_value']) && strtolower($metadata['rolls_value']) === 'rolls')) {
+            $item_name .= '<dt style="margin: 0.4rem 0"><strong>Length (MM):</strong> ' . esc_html($metadata['Length (MM)']) . '</dt>';
+        }
+        if (!empty($metadata['width_inch']) && $metadata['width_inch'] !== 'N/A') {
+            $item_name .= '<dt style="margin: 0.4rem 0"><strong>Width (INCHES):</strong> ' . esc_html($metadata['width_inch']) . '</dt>';
+        }
+        if (!empty($metadata['length_inch']) && $metadata['length_inch'] !== 'N/A') {
+            $item_name .= '<dt style="margin: 0.4rem 0"><strong>Length (INCHES):</strong> ' . esc_html($metadata['length_inch']) . '</dt>';
+        }
+        if (!empty($metadata['Total number of parts']) && $metadata['Total number of parts'] !== 'N/A') {
             $item_name .= '<dt style="margin: 0.4rem 0"><strong>Total number of parts:</strong> ' . esc_html($metadata['Total number of parts']) . '</dt>';
         }
-        // TOTAL NUMBER OF PARTS
-
-        // WIDTH (MM)
-        if ($form_id !== '19' && isset($metadata['Width (MM)']) && $metadata['Width (MM)'] !== 'N/A' && !empty($metadata['Width (MM)'])) {
-            $item_name .= '<dt style="margin: 0.4rem 0"><strong>Width (MM):</strong> ' . esc_html($metadata['Width (MM)']) . '</dt>';
-        } elseif ($form_id === '19') {
-            error_log('Hiding Width (MM) for cart item key ' . $cart_item_key . ' because form_id is 19');
+        if (!empty($metadata['Despatch Notes']) && $metadata['Despatch Notes'] !== 'N/A') {
+            $item_name .= '<dt style="margin: 0.4rem 0"><strong>Despatch Notes:</strong> ' . esc_html($metadata['Despatch Notes']) . '</dt>';
         }
-
-        // LENGTH (MM)
-        if ($form_id !== '19' && isset($metadata['Length (MM)']) && $metadata['Length (MM)'] !== 'N/A' && !empty($metadata['Length (MM)']) && !(isset($metadata['rolls_value']) && strtolower($metadata['rolls_value']) === 'rolls')) {
-            $item_name .= '<dt style="margin: 0.4rem 0"><strong>Length (MM):</strong> ' . esc_html($metadata['Length (MM)']) . '</dt>';
-        } elseif ($form_id === '19') {
-            error_log('Hiding Length (MM) for cart item key ' . $cart_item_key . ' because form_id is 19');
+        if (!empty($metadata['Customer Shipping Weight(s)']) && $metadata['Customer Shipping Weight(s)'] !== 'N/A') {
+            $item_name .= '<dt style="margin: 0.4rem 0"><strong>Customer Shipping Weight(s):</strong> ' . esc_html($metadata['Customer Shipping Weight(s)']) . '</dt>';
         }
-
-        // COST PER PART
-        if ($form_id !== '19' && isset($metadata['Cost Per Part']) && $metadata['Cost Per Part'] !== 'N/A' && !empty($metadata['Cost Per Part'])) {
-            $item_name .= '<dt style="margin: 0.4rem 0"><strong>Cost Per Part:</strong> ' . esc_html($metadata['Cost Per Part']) . '</dt>';
-        } elseif ($form_id === '19') {
-            error_log('Hiding Cost Per Part for cart item key ' . $cart_item_key . ' because form_id is 19');
-        }
-
-
-        // ROLL LENGTH
-        // Display "Roll Length (Metres)" after "Total number of parts" if rolls_value is 'rolls' (case-insensitive)
-        if (isset($metadata['Roll Length (Metres)']) && isset($metadata['rolls_value']) && strtolower($metadata['rolls_value']) === 'rolls' && $metadata['Roll Length (Metres)'] !== 'N/A' && !empty($metadata['Roll Length (Metres)'])) {
-            error_log('Displaying Roll Length (Metres) after Total number of parts: ' . $metadata['Roll Length (Metres)']);
+        if (isset($metadata['Roll Length (Metres)']) && isset($metadata['rolls_value']) 
+            && strtolower($metadata['rolls_value']) === 'rolls' 
+            && $metadata['Roll Length (Metres)'] !== 'N/A' && !empty($metadata['Roll Length (Metres)'])) {
             $item_name .= '<dt class="roll-length-metres" style="margin: 0.4rem 0"><strong>Roll Length (Metres):</strong> ' . esc_html($metadata['Roll Length (Metres)']) . '</dt>';
-        } else {
-            error_log('Not displaying Roll Length (Metres): rolls_value = ' . ($metadata['rolls_value'] ?? 'not set') . ', value = ' . ($metadata['Roll Length (Metres)'] ?? 'not set'));
         }
-        // ROLL LENGTH
 
-        // Loop through remaining metadata
+        // Loop
         foreach ($metadata as $key => $value) {
-            // Log processing of each key for debugging
-            error_log('Processing metadata key: ' . $key . ', value: ' . ($value ?? 'not set') . ', rolls_value: ' . ($metadata['rolls_value'] ?? 'not set'));
-
-          // Skip hidden keys and already displayed fields
-            if (in_array($key, $hidden_keys) || in_array($key, ['Part shape', 'Total number of parts', 'Roll Length (Metres)', 'Width (MM)', 'Length (MM)', 'Cost Per Part'])) {
+            if (in_array($key, $hidden_keys)) {
                 continue;
             }
 
-            // Conditionally skip "Length (mm)" if rolls_value is 'rolls' (case-insensitive)
-            if (strtolower($key) === 'length (mm)' && isset($metadata['rolls_value']) && strtolower($metadata['rolls_value']) === 'rolls') {
-                error_log('Hiding Length (mm) because rolls_value = ' . ($metadata['rolls_value'] ?? 'not set') . ', key = ' . $key . ', value = ' . ($value ?? 'not set'));
+            // Skip pre-handled
+            if (in_array($key, [
+                'Part shape', 'Width (MM)', 'Length (MM)', 'Total number of parts',
+                'Despatch Notes', 'Customer Shipping Weight(s)', 'Roll Length (Metres)', 'rolls_value'
+            ])) {
                 continue;
             }
 
-            // Handle file uploads
-            if ($key === 'Upload .PDF Drawing') {
-                $pdf_url = !empty($value) && $value !== 'N/A' && filter_var($value, FILTER_VALIDATE_URL) ? $value : null;
-                if ($pdf_url) {
-                    $pdf_filename = basename($pdf_url);
-                    $item_name .= '<dt style="margin: 0.4rem 0"><strong>' . esc_html($key) . ':</strong> <a href="' . esc_url($pdf_url) . '" target="_blank">' . esc_html($pdf_filename) . '</a></dt>';
+            // PDF / DXF handling — always attempt filename extraction
+            if ($key === 'Upload .PDF Drawing' || $key === 'Upload .DXF Drawing') {
+                $raw_value = trim($value);
+                if (!empty($raw_value) && $raw_value !== 'N/A') {
+
+                    // Always get filename
+                    $filename = basename($raw_value);
+                    if (empty($filename) || $filename === $raw_value) {
+                        $filename = $raw_value; // fallback if basename fails
+                    }
+
+                    // Build full URL if relative
+                    $url = $raw_value;
+                    if (strpos($raw_value, 'http') !== 0 && strpos($raw_value, '/') === 0) {
+                        $url = home_url($raw_value);
+                    }
+
+                    $label = ($key === 'Upload .PDF Drawing') ? 'PDF Drawing' : 'DXF Drawing';
+
+                    $item_name .= '<dt style="margin: 0.4rem 0"><strong>' . esc_html($label) . ':</strong> '
+                               . '<a href="' . esc_url($url) . '" target="_blank">' . esc_html($filename) . '</a></dt>';
+
                 }
-            } elseif ($key === 'Upload .DXF Drawing') {
-                $dxf_url = !empty($value) && $value !== 'N/A' && filter_var($value, FILTER_VALIDATE_URL) ? $value : null;
-                if ($dxf_url) {
-                    $dxf_filename = basename($dxf_url);
-                    $item_name .= '<dt style="margin: 0.4rem 0"><strong>' . esc_html($key) . ':</strong> <a href="' . esc_url($dxf_url) . '" target="_blank">' . esc_html($dxf_filename) . '</a></dt>';
-                }
-            } elseif ($value !== 'N/A' && !empty($value)) {
-                $item_name .= '<dt style="margin: 0.4rem 0"><strong>' . esc_html($key) . ':</strong> ' . esc_html($value) . '</dt>';
+                continue; // Skip generic
+            }
+
+            // Generic fallback
+            if ($value !== 'N/A' && !empty($value)) {
+                $item_name .= '<dt style="margin: 0.4rem 0"><strong>' . esc_html($key) . ':</strong> ' 
+                           . esc_html($value) . '</dt>';
             }
         }
-        $item_name .= '</div>';
+
+        $item_name .= '</dl>';
     }
+
     return $item_name;
 }, 10, 3);
 // END DISPLAY META DATA IN CART
@@ -958,7 +1039,6 @@ add_filter('woocommerce_cart_item_name', function ($item_name, $cart_item, $cart
 add_action('woocommerce_checkout_create_order_line_item', function ($item, $cart_item_key, $values, $order) {
     // Check if the cart item is restored from a captured cart
     if (isset($values['restored_from_capture']) && $values['restored_from_capture'] === true && isset($values['cart_metadata'])) {
-        error_log('Adding cart_metadata to order item for cart_item_key: ' . $cart_item_key);
 
         // List of meta keys to include in the order
         $meta_keys_to_include = [
@@ -990,9 +1070,6 @@ add_action('woocommerce_checkout_create_order_line_item', function ($item, $cart
             'Roll Length (Metres)',
         ];
 
-
-        
-
         
 
         // Add each meta key-value pair to the order item
@@ -1003,7 +1080,6 @@ add_action('woocommerce_checkout_create_order_line_item', function ($item, $cart
                     $values['cart_metadata'][$meta_key], // Meta value
                     true // Unique (only one value per key)
                 );
-                error_log("Added order item meta: $meta_key => " . $values['cart_metadata'][$meta_key]);
             }
         }
     }
@@ -1020,7 +1096,7 @@ add_action('woocommerce_checkout_create_order_line_item', function ($item, $cart
 
 // AJAX HANDLER FOR BULK DELETE
 function bulk_delete_captured_carts() {
-    error_log('Attempting bulk delete with data: ' . print_r($_POST, true));
+
     if (!isset($_POST['nonce']) || !wp_verify_nonce($_POST['nonce'], 'captured_carts_nonce')) {
         error_log('Nonce verification failed for bulk delete');
         wp_send_json_error(['message' => 'Security check failed.'], 400);
@@ -1039,6 +1115,7 @@ function bulk_delete_captured_carts() {
     }
 
     $deleted_count = 0;
+
     foreach ($post_ids as $post_id) {
         if (get_post_type($post_id) !== 'capture_cart') {
             error_log('Invalid post type for ID: ' . $post_id);
@@ -1082,46 +1159,40 @@ function send_customer_email() {
 
         // Check user permissions
         if (!current_user_can('edit_posts')) {
-            //error_log('Insufficient permissions for user: ' . wp_get_current_user()->user_login);
             wp_send_json_error(['message' => 'Insufficient permissions.'], 403);
         }
 
         // Validate post ID
         $post_id = isset($_POST['post_id']) ? intval($_POST['post_id']) : 0;
-        //error_log('Post ID: ' . $post_id);
+
         if ($post_id <= 0) {
-            //error_log('Invalid post ID: ' . $post_id);
             wp_send_json_error(['message' => 'Invalid post ID.'], 400);
         }
 
         // Check post existence and type
         $post = get_post($post_id);
         if (!$post || $post->post_type !== 'capture_cart') {
-            //error_log('Post does not exist or is not a capture_cart: ID ' . $post_id);
             wp_send_json_error(['message' => 'Invalid capture cart post.'], 400);
         }
         if ($post->post_status !== 'publish') {
-            //error_log('Post is not published: ID ' . $post_id . ', Status: ' . $post->post_status);
             wp_send_json_error(['message' => 'Cannot send email for unpublished post.'], 400);
         }
 
         // Get customer email and cart group ID
         $email = get_post_meta($post_id, 'customer_email', true);
         $cart_group_id = get_post_meta($post_id, 'cart_group_id', true);
-        //error_log('Email to send to: ' . ($email ?: 'none') . ', Cart Group ID: ' . ($cart_group_id ?: 'none'));
+
         if (empty($email) || !is_email($email)) {
-            //error_log('Invalid or empty email for post ID: ' . $post_id);
             wp_send_json_error(['message' => 'No valid customer email address found.'], 400);
         }
         if (empty($cart_group_id)) {
-            //error_log('Invalid or empty cart group ID for post ID: ' . $post_id);
             wp_send_json_error(['message' => 'No valid cart group ID found.'], 400);
         }
 
         // Retrieve customer first name from users table
         $user = get_user_by('email', $email);
         $customer_name = $user && !empty($user->first_name) ? $user->first_name : 'Customer';
-        //error_log("Customer Name for Post ID $post_id: " . $customer_name);
+
 
         // Query all capture_cart posts with matching email and cart_group_id
         $args = [
@@ -1211,7 +1282,6 @@ function send_customer_email() {
         if ($delivery_option == 1) {
             $custom_expiry_schedule = get_post_meta($post_id, 'custom_expiry_schedule', true);
             $expiration_hours = $custom_expiry_schedule && in_array($custom_expiry_schedule, ['2', '3', '4']) ? intval($custom_expiry_schedule) : 2;
-            //error_log("Using custom_expiry_schedule for post ID $post_id: $expiration_hours hours");
         }
 
         // Build email content with all cart items
@@ -1364,7 +1434,7 @@ function send_customer_email() {
         $headers = ['Content-Type' => 'text/html; charset=UTF-8'];
 
         // Send email
-        error_log('Attempting to send email to ' . $email . ' with ' . count($cart_items) . ' cart items');
+
         $sent = wp_mail($email, $subject, $message, $headers);
         if ($sent) {
             error_log('Email sent successfully to ' . $email . ' for post ID: ' . $post_id . ' with cart group ID: ' . $cart_group_id);
@@ -1391,22 +1461,53 @@ add_action('wp_ajax_send_customer_email', 'send_customer_email');
 // ADD CAPTURE CART BUTTON TO CART
 function add_capture_cart_button_to_cart() {
 
+if (!is_user_logged_in()) return;
 
-    if (is_user_logged_in()) {
-        $current_user = wp_get_current_user();
+    $current_user = wp_get_current_user();
+    $current_user_can = get_field('captured_carts_admin_email', 'option');
+    if ($current_user->user_email !== $current_user_can) return;
 
-        $current_user_can = get_field('captured_carts_admin_email', 'option');
+    $shipping_by_date = group_shipping_by_date(WC()->cart);
 
-        if ($current_user->user_email === $current_user_can) { ?>
-                    <form method="POST" action="" onsubmit="return confirm('Capture the current cart?');">
-                        <?php wp_nonce_field('capture_cart_nonce', 'capture_cart_nonce_field'); ?>
-                        <input type="hidden" name="capture_cart_action" value="1" />
-                        <button type="submit" class="product-page__capture-cart-btn" style="border-radius: 0.25rem; margin-bottom:1rem;">
-                            Capture Cart
-                        </button>
-                    </form>
-        <?php }
+    $total_optional_fees = 0;
+    foreach (WC()->cart->get_cart() as $cart_item) {
+        if (isset($cart_item['optional_fees'])) {
+            foreach ($cart_item['optional_fees'] as $amount) {
+                $total_optional_fees += floatval($amount);
+            }
+        }
+        // Also include scheduled/credit fees
+        if (isset($cart_item['custom_inputs']['total_optional_fees'])) {
+            $total_optional_fees += floatval($cart_item['custom_inputs']['total_optional_fees']);
+        }
     }
+    
+    $shipments_to_capture = [];
+    foreach ($shipping_by_date as $date => $data) {
+        if (!empty($data['final_shipping'])) {
+            $shipments_to_capture[] = [
+                'date' => $date,
+                'final_shipping' => floatval($data['final_shipping']),
+                'parts' => $data['quantity'] ?? 0,           // or whatever field you want
+                'lead_time_label' => $data['lead_time_label'] ?? ''
+            ];
+        }
+    }
+    $shipments_json = !empty($shipments_to_capture) ? json_encode($shipments_to_capture) : '[]';
+    ?>
+   
+    <form method="POST" action="" onsubmit="return confirm('Capture the current cart?');">
+        <?php wp_nonce_field('capture_cart_nonce', 'capture_cart_nonce_field'); ?>
+        <input type="hidden" name="capture_cart_action" value="1" />
+        <input type="hidden" name="captured_shipments" value="<?php echo esc_attr($shipments_json); ?>" />
+        <input type="hidden" name="captured_optional_fees" value="<?php echo esc_attr($total_optional_fees); ?>" />
+        <button type="submit" class="product-page__capture-cart-btn" style="border-radius: 0.25rem; margin-bottom:1rem;">
+            Capture Cart 
+        </button>
+    </form>
+
+    <?php 
+    
 }
 add_action('woocommerce_before_cart_totals', 'add_capture_cart_button_to_cart', 20);
 // END ADD CAPTURE CART BUTTON TO CART
@@ -1423,8 +1524,46 @@ function handle_capture_cart() {
         WC()->cart &&
         !empty(WC()->cart->get_cart())
     ) {
+
+        $captured_shipments = [];
+        $shipping_total_raw = 0;
+        $captured_optional_fees = 0;
+
+        if (!empty($_POST['captured_shipments'])) {
+            $decoded = json_decode(stripslashes($_POST['captured_shipments']), true);
+            if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
+                $captured_shipments = $decoded;
+
+                // Calculate total shipping from all entries
+                foreach ($captured_shipments as $shipment) {
+                    $shipping_total_raw += floatval($shipment['final_shipping'] ?? 0);
+                }
+
+            } else {
+                error_log('Invalid or malformed captured_shipments JSON in POST');
+            }
+        } else {
+            error_log('No captured_shipments data received from Capture Cart form');
+        }
+
+        // === NEW: CAPTURE TOTAL OPTIONAL FEES ===
+        foreach (WC()->cart->get_cart() as $cart_item) {
+            // Per-item fees (checkboxes)
+            if (isset($cart_item['optional_fees']) && is_array($cart_item['optional_fees'])) {
+                foreach ($cart_item['optional_fees'] as $amount) {
+                    $captured_optional_fees += floatval($amount);
+                }
+            }
+            // Scheduled/credit fees from custom_inputs
+            if (isset($cart_item['custom_inputs']['total_optional_fees'])) {
+                $captured_optional_fees += floatval($cart_item['custom_inputs']['total_optional_fees']);
+            }
+        }
+
+
+
         $cart_items = get_cart_capture_data();
-        //error_log('The cart items are:' . print_r($cart_items));
+
         if (empty($cart_items)) {
             wc_add_notice(__('No cart data captured.', 'woocommerce'), 'error');
             wp_safe_redirect(wc_get_cart_url());
@@ -1434,6 +1573,11 @@ function handle_capture_cart() {
         $captured_count = 0;
         $cart_group_id = date('YmdHis');
         foreach ($cart_items as $item) {
+
+            $item['captured_shipments'] = $captured_shipments;
+            $item['shipping_total_raw'] = $shipping_total_raw; // optional total for fallback/display
+            $item['captured_optional_fees'] = $captured_optional_fees;
+
             $post_id = wp_insert_post([
                 'post_type'   => 'capture_cart',
                 'post_status' => 'publish',
@@ -1442,7 +1586,8 @@ function handle_capture_cart() {
             ]);
 
             if ($post_id && !is_wp_error($post_id)) {
-                error_log('Saving cart_item for post ' . $post_id . ': ' . print_r($item, true));
+                //update_post_meta($post_id, 'captured_shipments', $captured_shipments);
+                //update_post_meta($post_id, 'captured_shipping_total', $shipping_total_raw);
                 update_post_meta($post_id, 'product_name', $item['product']);
                 update_post_meta($post_id, 'capture_date', current_time('mysql'));
                 update_post_meta($post_id, 'total_parts', intval($item['Total Number of Parts']));
@@ -1457,12 +1602,10 @@ function handle_capture_cart() {
                 // Store Field 123 (Delivery Option) from gravity_form_lead
                 $delivery_option = isset($item['gravity_form_lead'][123]) ? sanitize_text_field($item['gravity_form_lead'][123]) : 'N/A';
                 update_post_meta($post_id, 'delivery_option', $delivery_option);
-                //error_log('Saved delivery_option for post ' . $post_id . ': ' . $delivery_option);
 
                 // Store Custom Expiry Schedule if delivery_option == 1
                 if ($delivery_option == 1) {
                     update_post_meta($post_id, 'custom_expiry_schedule', '2'); // Default to 2 hours
-                    //error_log('Saved custom_expiry_schedule for post ' . $post_id . ': 2');
                 }
 
                 $captured_count++;
@@ -1489,7 +1632,6 @@ add_action('template_redirect', 'handle_capture_cart');
 // HANDLE SAVE CUSTOMER EMAIL
 function save_customer_email() {
     try {
-        //error_log('Starting save_customer_email for post_id: ' . (isset($_POST['post_id']) ? $_POST['post_id'] : 'not set'));
 
         // Verify nonce
         check_ajax_referer('captured_carts_nonce', 'nonce');
@@ -1502,7 +1644,6 @@ function save_customer_email() {
 
         // Validate post ID
         $post_id = isset($_POST['post_id']) ? intval($_POST['post_id']) : 0;
-        //error_log('Post ID: ' . $post_id);
         if ($post_id <= 0) {
             error_log('Invalid post ID: ' . $post_id);
             wp_send_json_error(['message' => 'Invalid post ID.'], 400);
@@ -1538,11 +1679,11 @@ function save_customer_email() {
         // Get User ID from email
         $user = get_user_by('email', $email);
         $user_id = $user ? $user->ID : 0;
-        //error_log('User ID for email ' . $email . ': ' . $user_id);
+
 
         // Get ACF field value for allow_credit
         $allow_credit = $user_id ? get_field('credit_options_allow_user_credit_option', 'user_' . $user_id) : 'N/A';
-        //error_log('Allow Credit for user ID ' . $user_id . ': ' . ($allow_credit !== null ? var_export($allow_credit, true) : 'N/A'));
+
 
         // Query all capture_cart posts with the same cart_group_id
         $args = [
@@ -1569,14 +1710,13 @@ function save_customer_email() {
         while ($captured_carts->have_posts()) {
             $captured_carts->the_post();
             $current_post_id = get_the_ID();
-            //error_log('Attempting to save customer_email meta for post ID: ' . $current_post_id);
+
 
             // Save customer email
             $result_email = update_post_meta($current_post_id, 'customer_email', $email);
             if ($result_email === false) {
                 global $wpdb;
                 $last_error = $wpdb->last_error;
-                //error_log('Failed to save customer email for post ID: ' . $current_post_id . '. WPDB Error: ' . ($last_error ?: 'None'));
             } else {
                 $updated_posts[] = $current_post_id;
             }
@@ -1586,7 +1726,6 @@ function save_customer_email() {
             if ($result_credit === false) {
                 global $wpdb;
                 $last_error = $wpdb->last_error;
-                //error_log('Failed to save allow_credit for post ID: ' . $current_post_id . '. WPDB Error: ' . ($last_error ?: 'None'));
             }
         }
         wp_reset_postdata();
@@ -1596,7 +1735,6 @@ function save_customer_email() {
             wp_send_json_error(['message' => 'Failed to save email address for any carts.'], 500);
         }
 
-        //error_log('Successfully saved customer email for ' . count($updated_posts) . ' posts in cart group ID: ' . $cart_group_id . ': ' . $email);
         wp_send_json_success([
             'message' => 'Email address saved successfully for ' . count($updated_posts) . ' cart(s) in group ' . esc_html($cart_group_id) . '.',
             'email' => $email,
@@ -1627,7 +1765,6 @@ function display_custom_message_on_my_account() {
     // Check the ACF field for the logged-in user
     $user_id = $current_user->ID;
     $allow_credit = $user_id ? get_field('credit_options_allow_user_credit_option', 'user_' . $user_id) : 'N/A';
-    error_log('Allow Credit for user ID ' . $user_id . ' (' . $user_email . '): ' . ($allow_credit !== null ? var_export($allow_credit, true) : 'N/A'));
 
     // Query all capture_cart posts with matching customer_email
     $args = [
@@ -1661,7 +1798,6 @@ function display_custom_message_on_my_account() {
     // If carts exist, update user meta to indicate they have had carts
     if ($captured_carts->have_posts() && !$has_had_carts) {
         update_user_meta($user_id, 'has_had_captured_carts', true);
-        //error_log('Marked user ID ' . $user_id . ' as having captured carts.');
     }
 
     // Check for delivery_option in captured carts
@@ -1714,7 +1850,6 @@ function display_custom_message_on_my_account() {
 
             $cart_item = get_post_meta($post_id, 'cart_item', true);
             // Log cart_item for debugging
-            //error_log('Cart item for post ID ' . $post_id . ': ' . print_r($cart_item, true));
 
             // Determine thumb_image with fallback to product image
             $thumb_image = !empty($cart_item['thumb_image']) ? esc_url($cart_item['thumb_image']) : null;
@@ -1723,7 +1858,6 @@ function display_custom_message_on_my_account() {
                 $thumb_image = $product ? wp_get_attachment_image_url($product->get_image_id(), 'thumbnail') : null;
             }
             $thumb_image = $thumb_image ?: 'https://placehold.co/150';
-            //error_log('Thumb image for post ID ' . $post_id . ': ' . $thumb_image);
 
             $cart_data[$post_id] = [
                 'product_name'  => get_post_meta($post_id, 'product_name', true) ?: 'N/A',
@@ -1801,7 +1935,6 @@ add_action('woocommerce_checkout_create_order_line_item', function ($item, $cart
     if (isset($values['cart_metadata']) && is_array($values['cart_metadata']) && isset($values['cart_metadata']['form_id']) && $values['cart_metadata']['form_id'] !== 'N/A' && !empty($values['cart_metadata']['form_id'])) {
         // Save only the form_id to the order item meta
         $item->add_meta_data('form_id', sanitize_text_field($values['cart_metadata']['form_id']));
-        error_log('Saved form_id ' . $values['cart_metadata']['form_id'] . ' to order item ID ' . $item->get_id());
     } else {
         error_log('No valid form_id found for cart item key ' . $cart_item_key . ': ' . print_r($values['cart_metadata'] ?? [], true));
     }
@@ -1819,7 +1952,6 @@ add_action('woocommerce_checkout_create_order_line_item', function ($item, $cart
     if (isset($values['cart_metadata']) && is_array($values['cart_metadata']) && isset($values['cart_metadata']['form_id']) && $values['cart_metadata']['form_id'] !== 'N/A' && !empty($values['cart_metadata']['form_id'])) {
         // Save only the form_id to the order item meta
         $item->add_meta_data('form_id', sanitize_text_field($values['cart_metadata']['form_id']));
-        error_log('Saved form_id ' . $values['cart_metadata']['form_id'] . ' to order item ID ' . $item->get_id());
     } else {
         error_log('No valid form_id found for cart item key ' . $cart_item_key . ': ' . print_r($values['cart_metadata'] ?? [], true));
     }
@@ -1836,10 +1968,8 @@ add_action('woocommerce_thankyou', function ($order_id) {
     // Check if any order item has form_id equal to 19
     foreach ($order->get_items() as $item_id => $item) {
         $form_id = $item->get_meta('form_id', true);
-        error_log('Checking form_id for order item ID ' . $item_id . ': ' . ($form_id ?: 'not set'));
         if ($form_id === '19') {
             $has_form_id_19 = true;
-            error_log('Found form_id 19 for order item ID ' . $item_id);
             break;
         }
     }
@@ -1883,7 +2013,6 @@ add_action('woocommerce_thankyou', function ($order_id) {
 // AJAX HANDLER FOR SAVING CUSTOM EXPIRY SCHEDULE
 function save_custom_expiry_schedule() {
     try {
-        error_log('Starting save_custom_expiry_schedule for post_id: ' . (isset($_POST['post_id']) ? $_POST['post_id'] : 'not set'));
 
         // Verify nonce
         check_ajax_referer('captured_carts_nonce', 'nonce');
@@ -2076,4 +2205,92 @@ function custom_thankyou_page_script() {
     <?php endif;
 }
 /* Add javascript/jquery fix to convert full url to file name */
+
+
+
+
+
+
+
+
+
+
+
+// Hook late into fee calculation — this survives recalcs
+add_action('woocommerce_cart_calculate_fees', 'restore_captured_optional_fees_late', 999);
+function restore_captured_optional_fees_late($cart) {
+    error_log('restore_captured_optional_fees_late triggered');
+
+    $total_fees = 0;
+    $has_restored = false;
+    $processed = false; // new
+
+    foreach ($cart->get_cart() as $item) {
+        if (!empty($item['restored_from_capture'])) {
+            $has_restored = true;
+            //$total_fees += floatval($item['cart_metadata']['captured_optional_fees'] ?? 0);
+            if (!$processed) {
+                $total_fees = floatval($item['cart_metadata']['captured_optional_fees'] ?? 0);
+                $processed = true;
+                error_log("Using captured optional fees from first restored item: £{$total_fees}");
+            }
+        }
+    }
+
+    if ($has_restored && $total_fees > 0) {
+        $existing_fees = $cart->get_fees();
+        $fee_exists = false;
+        foreach ($existing_fees as $fee) {
+            if ($fee->name === 'All COFC\'s & FAIR\'s') {
+                $fee_exists = true;
+                break;
+            }
+        }
+
+        if (!$fee_exists) {
+            $cart->add_fee('All COFC\'s & FAIR\'s', $total_fees, true, '');
+            error_log("Added restored optional fees in calculate_fees hook: £{$total_fees}");
+        } else {
+            error_log("Restored fee already exists in calculate_fees hook — skipping");
+        }
+    } else {
+        error_log('No restored items or zero fees to add');
+    }
+}
+
+
+
+
+
+
+
+// Page-load hook: force recalc to trigger the above
+add_action('woocommerce_before_cart', 'force_cart_recalc_on_load', 1);
+function force_cart_recalc_on_load() {
+    if (!is_cart()) return;
+
+    if (!WC()->session->has_session()) {
+        WC()->session->set_customer_session_cookie(true);
+    }
+
+    WC()->cart->calculate_shipping();
+    WC()->cart->calculate_fees();     // This triggers restore_captured_optional_fees_late
+    WC()->cart->calculate_totals();
+
+    error_log('Forced cart recalc on cart page load');
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 

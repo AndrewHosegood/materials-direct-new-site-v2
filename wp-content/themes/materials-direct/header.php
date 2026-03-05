@@ -160,3 +160,4 @@
 	?>		
 	
 	<!-- Conditionally display shop page banner -->
+

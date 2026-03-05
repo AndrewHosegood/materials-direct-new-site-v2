@@ -1304,6 +1304,8 @@ function add_custom_price_cart_item_data_secure($cart_item_data, $product_id) {
 
     $quantity = intval($_POST['custom_qty']);
     $product_weight = $product->get_weight();
+    error_log("Product Weight" . $product_weight);
+
     $discount_rate = isset($_POST['custom_discount_rate']) ? floatval($_POST['custom_discount_rate']) : 0;
 
     $discount_labels = [
@@ -1741,6 +1743,23 @@ function add_custom_price_cart_item_data_secure($cart_item_data, $product_id) {
 
     // Collect the dates from scheduled orders v2
 
+
+    /* Lets intercept and grab the shipping values that are displayed on the cart page (for capture cart) */
+    // $live_shipping = WC()->session->get('live_shipping_by_date', []);
+    // $cart_item_data['custom_inputs']['shipping_by_date'] = $live_shipping;
+    // $total_shipping = 0;
+    // foreach ($live_shipping as $date => $data) {
+    //     $total_shipping += floatval($data['final_shipping'] ?? 0);
+    // }
+    // $cart_item_data['custom_inputs']['final_shipping_total'] = $total_shipping;
+    // WC()->session->set('live_shipping_by_date', null); // Clean up session to avoid stale data
+    // if (defined('WP_DEBUG') && WP_DEBUG) {
+    //     error_log("Stored live shipping_by_date in custom_inputs for product $product_id: " . print_r($live_shipping, true));
+    // }
+    /* Lets intercept and grab the shipping values that are displayed on the cart page (for capture cart) */
+
+
+
     $cart_item_data['custom_inputs'] = array_merge($cart_item_data['custom_inputs'], [
         'width' => floatval($_POST['custom_width']),
         'width_inches' => floatval($_POST['custom_width_inches']),
@@ -1808,13 +1827,87 @@ function init_custom_shipping_method() {
             }
 
             public function calculate_shipping($package = []) {
+                
+                $cart = WC()->cart;
+
+                // === DETECT RESTORED CART & GET UNIQUE CAPTURED TOTAL ===
+                $has_restored = false;
+                $captured_shipping_data = []; // Use associative array to deduplicate by date
+
+                foreach ($cart->get_cart() as $item) {
+                    if (!empty($item['restored_from_capture'])) {
+                        $has_restored = true;
+
+                        if (!empty($item['restored_shipments']) && is_array($item['restored_shipments'])) {
+                            foreach ($item['restored_shipments'] as $date => $data) {
+                                // Only add once per unique date (prevents double-counting)
+                                if (!isset($captured_shipping_data[$date])) {
+                                    $captured_shipping_data[$date] = floatval($data['final_shipping'] ?? 0);
+                                }
+                            }
+                        }
+                    }
+                }
+
+                $total_shipping = 0;
+
+                if ($has_restored && !empty($captured_shipping_data)) {
+                    // Sum unique dates' shipping costs
+                    $total_shipping = array_sum($captured_shipping_data);
+                    error_log("Custom shipping method using captured total (unique dates) for restored cart: £{$total_shipping}");
+                } else {
+                    // Normal cart: live calculation
+                    $shipping_by_date = group_shipping_by_date($cart);
+                    $total_shipping = 0;
+                    foreach ($shipping_by_date as $date => $data) {
+                        $total_shipping += floatval($data['final_shipping'] ?? 0);
+                    }
+                    error_log("Custom shipping method using live calculation for normal cart: £{$total_shipping}");
+                }
+
+                // === ADD THE RATE ===
+                if ($total_shipping > 0) {
+                    $this->add_rate([
+                        'id'       => $this->id . ':' . $this->instance_id,
+                        'label'    => $this->title,
+                        'cost'     => $total_shipping,
+                        'taxes'    => '',
+                        'calc_tax' => 'per_order',
+                        'package'  => $package,
+                    ]);
+                    error_log("Custom shipping method added rate: £{$total_shipping}");
+                }
+            }
+
+            /*
+            public function calculate_shipping($package = []) {
                 $cart = WC()->cart;
                 $shipping_by_date = group_shipping_by_date($cart);
 
-                // Sum the shipping costs
                 $total_shipping = 0;
                 foreach ($shipping_by_date as $date => $data) {
                     $total_shipping += floatval($data['final_shipping']);
+                    error_log("Total Shipping Calc Triggered");
+                    error_log($total_shipping);
+                }
+
+                if ($total_shipping <= 0) {
+                    $has_restored = false;
+                    foreach ($cart->get_cart() as $item) {
+                        if (!empty($item['restored_from_capture'])) {
+                            $meta = $item['cart_metadata'] ?? [];
+                            $captured = floatval($meta['_Shipping Total'] ?? $meta['shipping_total_raw'] ?? 0);
+                            if ($captured > 0) {
+                                $total_shipping += $captured;
+                                $has_restored = true;
+                                error_log("Custom shipping method used captured fallback: £{$captured}");
+                            }
+                        }
+                    }
+
+                    if (!$has_restored) {
+                        return; 
+                    }
                 }
 
                 if ($total_shipping > 0) {
@@ -1826,8 +1919,10 @@ function init_custom_shipping_method() {
                         'calc_tax' => 'per_order',
                         'package' => $package,
                     ]);
+                    error_log("Custom shipping method added rate: £{$total_shipping}");
                 }
             }
+            */
         }
     }
 }
@@ -1843,8 +1938,79 @@ function add_custom_shipping_method($methods) {
 // END ADD CUSTOM SHIPPING METHOD TO WOOCOMMERCE
 
 
-// DISPLAY SHIPMENTS SECTION ABOVE CART TOTALS
-add_action('woocommerce_before_cart_totals', 'display_shipments_section_cart');
+
+
+// NEW - DISPLAY SHIPMENTS SECTION ABOVE CART TOTALS
+
+add_action('woocommerce_before_cart_totals', 'display_shipments_section_cart', 5);
+
+function display_shipments_section_cart() {
+    $cart = WC()->cart;
+
+    // Check if this cart contains any restored item
+    $has_restored = false;
+    $restored_shipments = [];
+
+    foreach ($cart->get_cart() as $item) {
+        if (!empty($item['restored_from_capture'])) {
+            $has_restored = true;
+            if (!empty($item['restored_shipments']) && is_array($item['restored_shipments'])) {
+                $restored_shipments = array_merge($restored_shipments, $item['restored_shipments']);
+            }
+        }
+    }
+
+    // For restored carts: use captured data
+    if ($has_restored && !empty($restored_shipments)) {
+        $shipping_by_date = $restored_shipments;
+        error_log('display_shipments_section_cart: Using restored/captured shipments for restored cart');
+    } else {
+        // Normal cart: calculate live
+        $shipping_by_date = group_shipping_by_date($cart);
+        error_log('display_shipments_section_cart: Using live group_shipping_by_date for normal cart');
+    }
+
+    if (empty($shipping_by_date)) {
+        error_log('display_shipments_section_cart: No shipments data available');
+        return;
+    }
+
+    echo '<div class="shipments-section" style="margin-bottom: 20px;">';
+    echo '<p class="cart_totals__shipment"><strong>Shipments:</strong></p>';
+
+    foreach ($shipping_by_date as $date => $data) {
+        $shipping_cost = floatval($data['final_shipping'] ?? 0);
+        $shipping_rate = get_currency_rate();
+        $currency_symbol = get_currency_symbol();
+
+        if ($shipping_cost > 0) {
+            $formatted_cost = round($shipping_cost * $shipping_rate, 2);
+            $line = 'Dispatch ' . esc_html($date) . '(' . $currency_symbol . $formatted_cost . ')';
+
+            // Optional: show parts/lead time if captured
+            // if (!empty($data['parts'])) {
+            //     $line .= ' - ' . number_format($data['parts']) . ' parts';
+            // }
+            if (!empty($data['lead_time_label'])) {
+                $line .= ' ' . esc_html($data['lead_time_label']);
+            }
+
+            echo '<p class="cart_totals__shipment-details">' . $line . '</p>';
+        }
+    }
+
+    echo '</div>';
+}
+
+// NEW - DISPLAY SHIPMENTS SECTION ABOVE CART TOTALS
+
+
+
+
+
+// OLD CODE - DISPLAY SHIPMENTS SECTION ABOVE CART TOTALS
+/*
+add_action('woocommerce_before_cart_totals', 'display_shipments_section_cart', 5);
 function display_shipments_section_cart() {
     $cart = WC()->cart;
     $shipping_by_date = group_shipping_by_date($cart);
@@ -1866,7 +2032,11 @@ function display_shipments_section_cart() {
         echo '</div>';
     }
 }
-// DISPLAY SHIPMENTS SECTION ABOVE CART TOTALS
+*/
+// OLD CODE - DISPLAY SHIPMENTS SECTION ABOVE CART TOTALS
+
+
+
 
 
 // DISPLAY SHIPPING ADDRESS ON CHECKOUT PAGE
@@ -1925,6 +2095,9 @@ function add_custom_shipping_to_order($order, $data) {
     $cart = WC()->cart;
     $shipping_by_date = group_shipping_by_date($cart);
 
+    //error_log("function triggered");
+    //error_log(print_r($shipping_by_date), true);
+
     // Sum the shipping costs
     $shipping_meta = [];
     $total_shipping = 0;
@@ -1936,6 +2109,10 @@ function add_custom_shipping_to_order($order, $data) {
         $total_shipping += floatval($data['final_shipping']);
 
         $shipping_meta[$date] = $final_shipping;
+
+        //error_log("Final Shipping Triggered");
+
+        //error_log($final_shipping);
     }
 
     if ($total_shipping > 0) {
@@ -1947,6 +2124,8 @@ function add_custom_shipping_to_order($order, $data) {
 
         // Add meta safely now
         foreach ($shipping_meta as $date => $amount) {
+            error_log("Amount triggered");
+            error_log($amount);
             $shipping_item->add_meta_data(
                 'ah_shipping_cost',
                 wc_format_decimal($amount),
