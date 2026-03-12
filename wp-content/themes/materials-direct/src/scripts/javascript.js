@@ -131,6 +131,13 @@ jQuery(document).ready(function($){
         });
         // shipping address edit
 
+        // shipping address edit - single product
+        $(".shipping-address-form-single__saved-edit").on("click", function() {
+            $(".shipping-address-form__saved").toggleClass("hide");
+            $("#shipping-address-form-single").addClass("show");
+        });
+        // shipping address edit - single product
+
         // display cofc on product page 'on keyup'
         $('#input_qty').on('keyup change', function() {
             const qty = parseInt($(this).val(), 10);
@@ -572,6 +579,8 @@ jQuery(document).ready(function($){
             $(this).text(currentText === 'Hide' ? 'Show' : 'Hide');
         });
         /* Category filter show/hide */
+
+
 
         // Owl Carousel
         $('.testimonials__carousel').owlCarousel({

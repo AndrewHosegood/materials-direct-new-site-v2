@@ -104,7 +104,7 @@ function add_order_number_to_admin_email_table($item_id, $item, $order, $plain_t
     $shipping_total = $order->get_shipping_total(); 
     //$shipping_calc = $shipping_total / $num_dates / $total_product_lines; // lets temporarily add in $total_product_lines (but need to get dynamic shipping values coming in as a proper fix)
     $shipping_calc = $shipping_total / $num_dates;
-
+    echo '<span style="font-weight: bold;">Scheduled Deliveries:</span>';
     echo '<ul class="delivery-options-list">';
 
     if ($num_dates >= 2) {

@@ -112,6 +112,7 @@ jQuery(document).ready(function($) {
             $('#fair_label').hide();
             $('#fair_label_credit_account').hide();
             $('#input_width, #input_length, #input_qty, #input_radius').prop('readonly', false);
+            $('.product-page__rolls-label-text-2').text('Quantity of sheets:');
             enableButtons();
 
             // Delete temporary PDF file from server
@@ -851,7 +852,7 @@ function updateDatepickerMinDate() {
                         $('#custom_price').val(cart_price);
                         $('#shipments_display').fadeToggle();
                         $('#parts_remaining').text(qty);
-                        console.log();
+
 
                         
 

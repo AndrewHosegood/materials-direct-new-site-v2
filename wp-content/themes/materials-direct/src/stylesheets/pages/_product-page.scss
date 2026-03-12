@@ -130,14 +130,14 @@
     &__calc-input::placeholder {
         color: #666;
     }
-    &__calc-input-small {
-        width: 100%;
-        margin-right: 0%;
-        @include breakpoints.tablet {
-            width: 48%;
-            margin-right: 1.6%;
-        }
-    }
+    // &__calc-input-small {
+    //     width: 100%;
+    //     margin-right: 0%;
+    //     @include breakpoints.tablet {
+    //         width: 48%;
+    //         margin-right: 1.6%;
+    //     }
+    // }
     &__calc-input:focus-visible {
         outline: 1px solid variables.$primary-color;
     }
@@ -430,7 +430,7 @@
         font-size: 0.55rem;
         padding: .81rem .3rem .88rem .15rem;
         @include breakpoints.iphone-small {
-            font-size: 0.61rem;
+            font-size: 0.59rem;
             padding: .81rem .15rem .88rem .35rem;
         }
         @include breakpoints.iphone {
@@ -438,6 +438,14 @@
             padding: .81rem .75rem .88rem .75rem;
         }
         @include breakpoints.tablet {
+            font-size: 0.75rem;
+            padding: .81rem .75rem .88rem 2.7rem;
+        }
+        @include breakpoints.laptop {
+            font-size: 0.75rem;
+            padding: .81rem .75rem .88rem 2.7rem;
+        }
+        @include breakpoints.desktop {
             font-size: 0.79rem;
             padding: .81rem .75rem .88rem 2.7rem;
         }
@@ -469,24 +477,24 @@
         border-top-right-radius: 0.4rem;
     }
     &__tabs-list:nth-child(1) {
-        width: 168px;
+        width: 158px;
     }
     &__tabs-list:nth-child(2) {
-        width: 125px;
+        width: 110px;
         margin-left: 0px;
         @include breakpoints.desktop {
             margin-left: 1px;
         }
     }
     &__tabs-list:nth-child(3) {
-        width: 137px;
+        width: 159px;
         margin-left: 0px;
         @include breakpoints.desktop {
             margin-left: 1px;
         }
     }
     &__tabs-list:nth-child(4) {
-        width: 115px;
+        width: 107px;
         margin-left: 0px;
         @include breakpoints.desktop {
             margin-left: 1px;
@@ -861,6 +869,50 @@
         font-size: 0.85rem;
         padding: 0.6rem 1rem;
     }
+    &__address-1 {
+        width: 100%;
+        display:inline-block;
+    }
+    &__address-2 {
+        width: 100%;
+        display:inline-block;
+    }
+    &__address-3 {
+        width: 100%;
+        margin-right: 0%;
+        @include breakpoints.iphone {
+            width: 48.8%;
+            margin-right: 1.2%;
+        }
+        display:inline-block;
+    }
+    &__address-4 {
+        width: 100%;
+        margin-left: 0%;
+        @include breakpoints.iphone {
+            width: 48.8%;
+            margin-left: 1.2%;
+        }
+        display:inline-block;
+    }
+    &__address-5 {
+        width: 100%;
+        margin-right: 0%;
+        @include breakpoints.iphone {
+            width: 48.8%;
+            margin-right: 1.2%;
+        }
+        display:inline-block;
+    }
+    &__address-6 {
+        width: 100%;
+        margin-left: 0%;
+        @include breakpoints.iphone {
+            width: 48.8%;
+            margin-left: 1.2%;
+        }
+        display:inline-block;
+    }
 }
 
 .has-tooltip {
@@ -1107,9 +1159,6 @@ div#order_info_box #parts_remaining {
     display: none;
 }
 .shipping-address-form {
-    &__hide {
-        display: none;
-    }
     &__saved {
         width: 100%;
     }
@@ -1127,6 +1176,19 @@ div#order_info_box #parts_remaining {
         color: white;
         cursor: pointer;
     }
+}
+.shipping-address-form-single {
+    &__saved-edit {
+        font-size: 0.8rem;
+        background: variables.$secondary-color;
+        padding: 0.7rem 1rem;
+        color: white;
+        cursor: pointer;
+    }
+}
+#shipping-address-form, #shipping-address-form-single {
+    display: flex;
+    flex-wrap: wrap;
 }
 #uploadPdf::file-selector-button {
   background-color: variables.$secondary-color;
@@ -1197,6 +1259,10 @@ div#order_info_box #parts_remaining {
     margin-bottom: 0.7rem;
     line-height: 1.5rem;
 }
+.woocommerce div.product .qty:focus-visible {
+    outline: 0;
+}
+
 
 /* Fix select menus in IOS */
 #input_country {
@@ -1205,5 +1271,6 @@ div#order_info_box #parts_remaining {
     border-radius: 0;
     -webkit-border-radius: 0;
     background-clip: padding-box;
+    padding: 0.79rem 0.5rem;
 }
 /* Fix select menus in IOS */

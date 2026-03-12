@@ -939,6 +939,7 @@ add_filter('woocommerce_cart_item_name', function ($item_name, $cart_item, $cart
         'Cost Per Part',
         'width_inch',
         'length_inch',
+        'captured_optional_fees',
     ];
 
     if (isset($cart_item['cart_metadata']) && is_array($cart_item['cart_metadata'])) {
@@ -969,12 +970,17 @@ add_filter('woocommerce_cart_item_name', function ($item_name, $cart_item, $cart
             $item_name .= '<dt style="margin: 0.4rem 0"><strong>Despatch Notes:</strong> ' . esc_html($metadata['Despatch Notes']) . '</dt>';
         }
         if (!empty($metadata['Customer Shipping Weight(s)']) && $metadata['Customer Shipping Weight(s)'] !== 'N/A') {
-            $item_name .= '<dt style="margin: 0.4rem 0"><strong>Customer Shipping Weight(s):</strong> ' . esc_html($metadata['Customer Shipping Weight(s)']) . '</dt>';
+            $weight = round( (float) $metadata['Customer Shipping Weight(s)'], 3 );
+            $item_name .= '<dt style="margin: 0.4rem 0"><strong>Customer Shipping Weight(s):</strong> ' . $weight . 'kg</dt>';
         }
         if (isset($metadata['Roll Length (Metres)']) && isset($metadata['rolls_value']) 
             && strtolower($metadata['rolls_value']) === 'rolls' 
             && $metadata['Roll Length (Metres)'] !== 'N/A' && !empty($metadata['Roll Length (Metres)'])) {
             $item_name .= '<dt class="roll-length-metres" style="margin: 0.4rem 0"><strong>Roll Length (Metres):</strong> ' . esc_html($metadata['Roll Length (Metres)']) . '</dt>';
+        }
+        $captured_fee = floatval($metadata['captured_optional_fees'] ?? 0);
+        if ($captured_fee > 0) {
+            $item_name .= '<dt style="margin: 0.4rem 0"><strong>All COFC\'s & FAIR\'s:</strong> ' . wc_price($captured_fee) . '</dt>';
         }
 
         // Loop
@@ -2208,14 +2214,6 @@ function custom_thankyou_page_script() {
 
 
 
-
-
-
-
-
-
-
-
 // Hook late into fee calculation — this survives recalcs
 add_action('woocommerce_cart_calculate_fees', 'restore_captured_optional_fees_late', 999);
 function restore_captured_optional_fees_late($cart) {
@@ -2257,11 +2255,7 @@ function restore_captured_optional_fees_late($cart) {
         error_log('No restored items or zero fees to add');
     }
 }
-
-
-
-
-
+// Hook late into fee calculation — this survives recalcs
 
 
 // Page-load hook: force recalc to trigger the above
@@ -2278,19 +2272,6 @@ function force_cart_recalc_on_load() {
     WC()->cart->calculate_totals();
 
     error_log('Forced cart recalc on cart page load');
+    
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+// Page-load hook: force recalc to trigger the above

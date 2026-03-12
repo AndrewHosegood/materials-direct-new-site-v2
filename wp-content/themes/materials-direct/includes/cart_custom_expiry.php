@@ -22,7 +22,7 @@ function add_cart_expiry_banner() {
 
     ?>
     <div class="woocommerce-message" role="alert" tabindex="-1">
-        <span style="display: inline;">Place your order within. <span class="cart-expiry-contdown" data-remaining="<?php //echo esc_attr( $remaining ); ?>"></span> Stock may become unavailable before the checkout time has expired!</span>
+        <span style="display: inline;">Place your order within. <span class="cart-expiry-contdown" data-remaining="<?php echo esc_attr( $remaining ); ?>"></span> Stock may become unavailable before the checkout time has expired!</span>
     </div>
 
     <?php
@@ -38,7 +38,7 @@ function get_cart_remaining_seconds() {
 
     global $wpdb;
     $expiration = $wpdb->get_var( $wpdb->prepare(
-        "SELECT session_expiration FROM {$wpdb->prefix}woocommerce_sessions WHERE session_key = %s LIMIT 1",
+        "SELECT session_expiry FROM {$wpdb->prefix}woocommerce_sessions WHERE session_key = %s LIMIT 1",
         $session_key
     ) );
 
@@ -62,6 +62,7 @@ function cart_expiry_countdown_js() {
     <script type="text/javascript">
     jQuery(document).ready(function($) {
         var $countdown = $('.cart-expiry-contdown');
+        if (!$countdown.length) return;
         var remaining = parseInt($countdown.data('remaining'), 10) || 7200;
 
         function formatTime(seconds) {

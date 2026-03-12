@@ -104,26 +104,49 @@
 
 	</header><!-- #masthead -->
 
+
+
 	<?php 
-	// $shipping_address = WC()->session->get('custom_shipping_address');
+	/* temporarily show the session shipping address country value  */
+	/*
+	$shipping_address = WC()->session->get('custom_shipping_address');
+	echo "<pre>";
+	print_r($shipping_address);
+	echo "</pre>";
+	*/
 	// if ($checkout_country !== 'United Kingdom') {
 	// 	echo "We are United Kingdon";
 	// } else {
 	// 	echo "We are something else";
 	// }
+
 	?>
 
 
 	<?php 
-	// $custom_shipments = WC()->session->get( 'custom_shipments', [] );
-	// $custom_qty = WC()->session->get( 'custom_qty' );	
-	//echo "Custom Shipments: " . $custom_shipments . "<br>";
-	// echo "<pre>";
-	// print_r($custom_shipments);
-	// echo "</pre>";
-	// echo "Custom Qty: " . $custom_qty;
+	/* temporarily show the custom shipments */
+	/*
+	$custom_shipments = WC()->session->get( 'custom_shipments', [] );
+	$custom_qty = WC()->session->get( 'custom_qty' );	
+	echo "Custom Shipments: " . $custom_shipments . "<br>";
+	echo "<pre>";
+	print_r($custom_shipments);
+	echo "</pre>";
+	echo "Custom Qty: " . $custom_qty;
+	*/
 	?>
 	<!-- <a href="?unset_currency=1" id="unset_session">UNSET</a> -->
+
+
+	<?php 
+	/* temporarily show the sesssion 'cart_start_time' value for the cart expiry */
+	/*
+	$custom_cart_time = WC()->session->get( 'cart_start_time', [] );
+	echo "<pre>";
+	print_r($custom_cart_time);
+	echo "</pre>";
+	*/
+	?>
 
 
 

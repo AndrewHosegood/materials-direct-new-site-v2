@@ -62,7 +62,7 @@
   color: #fff !important;
   background: variables.$primary-color;
   display: table-cell;
-  padding: 5px 20px;
+  padding: 10.5px 20px;
   border-radius: 20px;
   margin-top: 0;
   display: inline-block;
@@ -87,7 +87,7 @@
     background: variables.$primary-color !important;
 }
 .shipping-address-form__hide.show {
-        display: block !important;
+        display: flex !important;
 }
 .delivery-options-shipment__display-results {
     padding: 0.8rem 0.8rem !important;
@@ -99,6 +99,9 @@
     .product-page__tabs {
         background-image: unset !important;
     }
+}
+.shipping-address-form__hide {
+    display: none !important;
 }
 /* Product page */
 

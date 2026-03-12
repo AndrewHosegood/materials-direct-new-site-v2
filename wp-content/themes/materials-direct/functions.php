@@ -437,10 +437,6 @@ require_once('includes/product-page-one-shipment-schedule-shipments-buttons.php'
 require_once('includes/show-hide-credit-account-links-in-header.php');
 /* Toggle show/hide credit account related links in header */
 
-/* Remove get the app from emails */
-require_once('includes/remove-get-the-app-from-emails.php');
-/* Remove get the app from emails */
-
 /* Custom voucher discount */
 /* I need to test that this works correctly */
 require_once('includes/custom-voucher-system-new.php');
@@ -449,6 +445,10 @@ require_once('includes/custom-voucher-system-new.php');
 /* Email Template CSS Styling */
 require_once('includes/email-template-css-styling.php');
 /* Email Template CSS Styling */
+
+/* Remove get the app from emails */
+require_once('includes/remove-get-the-app-from-emails.php');
+/* Remove get the app from emails */
 
 // Popular Products Carousel
 require_once('includes/popular-products-carousel.php');
@@ -507,16 +507,43 @@ require_once('includes/conditionally-add-styling-if-is-schedule-exists.php');
 // Conditionally add styling to woccommerce notice if is_scheduled exists
 
 // Helper function to convert currency shipping totals on cart/checkout
-require_once('includes/convert_shipping_currency_on_cart_checkout.php');
+require_once('includes/convert_shipping_currency_on_cart_checkout.php'); 
 // Helper function to convert currency shipping totals on cart/checkout
 
 // Helper function to convert currency shipping totals on cart/checkout
-require_once('includes/cart_custom_expiry.php');
+//require_once('includes/cart_custom_expiry_v2.php');
 // Helper function to convert currency shipping totals on cart/checkout
+
+// Display ajax stock quantity on product page
+require_once('includes/display-ajax-stock-quantity-on-product-page.php');
+// Display ajax stock quantity on product page
+
+// Move and fix mobile menu position when user is logged in as administrator
+require_once('includes/move-and-fix-mobile-menu-administrator.php');
+// Move and fix mobile menu position when user is logged in as administrator
+
+// Enqueue javascript 'Credit Account Processing' for admin orders page
+require_once('includes/admin-credit-account-users.php');
+// Enqueue javascript 'Credit Account Processing' for admin orders page
+
+// Cart page shipping output helper function
+/* This replaces wc_cart_totals_shipping_html() in cart-totals.php template */
+require_once('includes/shipping-totals-helper-function.php');
+// Cart page shipping output helper function
+
+// Control number of products displayed on the shop page
+require_once('includes/number-of-products-on-shop-page.php');
+// Control number of products displayed on the shop page
 
 /* TEMPORARILY REMOVE LOAD TEXTDOMAIN WARNING THAT ARE FLOODING MY LOGS */
 require_once('includes/remove_load_textdomain_logs.php');
 /* TEMPORARILY REMOVE LOAD TEXTDOMAIN WARNING THAT ARE FLOODING MY LOGS */
+
+
+
+
+
+
 
 
 // change price in schema.org json file 

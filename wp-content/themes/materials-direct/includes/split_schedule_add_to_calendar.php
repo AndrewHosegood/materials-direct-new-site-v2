@@ -14,6 +14,11 @@ function split_schedule_insert_data($order_id) {
     $dxf_url = 0;
     $ah_mcofc_fair_value = 0;
     $tax_rate = 0;
+    $item_totals = $order->get_order_item_totals(); // new
+
+    // Get the voucher discount rate
+    $voucher_discount = (float) $order->get_meta('_voucher_discount'); // Retrieve the meta value
+    // Get the voucher discount rate
 
     // Get the tax rates
     $tax_rates = [];
@@ -36,6 +41,14 @@ function split_schedule_insert_data($order_id) {
     // Get the tax rates
 
     $payment_title = $order->get_payment_method_title();
+
+    // Extract the voucher discount value
+    $discount_value = isset($item_totals['discount']) ? $item_totals['discount']['value'] : '-£0.00';
+    $numericAmount = str_replace(['-', '£'], '', $discount_value);
+    $numericAmount = preg_replace('/[^0-9.,]/', '', $discount_value);
+    echo $discount_value . "<br>";
+    echo $numericAmount . "<br>";
+    // Extract the voucher discount value
 
     if (!$order) {
         return;

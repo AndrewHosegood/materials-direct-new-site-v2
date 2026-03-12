@@ -51,8 +51,12 @@ function custom_woocommerce_email_table_styles( $css ) {
         }
         #template_body table.email-order-details .order-item-data tr td {
             padding: 8px 12px !important;
+        }  
+        #template_body table.email-order-details .order-item-data .delivery-options-list {
+            padding-left: 1rem;
         }
         #template_body table.email-order-details .order-item-data .email-order-item-meta {
+            font-size: 15px;
             margin: 10px 0;
             line-height: 170%;
         }
@@ -89,6 +93,22 @@ function custom_woocommerce_email_table_styles( $css ) {
         }
         .email-additional-content {
             display: none;
+        }
+        @media screen and (max-width: 600px) {
+            #template_header_image {
+                padding: 16px 10px 10px !important;
+            }
+        }
+        @media screen and (max-width: 600px) {
+            .email-order-detail-heading {
+                font-size: 20px !important;
+                line-height: 22px !important;
+            }
+        }
+        @media screen and (max-width: 600px) {
+                #body_content_inner, .email-order-item-meta {
+                    font-size: 15px !important;
+                }
         }
 	";
 	return $css;

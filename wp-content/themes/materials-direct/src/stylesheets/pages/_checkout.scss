@@ -197,6 +197,15 @@
     & .shop_table .coupon-2-order-value-discount .woocommerce-remove-coupon {
         display: none;
     }
+    // & .shop_table .product-total {
+    //     text-align:center;
+    // }
+    // & .shop_table .products-purchased td {
+    //     text-align:center;
+    // }
+    // & .shop_table .cart-discount td {
+    //     text-align:center;
+    // }
     & .product-quantity {
         display: none;
     }
@@ -293,8 +302,12 @@
     }
 }
 
-
-
+.woocommerce table.shop_table tfoot th {
+    font-weight: 400;
+}
+.woocommerce table.shop_table tfoot td {
+    font-weight: 400;
+}
 .woocommerce #payment #place_order, .woocommerce-page #payment #place_order {
     background: variables.$secondary-color;
     border-radius: 0;

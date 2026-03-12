@@ -257,27 +257,68 @@ function custom_price_input_fields_prefill() {
     // If is_product_single is true, skip the custom form and rely on default WooCommerce behavior
     if ($is_product_single) {
         // Output shipping address form for single products
-        echo '<div id="shipping-address-form">
-            <h3 class="product-page__subheading">Item(s) shipping address<span class="gfield_required gfield_required_asterisk">*</span></h3>
+        if(WC()->session->get('custom_shipping_address')){
+            echo '<div id="shipping-address-form-single" class="shipping-address-form__hide">';
+        } else {
+            echo '<div id="shipping-address-form-single">';
+        }
+
+        echo '<h3 class="product-page__subheading">Item(s) shipping address<span class="gfield_required gfield_required_asterisk">*</span></h3>
             <p class="address-lookup__text" style="">Please ensure your shipping address is entered correctly here. Your order may be cancelled if an incorrect country has been entered. See our <a target="_blank" href="/terms-and-conditions/#shipping">terms and conditions</a> for more information.</p>
-            <label class="custom-price-calc__label"><input class="product-page__calc-input" type="text" id="input_street_address" name="custom_street_address" placeholder="Street Address" value="' . $street_address . '" required></label>
-            <label class="custom-price-calc__label"><input class="product-page__calc-input" type="text" id="input_address_line2" name="custom_address_line2" placeholder="Address Line 2" value="' . $address_line2 . '"></label>
-            <label class="custom-price-calc__label"><input class="product-page__calc-input product-page__calc-input-small" type="text" id="input_city" name="custom_city" placeholder="City" value="' . $city . '" required></label>
-            <label class="custom-price-calc__label"><input class="product-page__calc-input product-page__calc-input-small" type="text" id="input_county_state" name="custom_county_state" placeholder="County/State" value="' . $county_state . '" required></label>
-            <label class="custom-price-calc__label"><input class="product-page__calc-input product-page__calc-input-small" type="text" id="input_zip_postal" name="custom_zip_postal" placeholder="ZIP/Postal Code" value="' . $zip_postal . '" required></label>
-            <label class="custom-price-calc__label">
-                <select id="input_country" class="product-page__calc-input product-page__calc-input-small" name="custom_country" required>
-                    <option value="United Kingdom"' . selected($country, 'United Kingdom', false) . '>United Kingdom</option>
-                    <option value="France"' . selected($country, 'France', false) . '>France</option>
-                    <option value="Germany"' . selected($country, 'Germany', false) . '>Germany</option>
-                    <option value="Monaco"' . selected($country, 'Monaco', false) . '>Monaco</option>
-                    <option value="Poland"' . selected($country, 'Poland', false) . '>Poland</option>
-                    <option value="Spain"' . selected($country, 'Spain', false) . '>Spain</option>
-                    <option value="United States"' . selected($country, 'United States', false) . '>United States</option>
-                    
-                </select>
-            </label>
-        </div>';
+            <label class="custom-price-calc__label product-page__address-1"><input class="product-page__calc-input" type="text" id="input_street_address" name="custom_street_address" placeholder="Street Address" value="' . $street_address . '" required></label>
+            <label class="custom-price-calc__label product-page__address-2"><input class="product-page__calc-input" type="text" id="input_address_line2" name="custom_address_line2" placeholder="Address Line 2" value="' . $address_line2 . '"></label>
+            <label class="custom-price-calc__label product-page__address-3"><input class="product-page__calc-input product-page__calc-input-small" type="text" id="input_city" name="custom_city" placeholder="City" value="' . $city . '" required></label>
+            <label class="custom-price-calc__label product-page__address-4"><input class="product-page__calc-input product-page__calc-input-small" type="text" id="input_county_state" name="custom_county_state" placeholder="County/State" value="' . $county_state . '" required></label>
+            <label class="custom-price-calc__label product-page__address-5"><input class="product-page__calc-input product-page__calc-input-small" type="text" id="input_zip_postal" name="custom_zip_postal" placeholder="ZIP/Postal Code" value="' . $zip_postal . '" required></label>';
+        
+            echo '<label class="custom-price-calc__label product-page__address-6">';
+            echo  '<select id="input_country" class="product-page__calc-input product-page__calc-input-small" name="custom_country" required>';
+                $countries = array(
+                    'United Kingdom' => 'United Kingdom',
+                    'Belgium'        => 'Belgium',
+                    'France'         => 'France',
+                    'Germany'        => 'Germany',
+                    'Guernsey'       => 'Guernsey',
+                    'Ireland'        => 'Ireland',
+                    'Jersey'         => 'Jersey',
+                    'Luxembourg'     => 'Luxembourg',
+                    'Monaco'         => 'Monaco',
+                    'Netherlands'    => 'Netherlands',
+                    'Poland'         => 'Poland',
+                    'Spain'          => 'Spain',
+                    'United States'  => 'United States',
+                );
+                foreach ($countries as $value => $label) {
+                    echo '<option value="' . esc_attr($value) . '"' . selected($country, $value, false) . '>' . esc_html($label) . '</option>';
+                } 
+            echo '</select>';
+
+            // BACKUP HIDDEN FIELD – this is the key fix
+            // When a saved address exists (form is hidden), this hidden input is last in the DOM
+            // so $_POST['custom_country'] will always be the session value, even if JS resets the select
+            if (WC()->session->get('custom_shipping_address')) {
+                echo '<input type="hidden" name="custom_country" value="' . esc_attr($country) . '">';
+            }
+
+            echo '</label>';
+            echo '</div>';
+
+            if(WC()->session->get('custom_shipping_address')){
+                $address = WC()->session->get('custom_shipping_address');
+                echo '<div class="shipping-address-form__saved">';
+                echo '<h3 class="product-page__subheading">Item(s) shipping address?<span class="gfield_required gfield_required_asterisk">*</span></h3>';
+                echo '<p class="shipping-address-form__saved-content">';
+                echo $address['street_address'] . "<br>";
+                echo $address['address_line2'] . "<br>";
+                echo $address['city'] . "<br>";
+                echo $address['county_state'] . "<br>";
+                echo $address['zip_postal'] . "<br>";
+                echo $address['country'];
+                echo '</p>';
+                echo '<a class="shipping-address-form-single__saved-edit">Edit Address</a>';
+                echo '</div>';
+            }
+
         echo '<input type="hidden" id="custom_price" name="custom_price" value="">';
         echo '<div id="custom_price_display"></div>';
         return;
@@ -313,11 +354,11 @@ function custom_price_input_fields_prefill() {
         <input class="product-page__tabs-input" name="tabs_input" type="radio" value="custom-shape-drawing" checked="checked" id="custom_drawing" tabindex="1">
         </label></li>
 
-        <li class="product-page__tabs-list"><label class="product-page__tabs-label">Circle<br>Radius
+        <li class="product-page__tabs-list"><label class="product-page__tabs-label">Simple<br>Circle
         <input class="product-page__tabs-input" name="tabs_input" type="radio" value="circle-radius" id="circle-radius" tabindex="0">
         </label></li>
 
-        <li class="product-page__tabs-list"><label class="product-page__tabs-label">Square<br>Rectangle
+        <li class="product-page__tabs-list"><label class="product-page__tabs-label">Simple Square<br>Rectangle
         <input class="product-page__tabs-input" name="tabs_input" type="radio" value="square-rectangle" id="square_rectangle" tabindex="0">
         </label></li>
 
@@ -335,7 +376,7 @@ function custom_price_input_fields_prefill() {
         <!-- Price Inputs -->
         <div class="product-page__grey-panel">
 
-        <p class="product-page__square-rectangle-message"><i class="fa-solid fa-circle-info product-page__square-rectangle-message-icon"></i> You are asking us to manufacture a <span id="tabs_status_message">custom shape</span><span id="tabs_status_message_2">. The roll length is <span id="tabs_status_message_3">'.$roll_length_v.'</span> metres</span>. Enter your values below</p>
+        <p class="product-page__square-rectangle-message"><i class="fa-solid fa-circle-info product-page__square-rectangle-message-icon"></i> You are asking us to manufacture a <span id="tabs_status_message">custom shape</span><span id="tabs_status_message_2">. Enter your values below</p>
 
         <!-- File Upload Fields -->
         <div id="pdf_upload_container">
@@ -565,23 +606,44 @@ function custom_price_input_fields_prefill() {
         echo '<input style="margin-top: 1rem;" name="address_lookup" id="address_lookup" type="text" value="" class="product-page__calc-input address-lookup__search-field" tabindex="41" placeholder="Start by entering your address details here..." aria-invalid="false" role="combobox" aria-describedby="pca-country-button-help-text pca-help-text" aria-autocomplete="list" aria-expanded="false" autocomplete="off">
             <h3 class="product-page__subheading">Item(s) shipping address<span class="gfield_required gfield_required_asterisk">*</span></h3>
             <p class="address-lookup__text" style="">Please ensure your shipping address is entered correctly here. Your order may be cancelled if an incorrect country has been entered. See our <a target="_blank" href="/terms-and-conditions/#shipping">terms and conditions</a> for more information.</p>
-            <label class="custom-price-calc__label"><input class="product-page__calc-input" type="text" id="input_street_address" name="custom_street_address" placeholder="Street Address" value="' . $street_address . '" required></label>
-            <label class="custom-price-calc__label"><input class="product-page__calc-input" type="text" id="input_address_line2" name="custom_address_line2" placeholder="Address Line 2" value="' . $address_line2 . '"></label>
-            <label class="custom-price-calc__label"><input class="product-page__calc-input product-page__calc-input-small" type="text" id="input_city" name="custom_city" placeholder="City" value="' . $city . '" required></label>
-            <label class="custom-price-calc__label"><input class="product-page__calc-input product-page__calc-input-small" type="text" id="input_county_state" name="custom_county_state" placeholder="County/State" value="' . $county_state . '" required></label>
-            <label class="custom-price-calc__label"><input class="product-page__calc-input product-page__calc-input-small" type="text" id="input_zip_postal" name="custom_zip_postal" placeholder="ZIP/ Postal Code" value="' . $zip_postal . '" required></label>
-            <label class="custom-price-calc__label">
-                <select id="input_country" class="product-page__calc-input product-page__calc-input-small" name="custom_country" required>
-                    <option value="United Kingdom"' . selected($country, 'United Kingdom', false) . '>United Kingdom</option>
-                    <option value="France"' . selected($country, 'France', false) . '>France</option>
-                    <option value="Germany"' . selected($country, 'Germany', false) . '>Germany</option>
-                    <option value="Monaco"' . selected($country, 'Monaco', false) . '>Monaco</option>
-                    <option value="Poland"' . selected($country, 'Poland', false) . '>Poland</option>
-                    <option value="Spain"' . selected($country, 'Spain', false) . '>Spain</option>
-                    <option value="United States"' . selected($country, 'United States', false) . '>United States</option>
-                </select>
-            </label>
-        </div>';
+            <label class="custom-price-calc__label product-page__address-1"><input class="product-page__calc-input" type="text" id="input_street_address" name="custom_street_address" placeholder="Street Address" value="' . $street_address . '" required></label>
+            <label class="custom-price-calc__label product-page__address-2"><input class="product-page__calc-input" type="text" id="input_address_line2" name="custom_address_line2" placeholder="Address Line 2" value="' . $address_line2 . '"></label>
+            <label class="custom-price-calc__label product-page__address-3"><input class="product-page__calc-input product-page__calc-input-small" type="text" id="input_city" name="custom_city" placeholder="City" value="' . $city . '" required></label>
+            <label class="custom-price-calc__label product-page__address-4"><input class="product-page__calc-input product-page__calc-input-small" type="text" id="input_county_state" name="custom_county_state" placeholder="County/State" value="' . $county_state . '" required></label>
+            <label class="custom-price-calc__label product-page__address-5"><input class="product-page__calc-input product-page__calc-input-small" type="text" id="input_zip_postal" name="custom_zip_postal" placeholder="ZIP/ Postal Code" value="' . $zip_postal . '" required></label>';
+            
+        echo '<label class="custom-price-calc__label product-page__address-6">'; 
+        echo '<select id="input_country" class="product-page__calc-input product-page__calc-input-small" name="custom_country" required>';   
+            $countries = array(
+                'United Kingdom' => 'United Kingdom',
+                'Belgium'        => 'Belgium',
+                'France'         => 'France',
+                'Germany'        => 'Germany',
+                'Guernsey'       => 'Guernsey',
+                'Ireland'        => 'Ireland',
+                'Jersey'         => 'Jersey',
+                'Luxembourg'     => 'Luxembourg',
+                'Monaco'         => 'Monaco',
+                'Netherlands'    => 'Netherlands',
+                'Poland'         => 'Poland',
+                'Spain'          => 'Spain',
+                'United States'  => 'United States',
+            );
+            foreach ($countries as $value => $label) {
+                echo '<option value="' . esc_attr($value) . '"' . selected($country, $value, false) . '>' . esc_html($label) . '</option>';
+            }
+        echo '</select>';
+
+        // BACKUP HIDDEN FIELD – this is the key fix
+        // When a saved address exists (form is hidden), this hidden input is last in the DOM
+        // so $_POST['custom_country'] will always be the session value, even if JS resets the select
+        if (WC()->session->get('custom_shipping_address')) {
+            echo '<input type="hidden" name="custom_country" value="' . esc_attr($country) . '">';
+        }
+
+        echo '</label>';
+        echo '</div>';
+
    
         
 
@@ -624,28 +686,20 @@ function calculate_secure_price() {
 
     $roll_length_v = ($roll_length > 0) ? $roll_length / 1000 : 0;
 
-    //$currency_value = (float) get_field('currency_rate_to_gbp', 1350);
-
-    // get the currency value
-    //$usd_id = 1386;
-    //$currency_symbol      = get_field('currency_symbol', $usd_id);
-    //$currency_rate_to_gbp = get_field('currency_rate_to_gbp', $usd_id);
-    // get the currency value
-
     if ($is_product_single) {
         $product = wc_get_product($product_id);
         if (!$product) {
             wp_send_json_error(['message' => 'Invalid product ID.']);
             return;
         }
-        $price = $product->get_price(); // Get default WooCommerce price
+        $price = $product->get_price(); 
         wp_send_json_success([
             'price' => round($price, 2),
             'per_part' => round($price, 2), 
-            'sheets_required' => 1, // Default to 1 sheet for single products
+            'sheets_required' => 1, 
             'stock_quantity' => $product->get_stock_quantity(),
-            'is_backorder' => false, // Single products don't use sheets, so no backorder
-            'border_around' => 0.2 // Default for single products (not used, but included for consistency)
+            'is_backorder' => false, 
+            'border_around' => 0.2 
         ]);
         return;
     }
@@ -685,6 +739,8 @@ function calculate_secure_price() {
         return;
     }
 
+    /* CODE NO LONGER NEEDED*/
+    /*
     if (!empty($_POST['street_address'])) {
         $shipping_address = [
             'street_address' => sanitize_text_field($_POST['street_address']),
@@ -696,6 +752,7 @@ function calculate_secure_price() {
         ];
         WC()->session->set('custom_shipping_address', $shipping_address);
     }
+    */
 
     $total_price = calculate_product_price($product_id, $width, $length, $qty, $discount_rate, $shape_type, $product_id);
 
@@ -727,9 +784,6 @@ function calculate_secure_price() {
     }
     /* AH rolls fix 9.12.2025 */
 
-    //$currency_rate_value  = get_currency_rate();
-    //$currency_symbol_value = get_currency_symbol();
-    // $is_backorder = $sheets_required > $stock_quantity;
 
     // SEND DATA TO algorith-core-functionality.js
     wp_send_json_success([
@@ -837,9 +891,9 @@ function calculate_scheduled_price_func() {
 
     }
 
-    $total_optional_fees = 0; //new cofc delivery options
-    foreach ($shipments as $s) { //new cofc delivery options
-        $total_optional_fees += $s['total_fee'] ?? 0; //new cofc delivery options
+    $total_optional_fees = 0; 
+    foreach ($shipments as $s) { 
+        $total_optional_fees += $s['total_fee'] ?? 0; 
     } 
 
 
@@ -874,9 +928,9 @@ function calculate_scheduled_price_func() {
 
     wp_send_json_success([
         'price' => round($total_scheduled_price, 2),
-        'per_part' => round($total_scheduled_price / $qty, 6), // Higher precision for per_part
+        'per_part' => round($total_scheduled_price / $qty, 6), 
         'per_part_base' => $per_part_base,
-        'total_optional_fees' => $total_optional_fees, //new cofc delivery options
+        'total_optional_fees' => $total_optional_fees, 
         'sheets_required' => $sheets_required,
         'stock_quantity' => $stock_quantity,
         'is_backorder' => $is_backorder,
@@ -1086,22 +1140,60 @@ function calculate_shipping_cost($total_del_weight, $country) {
             [299, PHP_INT_MAX, 341.13],
         ],
         'Europe_1' => [ // Shared tiers for France, Germany, Monaco
-            [0, 1, 54.18],
-            [1, 1.5, 61.86],
-            [1.5, 2, 65.86],
-            [2, 2.5, 69.54],
-            [2.5, 3, 73.34],
-            [3, 3.5, 77.46],
-            [3.5, 4, 81.22],
-            [4, 4.5, 85.20],
-            [4.5, 5, 88.98],
-            [5, 10, 92.94],
-            [10, 26, 126.48],
-            [26, 30, 202.10],
-            [30, 50, 221.50],
-            [50, 70, 322.42],
-            [70, 100, 423.40],
-            [100, PHP_INT_MAX, 603.40],
+            [0, 0.5, 38.01],
+            [0.5, 1, 39.83],
+            [1, 1.5, 41.66],
+            [1.5, 2.0, 43.42],
+            [2.0, 2.5, 45.01],
+            [2.5, 3, 46.59],
+            [3, 3.5, 48.16],
+            [3.5, 4, 49.75],
+            [4, 4.5, 51.31],
+            [4.5, 5, 52.86],
+            [5, 5.5, 54.41],
+            [5.5, 6, 55.94],
+            [6, 6.5, 57.49],
+            [6.5, 7, 59.04],
+            [7, 7.5, 60.57],
+            [7.5, 8, 62.12],
+            [8, 8.5, 63.65],
+            [8.5, 9, 65.20],
+            [9, 9.5, 66.75],
+            [9.5, 10, 67.78],
+            [10, 15, 78.10],
+            [15, 20, 88.61],
+            [20, 25, 100.71],
+            [25, 30, 114.54],
+            [30, 35, 129.27],
+            [35, 40, 143.99],
+            [40, 45, 158.72],
+            [45, 50, 173.43],
+            [50, 60, 202.89],
+            [60, 70, 233.82],
+            [70, 80, 278.13],
+            [80, 90, 322.45],
+            [90, 100, 366.76],
+            [100, 110, 411.08],
+            [110, 120, 455.39],
+            [120, 130, 499.71],
+            [130, 140, 544.02],
+            [140, 150, 588.34],
+            [150, 160, 632.65],
+            [160, 170, 676.97],
+            [170, 180, 721.28],
+            [180, 190, 765.59],
+            [190, 200, 809.91],
+            [200, 210, 854.22],
+            [210, 220, 898.54],
+            [220, 230, 942.85],
+            [230, 240, 987.17],
+            [240, 250, 1031.48],
+            [250, 260, 1075.80],
+            [260, 270, 1120.11],
+            [270, 280, 1164.43],
+            [280, 290, 1208.74],
+            [290, 299, 1248.63],
+            [299, PHP_INT_MAX, 1288.74],
         ],
         'Europe_2' => [ // Shared tiers for Spain
             [0, 1, 58.56],
@@ -1162,9 +1254,15 @@ function calculate_shipping_cost($total_del_weight, $country) {
     // Map countries to cost tier groups
     $country_groups = [
         'United Kingdom' => 'United Kingdom',
+        'Belgium' => 'Europe_1',
         'France' => 'Europe_1',
         'Germany' => 'Europe_1',
+        'Guernsey' => 'Europe_1',
+        'Ireland' => 'Europe_1',
+        'Jersey' => 'Europe_1',
+        'Luxembourg' => 'Europe_1',
         'Monaco' => 'Europe_1',
+        'Netherlands' => 'Europe_1',
         'Poland' => 'Europe_3',
         'Spain' => 'Europe_2',
         'United States' => 'America_1',
@@ -1173,9 +1271,15 @@ function calculate_shipping_cost($total_del_weight, $country) {
     // Get the appropriate cost tier based on country
     switch ($country) {
         case 'United Kingdom':
+        case 'Belgium':
         case 'France':
         case 'Germany':
+        case 'Guernsey':  
+        case 'Ireland':
+        case 'Jersey':
+        case 'Luxembourg':            
         case 'Monaco':
+        case 'Netherlands':    
         case 'Poland':
         case 'Spain':
         case 'United States':
@@ -1861,8 +1965,12 @@ function init_custom_shipping_method() {
                     $total_shipping = 0;
                     foreach ($shipping_by_date as $date => $data) {
                         $total_shipping += floatval($data['final_shipping'] ?? 0);
+                        // if ($total_shipping > 0) {
+                        //     $clean_cost = round(floatval($total_shipping), 2);
+                        // }
                     }
                     error_log("Custom shipping method using live calculation for normal cart: £{$total_shipping}");
+                    error_log("Custom shipping passed value: £{$data['final_shipping']}");
                 }
 
                 // === ADD THE RATE ===
@@ -2151,9 +2259,15 @@ function add_custom_shipping_to_order($order, $data) {
         // Map full country names to ISO country codes for WooCommerce
         $country_codes = [
             'United Kingdom' => 'GB',
+            'Belgium' => 'BE',
             'France' => 'FR',
             'Germany' => 'DE',
+            'Guernsey' => 'GG',
+            'Ireland' => 'IE',
+            'Jersey' => 'JE',
+            'Luxembourg' => 'LU',
             'Monaco' => 'MC',
+            'Netherlands' => 'NL',
             'Poland' => 'PL',
             'Spain' => 'ES',
             'United States' => 'US',
@@ -2640,7 +2754,7 @@ function save_shipping_address_to_order_item($item, $cart_item_key, $values, $or
 
 
 // DISPLAY SHIPPING ADDRESS/NOTES IN ORDER EMAILS
-
+/*
 add_action('woocommerce_email_customer_details', 'add_custom_shipping_address_below_billing', 25, 4);
 function add_custom_shipping_address_below_billing($order, $sent_to_admin, $plain_text, $email) {
     // Loop through order items to find the first shipping address
@@ -2675,11 +2789,11 @@ function add_custom_shipping_address_below_billing($order, $sent_to_admin, $plai
 
 echo '<div class="custom-order-details" style="margin-top:10px;">';
         if ($despatch_notes) {
-            echo '<h3>Despatch Notes</h3>';
+            echo '<h3>Despatch Notes?</h3>';
             echo '<p>' . esc_html($despatch_notes) . '</p>';
         }
         if ($shipping_address) {
-            echo '<h3>Shipping Address</h3>';
+            echo '<h3>Shipping Address?</h3>';
             echo esc_html($shipping_address['street_address']) . '<br>';
             if (!empty($shipping_address['address_line2'])) {
                 echo esc_html($shipping_address['address_line2']) . '<br>';
@@ -2691,7 +2805,7 @@ echo '<div class="custom-order-details" style="margin-top:10px;">';
 
     }
 }
-
+*/
 // DISPLAY SHIPPING ADDRESS/NOTES IN ORDER EMAILS
 
 
@@ -2964,9 +3078,15 @@ function set_custom_shipping_country_for_tax_calculation() {
             // Map full country names to ISO country codes for WooCommerce
             $country_codes = [
                 'United Kingdom' => 'GB',
+                'Belgium' => 'BE',
                 'France' => 'FR',
                 'Germany' => 'DE',
+                'Guernsey' => 'GG',
+                'Ireland' => 'IE',
+                'Jersey' => 'JE',
+                'Luxembourg' => 'LU',
                 'Monaco' => 'MC',
+                'Netherlands' => 'NL',
                 'Poland' => 'PL',
                 'Spain' => 'ES',
                 'United States' => 'US',
