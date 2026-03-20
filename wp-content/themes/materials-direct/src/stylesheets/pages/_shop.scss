@@ -162,6 +162,27 @@
     & .woocommerce-products-header {
         display: none;
     }
+    & .woocommerce-ordering .orderby {
+        border-radius: 0;
+        border: 1px solid #ddd;
+        font-size: 0.88rem;
+        margin-right: 0;
+        @include breakpoints.iphone {
+            margin-right: 0.7rem;
+        }
+        padding: 0.25rem 0.5rem;
+        margin-top: 1rem;
+        background: white;
+    }
+     & .woocommerce-ordering .orderby:focus-visible {
+        outline: 0;
+     }
+     & .woocommerce-result-count, .woocommerce-page .woocommerce-result-count {
+        margin-top: 0.6rem;
+        @include breakpoints.tablet {
+            margin-top: 0;
+        }
+     }
 }
 
 @keyframes image_links_active {

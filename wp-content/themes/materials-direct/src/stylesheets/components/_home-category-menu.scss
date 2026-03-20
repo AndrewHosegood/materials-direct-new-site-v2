@@ -78,6 +78,9 @@
             width: 48.8%;
             padding: 0.7rem;
         }
+        @include breakpoints.tablet {
+            width: 32%
+        }
         @include breakpoints.laptop {
             width: 24%
         }

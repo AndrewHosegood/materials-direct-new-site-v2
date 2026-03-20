@@ -44,7 +44,22 @@ function update_order_status() {
 
     $order = wc_get_order($order_no);
   	$customer_email_send = $order->get_billing_email();
-  	$admin_email_send = "andrewh@materials-direct.com";
+    $emails = [];
+    if (have_rows('delivery_note_emails_customer', 'option')) {
+        while (have_rows('delivery_note_emails_customer', 'option')) {
+            the_row();
+            $email = get_sub_field('delivery_note_email_customer');
+            if ($email && is_email($email)) {           // basic validation
+                $emails[] = trim($email);
+            }
+        }
+    }
+    $admin_email_send = implode(', ', $emails);
+
+    if (empty($admin_email_send)) {
+        $admin_email_send = 'andrewh@materials-direct.com';     
+    }
+
     $totals_html = '';
     $mcf_v_sum = 0;
     $subtotal_sum = 0;
@@ -679,7 +694,10 @@ function update_order_status() {
                             $discount_rate = 0;
                         }
             
-        
+            
+                        // if($rolls_value == "Rolls"){
+                        //     $schedule_qty = $schedule_qty * $rolls_length;
+                        // }
 
                         //calculate subtotal
                         $total_1 = $cost_per_part_raw * $schedule_qty;

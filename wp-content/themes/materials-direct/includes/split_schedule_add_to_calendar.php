@@ -6,6 +6,7 @@ function split_schedule_insert_data($order_id) {
     $domain = $_SERVER['HTTP_HOST'];
     $table_name = $wpdb->prefix . 'split_schedule_orders';
     $order = wc_get_order($order_id);
+    
     $my_shipping_response_calc = 0;
     $custom_fee_total = 0;
     $cart_discount_percent = 0;
@@ -14,7 +15,9 @@ function split_schedule_insert_data($order_id) {
     $dxf_url = 0;
     $ah_mcofc_fair_value = 0;
     $tax_rate = 0;
-    $item_totals = $order->get_order_item_totals(); // new
+
+    $item_totals = $order->get_order_item_totals();
+    $customer_email = $order->get_billing_email();
 
     // Get the voucher discount rate
     $voucher_discount = (float) $order->get_meta('_voucher_discount'); // Retrieve the meta value
@@ -22,7 +25,6 @@ function split_schedule_insert_data($order_id) {
 
     // Get the tax rates
     $tax_rates = [];
-
     foreach ($order->get_tax_totals() as $tax) {
         $tax_rates[] = [
             'rate' => $tax->rate_id, // This is the tax rate ID
@@ -35,9 +37,7 @@ function split_schedule_insert_data($order_id) {
         }
         
     }
-    
     $tax_rate = str_replace('%', '', $tax_rate);
-
     // Get the tax rates
 
     $payment_title = $order->get_payment_method_title();
@@ -46,8 +46,6 @@ function split_schedule_insert_data($order_id) {
     $discount_value = isset($item_totals['discount']) ? $item_totals['discount']['value'] : '-£0.00';
     $numericAmount = str_replace(['-', '£'], '', $discount_value);
     $numericAmount = preg_replace('/[^0-9.,]/', '', $discount_value);
-    echo $discount_value . "<br>";
-    echo $numericAmount . "<br>";
     // Extract the voucher discount value
 
     if (!$order) {
@@ -73,6 +71,38 @@ function split_schedule_insert_data($order_id) {
     $order_items = $order->get_items();
     $scheduled_item_index = 0; // To generate unique invoice suffix
     $has_inserted = false;
+
+
+
+    // ====================== NEW AVERAGED SHIPPING LOGIC ======================
+    // Count total number of scheduled deliveries across ALL products
+    $total_delivery_count = 0;
+    foreach ($order_items as $item) {
+        if ($item->get_meta('is_scheduled') != 1) {
+            continue;
+        }
+        $despatch_string = trim($item->get_meta('despatch_string'));
+        if (empty($despatch_string)) {
+            continue;
+        }
+
+        $pattern_count = '/([\d,]+),\s*(\d{2}\/\d{2}\/\d{4})/';
+        preg_match_all($pattern_count, $despatch_string, $count_matches);
+        $total_delivery_count += count($count_matches[0]);
+    }
+
+    // Calculate average shipping per delivery
+    $average_shipping = ($total_delivery_count > 0)
+        ? round($shipping_total / $total_delivery_count, 3)   // or use 2 for standard money rounding
+        : 0;
+
+    // Debug (remove after testing)
+    // echo '<pre>Total deliveries across order: ' . $total_delivery_count . '<br>';
+    // echo 'Total shipping: £' . $shipping_total . '<br>';
+    // echo 'Average shipping per delivery: £' . number_format($average_shipping, 3) . '</pre>';
+    // ====================== END NEW LOGIC ======================
+
+
       
 
     if($order){
@@ -83,7 +113,6 @@ function split_schedule_insert_data($order_id) {
             }
 
             $despatch_string = trim($item->get_meta('despatch_string'));
-            echo "Despatch String: " . $despatch_string;
 
             if (empty($despatch_string)) {
                 continue;
@@ -94,7 +123,6 @@ function split_schedule_insert_data($order_id) {
             $product      = $item->get_product();
             $sku          = $product ? $product->get_sku() : '';
             $product_name = str_replace('™', '', $item->get_name());
-
             $invoice_no   = 50101 + intval($order_id) . "-" . $scheduled_item_index;
 
             // Dimensions
@@ -124,26 +152,10 @@ function split_schedule_insert_data($order_id) {
             $schedule = 0;
             $loop_iteration = 0;
 
-            // shipping
-            $shipping_costs = [];
 
-            foreach ( $order->get_items( 'shipping' ) as $shipping_item ) {
-                $meta_values = $shipping_item->get_meta( 'ah_shipping_cost', false );
-            
-                foreach ( $meta_values as $meta ) {
-                    $shipping_costs[] = (float) $meta->value;
-                }
-            }
-
-
-
-            //$meta_shipping_qty = count($shipping_costs);
 
             // Lets calculate the meta shipping quantity
             $shipments_new   = $item->get_meta('despatch_date', true);
-            //print_r($meta_shipping_qty);
-
-            
 
             $discount_meta = $item->get_meta('_advanced_woo_discount_item_total_discount', true);
             if (!empty($discount_meta['cart_discount_details'])) {
@@ -177,56 +189,66 @@ function split_schedule_insert_data($order_id) {
             }
 
             $delivery_count = count($matches);
-
             $stock_quantity = $item->get_meta('stock_quantity');
-            //$item->get_meta('is_backorder')
+
             if($stock_quantity <= 0){
                 $my_backorder = 1;
             } else {
                 $my_backorder = 0;
             }
 
-            //echo $my_backorder;
 
             foreach ($matches as $index => $match) {
                 $schedule_qty  = (int) str_replace(',', '', $match[1]);
-                //$dates_count = 9999;
                 $schedule = "part " . ($index + 1) . " of " . $delivery_count;
                 $my_date       = trim($match[2]);
                 $discount_rate = (float) $match[3];
                 $discount_rate_v = $discount_rate * 100;
                 $fees_section  = trim($match[4]); // May contain multiple fees separated by commas
+                
 
                 // lets extract the meta shipping values
+                $meta_shipping_qty = 1;
                 if (isset($shipments_new[$my_date])) {
                     $shipment_data = $shipments_new[$my_date];
                     $meta_shipping_qty = $shipment_data['qty'];
-                    //echo '<br>' . $meta_shipping_qty . '<br>';
                 }
                 // lets extract the meta shipping values
 
                 $loop_iteration++;
 
                 // Parse all fee entries in this section
-                $fee_names  = [];
+                $fee_names = [];
                 $total_fee_value = 0.0;
 
                 if (!empty($fees_section)) {
-                    // Split by comma, but only outside of the £ values
-                    // Safer: match each individual "Text £XX.XX"
-                    preg_match_all('/([^£]+?)£([\d\.]+)/', $fees_section, $fee_matches, PREG_SET_ORDER);
-
+                    // Improved regex: handles possible extra commas/spaces better
+                    preg_match_all('/\s*([^£,]+?)\s*£([\d\.]+)/', $fees_section, $fee_matches, PREG_SET_ORDER);
+                    
                     foreach ($fee_matches as $fee_match) {
-                        $name = trim($fee_match[1]);
+                        $name = trim($fee_match[1]);           // remove leading/trailing spaces
                         $value = (float) $fee_match[2];
-
-                        $fee_names[] = $name;
-                        $total_fee_value += $value;
+                        
+                        if ($name !== '') {                    // skip completely empty names
+                            $fee_names[] = $name;
+                            $total_fee_value += $value;
+                        }
                     }
                 }
 
+                // Build clean key for lookup - NO extra commas
+                $mcofc_fair_string = !empty($fee_names) 
+                    ? implode(', ', $fee_names) 
+                    : '';
+
+
+
+
                 // Build comma-separated string of fee names
                 $mcofc_fair_string = !empty($fee_names) ? implode(', ', $fee_names) : '';
+
+                // echo "<h2 style='color: blue;'>" .$mcofc_fair_string. "</h2>";
+
 
                 // Hardcoded label
                 $mcofc_fair = 'COFC\'s';
@@ -243,9 +265,12 @@ function split_schedule_insert_data($order_id) {
 
                 $last = ($loop_iteration === $delivery_count) ? 1 : 0;
 
-                $delivery_shipping = isset($shipping_costs[$index]) 
-                    ? $shipping_costs[$index] 
-                    : ($delivery_count > 0 ? $shipping_total / $delivery_count : $shipping_total);
+                // NEW: Use the averaged shipping value for every delivery
+                $delivery_shipping = $average_shipping;
+
+                // $delivery_shipping = isset($product_shipping_costs[$index])
+                //     ? $product_shipping_costs[$index]
+                //     : ($delivery_count > 0 ? $shipping_total / $delivery_count : $shipping_total);
 
                 // Final simplified data array
                 $data = [
@@ -260,8 +285,8 @@ function split_schedule_insert_data($order_id) {
                         'order_count'           => $scheduled_item_index,
                         'delivery_count'        => $delivery_count,
                         'discount_rate'         => $discount_rate_v,
-                        'voucher_code'          => 0,
-                        'voucher_percent'       => 0,
+                        'voucher_code'          => $numericAmount,
+                        'voucher_percent'       => $voucher_discount,
                         'on_backorder'          => $my_backorder,
                         'cost_per_part'         => $item->get_meta('price'),
                         'cost_per_part_raw'     => $item->get_meta('cost_per_part'),
@@ -281,7 +306,7 @@ function split_schedule_insert_data($order_id) {
                         'shipping_weights'      => $item->get_meta('total_del_weight'), 
                         'shipping_duplicates'   => 0, 
                         'meta_shipping_qty'     => $meta_shipping_qty, // get the count of the weight values
-                        'meta_shipping_total'   => $delivery_shipping, //get the weights values
+                        'meta_shipping_total'   => $delivery_shipping, // ← Averaged value
                         'dimension_type'        => 'mm',
                         'width'                 => $width,
                         'length'                => $length,
@@ -297,7 +322,6 @@ function split_schedule_insert_data($order_id) {
                         'last'                  => $last, //
                         'cart_discount_price'   => $cart_discount_price,
                         'cart_discount_percent' => $cart_discount_percent,
-
                         'mcofc_fair'          => $mcofc_fair,
                         'mcofc_fair_string'   => $mcofc_fair_string,
                         'mcofc_fair_value'    => $mcofc_fair_value,
@@ -316,7 +340,10 @@ function split_schedule_insert_data($order_id) {
 
                 // Insert into database
                 $result = $wpdb->insert($table_name, $data);
-                $email = 'andrew.hosegood@sky.com'; // email address for paul
+
+                $pauls_email = get_field('email_to_paul', 'option') ?: 'andrewh@materials-direct.com'; // Retrieve the ACF field email addresses from backend for paul
+                $email = 'andrewh@materials-direct.com'; // email address for inser failure email
+
                 $Subject_message_error = 'Split & Schedule Order( Database Error )';
 
                 if ($result === false) {
@@ -336,10 +363,10 @@ function split_schedule_insert_data($order_id) {
                 } else {
                     echo "Data inserted successfully into the database.";
                     $has_inserted = true;
-                    error_log('Split schedule INSERT SUCCESS: ID ' . $wpdb->insert_id . ' | Data: ' . print_r($data, true));
                     $requiredDate = date("F d Y", strtotime($formattedDateNew));
+
                     // Send email to Paul
-                    $to = $email;
+                    $to = $pauls_email;
                     $subject = 'Delivery Options ('.$schedule.')';
                     $message = '<h2 style="display: block; font-family: &quot;Helvetica Neue&quot;, Helvetica, Roboto, Arial, sans-serif; font-weight: bold; line-height: 130%; margin: 0 0 18px; text-align: left; font-size: 26px; color: #000000;">Delivery Options Order ('.$schedule.')</h2>';
                     $message .= '<h3 style="display: block; font-family: &quot;Helvetica Neue&quot;, Helvetica, Roboto, Arial, sans-serif; font-weight: bold; line-height: 130%; margin: 0 0 18px; text-align: left; font-size: 22px; color: #000000;">Scheduled Date: '.$requiredDate.'</h3>';
@@ -420,9 +447,6 @@ function split_schedule_insert_data($order_id) {
                     $date_time = new DateTime($date_string);
                     $order_date_formatted = $date_time->format('F j, Y');
                 }
-
-
-                $customer_email = "andrew.hosegood@sky.com";
 
 
 
@@ -601,9 +625,10 @@ function split_schedule_insert_data($order_id) {
                             $vat_percent = 20;
                             $vat_display_new = ($vat_display_customer * $vat_percent) / 100;
 
-                            if($rolls_value == "Rolls"){
-                                $schedule_qty = $schedule_qty * $rolls_length;
-                            }
+
+                            // if($rolls_value == "Rolls"){
+                            //     $schedule_qty = $schedule_qty * $rolls_length;
+                            // }
     
                             if (!isset($voucher_code) || $voucher_code <= 0) {
                                 $discount_code_value_new = 0;
@@ -635,42 +660,39 @@ function split_schedule_insert_data($order_id) {
                             $voucher_percent = $cppnew * $voucher_discount;
     
     
-                            if($meta_qty_2 > 1){
-                                $my_shipping_response = $meta_shipping_total_2 / $meta_qty_2;
-                                $my_shipping_response_calc += $meta_shipping_total_2 / $meta_qty_2;
-                            } else {
-                                $my_shipping_response = $meta_shipping_total_2;
-                                $my_shipping_response_calc += $meta_shipping_total_2;
-                            }
+                            // if($meta_qty_2 > 1){
+                            //     $my_shipping_response = $meta_shipping_total_2 / $meta_qty_2;
+                            //     $my_shipping_response_calc += $meta_shipping_total_2 / $meta_qty_2;
+                            // } else {
+                            //     $my_shipping_response = $meta_shipping_total_2;
+                            //     $my_shipping_response_calc += $meta_shipping_total_2;
+                            // }
+
+                            $my_shipping_response = $meta_shipping_total_2;
+                            $my_shipping_response_calc += $meta_shipping_total_2;
                             
                             // Get the fair values
                             $prices = [
-                                'Manufacturers COFC'              => 10,
-                                'Materials Direct COFC'           => 12.50,
-                                'First Article Inspection Report' => 95,
+                                'Manufacturers COFC'                          => 10,
+                                'Materials Direct COFC'                       => 12.50,
+                                'First Article Inspection Report'             => 95,
+                                'Manufacturers COFC, First Article Inspection Report' => 105,
+                                'Manufacturers COFC, First Article Inspection Report, Materials Direct COFC' => 117.5,
+                                'Manufacturers COFC, Materials Direct COFC' => 22.5,
+                                'First Article Inspection Report, Materials Direct COFC' => 107.5,
                             ];
 
-                            $mcofc_fair_numeric = $prices[$mcofc_fair_string] ?? 0;
-                            // preg_match_all('/(?:[a-zA-Z ]+?COFC|FAIR)/', $mcofc_fair_string, $mcofc_matches);
+                            // Normalize the string before lookup (remove any double commas/spaces)
+                            $lookup_key = trim(preg_replace('/\s*,\s*,+\s*/', ', ', $mcofc_fair_string));
+                            $lookup_key = preg_replace('/\s+/', ' ', $lookup_key);   // collapse multiple spaces
 
-                            // $mcofc_fair_numeric = 0;
-    
-                            // foreach ($mcofc_matches[0] as $mcofc_match) {
-    
-                            //     if($mcofc_match == "Manufacturers COFC"){
-                            //         $match_number = 10;
-                            //         $match_value = $mcofc_match . "- £" . $match_number;
-                            //     } elseif($mcofc_match == "First Article Inspection Report"){
-                            //         $match_number = 95;
-                            //         $match_value = $mcofc_match . "- £" . $match_number;
-                            //     } else {
-                            //         $match_number = 12.50;
-                            //         $match_value = $mcofc_match . "- £" . $match_number;
-                            //     }
-    
-                            //     $mcofc_fair_numeric += $match_number;
-    
-                            // }
+                            $mcofc_fair_numeric = $prices[$lookup_key] ?? 0;
+
+                            // echo "<h2 style='color:purple;'>Raw mcofc_fair_string: [" . htmlspecialchars($mcofc_fair_string) . "]</h2>";
+                            // echo "<h2 style='color:orange;'>Lookup key: [" . htmlspecialchars($lookup_key) . "]</h2>";
+                            
+                            /* NEW CODE */
+
                             // Get the fair values
 
                             $vat_amount = $cppnew + $my_shipping_response - $tf_3 + $md_value_final + $mcofc_fair_numeric - $voucher_percent; 
@@ -716,30 +738,49 @@ function split_schedule_insert_data($order_id) {
                             $message_3 .= '<p style="margin: 0; padding: 0;">Shipping Weight: '.$row['shipping_weights'].'kg</p>';
                             $message_3 .= '<p style="margin: 0; padding: 0;">Discount: '.$discount_rate.'%</p>';
 
-                            // foreach ($mcofc_matches[0] as $mcofc_match) {
-                            //     if($mcofc_match == "Manufacturers COFC"){
-                            //         $match_number = 10;
-                            //         $match_value = $mcofc_match . "- £" . $match_number;
-                            //     } elseif($mcofc_match == "FAIR"){
-                            //         $match_number = 95;
-                            //         $match_value = $mcofc_match . "- £" . $match_number;
-                            //     } else {
-                            //         $mcofc_match = ltrim($mcofc_match);
-                            //         $match_number = 12.50;
-                            //         $match_value = $mcofc_match . "- £" . $match_number;
-                            //     }
-                            //     $message_3 .= '<p style="margin: 0; padding: 0;">('.$match_value.') </p>';
-                            // }
+                            /* OLD CODE */
+                            /*
+                            foreach ($mcofc_matches[0] as $mcofc_match) {
+                                if($mcofc_match == "Manufacturers COFC"){
+                                    $match_number = 10;
+                                    $match_value = $mcofc_match . "- £" . $match_number;
+                                } elseif($mcofc_match == "FAIR"){
+                                    $match_number = 95;
+                                    $match_value = $mcofc_match . "- £" . $match_number;
+                                } else {
+                                    $mcofc_match = ltrim($mcofc_match);
+                                    $match_number = 12.50;
+                                    $match_value = $mcofc_match . "- £" . $match_number;
+                                }
+                                $message_3 .= '<p style="margin: 0; padding: 0;">('.$match_value.') </p>';
+                            }
+                                */
+                            /* OLD CODE */
+
+                            /* NEW CODE */
                             if($mcofc_fair_numeric == "10.00"){
                                 $mcofc_fair_numeric_title = "Manufacturers COFC";
                             } elseif($mcofc_fair_numeric == "95.00"){
                                 $mcofc_fair_numeric_title = "First Article Inspection Report";
                             } else {
                                 $mcofc_fair_numeric_title = "Materials Direct COFC";
-                            }   
+                            }  
+                            /* NEW CODE */
+
                             $message_3 .= '<p style="margin: 0; padding: 0;">('.$mcofc_fair_numeric_title.' - £'.$mcofc_fair_numeric.') </p>';
                             $message_3 .= '<p style="margin: 0; padding: 0;"><strong style="color:#ef9003;">Products Purchased Subtotal: £'.$subtotal_display.'</strong></p>';
-                            $message_3 .= '<p style="margin: 0; padding: 0;"><strong>Total Price: £'.number_format($total_final, 2).'</strong></p><br>';
+                            $message_3 .= '<p style="margin: 0; padding: 0;"><strong>Total Price: £'.number_format($total_final, 2).'</strong></p><br><br>';
+
+                            /* TEMP TO DELETE */
+                            // $message_3 .= '<p style="margin: 0; padding: 0;"><strong>subtotal: £'.number_format($subtotal, 2).'</strong></p><br>';
+                            // $message_3 .= '<p style="margin: 0; padding: 0;"><strong>my_shipping_response: £'.number_format($my_shipping_response, 2).'</strong></p><br>';
+                            // $message_3 .= '<p style="margin: 0; padding: 0;"><strong>vat_display: £'.number_format($vat_display, 2).'</strong></p><br>';
+                            // $message_3 .= '<p style="margin: 0; padding: 0;"><strong>tf_3: £'.number_format($tf_3, 2).'</strong></p><br>';
+                            // $message_3 .= '<p style="margin: 0; padding: 0;"><strong>md_value_final: £'.number_format($md_value_final, 2).'</strong></p><br>';
+                            // $message_3 .= '<p style="margin: 0; padding: 0;"><strong>mcofc_fair_numeric: £'.number_format($mcofc_fair_numeric, 2).'</strong></p><br>';
+                            // $message_3 .= '<p style="margin: 0; padding: 0;"><strong>voucher_percent: £'.number_format($voucher_percent, 2).'</strong></p><br>';
+
+
 
 
                         } // end foreach
@@ -763,6 +804,17 @@ function split_schedule_insert_data($order_id) {
                     /* Calculate the final VAT for display */
 
 
+
+
+
+        } else {
+            echo "3";
+        } //end if is_scheduled_check
+    } // END FOREACH
+
+
+
+    // EMAIL GENERATION CODE GOES IN HERE
                 $message_3 .= '</ul>';
                 $message_3 .= '</td>';
 
@@ -777,7 +829,7 @@ function split_schedule_insert_data($order_id) {
 
                 $message_3 .= '<tr>';
                 $message_3 .= '<th class="td" scope="row" style="color: #ef9003; border: 1px solid #e5e5e5; vertical-align: middle; text-align: left;">Products Purchased:</th>';
-                $message_3 .= '<td class="td" style="color: #ef9003; border: 1px solid #e5e5e5; vertical-align: middle; text-align: center;"><strong>£1,180.52</strong></td>';
+                $message_3 .= '<td class="td" style="color: #ef9003; border: 1px solid #e5e5e5; vertical-align: middle; text-align: center;"><strong>£'.number_format($order->get_subtotal(), 2).'</strong></td>';
                 $message_3 .= '</tr>';
                 
                 if(isset($cart_discount_percent)){
@@ -802,7 +854,7 @@ function split_schedule_insert_data($order_id) {
                 if($discount_code_value_new != 0){
                     $message_3 .= '<tr>';
                     $message_3 .= '<th class="td" scope="row" style="color: #636363; border: 1px solid #e5e5e5; vertical-align: middle; text-align: left;">Discount Code:</th>';
-                    $message_3 .= '<td class="td" style="color: #636363; border: 1px solid #e5e5e5; vertical-align: middle; text-align: center;"><span class="woocommerce-Price-amount amount"><span class="woocommerce-Price-currencySymbol">£-</span>'.number_format($voucher_code, 2).'</span></td>';
+                    $message_3 .= '<td class="td" style="color: #636363; border: 1px solid #e5e5e5; vertical-align: middle; text-align: center;"><span class="woocommerce-Price-amount amount"><span class="woocommerce-Price-currencySymbol">£-</span>'.number_format((float)$voucher_code, 2).'</span></td>';
                     $message_3 .= '</tr>';
                 }
 
@@ -874,12 +926,22 @@ function split_schedule_insert_data($order_id) {
                 $message_3 .= '</tbody>';
                 $message_3 .= '</table>';
 
-                //echo $message_3;
-
                 $subject_3 = 'Order Acknowledgement[#' .$order_id. ']'; 
-                $headers_3 = array('Content-Type: text/html; charset=UTF-8');
 
-                $mail_sent_3 = wp_mail( $customer_email, $subject_3, $message_3, $headers_3);
+                // Retrieve the ACF field email addresses from backend
+                $admin_email = get_field('delivery_options_order_acknowledgement_admin_email', 'option') ?: 'andrewh@materials-direct.com';
+                $bcc_email   = get_field('delivery_options_order_acknowledgement_bcc_email', 'option') ?: 'andrewh@materials-direct.com';
+
+
+                $to_new = $customer_email . ", " . $admin_email;
+
+
+                $headers_3 = array(
+                    'Content-Type: text/html; charset=UTF-8',
+                    'Bcc: ' . $bcc_email
+                );
+
+                $mail_sent_3 = wp_mail( $to_new, $subject_3, $message_3, $headers_3);
 
                 if ($mail_sent_3) {
                     echo "Email with invoice sent successfully.";
@@ -888,14 +950,7 @@ function split_schedule_insert_data($order_id) {
                 } else {
                     echo "Error sending invoice email.";
                 }
-
-
-        } else {
-            echo "3";
-        } //end if is_scheduled_check
-    }
-
-
+    // EMAIL GENERATION CODE GOES IN HERE
 
 
     // Mark as processed to prevent duplicates
@@ -910,9 +965,9 @@ function split_schedule_insert_data($order_id) {
         wc_print_notices();
     }
 
-    echo '<pre>';
-    print_r( $order->get_data() );
-    echo '</pre>';
+    // echo '<pre>';
+    // print_r( $order->get_data() );
+    // echo '</pre>';
 
 }
 

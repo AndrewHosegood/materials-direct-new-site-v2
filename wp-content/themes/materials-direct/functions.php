@@ -166,8 +166,17 @@ function materials_direct_scripts() {
 	wp_enqueue_style( 'materials-direct-style', get_stylesheet_uri(), array(), _S_VERSION );
 	wp_style_add_data( 'materials-direct-style', 'rtl', 'replace' );
 
-	//wp_enqueue_script( 'materials-direct-navigation', get_template_directory_uri() . '/js/navigation.js', array(), _S_VERSION, true );
-	wp_enqueue_script( 'materials-direct-scripts', get_template_directory_uri() . '/js/scripts.js', array(), _S_VERSION, true );
+	$js_file = get_template_directory() . '/js/scripts.js';
+	$version = file_exists( $js_file ) ? filemtime( $js_file ) : '1.0';
+
+	wp_enqueue_script(
+		'materials-direct-scripts',
+		get_template_directory_uri() . '/js/scripts.js',
+		array(),
+		$version,
+		true
+	);
+
 	wp_enqueue_script( 'owl-scripts', get_template_directory_uri() . '/js/owl.carousel.min.js', array(), _S_VERSION, true );
 
 	if ( is_singular() && comments_open() && get_option( 'thread_comments' ) ) {
@@ -389,9 +398,10 @@ require_once('includes/custom-product-page-featured-image.php');
 require_once('includes/remove-heading-from-my-accounts-page.php');
 /* Remove h1 heading from the my-accounts page */
 
-/* Remove the shop/category sorting select menu */
-require_once('includes/remove-category-shop-sorting-menu.php');
-/* Remove the shop/category sorting select menu */
+
+// Load stock quantity dynamically on page load with ajax
+//require_once('includes/remove-category-shop-sorting-menu.php'); // removed this function which hides default woocommerce sorting
+// Load stock quantity dynamically on page load with ajax 
 
 /* Display custom banner on my-accounts page */
 require_once('includes/my-accounts-page-custom-banner.php');
@@ -510,10 +520,6 @@ require_once('includes/conditionally-add-styling-if-is-schedule-exists.php');
 require_once('includes/convert_shipping_currency_on_cart_checkout.php'); 
 // Helper function to convert currency shipping totals on cart/checkout
 
-// Helper function to convert currency shipping totals on cart/checkout
-//require_once('includes/cart_custom_expiry_v2.php');
-// Helper function to convert currency shipping totals on cart/checkout
-
 // Display ajax stock quantity on product page
 require_once('includes/display-ajax-stock-quantity-on-product-page.php');
 // Display ajax stock quantity on product page
@@ -535,11 +541,17 @@ require_once('includes/shipping-totals-helper-function.php');
 require_once('includes/number-of-products-on-shop-page.php');
 // Control number of products displayed on the shop page
 
+// Clear address button on product page
+require_once('includes/clear_address_button_on_product_page.php');
+// Clear address button on product page
+
+// Custom shop page select menu filter
+require_once('includes/custom-shop-page-select-filter.php');
+// Custom shop page select menu filter
+
 /* TEMPORARILY REMOVE LOAD TEXTDOMAIN WARNING THAT ARE FLOODING MY LOGS */
 require_once('includes/remove_load_textdomain_logs.php');
 /* TEMPORARILY REMOVE LOAD TEXTDOMAIN WARNING THAT ARE FLOODING MY LOGS */
-
-
 
 
 
@@ -594,7 +606,7 @@ require_once('includes/add_split_schedule_status_to_woocommerce_orders.php');
 require_once('includes/split_schedule_calendar.php');
 require_once('includes/split_schedule_admin.php');
 //require_once('includes/admin-email-split-schedule-data.php'); // for displaying the split schedule breakdown on the emails
-require_once('includes/admin-email-split-schedule-data-v3.php');
+require_once('includes/admin-email-split-schedule-data-v4.php');
 require_once('includes/enqueue-ajax-for-calendar-admin.php'); // Enqueue ajax for calendar admin *
 require_once('includes/ajax-for-calendar-admin-new.php'); // Enqueue ajax for calendar admin *
 require_once('includes/ajax-for-calendar-admin-merged-dates.php'); // Enqueue ajax for calendar admin *

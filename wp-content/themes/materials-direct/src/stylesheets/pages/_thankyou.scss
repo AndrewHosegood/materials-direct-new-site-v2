@@ -1,3 +1,5 @@
+@use "../abstracts/breakpoints";
+
 .woocommerce-order-received {
     & .woocommerce-table ul li p {
         display: inline;
@@ -30,6 +32,24 @@
     & .woocommerce-order-details .woocommerce-order-details__title {
         line-height: 4rem;
         margin-bottom: 0.15rem;
+    }
+    & .woocommerce-table tfoot tr th.total {
+        font-weight: 700;
+    }
+    & .woocommerce-table tfoot tr td.total {
+        font-weight: 700;
+    }
+    & .woocommerce-table--custom-fields tr th {
+        width: 70%;
+        @include breakpoints.tablet {
+            width: 80%;
+        }
+    }
+    & .woocommerce-table--custom-fields tr td {
+        width: 30%;
+        @include breakpoints.tablet {
+            width: 20%;
+        }
     }
 }
 .woocommerce-customer-details--phone, .woocommerce-customer-details--email {

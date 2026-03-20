@@ -422,17 +422,13 @@ try {
 
             $shipping_subtract = $total_shipping_duplicates / $total_delivery_count; // we need to subtract to total for duplicate dates from the $shipping_responses total
 
-            if($flag == 1){
-                $my_shipping_response = $shipping_display_new / $meta_qty;
-                //echo "Flag is 1";
-                //exit;
-            } else {
-                $my_shipping_response = $shipping_display_new;
-                //echo "Flag is 0";
-                //exit;
-            }
+            // if($flag == 1){
+            //     $my_shipping_response = $shipping_display_new / $meta_qty;
+            // } else {
+            //     $my_shipping_response = $shipping_display_new;
+            // }
 
-
+            $my_shipping_response = $shipping_display_new;
 
             // Get the MCOFC and FAIR values
             // echo "<pre>";
@@ -760,13 +756,13 @@ try {
                     $totals_html .= '<td>£'.$subtotal_display.'</td>';
                     $totals_html .= '</tr>';
         
-                    if($mcf_v != 0){
+                    //if($mcf_v != 0){
                         $totals_html .= '<tr>';
                         $totals_html .= '<td>All COFCs & Fairs</td>';
                         //$totals_html .= '<td>£'.$mcf_v.'</td>';
                         $totals_html .= '<td>£'.$mcofc_fair_value.'</td>';
                         $totals_html .= '</tr>';
-                    }
+                    //}
                     $totals_html .= '<tr>';
                     $totals_html .= '<td>Shipping Total (ex. VAT)</td>';
                     $totals_html .= '<td>£'.number_format($my_shipping_response, 2) .'</td>';
@@ -784,7 +780,7 @@ try {
                         $totals_html .= '</tr>';
                     }
                     $totals_html .= '<tr>';
-                    $totals_html .= '<td><strong>Subtotal (ex. VAT)</strong></td>';
+                    $totals_html .= '<td><strong>Subtotal (ex. VAT)?</strong></td>';
                     $totals_html .= '<td><strong>£'.number_format($subtotal_display_2, 2).'</strong></td>';
                     $totals_html .= '</tr>';
         

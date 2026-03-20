@@ -229,6 +229,8 @@ add_action('woocommerce_before_add_to_cart_button', 'custom_price_input_fields_p
 function custom_price_input_fields_prefill() {
     global $product;
 
+    $clear_nonce = wp_create_nonce('clear_custom_shipping_address_nonce');  // unique action name to avoid conflicts
+
     // Get the ACF field value
     $is_product_single = function_exists('get_field') ? get_field('is_product_single', $product->get_id()) : false;
     $product_id = $product->get_id();
@@ -275,23 +277,49 @@ function custom_price_input_fields_prefill() {
             echo  '<select id="input_country" class="product-page__calc-input product-page__calc-input-small" name="custom_country" required>';
                 $countries = array(
                     'United Kingdom' => 'United Kingdom',
+                    'Andorra'        => 'Andorra',
+                    'Austria'        => 'Austria',
                     'Belgium'        => 'Belgium',
+                    'Bulgaria'       => 'Bulgaria',
+                    'Canada'         => 'Canada',
+                    'Croatia'        => 'Croatia',
+                    'Cyprus'         => 'Cyprus',
+                    'Czechia'        => 'Czechia',
+                    'Denmark'        => 'Denmark',
+                    'Estonia'        => 'Estonia',
+                    'Finland'        => 'Finland',
                     'France'         => 'France',
                     'Germany'        => 'Germany',
+                    'Gibraltar'      => 'Gibraltar',
+                    'Greece'         => 'Greece',
                     'Guernsey'       => 'Guernsey',
+                    'Hungary'        => 'Hungary',
                     'Ireland'        => 'Ireland',
+                    'Italy'          => 'Italy',
                     'Jersey'         => 'Jersey',
+                    'Latvia'         => 'Latvia',
+                    'Lithuania'      => 'Lithuania',
                     'Luxembourg'     => 'Luxembourg',
+                    'Malta'          => 'Malta',
+                    'Mexico'         => 'Mexico',
                     'Monaco'         => 'Monaco',
                     'Netherlands'    => 'Netherlands',
                     'Poland'         => 'Poland',
+                    'Portugal'       => 'Portugal',
+                    'Romania'        => 'Romania',
+                    'San Marino'     => 'San Marino',
+                    'Slovakia'       => 'Slovakia',
+                    'Slovenia'       => 'Slovenia',
                     'Spain'          => 'Spain',
+                    'Sweden'         => 'Sweden',
                     'United States'  => 'United States',
+                    'Vatican City'  => 'Vatican City',
                 );
                 foreach ($countries as $value => $label) {
                     echo '<option value="' . esc_attr($value) . '"' . selected($country, $value, false) . '>' . esc_html($label) . '</option>';
                 } 
             echo '</select>';
+            
 
             // BACKUP HIDDEN FIELD – this is the key fix
             // When a saved address exists (form is hidden), this hidden input is last in the DOM
@@ -308,12 +336,12 @@ function custom_price_input_fields_prefill() {
                 echo '<div class="shipping-address-form__saved">';
                 echo '<h3 class="product-page__subheading">Item(s) shipping address?<span class="gfield_required gfield_required_asterisk">*</span></h3>';
                 echo '<p class="shipping-address-form__saved-content">';
-                echo $address['street_address'] . "<br>";
-                echo $address['address_line2'] . "<br>";
-                echo $address['city'] . "<br>";
-                echo $address['county_state'] . "<br>";
-                echo $address['zip_postal'] . "<br>";
-                echo $address['country'];
+                if($address['street_address']){ echo $address['street_address'] . "<br>"; }
+                if($address['address_line2']){ echo $address['address_line2'] . "<br>"; }
+                if($address['city']){ echo $address['city'] . "<br>"; }
+                if($address['county_state']){ echo $address['county_state'] . "<br>"; }
+                if($address['zip_postal']){ echo $address['zip_postal'] . "<br>"; }
+                if($address['country']){ echo $address['country'] . "<br>"; }
                 echo '</p>';
                 echo '<a class="shipping-address-form-single__saved-edit">Edit Address</a>';
                 echo '</div>';
@@ -613,32 +641,60 @@ function custom_price_input_fields_prefill() {
             <label class="custom-price-calc__label product-page__address-5"><input class="product-page__calc-input product-page__calc-input-small" type="text" id="input_zip_postal" name="custom_zip_postal" placeholder="ZIP/ Postal Code" value="' . $zip_postal . '" required></label>';
             
         echo '<label class="custom-price-calc__label product-page__address-6">'; 
-        echo '<select id="input_country" class="product-page__calc-input product-page__calc-input-small" name="custom_country" required>';   
+
+        // === CHANGED: Country field logic ===
+        if (WC()->session->get('custom_shipping_address')) {
+            // Saved address exists → show read-only single option
+            echo '<select id="input_country" class="product-page__calc-input product-page__calc-input-small" name="custom_country" required>';
+            echo '<option value="' . esc_attr($country) . '" selected>' . esc_html($country) . '</option>';
+            echo '</select>';
+        } else {
+            // No saved address → full editable select
+            echo '<select id="input_country" class="product-page__calc-input product-page__calc-input-small" name="custom_country" required>';
             $countries = array(
                 'United Kingdom' => 'United Kingdom',
+                'Andorra'        => 'Andorra',
+                'Austria'        => 'Austria',
                 'Belgium'        => 'Belgium',
+                'Bulgaria'       => 'Bulgaria',
+                'Canada'         => 'Canada',
+                'Croatia'        => 'Croatia',
+                'Cyprus'         => 'Cyprus',
+                'Czechia'        => 'Czechia',
+                'Denmark'        => 'Denmark',
+                'Estonia'        => 'Estonia',
+                'Finland'        => 'Finland',
                 'France'         => 'France',
                 'Germany'        => 'Germany',
+                'Gibraltar'      => 'Gibraltar',
+                'Greece'         => 'Greece',
                 'Guernsey'       => 'Guernsey',
+                'Hungary'        => 'Hungary',
                 'Ireland'        => 'Ireland',
+                'Italy'          => 'Italy',
                 'Jersey'         => 'Jersey',
+                'Latvia'         => 'Latvia',
+                'Lithuania'      => 'Lithuania',
                 'Luxembourg'     => 'Luxembourg',
+                'Malta'          => 'Malta',
+                'Mexico'         => 'Mexico',
                 'Monaco'         => 'Monaco',
                 'Netherlands'    => 'Netherlands',
                 'Poland'         => 'Poland',
+                'Portugal'       => 'Portugal',
+                'Romania'        => 'Romania',
+                'San Marino'     => 'San Marino',
+                'Slovakia'       => 'Slovakia',
+                'Slovenia'       => 'Slovenia',
                 'Spain'          => 'Spain',
+                'Sweden'         => 'Sweden',
                 'United States'  => 'United States',
+                'Vatican City'  => 'Vatican City',
             );
             foreach ($countries as $value => $label) {
                 echo '<option value="' . esc_attr($value) . '"' . selected($country, $value, false) . '>' . esc_html($label) . '</option>';
             }
-        echo '</select>';
-
-        // BACKUP HIDDEN FIELD – this is the key fix
-        // When a saved address exists (form is hidden), this hidden input is last in the DOM
-        // so $_POST['custom_country'] will always be the session value, even if JS resets the select
-        if (WC()->session->get('custom_shipping_address')) {
-            echo '<input type="hidden" name="custom_country" value="' . esc_attr($country) . '">';
+            echo '</select>';
         }
 
         echo '</label>';
@@ -652,19 +708,69 @@ function custom_price_input_fields_prefill() {
             echo '<div class="shipping-address-form__saved">';
             echo '<h3 class="product-page__subheading">Item(s) shipping address?<span class="gfield_required gfield_required_asterisk">*</span></h3>';
             echo '<p class="shipping-address-form__saved-content">';
-            echo $address['street_address'] . "<br>";
-            echo $address['address_line2'] . "<br>";
-            echo $address['city'] . "<br>";
-            echo $address['county_state'] . "<br>";
-            echo $address['zip_postal'] . "<br>";
-            echo $address['country'];
+                if($address['street_address']){ echo $address['street_address'] . "<br>"; }
+                if($address['address_line2']){ echo $address['address_line2'] . "<br>"; }
+                if($address['city']){ echo $address['city'] . "<br>"; }
+                if($address['county_state']){ echo $address['county_state'] . "<br>"; }
+                if($address['zip_postal']){ echo $address['zip_postal'] . "<br>"; }
+                if($address['country']){ echo $address['country'] . "<br>"; }
             echo '</p>';
             echo '<a class="shipping-address-form__saved-edit">Edit Address</a>';
+            echo '<a class="shipping-address-form__clear-address" id="clear-shipping-address">Clear Address</a>';
             echo '</div>';
         }
        
 
     echo '</div>';
+    ?>
+    <?php if (WC()->session->get('custom_shipping_address')) : ?>
+    <script>
+    jQuery(document).ready(function($) {
+        $('#clear-shipping-address').on('click', function(e) {
+            e.preventDefault();
+            if (!confirm('Are you sure you want to clear the saved shipping address?')) {
+                return;
+            }
+
+            $.ajax({
+                url: '<?php echo admin_url('admin-ajax.php'); ?>',
+                type: 'POST',
+                data: {
+                    action: 'clear_custom_shipping_address',
+                    nonce: '<?php echo esc_js($clear_nonce); ?>'
+                },
+                success: function(response) {
+                    if (response.success) {
+                        // Refresh the address section (or whole page)
+                        location.reload(); // Simplest – reloads product page to show full form
+                        // Alternative: dynamically show full form without reload (more advanced)
+                    } else {
+                        alert('Error clearing address. Please try again.');
+                    }
+                },
+                // error: function(jqXHR, textStatus, errorThrown) {
+                //     console.log('AJAX failed:', {
+                //         status: jqXHR.status,
+                //         statusText: jqXHR.statusText,
+                //         responseText: jqXHR.responseText,
+                //         textStatus: textStatus,
+                //         errorThrown: errorThrown
+                //     });
+                //     let msg = 'Clear address failed.\nStatus: ' + jqXHR.status + ' ' + jqXHR.statusText;
+                //     if (jqXHR.responseText === '0' || jqXHR.responseText.includes('-1')) {
+                //         msg += '\n(Nonce/security check failed – try refreshing the page)';
+                //     }
+                //     alert(msg + '\nCheck browser console (F12 → Console) for full details.');
+                // }
+                error: function() {
+                    alert('Ajax error. Please refresh the page.');
+                }
+            });
+        });
+    });
+    </script>
+<?php endif; ?>
+<?php
 }
 // 2. HTML FORM WITH SPINNER
 
@@ -1085,6 +1191,7 @@ function group_shipping_by_date($cart) {
 
     // Calculate final shipping costs after all aggregations
     foreach ($shipping_by_date as $date => &$data) {
+        error_log("Final Total Del Weight" . $data['total_del_weight']);
         $data['final_shipping'] = calculate_shipping_cost($data['total_del_weight'], $data['country']);
     }
 
@@ -1102,7 +1209,7 @@ function group_shipping_by_date($cart) {
 function calculate_shipping_cost($total_del_weight, $country) {
     // Define cost tiers for each country or group of countries
     $cost_tiers = [
-        'United Kingdom' => [
+        'United Kingdom' => [ // (Done)
             [0, 10, 13.29],
             [10, 15, 18.76],
             [15, 20, 24.23],
@@ -1139,7 +1246,7 @@ function calculate_shipping_cost($total_del_weight, $country) {
             [290, 299, 331.13],
             [299, PHP_INT_MAX, 341.13],
         ],
-        'Europe_1' => [ // Shared tiers for France, Germany, Monaco
+        'Europe_1' => [ // Shared tiers for France, Germany, Monaco (Done)
             [0, 0.5, 38.01],
             [0.5, 1, 39.83],
             [1, 1.5, 41.66],
@@ -1195,25 +1302,63 @@ function calculate_shipping_cost($total_del_weight, $country) {
             [290, 299, 1248.63],
             [299, PHP_INT_MAX, 1288.74],
         ],
-        'Europe_2' => [ // Shared tiers for Spain
-            [0, 1, 58.56],
-            [1, 1.5, 67.38],
-            [1.5, 2, 72.70],
-            [2, 2.5, 78.36],
-            [2.5, 3, 83.92],
-            [3, 3.5, 89.12],
-            [3.5, 4, 94.50],
-            [4, 4.5, 99.76],
-            [4.5, 5, 105],
-            [5, 10, 110.40],
-            [10, 26, 160.26],
-            [26, 30, 280.46],
-            [30, 50, 308.68],
-            [50, 70, 486.86],
-            [70, 100, 665.10],
-            [100, PHP_INT_MAX, 950.70],
+        'Europe_2' => [ // Shared tiers for Spain (Done)
+            [0, 0.5,  43.34],
+            [0.5, 1, 47.38],
+            [1, 1.5, 51.41],
+            [1.5, 2, 52.94],
+            [2, 2.5, 55.14],
+            [2.5, 3, 57.33],
+            [3, 3.5, 59.53],
+            [3.5, 4, 61.71],
+            [4, 4.5, 63.90],
+            [4.5, 5, 65.73],
+            [5, 5.5, 67.54],
+            [5.5, 6, 69.35],
+            [6, 6.5, 71.18],
+            [6.5, 7, 72.99],
+            [7, 7.5, 74.80],
+            [7.5, 8, 76.63],
+            [8, 8.5, 78.44],
+            [8.5, 9, 80.27],
+            [9, 9.5, 82.08],
+            [9.5, 10, 83.35],
+            [10, 15, 96.15],
+            [15, 20, 109.18],
+            [20, 25, 124.36],
+            [25, 30, 142.18],
+            [30, 35, 162.98],
+            [35, 40, 184.77],
+            [40, 45, 204.59],
+            [45, 50, 225.38],
+            [50, 60, 266.99],
+            [60, 70, 309.74],
+            [70, 80, 362.67],
+            [80, 90, 415.61],
+            [90, 100, 468.55],
+            [100, 110,521.49],
+            [110, 120, 574.43],
+            [120, 130, 627.37],
+            [130, 140, 680.31],
+            [140, 150, 733.25],
+            [150, 160, 786.18],
+            [160, 170, 839.12],
+            [170, 180, 892.06],
+            [180, 190, 945.00],
+            [190, 200, 997.94],
+            [200, 210, 1050.88],
+            [210, 220, 1103.82],
+            [220, 230, 1156.75],
+            [230, 240, 1209.69],
+            [240, 250, 1262.63],
+            [250, 260, 1315.57],
+            [260, 270, 1368.51],
+            [270, 280, 1421.45],
+            [280, 290, 1474.39],
+            [290, 299, 1522.02],
+            [299,  PHP_INT_MAX, 1575.39],
         ],
-        'Europe_3' => [ // Shared tiers for Poland
+        'Europe_3' => [ // Shared tiers for (Still to do)
             [0, 1, 65.48],
             [1, 1.5, 73.24],
             [1.5, 2, 80.54],
@@ -1231,58 +1376,146 @@ function calculate_shipping_cost($total_del_weight, $country) {
             [70, 100, 673.54],
             [100, PHP_INT_MAX, 962.14],
         ],
-        'America_1' => [ // Shared tiers for USA
-            [0, 1, 84.40],
-            [1, 1.5, 89.12],
-            [1.5, 2, 101.40],
-            [2, 2.5, 106.70],
-            [2.5, 3, 111.92],
-            [3, 3.5, 117.24],
-            [3.5, 4, 122.08],
-            [4, 4.5, 126.96],
-            [4.5, 5, 131.92],
-            [5, 10, 136.76],
-            [10, 26, 173.44],
-            [26, 30, 301.82],
-            [30, 50, 328.26],
-            [50, 70, 496.86],
-            [70, 100, 664.70],
-            [100, PHP_INT_MAX, 935.90],
+        'America_1' => [ // Shared tiers for USA (Done)
+            [0, 0.5, 37.97],
+            [0.5, 1, 41.79],
+            [1, 1.5, 45.64],
+            [1.5, 2, 51.02],
+            [2, 2.5, 54.15],
+            [2.5, 3, 57.29],
+            [3, 3.5, 60.41],
+            [3.5, 4, 63.54],
+            [4, 4.5, 66.68],
+            [4.5, 5, 69.81],
+            [5, 5.5, 72.97],
+            [5.5, 6, 76.12],
+            [6, 6.5, 79.26],
+            [6.5, 7, 82.41],
+            [7, 7.5, 85.57],
+            [7.5, 8, 88.70],
+            [8, 8.5, 91.86],
+            [8.5, 9, 95.01],
+            [9, 9.5, 98.15],
+            [9.5, 10, 101.30],
+            [10, 15, 132.83],
+            [15, 20, 163.30],
+            [20, 25, 184.30],
+            [25, 30, 209.78],
+            [30, 35, 242.59],
+            [35, 40, 275.41],
+            [40, 45, 308.21],
+            [45, 50, 341.02],
+            [50, 60, 406.65],
+            [60, 70, 473.98],
+            [70, 80, 556.57],
+            [80, 90, 639.17],
+            [90, 100, 721.75],
+            [100, 110, 804.33],
+            [110, 120, 886.93],
+            [120, 130, 969.51],
+            [130, 140, 1052.11],
+            [140, 150, 1134.69],
+            [150, 160, 1217.27],
+            [160, 170, 1299.87],
+            [170, 180, 1382.45],
+            [180, 190, 1465.05],
+            [190, 200, 1547.63],
+            [200, 210, 1630.22],
+            [210, 220, 1712.82],
+            [220, 230, 1795.40],
+            [230, 240, 1878.00],
+            [240, 250, 1960.58],
+            [250, 260, 2043.16],
+            [260, 270, 2125.76],
+            [270, 280, 2208.34],
+            [280, 290, 2290.94],
+            [290, 299, 2365.27],
+            [299, PHP_INT_MAX, 2439.60],
         ],
     ];
 
     // Map countries to cost tier groups
     $country_groups = [
         'United Kingdom' => 'United Kingdom',
+        'Andorra' => 'Europe_2',
+        'Austria' => 'Europe_2',
         'Belgium' => 'Europe_1',
+        'Bulgaria' => 'Europe_2',
+        'Canada' => 'America_1',
+        'Croatia' => 'Europe_2',
+        'Cyprus' => 'Europe_2',
+        'Czechia' => 'Europe_2',
+        'Denmark' => 'Europe_2',
+        'Estonia' => 'Europe_2',
+        'Finland' => 'Europe_2',
         'France' => 'Europe_1',
         'Germany' => 'Europe_1',
+        'Gibraltar' => 'Europe_2',
+        'Greece' => 'Europe_2',
         'Guernsey' => 'Europe_1',
+        'Hungary' => 'Europe_2',
         'Ireland' => 'Europe_1',
+        'Italy' => 'Europe_2',
         'Jersey' => 'Europe_1',
+        'Latvia' => 'Europe_2',
+        'Lithuania' => 'Europe_2',
         'Luxembourg' => 'Europe_1',
+        'Malta' => 'Europe_2',
+        'Mexico' => 'America_1',
         'Monaco' => 'Europe_1',
         'Netherlands' => 'Europe_1',
-        'Poland' => 'Europe_3',
+        'Poland' => 'Europe_2',
+        'Portugal' => 'Europe_2',
+        'Romania' => 'Europe_2',
+        'San Marino' => 'Europe_2',
+        'Slovakia' => 'Europe_2',
+        'Slovenia' => 'Europe_2',
         'Spain' => 'Europe_2',
+        'Sweden' => 'Europe_2',
         'United States' => 'America_1',
+        'Vatican City' => 'Europe_2',
     ];
 
     // Get the appropriate cost tier based on country
     switch ($country) {
         case 'United Kingdom':
+        case 'Andorra':
+        case 'Austria':
         case 'Belgium':
+        case 'Bulgaria':
+        case 'Canada':
+        case 'Croatia':
+        case 'Cyprus':
+        case 'Czechia':
+        case 'Denmark':
+        case 'Estonia':
+        case 'Finland':
         case 'France':
         case 'Germany':
-        case 'Guernsey':  
+        case 'Gibraltar': 
+        case 'Greece':        
+        case 'Guernsey':
+        case 'Hungary':  
         case 'Ireland':
+        case 'Italy':
         case 'Jersey':
-        case 'Luxembourg':            
+        case 'Latvia':    
+        case 'Lithuania':
+        case 'Luxembourg':
+        case 'Malta':
+        case 'Mexico':                
         case 'Monaco':
         case 'Netherlands':    
         case 'Poland':
+        case 'Portugal':
+        case 'Romania':
+        case 'San Marino':          
+        case 'Slovakia':  
+        case 'Slovenia': 
         case 'Spain':
+        case 'Sweden':
         case 'United States':
+        case 'Vatican City':    
             $tiers = $cost_tiers[$country_groups[$country]];
             break;
         default:
@@ -2259,18 +2492,43 @@ function add_custom_shipping_to_order($order, $data) {
         // Map full country names to ISO country codes for WooCommerce
         $country_codes = [
             'United Kingdom' => 'GB',
+            'Andorra' => 'AD',
+            'Austria' => 'AT',
             'Belgium' => 'BE',
+            'Bulgaria' => 'BG',
+            'Canada' => 'CA',
+            'Croatia' => 'HR',
+            'Cyprus' => 'CY',
+            'Czechia' => 'CZ',
+            'Denmark' => 'DK',
+            'Estonia' => 'EE',     
+            'Finland' => 'FI',  
             'France' => 'FR',
-            'Germany' => 'DE',
+            'Germany' => 'DE', 
+            'Gibraltar' => 'GI',
+            'Greece' => 'GR',
             'Guernsey' => 'GG',
+            'Hungary' => 'HU',
             'Ireland' => 'IE',
+            'Italy' => 'IT',
             'Jersey' => 'JE',
+            'Latvia' => 'LV',  
+            'Lithuania' => 'LT',
             'Luxembourg' => 'LU',
+            'Malta' => 'MT',
+            'Mexico' => 'MX',
             'Monaco' => 'MC',
             'Netherlands' => 'NL',
             'Poland' => 'PL',
+            'Portugal' => 'PT',     
+            'Romania' => 'RO',      
+            'San Marino' => 'SM',   
+            'Slovakia' => 'SK',     
+            'Slovenia' => 'SI',
             'Spain' => 'ES',
+            'Sweden' => 'SE',
             'United States' => 'US',
+            'Vatican City' => 'VA',
         ];
         $country_code = isset($country_codes[$shipping_address['country']]) ? $country_codes[$shipping_address['country']] : '';
         if ($country_code) {
@@ -2859,14 +3117,14 @@ function update_order_shipping_fields($order, $data) {
 
 
 // CLEAR SESSION AFTER ORDER IS PLACED
-
+/*
 add_action('woocommerce_checkout_order_processed', 'clear_custom_shipping_session', 10, 1);
 function clear_custom_shipping_session($order_id) {
-    WC()->session->set('custom_shipping_address', null);
+    //WC()->session->set('custom_shipping_address', null);
     WC()->session->set('custom_qty', null); 
     WC()->session->set('custom_shipments', null); 
 }
-
+*/
 // CLEAR SESSION AFTER ORDER IS PLACED
 
 
@@ -3078,18 +3336,43 @@ function set_custom_shipping_country_for_tax_calculation() {
             // Map full country names to ISO country codes for WooCommerce
             $country_codes = [
                 'United Kingdom' => 'GB',
+                'Andorra' => 'AD',
+                'Austria' => 'AT',
                 'Belgium' => 'BE',
+                'Bulgaria' => 'BG',
+                'Canada' => 'CA',
+                'Croatia' => 'HR',
+                'Cyprus' => 'CY',
+                'Czechia' => 'CZ',
+                'Denmark' => 'DK',
+                'Estonia' => 'EE',     
+                'Finland' => 'FI',
                 'France' => 'FR',
-                'Germany' => 'DE',
+                'Germany' => 'DE',   
+                'Gibraltar' => 'GI',
+                'Greece' => 'GR',
                 'Guernsey' => 'GG',
+                'Hungary' => 'HU',
                 'Ireland' => 'IE',
+                'Italy' => 'IT',
                 'Jersey' => 'JE',
+                'Latvia' => 'LV',  
+                'Lithuania' => 'LT',
                 'Luxembourg' => 'LU',
+                'Malta' => 'MT',
+                'Mexico' => 'MX',
                 'Monaco' => 'MC',
                 'Netherlands' => 'NL',
                 'Poland' => 'PL',
+                'Portugal' => 'PT',     
+                'Romania' => 'RO',      
+                'San Marino' => 'SM',   
+                'Slovakia' => 'SK',     
+                'Slovenia' => 'SI',
                 'Spain' => 'ES',
+                'Sweden' => 'SE',
                 'United States' => 'US',
+                'Vatican City' => 'VA',
             ];
             $country_code = isset($country_codes[$custom_country]) ? $country_codes[$custom_country] : '';
             if ($country_code) {

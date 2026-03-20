@@ -246,18 +246,22 @@ ul.woof_list {
 // Custom tool tip
 .cfc__tooltip {
     font-family: helvetica, sans-serif;
-    position: relative;
+    position: absolute;
     cursor: pointer;
     color: white;
     font-weight: bold;
     background: #2980b9;
-    padding: 0 0.24rem;
+    padding: 0.24rem;
     border-radius: 50%;
     font-weight: 300;
-    font-size: 0.89rem;
-    display: inline;
+    font-size: 0.87rem;
+    display: inline-block;
     margin-left: 4px;
-    line-height: 1.1rem;
+    line-height: 0.7rem;
+    text-align: center;
+    width: 18px;
+    height: 18px;
+    top: 0.15rem;
 }
 
 .cfc__tooltip::before {
@@ -272,6 +276,16 @@ ul.woof_list {
     white-space: normal;
     width: 130px;
     @include breakpoints.iphone {
+        font-size: 11px;
+        line-height: 14px;
+        width: 130px;
+    }
+    @include breakpoints.tablet {
+        font-size: 11px;
+        line-height: 14px;
+        width: 113px;
+    }
+    @include breakpoints.laptop {
         font-size: 12px;
         line-height: 15px;
         width: 200px;

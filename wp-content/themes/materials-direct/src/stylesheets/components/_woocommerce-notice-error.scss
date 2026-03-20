@@ -42,7 +42,8 @@
         }
     }
     &::before {
-        top: 1.3rem;
+        top: 50%;
+        margin-top: -9px;
     }
     & .restore-item {
         margin-left: 0.5rem;
@@ -50,5 +51,14 @@
         font-weight: 700;
         text-decoration: underline;
         display: inline-block;
+    }
+}
+.woocommerce-error {
+    & li {
+        line-height: 1.5rem;
+    }
+    &::before {
+        top: 1.2rem;
+        margin-top: 0;
     }
 }

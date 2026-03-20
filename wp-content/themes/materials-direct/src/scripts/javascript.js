@@ -360,7 +360,6 @@ jQuery(document).ready(function($){
         // add width and length values based on circle radius input
         $('#input_radius').on('keyup', function() {
             var keyup_value = $(this).val() * 2;
-            console.log(keyup_value);
             $("#input_length").val(keyup_value);
             $("#input_width").val(keyup_value);
             $("#generate_price").prop("disabled", false);
@@ -373,7 +372,6 @@ jQuery(document).ready(function($){
 
             if (!isNaN(inches)) {
                 var mm = (inches * 25.4).toFixed(2); // 2 decimal places
-                console.log("Value: " + mm);
                 $("#input_width").val(mm);
                 $("#generate_price").prop("disabled", false);
             } else {
@@ -395,7 +393,6 @@ jQuery(document).ready(function($){
 
             if (!isNaN(inches_2)) {
                 var mm_2 = (inches_2 * 25.4).toFixed(2); // 2 decimal places
-                console.log("Value: " + mm_2);
                 $("#input_length").val(mm_2);
                 $("#generate_price").prop("disabled", false);
             } else {
@@ -414,14 +411,12 @@ jQuery(document).ready(function($){
         // add inch values to length field
         $('#input_radius_inches').on('keyup', function() {
             var value = $(this).val().trim(); // remove accidental spaces
-            console.log(value);
             var inch_radius_keyup_value = '';
             if (value !== '') {
                 inch_radius_keyup_value = value * 25.4 * 2;
             } else {
                 return; // stop here if empty
             }
-            console.log(inch_radius_keyup_value);
             $("#input_length").val(inch_radius_keyup_value);
             $("#input_width").val(inch_radius_keyup_value);
             $("#generate_price").prop("disabled", false);
@@ -433,7 +428,6 @@ jQuery(document).ready(function($){
 
         $('#input_qty_rolls').on('keyup', function() {
             var keyup_value_rolls = $(this).val() * rollLength;
-            console.log(keyup_value_rolls);
             $("#input_qty").val(keyup_value_rolls);
         });
         // add quantity value based on rolls quantity input
@@ -516,8 +510,6 @@ jQuery(document).ready(function($){
             let value = $(this).val();
             let cleanValue = value.replace(/[^0-9]/g, '');
             cleanValue = cleanValue.replace(/^0+/, '');
-            console.log("value:" + value);
-            console.log("cleanValue:" + cleanValue);
             if (cleanValue === "") {
                 cleanValue = "";
             }
