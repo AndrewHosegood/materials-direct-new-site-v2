@@ -209,3 +209,31 @@
     }
 }
 
+.woocommerce-shop__cat-hover-image {
+    z-index: 9;
+    opacity: 0;
+}
+// .woocommerce-shop__cat-hover-image:hover {
+//     z-index: 9 !important;
+//     opacity: 1 !important;
+// }
+.woocommerce ul.products li.product a.woocommerce-loop-product__link:hover .woocommerce-shop__cat-hover-image {
+    z-index: 9;
+    opacity: 1;
+    animation-name: shopCardFadeIn;
+    animation-duration: 0.7s;
+}
+
+@keyframes shopCardFadeIn {
+  0%   {
+    opacity: 0;
+}
+  100% {
+    opacity: 1;
+}
+}
+
+.woocommerce-shop__cat-hover-image.active {
+    z-index: 9;
+    opacity: 1;
+}

@@ -5,16 +5,17 @@ Template Name: PDF Generation For Admin (New Version 4)
 
 $domain = $_SERVER['HTTP_HOST'];
 
-if($domain == "localhost:8888"){
-    require_once('/Applications/MAMP/htdocs/materials-direct-new/wp-content/themes/creative-mon/pdf-generation/examples/tcpdf_include.php');
-} 
-elseif($domain == "newbuild.staging-materials-direct.co.uk"){
-    require_once('/kunden/homepages/2/d4298640024/htdocs/newbuild/wp-content/themes/materials-direct/pdf-generation/examples/tcpdf_include.php');
-}
-else {
-    require_once('/home/customer/www/materials-direct.com/public_html/wp-content/themes/creative-mon/pdf-generation/examples/tcpdf_include.php');
-}
+// if($domain == "localhost:8888"){
+//     require_once('/Applications/MAMP/htdocs/materials-direct-new/wp-content/themes/creative-mon/pdf-generation/examples/tcpdf_include.php');
+// } 
+// elseif($domain == "newbuild.staging-materials-direct.co.uk"){
+//     require_once('/kunden/homepages/2/d4298640024/htdocs/newbuild/wp-content/themes/materials-direct/pdf-generation/examples/tcpdf_include.php');
+// }
+// else {
+//     require_once('/home/customer/www/materials-direct.com/public_html/wp-content/themes/creative-mon/pdf-generation/examples/tcpdf_include.php');
+// }
 
+require_once TCPDF_INCLUDE_PATH;
 
 date_default_timezone_set('Europe/London');
 

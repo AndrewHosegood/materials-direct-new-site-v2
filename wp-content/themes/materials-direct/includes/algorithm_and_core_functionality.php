@@ -62,6 +62,21 @@ function calculate_product_price($product_id, $width, $length, $qty, $discount_r
         return new WP_Error('invalid_input', 'Invalid input data');
     }
 
+    // new
+    // Load the product once — this is the reliable way
+    $product = wc_get_product($product_id);
+    if (!$product) {
+        return new WP_Error('invalid_product', 'Invalid product ID');
+    }
+
+    // Now safely get shipping dimensions
+    $shipping_length = $product->get_length();
+
+    error_log("Shipping length from backend?: " . $ah_length);
+    // error_log("Shipping width: " . $ah_width);
+    // new
+
+
     $width = floatval($width);
     $length = floatval($length);
     $qty = intval($qty);
@@ -100,12 +115,12 @@ function calculate_product_price($product_id, $width, $length, $qty, $discount_r
     if(get_field('sheets_gpm', $product_id)){
         $sheets_gpm = floatval(get_field('sheets_gpm', $product_id));
     } else {
-        $sheets_gpm = 0.48679; // changed from 0.5 to allow for borders in sheets
+        $sheets_gpm = 0.5; 
     }
     if(get_field('rolls_gpm', $product_id)){
         $rolls_gpm = floatval(get_field('rolls_gpm', $product_id));
     } else {
-        $rolls_gpm = 0.48679;// changed from 0.5 to allow for borders in rolls
+        $rolls_gpm = 0.5;
     }
     if(get_field('roll_length', $product_id)){
         $roll_length = floatval(get_field('roll_length', $product_id));
@@ -171,7 +186,12 @@ function calculate_product_price($product_id, $width, $length, $qty, $discount_r
         $finalPppOnAva = $finalPppOnAva / $sheets_gpm;
     }
     if($shape_type === "rolls"){
-		$finalPppOnAva = $finalPppOnAva / $rolls_gpm;
+        /* new rolls calculation */
+        $shipping_length_value = 100 / $shipping_length;
+        $finalPppOnAva = $shipping_length_value * ($finalPppOnAva / $rolls_gpm);
+         /* new rolls calculation */
+        
+		//$finalPppOnAva = $finalPppOnAva / $rolls_gpm;
 	}
 
 
@@ -238,6 +258,8 @@ function custom_price_input_fields_prefill() {
     $user_id = get_current_user_id();
     $credit_options = get_field('credit_options', 'user_' . $user_id); // get the ACF Users Credits options
     $allow_credit = $credit_options['allow_user_credit_option'] ?? false; // get the ACF Users Credits options
+    $current_user = wp_get_current_user(); // Get the current user role
+    $is_creditor = in_array('creditor', (array) $current_user->roles, true); // Get the current user role
     $shipments = WC()->session->get('custom_shipments', []); 
     
     if (is_user_logged_in() && $allow_credit && !is_admin()) {
@@ -277,9 +299,11 @@ function custom_price_input_fields_prefill() {
             echo  '<select id="input_country" class="product-page__calc-input product-page__calc-input-small" name="custom_country" required>';
                 $countries = array(
                     'United Kingdom' => 'United Kingdom',
+                    'Albania'        => 'Albania',
                     'Andorra'        => 'Andorra',
                     'Austria'        => 'Austria',
                     'Belgium'        => 'Belgium',
+                    'Bosnia & Herzegovina'       => 'Bosnia & Herzegovina',
                     'Bulgaria'       => 'Bulgaria',
                     'Canada'         => 'Canada',
                     'Croatia'        => 'Croatia',
@@ -287,31 +311,42 @@ function custom_price_input_fields_prefill() {
                     'Czechia'        => 'Czechia',
                     'Denmark'        => 'Denmark',
                     'Estonia'        => 'Estonia',
+                    'Faroe Islands'  => 'Faroe Islands',
                     'Finland'        => 'Finland',
                     'France'         => 'France',
                     'Germany'        => 'Germany',
                     'Gibraltar'      => 'Gibraltar',
                     'Greece'         => 'Greece',
+                    'Greenland'      => 'Greenland',
                     'Guernsey'       => 'Guernsey',
                     'Hungary'        => 'Hungary',
+                    'Iceland'        => 'Iceland',
                     'Ireland'        => 'Ireland',
+                    'Israel'         => 'Israel',
                     'Italy'          => 'Italy',
                     'Jersey'         => 'Jersey',
                     'Latvia'         => 'Latvia',
+                    'Liechtenstein'  => 'Liechtenstein',
                     'Lithuania'      => 'Lithuania',
                     'Luxembourg'     => 'Luxembourg',
                     'Malta'          => 'Malta',
                     'Mexico'         => 'Mexico',
                     'Monaco'         => 'Monaco',
+                    'Montenegro'     => 'Montenegro',
                     'Netherlands'    => 'Netherlands',
+                    'North Macedonia' => 'North Macedonia',
+                    'Norway'         => 'Norway',
                     'Poland'         => 'Poland',
                     'Portugal'       => 'Portugal',
                     'Romania'        => 'Romania',
                     'San Marino'     => 'San Marino',
+                    'Serbia'         => 'Serbia',
                     'Slovakia'       => 'Slovakia',
                     'Slovenia'       => 'Slovenia',
                     'Spain'          => 'Spain',
                     'Sweden'         => 'Sweden',
+                    'Switzerland'    => 'Switzerland',
+                    'Turkey'         => 'Turkey',
                     'United States'  => 'United States',
                     'Vatican City'  => 'Vatican City',
                 );
@@ -355,8 +390,8 @@ function custom_price_input_fields_prefill() {
     // Check stock quantity for backorder status
     $stock_quantity = $product->get_stock_quantity();
     $is_full_backorder = $stock_quantity <= 0;
-    $roll_length = floatval(get_field('roll_length', $product_id) ?: 0);
-    $roll_length_v = $roll_length / 1000;
+
+    //$roll_length_v = $roll_length / 1000;
 
     // Get the currency switcher ID
     if (isset($_GET['set_currency']) && $_GET['set_currency'] === 'USD') {
@@ -404,9 +439,17 @@ function custom_price_input_fields_prefill() {
         <!-- Price Inputs -->
         <div class="product-page__grey-panel">
 
-        <p class="product-page__square-rectangle-message"><i class="fa-solid fa-circle-info product-page__square-rectangle-message-icon"></i> You are asking us to manufacture a <span id="tabs_status_message">custom shape</span><span id="tabs_status_message_2">. Enter your values below</p>
-
-        <!-- File Upload Fields -->
+        <p class="product-page__square-rectangle-message"><i class="fa-solid fa-circle-info product-page__square-rectangle-message-icon"></i> You are asking us to manufacture a <span id="tabs_status_message">custom shape</span><span id="tabs_status_message_2">. Enter your values below</p>';
+        
+        $roll_link = get_field('roll_link', $product_id);
+        
+        if ($roll_link) {
+            //the_field('roll_link', $product_id);
+            $url_1 = $roll_link['url'];
+            $title_1 = $roll_link['title'];
+            echo '<a class="product-page__rolls-link" href="'.esc_html( $url_1 ).'">'.esc_html( $title_1 ).'</a>';
+        }
+        echo '<!-- File Upload Fields -->
         <div id="pdf_upload_container">
         <label id="pdf_upload_label" class="product-page__file-upload-label">Upload .PDF Drawing</label>
         <input class="product-page__file-upload-input" type="file" id="uploadPdf" name="upload-pdf" accept=".pdf">
@@ -520,7 +563,7 @@ function custom_price_input_fields_prefill() {
             
 
         // display the is shipment button -  if the user has a credit account
-        if (is_user_logged_in() && $allow_credit && !is_admin()) {
+        if ( is_user_logged_in() && $allow_credit && !is_admin() ) {
                 $post_id = get_the_ID();
                 $sold_as_roll_length_value = get_field('sold_as_roll_length', $post_id);
                 if (!empty($sold_as_roll_length_value)) {
@@ -653,9 +696,11 @@ function custom_price_input_fields_prefill() {
             echo '<select id="input_country" class="product-page__calc-input product-page__calc-input-small" name="custom_country" required>';
             $countries = array(
                 'United Kingdom' => 'United Kingdom',
+                'Albania'        => 'Albania',
                 'Andorra'        => 'Andorra',
                 'Austria'        => 'Austria',
                 'Belgium'        => 'Belgium',
+                'Bosnia & Herzegovina'       => 'Bosnia & Herzegovina',
                 'Bulgaria'       => 'Bulgaria',
                 'Canada'         => 'Canada',
                 'Croatia'        => 'Croatia',
@@ -663,31 +708,42 @@ function custom_price_input_fields_prefill() {
                 'Czechia'        => 'Czechia',
                 'Denmark'        => 'Denmark',
                 'Estonia'        => 'Estonia',
+                'Faroe Islands'  => 'Faroe Islands',
                 'Finland'        => 'Finland',
                 'France'         => 'France',
                 'Germany'        => 'Germany',
                 'Gibraltar'      => 'Gibraltar',
                 'Greece'         => 'Greece',
+                'Greenland'      => 'Greenland',
                 'Guernsey'       => 'Guernsey',
                 'Hungary'        => 'Hungary',
+                'Iceland'        => 'Iceland',
                 'Ireland'        => 'Ireland',
+                'Israel'         => 'Israel',
                 'Italy'          => 'Italy',
                 'Jersey'         => 'Jersey',
                 'Latvia'         => 'Latvia',
+                'Liechtenstein'  => 'Liechtenstein',
                 'Lithuania'      => 'Lithuania',
                 'Luxembourg'     => 'Luxembourg',
                 'Malta'          => 'Malta',
                 'Mexico'         => 'Mexico',
                 'Monaco'         => 'Monaco',
+                'Montenegro'     => 'Montenegro',
                 'Netherlands'    => 'Netherlands',
+                'North Macedonia' => 'North Macedonia',
+                'Norway'         => 'Norway',
                 'Poland'         => 'Poland',
                 'Portugal'       => 'Portugal',
                 'Romania'        => 'Romania',
                 'San Marino'     => 'San Marino',
+                'Serbia'         => 'Serbia',
                 'Slovakia'       => 'Slovakia',
                 'Slovenia'       => 'Slovenia',
                 'Spain'          => 'Spain',
                 'Sweden'         => 'Sweden',
+                'Switzerland'    => 'Switzerland',
+                'Turkey'         => 'Turkey',
                 'United States'  => 'United States',
                 'Vatican City'  => 'Vatican City',
             );
@@ -876,10 +932,12 @@ function calculate_secure_price() {
         $width,
         $length,
         $qty,
+        $shape_type,
         $product_id
     );
 
     $sheets_required = $sheet_result['sheets_required'];
+    error_log("sheets_required: " . $sheets_required);
     $sheets_required_rolls = $sheet_result['sheets_required'] * $roll_length_v;
 
     /* AH rolls fix 9.12.2025 */
@@ -1027,7 +1085,7 @@ function calculate_scheduled_price_func() {
         WC()->session->set('custom_shipping_address', $shipping_address);
     }
 
-    $sheet_result = calculate_sheets_required($sheet_width_mm, $sheet_length_mm, $width, $length, $qty, $product_id);
+    $sheet_result = calculate_sheets_required($sheet_width_mm, $sheet_length_mm, $width, $length, $qty, $shape_type, $product_id);
     $sheets_required = $sheet_result['sheets_required'];
     $is_backorder = false; // No backorder for scheduled deliveries
 
@@ -1302,7 +1360,7 @@ function calculate_shipping_cost($total_del_weight, $country) {
             [290, 299, 1248.63],
             [299, PHP_INT_MAX, 1288.74],
         ],
-        'Europe_2' => [ // Shared tiers for Spain (Done)
+        'Europe_2' => [ // Shared tiers for Spain, Sweden, Vatican City (Done)
             [0, 0.5,  43.34],
             [0.5, 1, 47.38],
             [1, 1.5, 51.41],
@@ -1358,23 +1416,61 @@ function calculate_shipping_cost($total_del_weight, $country) {
             [290, 299, 1522.02],
             [299,  PHP_INT_MAX, 1575.39],
         ],
-        'Europe_3' => [ // Shared tiers for (Still to do)
-            [0, 1, 65.48],
-            [1, 1.5, 73.24],
-            [1.5, 2, 80.54],
-            [2, 2.5, 86.92],
-            [2.5, 3, 93.48],
-            [3, 3.5, 97],
-            [3.5, 4, 102.76],
-            [4, 4.5, 108.32],
-            [4.5, 5, 114.08],
-            [5, 10, 119.72],
-            [10, 26, 162.26],
-            [26, 30, 286.88],
-            [30, 50, 316.32],
-            [50, 70, 494.98],
-            [70, 100, 673.54],
-            [100, PHP_INT_MAX, 962.14],
+        'Europe_3' => [ // Shared tiers for Greenland, Iceland, Isreal (done)
+            [0, 0.5, 45.47],
+            [0.5, 1, 49.90],
+            [1, 1.5, 54.32],
+            [1.5, 2, 57.72],
+            [2, 2.5, 61.25],
+            [2.5, 3, 64.77],
+            [3, 3.5, 68.28],
+            [3.5, 4, 71.81],
+            [4, 4.5, 75.34],
+            [4.5, 5, 78.16],
+            [5, 5.5, 80.99],
+            [5.5, 6, 83.83],
+            [6, 6.5, 86.65],
+            [6.5, 7, 89.49],
+            [7, 7.5, 92.33],
+            [7.5, 8, 95.14],
+            [8, 8.5, 97.98],
+            [8.5, 9, 100.82],
+            [9, 9.5, 103.66],
+            [9.5, 10, 106.10],
+            [10, 15, 130.69],
+            [15, 20, 154.65],
+            [20, 25, 173.08],
+            [25, 30, 195.29],
+            [30, 35, 223.46],
+            [35, 40, 251.63],
+            [40, 45, 279.81],
+            [45, 50, 307.98],
+            [50, 60, 364.32],
+            [60, 70, 422.15],
+            [70, 80, 493.23],
+            [80, 90, 564.33],
+            [90, 100, 635.41],
+            [100, 110, 706.51],
+            [110, 120, 777.60],
+            [120, 130, 848.68],
+            [130, 140, 919.78],
+            [140, 150, 990.86],
+            [150, 160, 1061.97],
+            [160, 170, 1133.05],
+            [170, 180, 1204.13],
+            [180, 190, 1275.23],
+            [190, 200, 1346.31],
+            [200, 210, 1417.42],
+            [210, 220, 1488.50],
+            [220, 230, 1559.58],
+            [230, 240, 1630.68],
+            [240, 250, 1701.77],
+            [250, 260, 1772.87],
+            [260, 270, 1843.95],
+            [270, 280, 1915.03],
+            [280, 290, 1986.13],
+            [290, 299, 2050.10],
+            [299, PHP_INT_MAX, 2120.29],
         ],
         'America_1' => [ // Shared tiers for USA (Done)
             [0, 0.5, 37.97],
@@ -1437,9 +1533,11 @@ function calculate_shipping_cost($total_del_weight, $country) {
     // Map countries to cost tier groups
     $country_groups = [
         'United Kingdom' => 'United Kingdom',
+        'Albania' => 'Europe_3',
         'Andorra' => 'Europe_2',
         'Austria' => 'Europe_2',
         'Belgium' => 'Europe_1',
+        'Bosnia & Herzegovina' => 'Europe_3',
         'Bulgaria' => 'Europe_2',
         'Canada' => 'America_1',
         'Croatia' => 'Europe_2',
@@ -1447,31 +1545,42 @@ function calculate_shipping_cost($total_del_weight, $country) {
         'Czechia' => 'Europe_2',
         'Denmark' => 'Europe_2',
         'Estonia' => 'Europe_2',
+        'Faroe Islands' => 'Europe_3',
         'Finland' => 'Europe_2',
         'France' => 'Europe_1',
         'Germany' => 'Europe_1',
         'Gibraltar' => 'Europe_2',
         'Greece' => 'Europe_2',
+        'Greenland' => 'Europe_3',
         'Guernsey' => 'Europe_1',
         'Hungary' => 'Europe_2',
+        'Iceland' => 'Europe_3',
         'Ireland' => 'Europe_1',
+        'Israel' => 'Europe_3',
         'Italy' => 'Europe_2',
         'Jersey' => 'Europe_1',
         'Latvia' => 'Europe_2',
+        'Liechtenstein'  => 'Europe_3',
         'Lithuania' => 'Europe_2',
         'Luxembourg' => 'Europe_1',
         'Malta' => 'Europe_2',
         'Mexico' => 'America_1',
         'Monaco' => 'Europe_1',
+        'Montenegro' => 'Europe_3',
         'Netherlands' => 'Europe_1',
+        'North Macedonia' => 'Europe_3',
+        'Norway' => 'Europe_3',
         'Poland' => 'Europe_2',
         'Portugal' => 'Europe_2',
         'Romania' => 'Europe_2',
         'San Marino' => 'Europe_2',
+        'Serbia' => 'Europe_3',
         'Slovakia' => 'Europe_2',
         'Slovenia' => 'Europe_2',
         'Spain' => 'Europe_2',
         'Sweden' => 'Europe_2',
+        'Switzerland' => 'Europe_3',
+        'Turkey' => 'Europe_3',
         'United States' => 'America_1',
         'Vatican City' => 'Europe_2',
     ];
@@ -1479,9 +1588,11 @@ function calculate_shipping_cost($total_del_weight, $country) {
     // Get the appropriate cost tier based on country
     switch ($country) {
         case 'United Kingdom':
+        case 'Albania':
         case 'Andorra':
         case 'Austria':
         case 'Belgium':
+        case 'Bosnia & Herzegovina':
         case 'Bulgaria':
         case 'Canada':
         case 'Croatia':
@@ -1489,31 +1600,42 @@ function calculate_shipping_cost($total_del_weight, $country) {
         case 'Czechia':
         case 'Denmark':
         case 'Estonia':
+        case 'Faroe Islands':
         case 'Finland':
         case 'France':
         case 'Germany':
         case 'Gibraltar': 
-        case 'Greece':        
+        case 'Greece':  
+        case 'Greenland':          
         case 'Guernsey':
-        case 'Hungary':  
+        case 'Hungary':
+        case 'Iceland':
         case 'Ireland':
+        case 'Israel':   
         case 'Italy':
         case 'Jersey':
-        case 'Latvia':    
+        case 'Latvia':
+        case 'Liechtenstein':   
         case 'Lithuania':
         case 'Luxembourg':
         case 'Malta':
         case 'Mexico':                
         case 'Monaco':
-        case 'Netherlands':    
+        case 'Montenegro':
+        case 'Netherlands':
+        case 'North Macedonia':
+        case 'Norway':
         case 'Poland':
         case 'Portugal':
         case 'Romania':
-        case 'San Marino':          
+        case 'San Marino':
+        case 'Serbia':
         case 'Slovakia':  
         case 'Slovenia': 
         case 'Spain':
         case 'Sweden':
+        case 'Switzerland':
+        case 'Turkey':
         case 'United States':
         case 'Vatican City':    
             $tiers = $cost_tiers[$country_groups[$country]];
@@ -1689,19 +1811,23 @@ function add_custom_price_cart_item_data_secure($cart_item_data, $product_id) {
         $part_width_mm,
         $part_length_mm,
         $quantity,
+        $shape_type,
         $product_id
     );
 
     $totalSqMm = $part_length_mm * $part_width_mm;
     $totalSqCm = $totalSqMm / 100;
-    $total_del_weight = $totalSqCm * floatval($product_weight) * $quantity * 1.03;
-    $final_shipping = calculate_shipping_cost($total_del_weight, $country);
+    $total_del_weight_calc = $totalSqCm * floatval($product_weight) * $quantity * 1.03;
 
     if($shape_type === "rolls"){
         $stock_quantity = $product->get_stock_quantity() / $roll_length_v;
+        $total_del_weight = $total_del_weight_calc * $roll_length_v;
     } else {
-        $stock_quantity = $product->get_stock_quantity(); 
+        $stock_quantity = $product->get_stock_quantity();
+        $total_del_weight = $total_del_weight_calc;
     }
+
+    $final_shipping = calculate_shipping_cost($total_del_weight, $country);
 
     $sheets_required = $sheet_result['sheets_required'];
     $is_backorder_raw = $sheets_required > $stock_quantity;
@@ -1737,8 +1863,7 @@ function add_custom_price_cart_item_data_secure($cart_item_data, $product_id) {
     }
 
     if ($is_scheduled) {
-        $cart_item_data['custom_inputs']['is_scheduled'] = $is_scheduled; // wednesday amend
-        //$cart_item_data['custom_inputs']['roll_length'] = $roll_length_v; // wednesday amend
+        $cart_item_data['custom_inputs']['is_scheduled'] = $is_scheduled; 
         $despatch_dates = '';
         $despatch_string = ''; 
         $despatch_notes = '';
@@ -1750,7 +1875,7 @@ function add_custom_price_cart_item_data_secure($cart_item_data, $product_id) {
             list($dd, $mm, $yyyy) = explode('/', $despatch_date);
             $despatch_ymd = "$yyyy-$mm-$dd";
             $lead_time_label = get_shipment_lead_time_label($despatch_ymd);
-            $discount_label = get_shipment_lead_time_discount($despatch_ymd); // thurdsay retrieve discount rate
+            $discount_label = get_shipment_lead_time_discount($despatch_ymd); 
 
             // new code for new teusday cofc delivery options
             $feeAppendix = '';
@@ -1860,9 +1985,9 @@ function add_custom_price_cart_item_data_secure($cart_item_data, $product_id) {
         $despatch_notes = $despatch_notes;
     } else {
         // Non-scheduled: Unified handling for backorder and instock
-        $border = floatval(get_field('border_around', $product_id) * 10);
-        $v1 = $part_width_mm + (2 * $border);
-        $v2 = $part_length_mm + (2 * $border);
+        $border = floatval(get_field('border_around', $product_id) * 10); //bug
+        $v1 = $part_width_mm + (2 * $border); //wrong
+        $v2 = $part_length_mm + (2 * $border); //wrong
         $parts_per_row = floor($sheet_width_mm / $v1);
         $parts_per_column = floor($sheet_length_mm / $v2);
         $calculated_parts_per_sheet = $parts_per_row * $parts_per_column;
@@ -1882,17 +2007,65 @@ function add_custom_price_cart_item_data_secure($cart_item_data, $product_id) {
             $despatch_notes = sprintf('%d parts to be despatched in 35 Days (working days) (5%% Discount)', $quantity);
             $shipments = date('d/m/Y', strtotime('+35 days'));
             $is_backorder = true;
+
+
         } elseif ($is_backorder_raw) {
-            // Partial backorder - Recalc with split discounts
-            $sheets_backorder = $sheets_required - $stock_quantity;
+
+            // Partial backorder - Use the exact price the user just saw on the product page
+            // This prevents recalculation drift and floating-point differences
+            $server_total_price = floatval($_POST['custom_price']) * $sheets_required;
+
+            // Still calculate the split numbers only for despatch_notes and backorder_data
+            $calculated_parts_per_sheet = $sheet_result['parts_per_sheet'];
             $parts_from_stock = $stock_quantity * $calculated_parts_per_sheet;
             $able_to_dispatch = min($parts_from_stock, $quantity);
             $parts_backorder = $quantity - $able_to_dispatch;
 
-            // Split price: normal discount on dispatch, 5% on backorder
+            $despatch_notes = sprintf(
+                '%d parts to be despatched in %s, %d parts to be despatched in 35 days (5%% discount)',
+                $able_to_dispatch,
+                $delivery_time,
+                $parts_backorder
+            );
+
+            $shipments_dispatch = $shipments;
+            $shipments_backorder = date('d/m/Y', strtotime('+35 days'));
+            $shipments = [$shipments_dispatch, $shipments_backorder];
+
+            $backorder_data = [
+                'backorder_total' => $server_total_price,
+                'parts_backorder' => $parts_backorder,
+                'able_to_dispatch' => $able_to_dispatch,
+                'parts_per_sheet' => $calculated_parts_per_sheet,
+            ];
+            $is_backorder = true;
+
+            // Optional validation (keeps your existing safety check)
+            if (isset($_POST['custom_parts_per_sheet'])) {
+                $client_parts_per_sheet = intval($_POST['custom_parts_per_sheet']);
+                $client_parts_backorder = intval($_POST['custom_parts_backorder']);
+                $client_able_to_dispatch = intval($_POST['custom_able_to_dispatch']);
+                if ($calculated_parts_per_sheet != $client_parts_per_sheet ||
+                    $parts_backorder != $client_parts_backorder ||
+                    $able_to_dispatch != $client_able_to_dispatch) {
+                    if (defined('WP_DEBUG') && WP_DEBUG) {
+                        error_log("Backorder data validation failed for product $product_id");
+                    }
+                }
+            }
+
+            /*
+
+            $sheets_backorder = $sheets_required - $stock_quantity;
+
+            $calculated_parts_per_sheet = $sheet_result['parts_per_sheet'];
+            $parts_from_stock = $stock_quantity * $calculated_parts_per_sheet; 
+            $able_to_dispatch = min($parts_from_stock, $quantity);
+            $parts_backorder = $quantity - $able_to_dispatch;
+
             $per_part_base = $base_total_price_no_disc / $quantity;
             $dispatch_price = $able_to_dispatch * $per_part_base * (1 - $discount_rate);
-            $backorder_price = $parts_backorder * $per_part_base * 0.95; // 5% discount
+            $backorder_price = $parts_backorder * $per_part_base * 0.95; 
             $server_total_price = $dispatch_price + $backorder_price;
 
             $despatch_notes = sprintf(
@@ -1913,7 +2086,7 @@ function add_custom_price_cart_item_data_secure($cart_item_data, $product_id) {
             ];
             $is_backorder = true;
 
-            // Validate client-sent backorder data if present
+  
             if (isset($_POST['custom_parts_per_sheet'])) {
                 $client_parts_per_sheet = intval($_POST['custom_parts_per_sheet']);
                 $client_parts_backorder = intval($_POST['custom_parts_backorder']);
@@ -1928,9 +2101,13 @@ function add_custom_price_cart_item_data_secure($cart_item_data, $product_id) {
                     }
                     $is_backorder = false;
                     $backorder_data = [];
-                    $despatch_notes = sprintf('%d parts to be despatched in %s', $quantity, $delivery_time); // Fallback
+                    $despatch_notes = sprintf('%d parts to be despatched in %s', $quantity, $delivery_time); 
                 }
             }
+
+            */
+
+
         } else {
             // Instock
             if ($stock_quantity <= 0) {
@@ -1944,6 +2121,11 @@ function add_custom_price_cart_item_data_secure($cart_item_data, $product_id) {
             );
         }
 
+
+
+
+
+
         // Price per sheet for cart
         $server_price_per_sheet = $sheets_required > 0 ? $server_total_price / $sheets_required : $server_total_price;
         $client_price = floatval($_POST['custom_price']);
@@ -1955,54 +2137,6 @@ function add_custom_price_cart_item_data_secure($cart_item_data, $product_id) {
         $cart_item_data['custom_inputs']['price'] = $server_price_per_sheet;
         $cart_item_data['custom_inputs']['total_price'] = $server_total_price;
     }
-
-    // Collect the dates from scheduled orders V1
-    /*
-    $current_dates = [];
-
-    if ($is_scheduled) {
-        foreach ($scheduled_shipments as $s) {
-            $current_dates[] = $s['date'];
-        }
-    } else {
-        if (is_array($shipments)) {
-            $current_dates = $shipments; 
-        } elseif (is_string($shipments) && !empty($shipments)) {
-            $current_dates = [$shipments]; 
-        }
-    }
-
-    $all_dates = [];
-
-    foreach (WC()->cart->get_cart() as $cart_item) {
-        if (isset($cart_item['custom_inputs']['is_scheduled']) && $cart_item['custom_inputs']['is_scheduled']) {
-            // Scheduled item – dates stored in scheduled_shipments
-            if (isset($cart_item['custom_inputs']['scheduled_shipments'])) {
-                $all_dates = array_merge($all_dates, array_column($cart_item['custom_inputs']['scheduled_shipments'], 'date'));
-            }
-        } else {
-            // Non-scheduled item – dates stored in shipments
-            $item_shipments = $cart_item['custom_inputs']['shipments'] ?? '';
-            if (is_array($item_shipments)) {
-                $all_dates = array_merge($all_dates, $item_shipments);
-            } elseif (is_string($item_shipments) && !empty($item_shipments)) {
-                $all_dates[] = $item_shipments;
-            }
-        }
-    }
-
-    $all_dates = array_merge($all_dates, $current_dates);
-
-    $ah_despatch_date = implode(', ', $all_dates);
-
-    foreach (WC()->cart->get_cart() as $cart_item_key => $cart_item) {
-        WC()->cart->cart_contents[$cart_item_key]['custom_inputs']['despatch_date'] = $ah_despatch_date;
-    }
-
-    $cart_item_data['custom_inputs']['despatch_date'] = $ah_despatch_date;
-
-    */
-    // Collect the dates from scheduled orders V1
 
 
     // Collect the dates from scheduled orders v2
@@ -2079,21 +2213,6 @@ function add_custom_price_cart_item_data_secure($cart_item_data, $product_id) {
     $cart_item_data['custom_inputs']['despatch_date'] = $aggregated;
 
     // Collect the dates from scheduled orders v2
-
-
-    /* Lets intercept and grab the shipping values that are displayed on the cart page (for capture cart) */
-    // $live_shipping = WC()->session->get('live_shipping_by_date', []);
-    // $cart_item_data['custom_inputs']['shipping_by_date'] = $live_shipping;
-    // $total_shipping = 0;
-    // foreach ($live_shipping as $date => $data) {
-    //     $total_shipping += floatval($data['final_shipping'] ?? 0);
-    // }
-    // $cart_item_data['custom_inputs']['final_shipping_total'] = $total_shipping;
-    // WC()->session->set('live_shipping_by_date', null); // Clean up session to avoid stale data
-    // if (defined('WP_DEBUG') && WP_DEBUG) {
-    //     error_log("Stored live shipping_by_date in custom_inputs for product $product_id: " . print_r($live_shipping, true));
-    // }
-    /* Lets intercept and grab the shipping values that are displayed on the cart page (for capture cart) */
 
 
 
@@ -2220,50 +2339,6 @@ function init_custom_shipping_method() {
                 }
             }
 
-            /*
-            public function calculate_shipping($package = []) {
-                $cart = WC()->cart;
-                $shipping_by_date = group_shipping_by_date($cart);
-
-                $total_shipping = 0;
-                foreach ($shipping_by_date as $date => $data) {
-                    $total_shipping += floatval($data['final_shipping']);
-                    error_log("Total Shipping Calc Triggered");
-                    error_log($total_shipping);
-                }
-
-                if ($total_shipping <= 0) {
-                    $has_restored = false;
-                    foreach ($cart->get_cart() as $item) {
-                        if (!empty($item['restored_from_capture'])) {
-                            $meta = $item['cart_metadata'] ?? [];
-                            $captured = floatval($meta['_Shipping Total'] ?? $meta['shipping_total_raw'] ?? 0);
-                            if ($captured > 0) {
-                                $total_shipping += $captured;
-                                $has_restored = true;
-                                error_log("Custom shipping method used captured fallback: £{$captured}");
-                            }
-                        }
-                    }
-
-                    if (!$has_restored) {
-                        return; 
-                    }
-                }
-
-                if ($total_shipping > 0) {
-                    $this->add_rate([
-                        'id' => $this->id . ':' . $this->instance_id,
-                        'label' => $this->title,
-                        'cost' => $total_shipping,
-                        'taxes'     => '',
-                        'calc_tax' => 'per_order',
-                        'package' => $package,
-                    ]);
-                    error_log("Custom shipping method added rate: £{$total_shipping}");
-                }
-            }
-            */
         }
     }
 }
@@ -2346,40 +2421,6 @@ function display_shipments_section_cart() {
 // NEW - DISPLAY SHIPMENTS SECTION ABOVE CART TOTALS
 
 
-
-
-
-// OLD CODE - DISPLAY SHIPMENTS SECTION ABOVE CART TOTALS
-/*
-add_action('woocommerce_before_cart_totals', 'display_shipments_section_cart', 5);
-function display_shipments_section_cart() {
-    $cart = WC()->cart;
-    $shipping_by_date = group_shipping_by_date($cart);
-
-    if (!empty($shipping_by_date)) {
-        echo '<div class="shipments-section" style="margin-bottom: 20px;">';
-        echo '<p class="cart_totals__shipment"><strong>Shipments:</strong></p>';
-
-        foreach ($shipping_by_date as $date => $data) {
-            $shipping_cost = floatval($data['final_shipping']);
-            $shipping_rate = get_currency_rate();
-            $currency_symbol = get_currency_symbol();
-            if ($shipping_cost > 0) {
-                //$formatted_cost = wc_price($shipping_cost);
-                $formatted_cost = round($shipping_cost * $shipping_rate, 2);
-                echo '<p class="cart_totals__shipment-details">Dispatch ' . esc_html($date) .'('. $currency_symbol . '' . $formatted_cost . ')</p>';
-            }
-        }
-        echo '</div>';
-    }
-}
-*/
-// OLD CODE - DISPLAY SHIPMENTS SECTION ABOVE CART TOTALS
-
-
-
-
-
 // DISPLAY SHIPPING ADDRESS ON CHECKOUT PAGE
 add_action('woocommerce_review_order_before_payment', 'display_shipping_address_on_checkout');
 function display_shipping_address_on_checkout() {
@@ -2436,8 +2477,6 @@ function add_custom_shipping_to_order($order, $data) {
     $cart = WC()->cart;
     $shipping_by_date = group_shipping_by_date($cart);
 
-    //error_log("function triggered");
-    //error_log(print_r($shipping_by_date), true);
 
     // Sum the shipping costs
     $shipping_meta = [];
@@ -2451,9 +2490,6 @@ function add_custom_shipping_to_order($order, $data) {
 
         $shipping_meta[$date] = $final_shipping;
 
-        //error_log("Final Shipping Triggered");
-
-        //error_log($final_shipping);
     }
 
     if ($total_shipping > 0) {
@@ -2492,41 +2528,54 @@ function add_custom_shipping_to_order($order, $data) {
         // Map full country names to ISO country codes for WooCommerce
         $country_codes = [
             'United Kingdom' => 'GB',
+            'Albania' => 'AL',
             'Andorra' => 'AD',
             'Austria' => 'AT',
             'Belgium' => 'BE',
+            'Bosnia & Herzegovina' => 'BA',
             'Bulgaria' => 'BG',
             'Canada' => 'CA',
             'Croatia' => 'HR',
             'Cyprus' => 'CY',
             'Czechia' => 'CZ',
             'Denmark' => 'DK',
-            'Estonia' => 'EE',     
+            'Estonia' => 'EE',
+            'Faroe Islands' => 'FO',     
             'Finland' => 'FI',  
             'France' => 'FR',
             'Germany' => 'DE', 
             'Gibraltar' => 'GI',
             'Greece' => 'GR',
+            'Greenland' => 'GL',
             'Guernsey' => 'GG',
             'Hungary' => 'HU',
+            'Iceland' => 'IS',
             'Ireland' => 'IE',
+            'Israel' => 'IL',
             'Italy' => 'IT',
             'Jersey' => 'JE',
-            'Latvia' => 'LV',  
+            'Latvia' => 'LV',
+            'Liechtenstein' => 'LI',
             'Lithuania' => 'LT',
             'Luxembourg' => 'LU',
             'Malta' => 'MT',
             'Mexico' => 'MX',
             'Monaco' => 'MC',
+            'Montenegro' => 'ME',
             'Netherlands' => 'NL',
+            'North Macedonia' => 'MK',
+            'Norway' => 'NO',
             'Poland' => 'PL',
             'Portugal' => 'PT',     
             'Romania' => 'RO',      
-            'San Marino' => 'SM',   
+            'San Marino' => 'SM',
+            'Serbia' => 'RS',
             'Slovakia' => 'SK',     
             'Slovenia' => 'SI',
             'Spain' => 'ES',
             'Sweden' => 'SE',
+            'Switzerland' => 'CH',
+            'Turkey' => 'TR',
             'United States' => 'US',
             'Vatican City' => 'VA',
         ];
@@ -2825,9 +2874,6 @@ function show_custom_input_details_in_cart($item_data, $cart_item) {
                 'name' => 'Customer Shipping Weight(s)',
                 'value' => round((float)$cart_item['custom_inputs']['total_del_weight'], 3) . "kg"
             ];
-            // echo "<pre>";
-            // print_r($cart_item['custom_inputs']);
-            // echo "</pre>";
         }
 
     }
@@ -2962,34 +3008,6 @@ function display_shipping_address_on_thankyou($order_id) {
             break;
         }
     }
-/*
-if ($shipping_address || $despatch_notes) {
-        echo '<div class="custom-order-details">';
-        echo '<h2 class="woocommerce-column__title">Order Details</h2>';
-
-        // Display Despatch Notes
-        if ($despatch_notes) {
-            echo '<p><strong>Despatch Notes:</strong> ' . esc_html($despatch_notes) . '</p>';
-        }
-
-        // Display Shipping Address
-        if ($shipping_address) {
-            echo '<h3>Shipping Details</h3>';
-            echo '<address>';
-            echo esc_html($shipping_address['street_address']) . '<br>';
-            if (!empty($shipping_address['address_line2'])) {
-                echo esc_html($shipping_address['address_line2']) . '<br>';
-            }
-            echo esc_html($shipping_address['city']) . '<br>';
-            echo esc_html($shipping_address['county_state']) . '<br>';
-            echo esc_html($shipping_address['zip_postal']) . '<br>';
-            echo esc_html($shipping_address['country']) . '<br>';
-            echo '</address>';
-        }
-
-        echo '</div>';
-    }
-        */
 }
 // DISPLAY SHIPPING ADDRESS ON THANKYOU PAGE
 
@@ -3132,12 +3150,22 @@ function clear_custom_shipping_session($order_id) {
 
 // CALCULATE SHEETS REQUIRED
 
-function calculate_sheets_required($sheet_width, $sheet_length, $part_width, $part_length, $quantity, $product_id) {
+function calculate_sheets_required($sheet_width, $sheet_length, $part_width, $part_length, $quantity, $shape_type, $product_id) {
 
-    $border_cm = 0.2;
+    $border_cm = 0;
     
     if ($product_id && function_exists('get_field')) {
-        $acf_border = get_field('border_around', $product_id); // i need to conditionally set $acf_border to '0' if stock sheets is clicked
+
+        if($shape_type === "stock-sheets"){
+          	$acf_border = 0;
+        } 
+        elseif($shape_type === "rolls"){
+            $acf_border = 0;
+        }
+        else {
+        	$acf_border = get_field('border_around', $product_id);
+        }
+
         if (is_numeric($acf_border) && $acf_border > 0) {
             $border_cm = floatval($acf_border);
         } 
@@ -3274,6 +3302,7 @@ function display_custom_inputs_on_product_page() {
             $part_width_mm,
             $part_length_mm,
             $quantity,
+            $shape_type,
             $product_id
         );
 
@@ -3336,41 +3365,54 @@ function set_custom_shipping_country_for_tax_calculation() {
             // Map full country names to ISO country codes for WooCommerce
             $country_codes = [
                 'United Kingdom' => 'GB',
+                'Albania' => 'AL',
                 'Andorra' => 'AD',
                 'Austria' => 'AT',
                 'Belgium' => 'BE',
+                'Bosnia & Herzegovina' => 'BA',
                 'Bulgaria' => 'BG',
                 'Canada' => 'CA',
                 'Croatia' => 'HR',
                 'Cyprus' => 'CY',
                 'Czechia' => 'CZ',
                 'Denmark' => 'DK',
-                'Estonia' => 'EE',     
+                'Estonia' => 'EE',    
+                'Faroe Islands' => 'FO',
                 'Finland' => 'FI',
                 'France' => 'FR',
                 'Germany' => 'DE',   
                 'Gibraltar' => 'GI',
                 'Greece' => 'GR',
+                'Greenland' => 'GL',
                 'Guernsey' => 'GG',
                 'Hungary' => 'HU',
+                'Iceland' => 'IS',
                 'Ireland' => 'IE',
+                'Israel' => 'IL',
                 'Italy' => 'IT',
                 'Jersey' => 'JE',
-                'Latvia' => 'LV',  
+                'Latvia' => 'LV',
+                'Liechtenstein' => 'LI',
                 'Lithuania' => 'LT',
                 'Luxembourg' => 'LU',
                 'Malta' => 'MT',
                 'Mexico' => 'MX',
                 'Monaco' => 'MC',
+                'Montenegro' => 'ME',
                 'Netherlands' => 'NL',
+                'North Macedonia' => 'MK',
+                'Norway' => 'NO',
                 'Poland' => 'PL',
                 'Portugal' => 'PT',     
                 'Romania' => 'RO',      
-                'San Marino' => 'SM',   
+                'San Marino' => 'SM',
+                'Serbia' => 'RS',  
                 'Slovakia' => 'SK',     
                 'Slovenia' => 'SI',
                 'Spain' => 'ES',
                 'Sweden' => 'SE',
+                'Switzerland' => 'CH',
+                'Turkey' => 'TR',
                 'United States' => 'US',
                 'Vatican City' => 'VA',
             ];

@@ -7,37 +7,42 @@ jQuery(document).ready(function($){
         var $header_right = $('.header__right');
         var $main_navigation = $('.main-navigation');
         var $ajax_search_container = $('#custom-search-results');
-        //var $form = $('.is-search-form');
         var $form = $('.header__search-result-container');
+
         var scrollThreshold = 400;
-        var throttleDelay = 100; // milliseconds
-        var lastExecution = 0;
-        function onScrollThrottled() {
-            var now = Date.now();
+        var ticking = false;
 
-            if (now - lastExecution >= throttleDelay) {
-                lastExecution = now;
+        function updateHeader() {
 
-                if ($(window).scrollTop() >= scrollThreshold) {
-                    $header.addClass('header__main-fixed');
-                    $header_container.addClass('header__main-container-fixed');
-                    $header_left.addClass('header__left-fixed');
-                    $header_right.addClass('header__right-fixed');
-                    $main_navigation.addClass('header__main-navigation-fixed');
-                    $form.addClass('header__is-search-form-fixed');
-                    $ajax_search_container.addClass('header__search-result-scroll');
-                } else {
-                    $header.removeClass('header__main-fixed');
-                    $header_container.removeClass('header__main-container-fixed');
-                    $header_left.removeClass('header__left-fixed');
-                    $header_right.removeClass('header__right-fixed');
-                    $main_navigation.removeClass('header__main-navigation-fixed');
-                    $form.removeClass('header__is-search-form-fixed');
-                    $ajax_search_container.removeClass('header__search-result-scroll');
-                }
+            var scrollTop = $(window).scrollTop();
+
+            if (scrollTop >= scrollThreshold) {
+                $header.addClass('header__main-fixed');
+                $header_container.addClass('header__main-container-fixed');
+                $header_left.addClass('header__left-fixed');
+                $header_right.addClass('header__right-fixed');
+                $main_navigation.addClass('header__main-navigation-fixed');
+                $form.addClass('header__is-search-form-fixed');
+                $ajax_search_container.addClass('header__search-result-scroll');
+            } else {
+                $header.removeClass('header__main-fixed');
+                $header_container.removeClass('header__main-container-fixed');
+                $header_left.removeClass('header__left-fixed');
+                $header_right.removeClass('header__right-fixed');
+                $main_navigation.removeClass('header__main-navigation-fixed');
+                $form.removeClass('header__is-search-form-fixed');
+                $ajax_search_container.removeClass('header__search-result-scroll');
             }
+
+            ticking = false;
         }
-        $(window).on('scroll', onScrollThrottled);
+
+        $(window).on('scroll', function () {
+            if (!ticking) {
+                window.requestAnimationFrame(updateHeader);
+                ticking = true;
+            }
+        });
     
         // on page load enable the generate price button
         $("#generate_price").prop("disabled", false);
@@ -149,7 +154,7 @@ jQuery(document).ready(function($){
             }
         });
 
-        // display cofc on product page 'on keyup' dor rolls
+        // display cofc on product page 'on keyup' for rolls
         $('#input_qty_rolls').on('keyup change', function() {
             const qty_rolls = parseInt($(this).val(), 10);
 
@@ -562,6 +567,23 @@ jQuery(document).ready(function($){
             }
         });
         // click event for header Advanced Search
+
+        // Hover event for shop page cards
+        $('.woocommerce-shop__image-links a.woocommerce-shop__image-links-link').hover(
+            function () {
+                $(this)
+                    .closest('.woocommerce-shop__mask')
+                    .find('.woocommerce-shop__cat-hover-image')
+                    .addClass('active');
+            },
+            function () {
+                $(this)
+                    .closest('.woocommerce-shop__mask')
+                    .find('.woocommerce-shop__cat-hover-image')
+                    .removeClass('active');
+            }
+        );
+        // Hover event for shop page cards
 
         /* Category filter show/hide */
         jQuery('.filter-btn-hide').on('click', function(event) {

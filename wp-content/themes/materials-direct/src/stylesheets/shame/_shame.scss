@@ -46,7 +46,32 @@
     color: white !important;
 }
 .wp-gr .wp-google-based, .wp-gr .wp-google-powered {
-    color: #666 !important;
+    color: #888 !important;
+}
+.wp-gr .wp-google-text {
+	color: #ececec !important;
+  font-size: 12px !important;
+  line-height: 11px !important;
+  opacity: 0.8;
+}
+.rpi .rpi-ltgt {
+	 background-color: transparent !important;
+   border: 0 !important;
+   box-shadow: none !important;
+}
+.wp-gr a.wp-google-name {
+    color: white !important;
+    text-decoration: none !important;
+    font-weight: 600 !important;
+}
+.wp-gr.rpi a.wp-google-name {
+		color: white !important;
+}
+.wp-gr .wp-google-time {
+    color: #888 !important;
+}
+.wp-gr .grw-review .wp-google-feedback {
+    height: 128px !important;
 }
 /* Google Reviews Widget */
 

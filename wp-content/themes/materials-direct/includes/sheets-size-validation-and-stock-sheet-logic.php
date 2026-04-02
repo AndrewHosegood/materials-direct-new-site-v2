@@ -33,16 +33,20 @@ function combined_custom_jquery_for_dimensions_and_stock_sheets() {
     jQuery(document).ready(function ($) {
         const stocksheetWidth = <?php echo esc_js( $sheet_width_mm ); ?>;
         const allowedBorder = <?php echo esc_js( $allowed_border ) ?>;
-        const stocksheetWidthB = stocksheetWidth - allowedBorder;
+        //const stocksheetWidthB = stocksheetWidth - allowedBorder;
         const stocksheetLength = <?php echo esc_js( $sheet_length_mm ); ?>;
-        const stocksheetLengthB = stocksheetLength - allowedBorder;
+        //const stocksheetLengthB = stocksheetLength - allowedBorder;
         const maxWidth = <?php echo esc_js( $allowed_width ); ?>;
         const maxLength = <?php echo esc_js( $allowed_length ); ?>;
 
         const $widthInput = $('input[name="custom_width"]');
         const $lengthInput = $('input[name="custom_length"]');
+        const $radiusInput = $('input[name="custom_radius"]');
         const $button = $('#generate_price');
         const $panel = $('.product-page__grey-panel');
+
+        let stocksheetWidthB;
+        let stocksheetLengthB
 
         // Utility functions
         function removeMessage() {
@@ -65,6 +69,8 @@ function combined_custom_jquery_for_dimensions_and_stock_sheets() {
             const selectedTab = $('[name="tabs_input"]:checked').val();
 
             if (selectedTab === "stock-sheets") {
+                stocksheetWidthB = stocksheetWidth;
+                stocksheetLengthB = stocksheetLength;
                 $widthInput.val(stocksheetWidthB).prop('readonly', true).trigger('change');
                 $lengthInput.val(stocksheetLengthB).prop('readonly', true).trigger('change');
                 $widthInput.addClass("disabled");
@@ -72,16 +78,19 @@ function combined_custom_jquery_for_dimensions_and_stock_sheets() {
                 $button.prop('disabled', false); // Force enable button
                 removeMessage(); // No validation needed
             } 
-            else if(selectedTab === "rolls"){
-                //$rolls_length = 8000;
-                $widthInput.val(stocksheetWidthB).prop('readonly', true).trigger('change');
-                $lengthInput.val(stocksheetLengthB).prop('readonly', true).trigger('change');
-                $widthInput.addClass("disabled");
-                $lengthInput.addClass("disabled");
-                $button.prop('disabled', false); // Force enable button
-                removeMessage(); // No validation needed
-            }
+            // else if(selectedTab === "rolls"){
+            //     stocksheetWidthB = stocksheetWidth;
+            //     stocksheetLengthB = stocksheetLength;
+            //     $widthInput.val(stocksheetWidthB).prop('readonly', true).trigger('change');
+            //     $lengthInput.val(stocksheetLengthB).prop('readonly', true).trigger('change');
+            //     $widthInput.addClass("disabled");
+            //     $lengthInput.addClass("disabled");
+            //     $button.prop('disabled', false); // Force enable button
+            //     removeMessage(); // No validation needed
+            // }
             else {
+                stocksheetWidthB = stocksheetWidth - allowedBorder;
+                stocksheetLengthB = stocksheetLength - allowedBorder;
                 $widthInput.prop('readonly', false);
                 $lengthInput.prop('readonly', false);
                 $widthInput.removeClass("disabled");
@@ -104,19 +113,37 @@ function combined_custom_jquery_for_dimensions_and_stock_sheets() {
 
             const width = parseFloat($widthInput.val()) || 0;
             const length = parseFloat($lengthInput.val()) || 0;
+            
 
             removeMessage();
 
-            if (width > maxWidth || length > maxLength) {
-                if (width > maxWidth) {
-                    showMessage("Unfortunately your drawing won't fit the sheet. Part width exceeds stock sheet size. Enter a width of " + maxWidth + "mm or less.");
-                } else if (length > maxLength) {
-                    showMessage("Unfortunately your drawing won't fit the sheet. Part length exceeds stock sheet size. Enter a length of " + maxLength + "mm or less.");
+            if(selectedTab === "circle-radius"){
+                const Radius = parseFloat($('input[name="custom_radius"]').val()) || 0;
+                const RadiusCalc = Radius * 2;
+                if (RadiusCalc > maxWidth ) {
+                    if (RadiusCalc > maxWidth) {
+                        showMessage("Unfortunately your drawing won't fit the sheet. Part width exceeds stock sheet size. Enter a width of " + maxWidth + "mm or less.");
+                    } else if (length > maxLength) {
+                        showMessage("Unfortunately your drawing won't fit the sheet. Part length exceeds stock sheet size. Enter a length of " + maxLength + "mm or less.");
+                    }
+                    $button.prop('disabled', true);
+                } else {
+                    $button.prop('disabled', false);
                 }
-                $button.prop('disabled', true);
             } else {
-                $button.prop('disabled', false);
+                if (width > maxWidth || length > maxLength) {
+                    if (width > maxWidth) {
+                        showMessage("Unfortunately your drawing won't fit the sheet. Part width exceeds stock sheet size. Enter a width of " + maxWidth + "mm or less.");
+                    } else if (length > maxLength) {
+                        showMessage("Unfortunately your drawing won't fit the sheet. Part length exceeds stock sheet size. Enter a length of " + maxLength + "mm or less.");
+                    }
+                    $button.prop('disabled', true);
+                } else {
+                    $button.prop('disabled', false);
+                }
             }
+
+
         }
 
         // Initial run
@@ -127,9 +154,12 @@ function combined_custom_jquery_for_dimensions_and_stock_sheets() {
             setTimeout(handleTabChange, 100); // Delay in case of DOM lag
         });
 
-        $widthInput.add($lengthInput).on('keyup change', function () {
-            validateInputs();
-        });
+        $(document).on('keyup change', 
+            'input[name="custom_width"], input[name="custom_length"], input[name="custom_radius"]', 
+            function () {
+                validateInputs();
+            }
+        );
     });
     </script>
     <?php

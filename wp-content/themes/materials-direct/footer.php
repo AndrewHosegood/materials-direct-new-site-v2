@@ -85,7 +85,7 @@
 		<div class="container">
 			<hr class="footer__underline">
 			<h4 class="footer__subheading">Reviews</h4>
-			<?php echo do_shortcode( '[grw id=149]' ); ?>
+			<?php echo do_shortcode( '[grw id=5639]' ); ?>
 		</div>
 
 		<div class="footer__baseline">

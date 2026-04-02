@@ -43,12 +43,42 @@ function get_live_stock() {
         wp_die();
     }
 
+    $is_product_single = get_field('is_product_single', $product_id);
+
+        // Default label when NOT a single product
+    if ( $is_product_single == 0 ) {
+
+        $item_sheet_roll = 'Sheets';
+
+    } else {
+
+        // Only fetch ACF value if single product
+        $item_sheet_roll = get_field('is_this_an_item_sheet_or_roll', $product_id);
+
+        // Fallback if empty
+        if ( empty($item_sheet_roll) ) {
+            $item_sheet_roll = 'Items';
+        }
+    }
+
+   //$item_sheet_roll = get_field('is_this_an_item_sheet_or_roll', $product_id);
+    
+
+
+    // if (empty($item_sheet_roll)) {
+    //     $item_sheet_roll = 'Items';
+    // }
+
+    // if ( ! $product ) {
+    //     wp_die();
+    // }
+
     $stock_quantity = $product->get_stock_quantity();
 
     // If stock is managed and greater than 0
-    if ( $product->managing_stock() && $stock_quantity > 0 ) {
+    if ( $product->managing_stock() && $stock_quantity > 0  ) {
 
-        echo '<span class="stock in-stock">' . esc_html($stock_quantity) . ' Sheets In Stock</span>';
+        echo '<span class="stock in-stock">' . esc_html($stock_quantity) . ' '. esc_html($item_sheet_roll) . '</span>';
 
     } else {
 

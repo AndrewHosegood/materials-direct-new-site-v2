@@ -509,7 +509,7 @@ require_once('includes/capture_cart_v9.php');
 // Capture Cart Contents
 
 // Get the roll length value and inject a div element into the rolls tab field
-require_once('includes/rolls-tab-inject-rolls-length-data.php');
+//require_once('includes/rolls-tab-inject-rolls-length-data.php');
 // Get the roll length value and inject a div element into the rolls tab field
 
 // Conditionally add styling to woccommerce notice if is_scheduled exists

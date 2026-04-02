@@ -10,14 +10,15 @@ function update_order_status() {
     $http = "https"; //change to https for staging and live
 
      //require_once('/kunden/homepages/2/d4298640024/htdocs/newbuild/wp-content/themes/materials-direct/pdf-generation/examples/tcpdf_include.php');
-
+    /*
     if($domain == "localhost:8888"){
         require_once('/Applications/MAMP/htdocs/materials-direct-new/wp-content/themes/materials-direct/pdf-generation/examples/tcpdf_include.php');
     } else {
         require_once('/kunden/homepages/2/d4298640024/htdocs/newbuild/wp-content/themes/materials-direct/pdf-generation/examples/tcpdf_include.php');
     }
-  
+    */
      
+    require_once TCPDF_INCLUDE_PATH;
 
     date_default_timezone_set('Europe/London');
 
@@ -238,14 +239,14 @@ function update_order_status() {
                     // Path to save the PDF
 
                     //$tempFilePath1 = '/kunden/homepages/2/d4298640024/htdocs/newbuild/wp-content/themes/materials-direct/pdf-generation/pdf/Materials-Direct-DELIVERY-NOTE-' . $pdf_filename . '-' . $formatted_date_pdf . '-1.pdf';
-                    
+                    /*
                     if ($domain == "localhost:8888") {
                         $tempFilePath1 = '/Applications/MAMP/htdocs/materials-direct-new/wp-content/themes/creative-mon/pdf-generation/pdf/Materials-Direct-DELIVERY-NOTE-' . $pdf_filename . '-' . $formatted_date_pdf . '-1.pdf';
                     } else {
                         $tempFilePath1 = '/kunden/homepages/2/d4298640024/htdocs/newbuild/wp-content/themes/materials-direct/pdf-generation/pdf/Materials-Direct-DELIVERY-NOTE-' . $pdf_filename . '-' . $formatted_date_pdf . '-1.pdf';
                     }
-                  
-                    
+                    */
+                    $tempFilePath1 = TEMP_PDF_BASE_DIR . 'Materials-Direct-DELIVERY-NOTE-' . $pdf_filename . '-' . $formatted_date_pdf . '-1.pdf';
                     
 
                     class MDPDF extends TCPDF {
@@ -478,13 +479,13 @@ function update_order_status() {
 
                     
                     
-                    if ($domain == "localhost:8888") {
-                        $tempFilePath2 = '/Applications/MAMP/htdocs/materials-direct-new/wp-content/themes/creative-mon/pdf-generation/pdf/Materials-Direct-INVOICE-' . $pdf_filename . '-' . $formatted_date_pdf . '-2.pdf';
-                    } else {
-                        $tempFilePath2 = '/kunden/homepages/2/d4298640024/htdocs/newbuild/wp-content/themes/materials-direct/pdf-generation/pdf/Materials-Direct-INVOICE-' . $pdf_filename . '-' . $formatted_date_pdf . '-2.pdf';
-                    }
+                    // if ($domain == "localhost:8888") {
+                    //     $tempFilePath2 = '/Applications/MAMP/htdocs/materials-direct-new/wp-content/themes/creative-mon/pdf-generation/pdf/Materials-Direct-INVOICE-' . $pdf_filename . '-' . $formatted_date_pdf . '-2.pdf';
+                    // } else {
+                    //     $tempFilePath2 = '/kunden/homepages/2/d4298640024/htdocs/newbuild/wp-content/themes/materials-direct/pdf-generation/pdf/Materials-Direct-INVOICE-' . $pdf_filename . '-' . $formatted_date_pdf . '-2.pdf';
+                    // }
                     
-                    
+                    $tempFilePath2 = TEMP_PDF_BASE_DIR . 'Materials-Direct-INVOICE-'      . $pdf_filename . '-' . $formatted_date_pdf . '-2.pdf';
 
                     class MDPDF2 extends TCPDF {
                         public $iso_logo_path = '';

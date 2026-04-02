@@ -54,7 +54,11 @@
         <section class="sectors-two-column">
             <div class="two-column-grid grid-gap-three-point-five container <?php if(get_sub_field('layout_alignment_fc') === "Right"){ echo "reverse"; } ?>">
                 <?php $two_column_layout_image = get_sub_field('two_column_layout_fc_image'); ?>
-                <img src="<?php echo $two_column_layout_image['url']; ?>" alt="<?php echo $two_column_layout_image['alt']; ?>" class="sectors-two-column__img manufacturing-two-column__img">
+                <?php if(!empty($two_column_layout_image)){ ?>
+                    <img src="<?php echo $two_column_layout_image['url']; ?>" alt="<?php echo $two_column_layout_image['alt']; ?>" class="sectors-two-column__img manufacturing-two-column__img">
+                <?php } else { ?>
+                    <img style="border: 1px solid #ccc;" src="/wp-content/uploads/woocommerce-placeholder-600x600.webp" alt="Placeholder Image" class="sectors-two-column__img manufacturing-two-column__img">
+                <?php } ?>
                 <div class="sectors-two-column__content">
                     <h2 class="sectors-two-column__heading manufacturing-two-column__heading"><?php the_sub_field('two_column_layout_fc_heading'); ?></h2>
                     <?php the_sub_field('two_column_layout_fc_content'); ?>
@@ -169,9 +173,11 @@
 
                                             <a class="manufacturing-latest-products__link" href="<?php the_permalink(); ?>">
                                                 <div class="woocommerce-shop__soft-border"></div>
-                                                <?php if (has_post_thumbnail()) : ?>
+                                                <?php if (has_post_thumbnail()) { ?>
                                                     <?php the_post_thumbnail( 'woocommerce_thumbnail', array( 'class' => 'manufacturing-latest-products__image' ) ); ?>
-                                                <?php endif; ?>
+                                                    <?php } else { ?>
+                                                        <img src="/wp-content/uploads/woocommerce-placeholder-600x600.webp" alt="Placeholder Image" class="manufacturing-latest-products__image wp-post-image">
+                                                   <?php } ?>
                                             </a>
                                         </div>
                                         <div class="manufacturing-latest-products__info-card">
@@ -279,9 +285,11 @@
 
                                                 <a class="manufacturing-latest-products__link" href="<?php the_permalink(); ?>">
                                                     <div class="woocommerce-shop__soft-border"></div>
-                                                    <?php if (has_post_thumbnail()) : ?>
+                                                    <?php if (has_post_thumbnail()) { ?>
                                                         <?php the_post_thumbnail( 'woocommerce_thumbnail', array( 'class' => 'manufacturing-latest-products__image' ) ); ?>
-                                                    <?php endif; ?>
+                                                    <?php } else { ?>
+                                                        <img src="/wp-content/uploads/woocommerce-placeholder-600x600.webp" alt="Placeholder Image" class="manufacturing-latest-products__image wp-post-image">
+                                                   <?php } ?>
                                                 </a>
                                             </div>
                                             <div class="manufacturing-latest-products__info-card">

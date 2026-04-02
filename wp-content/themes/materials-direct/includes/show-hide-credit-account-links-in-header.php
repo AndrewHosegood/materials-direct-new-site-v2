@@ -6,12 +6,12 @@ function hide_credit_account_active() {
 
     // User logged out OR logged in but NO credit allowed
     if ( ! is_user_logged_in() || $allow_credit == 0 ) {
-        echo '<style>#menu-item-1052 { display: none !important; }</style>';
+        echo '<style>#menu-item-123 { display: none !important; }</style>';
     }
 
     // User logged in AND credit IS allowed
     if ( is_user_logged_in() && $allow_credit == 1 ) {
-        echo '<style>#menu-item-1051 { display: none !important; }</style>';
+        echo '<style>#menu-item-1046 { display: none !important; }</style>';
     }
 
 }

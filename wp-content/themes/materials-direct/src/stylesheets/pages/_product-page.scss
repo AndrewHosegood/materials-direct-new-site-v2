@@ -615,6 +615,7 @@
         position: absolute;
     }
     &__square-rectangle-message {
+        width: 100%;
         font-weight: 700;
         font-size: 0.8rem;
         line-height: 1.5;
@@ -913,6 +914,15 @@
             margin-left: 1.2%;
         }
         display:inline-block;
+    }
+    &__rolls-link {
+        color: white;
+        padding: 0.3rem 1rem;
+        width: 100%;
+        text-align: center;
+        background: #ef9003;
+        border-radius: 0.15rem;
+        display: none;
     }
 }
 

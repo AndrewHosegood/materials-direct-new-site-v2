@@ -32,6 +32,10 @@ jQuery(document).ready(function($) {
             $('#fair_label').hide();
             $('#fair_label_credit_account').hide();
             $('#input_width, #input_length, #input_qty, #input_radius').prop('readonly', false);
+            $('#cont_width_mm').show();
+            $('#cont_length_mm').show();
+            $('.product-page__input-wrap.part-qty').show();
+            $('.product-page__rolls-link').hide();
             enableButtons();
 
             // Delete temporary PDF file from server
@@ -72,6 +76,10 @@ jQuery(document).ready(function($) {
             $('#fair_label').hide();
             $('#fair_label_credit_account').hide();
             $('#input_width, #input_length, #input_qty, #input_radius').prop('readonly', false);
+            $('#cont_width_mm').hide();
+            $('#cont_length_mm').hide();
+            $('.product-page__input-wrap.part-qty').show();
+            $('.product-page__rolls-link').hide();
             enableButtons();
 
             // Delete temporary PDF file from server
@@ -113,6 +121,10 @@ jQuery(document).ready(function($) {
             $('#fair_label_credit_account').hide();
             $('#input_width, #input_length, #input_qty, #input_radius').prop('readonly', false);
             $('.product-page__rolls-label-text-2').text('Quantity of sheets:');
+            $('#cont_width_mm').show();
+            $('#cont_length_mm').show();
+            $('.product-page__input-wrap.part-qty').show();
+            $('.product-page__rolls-link').hide();
             enableButtons();
 
             // Delete temporary PDF file from server
@@ -141,10 +153,14 @@ jQuery(document).ready(function($) {
         }
         else if (selectedTab === 'rolls') {
             $('#tabs_status_message').html('Roll');
-            $('.product-page__rolls-label-text-1').text('Length (Metres):');
-            $('.product-page__rolls-label-text-2').text('Quantity of rolls:');
+            // $('.product-page__rolls-label-text-1').text('Length (Metres):');
+            // $('.product-page__rolls-label-text-2').text('Quantity of rolls:');
+            $('#cont_width_mm').hide();
+            $('#cont_length_mm').hide();
+            $('.product-page__input-wrap.part-qty').hide();
             $('#fair_label').hide();
             $('#fair_label_credit_account').hide();
+            $('.product-page__rolls-link').show();
             $('#input_width, #input_length, #input_qty, #input_radius').prop('readonly', false);
         }
         else {
@@ -161,6 +177,8 @@ jQuery(document).ready(function($) {
             $('.product-page__rolls-label-text-2').text('Total number of parts:');
             $('#fair_label').show();
             $('#fair_label_credit_account').show();
+            $('.product-page__input-wrap.part-qty').show();
+            $('.product-page__rolls-link').hide();
         }
     }
 
@@ -650,9 +668,7 @@ function updateDatepickerMinDate() {
             const discount_rate = parseFloat($('#input_discount_rate').val());
             const shipping_address = validateShippingAddress();
             const currency_rate = $('#currency_rate_sum').val();
-            console.log("currency rate: " + currency_rate);
             const currency_symbol =  $('#currency_rate_symbol').val();
-            console.log("currency symbol: " + currency_symbol);
 
             if (!shipping_address) return;
 
@@ -702,13 +718,8 @@ function updateDatepickerMinDate() {
                         const sheet_width_mm = response.data.sheet_width_mm;
                         const sheet_length_mm = response.data.sheet_length_mm;
                         const border = parseFloat(response.data.border_around || 0.2) * 10;
-                        const roll_length = response.data.roll_length;
-                        //const rate   = parseFloat(response.data.currency_rate) || 1;
-                        //const symbol = response.data.currency_symbol || '£';
 
-                        //console.log("isBackorder: " + isBackorder);
-                        //console.log("currency_rate: " + rate);
-                        //console.log("Symbol: " + symbol);
+                        const roll_length = response.data.roll_length;
 
                         // add per part cost to hidden field 
                         $('#cpp').val(adjustedPrice);
@@ -776,16 +787,30 @@ function updateDatepickerMinDate() {
                         let calcPartialbackorderdiscount_1;
                         let calcPartialbackorderdiscount_2;
                         let calcPartialbackorderFinal;
-
+                        let v1;
+                        let v2;
                         // Calculate partial backorder figures
-                        const v1 = width + (2 * border);
-                        const v2 = length + (2 * border);
+                        //const v1 = width + (2 * border);
+                        //const v2 = length + (2 * border);
+                        if(selectedTab === 'stock-sheets'){
+                            v1 = width;
+                            v2 = length;
+                        } 
+                        else if(selectedTab === 'rolls'){
+                            v1 = width;
+                            v2 = length;
+                        }
+                        else {
+                            v1 = width + (2 * border);
+                            v2 = length + (2 * border);
+                        }
                         const usable_width = sheet_width_mm;
                         const usable_length = sheet_length_mm;
                         const parts_per_row = Math.floor(usable_width / v1);
                         const parts_per_column = Math.floor(usable_length / v2);
                         const parts_per_sheet = parts_per_row * parts_per_column;
-                        
+                    
+
 
                         let priceHtml = '';
 
