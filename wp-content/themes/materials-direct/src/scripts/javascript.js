@@ -594,7 +594,20 @@ jQuery(document).ready(function($){
         });
         /* Category filter show/hide */
 
+        /* Questionnaire */
+        $('.suggested-improvements-yes').on('click', function() {
+                $('.suggested-improvements').addClass('active');
+                $('.suggested-improvements-yes').addClass('active');
+                $('.suggested-improvements-no').removeClass('active');
 
+        });
+
+        $('.suggested-improvements-no').on('click', function() {
+                $('.suggested-improvements').removeClass('active');
+                $('.suggested-improvements-yes').removeClass('active');
+                $('.suggested-improvements-no').addClass('active');
+        });
+        /* Questionnaire */
 
         // Owl Carousel
         $('.testimonials__carousel').owlCarousel({

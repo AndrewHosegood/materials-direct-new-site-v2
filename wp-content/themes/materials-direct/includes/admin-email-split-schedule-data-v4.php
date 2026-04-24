@@ -101,7 +101,10 @@ function add_order_number_to_admin_email_table($item_id, $item, $order, $plain_t
         }
     }
 
-    echo '<span style="font-weight: bold;">Scheduled Deliveries:</span>';
+    if ($num_dates = 1) {
+    echo '<span style="font-weight: bold; margin-top: 0.8rem; display: block;">Scheduled Deliveries:</span>';
+    }
+    
     echo '<ul class="delivery-options-list">';
 
     if ($num_dates >= 2) {

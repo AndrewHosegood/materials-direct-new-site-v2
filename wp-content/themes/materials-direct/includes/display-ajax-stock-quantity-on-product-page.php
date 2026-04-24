@@ -78,7 +78,7 @@ function get_live_stock() {
     // If stock is managed and greater than 0
     if ( $product->managing_stock() && $stock_quantity > 0  ) {
 
-        echo '<span class="stock in-stock">' . esc_html($stock_quantity) . ' '. esc_html($item_sheet_roll) . '</span>';
+        echo '<span class="stock in-stock">' . esc_html($stock_quantity) . ' '. esc_html($item_sheet_roll) . ' In Stock</span>';
 
     } else {
 

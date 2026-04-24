@@ -57,6 +57,9 @@
     &__row .woocommerce-tabs__form-input {
         margin-bottom: -0.5rem;
     }
+    &__row .woocommerce-tabs__form-input:focus-visible {
+        outline: 0;
+    }
     &__row .button {
         padding: 0.6rem 1.9rem;
         border-radius: 2rem;

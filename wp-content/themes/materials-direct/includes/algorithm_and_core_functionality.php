@@ -1,4 +1,256 @@
 <?php
+// Get country data for select country and shipping calculations
+function get_country_data() {
+    return [
+
+        // UNITED KINGDOM
+        'United Kingdom' => ['code' => 'GB', 'group' => 'United Kingdom'],
+
+        // EUROPE 1
+        'Belgium' => ['code' => 'BE', 'group' => 'Europe_1'],
+        'France' => ['code' => 'FR', 'group' => 'Europe_1'],
+        'Germany' => ['code' => 'DE', 'group' => 'Europe_1'],
+        'Monaco' => ['code' => 'MC', 'group' => 'Europe_1'],
+        'Netherlands' => ['code' => 'NL', 'group' => 'Europe_1'],
+        'Luxembourg' => ['code' => 'LU', 'group' => 'Europe_1'],
+        'Ireland' => ['code' => 'IE', 'group' => 'Europe_1'],
+        'Guernsey' => ['code' => 'GG', 'group' => 'Europe_1'],
+        'Jersey' => ['code' => 'JE', 'group' => 'Europe_1'],
+
+        // EUROPE 2
+        'Andorra' => ['code' => 'AD', 'group' => 'Europe_2'],
+        'Austria' => ['code' => 'AT', 'group' => 'Europe_2'],
+        'Bulgaria' => ['code' => 'BG', 'group' => 'Europe_2'],
+        'Croatia' => ['code' => 'HR', 'group' => 'Europe_2'],
+        'Cyprus' => ['code' => 'CY', 'group' => 'Europe_2'],
+        'Czechia' => ['code' => 'CZ', 'group' => 'Europe_2'],
+        'Denmark' => ['code' => 'DK', 'group' => 'Europe_2'],
+        'Estonia' => ['code' => 'EE', 'group' => 'Europe_2'],
+        'Finland' => ['code' => 'FI', 'group' => 'Europe_2'],
+        'Gibraltar' => ['code' => 'GI', 'group' => 'Europe_2'],
+        'Greece' => ['code' => 'GR', 'group' => 'Europe_2'],
+        'Hungary' => ['code' => 'HU', 'group' => 'Europe_2'],
+        'Italy' => ['code' => 'IT', 'group' => 'Europe_2'],
+        'Latvia' => ['code' => 'LV', 'group' => 'Europe_2'],
+        'Lithuania' => ['code' => 'LT', 'group' => 'Europe_2'],
+        'Malta' => ['code' => 'MT', 'group' => 'Europe_2'],
+        'Poland' => ['code' => 'PL', 'group' => 'Europe_2'],
+        'Portugal' => ['code' => 'PT', 'group' => 'Europe_2'],
+        'Romania' => ['code' => 'RO', 'group' => 'Europe_2'],
+        'San Marino' => ['code' => 'SM', 'group' => 'Europe_2'],
+        'Slovakia' => ['code' => 'SK', 'group' => 'Europe_2'],
+        'Slovenia' => ['code' => 'SI', 'group' => 'Europe_2'],
+        'Spain' => ['code' => 'ES', 'group' => 'Europe_2'],
+        'Sweden' => ['code' => 'SE', 'group' => 'Europe_2'],
+        'Vatican City' => ['code' => 'VA', 'group' => 'Europe_2'],
+
+        // EUROPE 3
+        'Albania' => ['code' => 'AL', 'group' => 'Europe_3'],
+        'Bosnia & Herzegovina' => ['code' => 'BA', 'group' => 'Europe_3'],
+        'Faroe Islands' => ['code' => 'FO', 'group' => 'Europe_3'],
+        'Greenland' => ['code' => 'GL', 'group' => 'Europe_3'],
+        'Iceland' => ['code' => 'IS', 'group' => 'Europe_3'],
+        'Israel' => ['code' => 'IL', 'group' => 'Europe_3'],
+        'Liechtenstein' => ['code' => 'LI', 'group' => 'Europe_3'],
+        'Montenegro' => ['code' => 'ME', 'group' => 'Europe_3'],
+        'North Macedonia' => ['code' => 'MK', 'group' => 'Europe_3'],
+        'Norway' => ['code' => 'NO', 'group' => 'Europe_3'],
+        'Serbia' => ['code' => 'RS', 'group' => 'Europe_3'],
+        'Switzerland' => ['code' => 'CH', 'group' => 'Europe_3'],
+        'Turkey' => ['code' => 'TR', 'group' => 'Europe_3'],
+
+        // AMERICA 1
+        'United States' => ['code' => 'US', 'group' => 'America_1'],
+        'Canada' => ['code' => 'CA', 'group' => 'America_1'],
+        'Mexico' => ['code' => 'MX', 'group' => 'America_1'],
+
+        // MIDDLE EAST
+        'Bahrain' => ['code' => 'BH', 'group' => 'middle_east'],
+        'Jordan' => ['code' => 'JO', 'group' => 'middle_east'],
+        'Kuwait' => ['code' => 'KW', 'group' => 'middle_east'],
+        'Oman' => ['code' => 'OM', 'group' => 'middle_east'],
+        'Qatar' => ['code' => 'QA', 'group' => 'middle_east'],
+        'Saudi Arabia' => ['code' => 'SA', 'group' => 'middle_east'],
+        'United Arab Emirates' => ['code' => 'AE', 'group' => 'middle_east'],
+
+        // AUSTRALASIA
+        'Australia' => ['code' => 'AU', 'group' => 'australasia'],
+        'New Zealand' => ['code' => 'NZ', 'group' => 'australasia'],
+        'China' => ['code' => 'CN', 'group' => 'australasia'],
+        'Hong Kong SAR China' => ['code' => 'HK', 'group' => 'australasia'],
+        'India' => ['code' => 'IN', 'group' => 'australasia'],
+        'Japan' => ['code' => 'JP', 'group' => 'australasia'],
+        'Malaysia' => ['code' => 'MY', 'group' => 'australasia'],
+        'Singapore' => ['code' => 'SG', 'group' => 'australasia'],
+        'South Korea' => ['code' => 'KR', 'group' => 'australasia'],
+        'South Africa' => ['code' => 'ZA', 'group' => 'australasia'],
+        'Taiwan' => ['code' => 'TW', 'group' => 'australasia'],
+        'Thailand' => ['code' => 'TH', 'group' => 'australasia'],
+
+        // ASIA
+        'Bangladesh' => ['code' => 'BD', 'group' => 'asia'],
+        'Bhutan' => ['code' => 'BT', 'group' => 'asia'],
+        'Brunei' => ['code' => 'BN', 'group' => 'asia'],
+        'Cambodia' => ['code' => 'KH', 'group' => 'asia'],
+        'Indonesia' => ['code' => 'ID', 'group' => 'asia'],
+        'Laos' => ['code' => 'LA', 'group' => 'asia'],
+        'Myanmar (Burma)' => ['code' => 'MM', 'group' => 'asia'],
+        'Nepal' => ['code' => 'NP', 'group' => 'asia'],
+        'Pakistan' => ['code' => 'PK', 'group' => 'asia'],
+        'Philippines' => ['code' => 'PH', 'group' => 'asia'],
+        'Sri Lanka' => ['code' => 'LK', 'group' => 'asia'],
+        'Vietnam' => ['code' => 'VN', 'group' => 'asia'],
+
+        // REST OF WORLD
+        'Afghanistan' => ['code' => 'AF', 'group' => 'rest_of_world'],
+        'Algeria' => ['code' => 'DZ', 'group' => 'rest_of_world'],
+        'American Samoa' => ['code' => 'AS', 'group' => 'rest_of_world'],
+        'Angola' => ['code' => 'AO', 'group' => 'rest_of_world'],
+        'Anguilla' => ['code' => 'AI', 'group' => 'rest_of_world'],
+        'Antigua & Barbuda' => ['code' => 'AG', 'group' => 'rest_of_world'],
+        'Argentina' => ['code' => 'AR', 'group' => 'rest_of_world'],
+        'Armenia' => ['code' => 'AM', 'group' => 'rest_of_world'],
+        'Aruba' => ['code' => 'AW', 'group' => 'rest_of_world'],
+        'Azerbaijan' => ['code' => 'AZ', 'group' => 'rest_of_world'],
+        'Bahamas' => ['code' => 'BS', 'group' => 'rest_of_world'],
+        'Barbados' => ['code' => 'BB', 'group' => 'rest_of_world'],
+        'Belarus' => ['code' => 'BY', 'group' => 'rest_of_world'],
+        'Belize' => ['code' => 'BZ', 'group' => 'rest_of_world'],
+        'Benin' => ['code' => 'BJ', 'group' => 'rest_of_world'],
+        'Bermuda' => ['code' => 'BM', 'group' => 'rest_of_world'],
+        'Bolivia' => ['code' => 'BO', 'group' => 'rest_of_world'],
+        'Botswana' => ['code' => 'BW', 'group' => 'rest_of_world'],
+        'Brazil' => ['code' => 'BR', 'group' => 'rest_of_world'],
+        'British Virgin Islands' => ['code' => 'VG', 'group' => 'rest_of_world'],
+        'Burkina Faso' => ['code' => 'BF', 'group' => 'rest_of_world'],
+        'Burundi' => ['code' => 'BI', 'group' => 'rest_of_world'],
+        'Cameroon' => ['code' => 'CM', 'group' => 'rest_of_world'],
+        'Cape Verde' => ['code' => 'CV', 'group' => 'rest_of_world'],
+        'Cayman Islands' => ['code' => 'KY', 'group' => 'rest_of_world'],
+        'Central African Republic' => ['code' => 'CF', 'group' => 'rest_of_world'],
+        'Chad' => ['code' => 'TD', 'group' => 'rest_of_world'],
+        'Chile' => ['code' => 'CL', 'group' => 'rest_of_world'],
+        'Colombia' => ['code' => 'CO', 'group' => 'rest_of_world'],
+        'Comoros' => ['code' => 'KM', 'group' => 'rest_of_world'],
+        'Congo - Brazzaville' => ['code' => 'CG', 'group' => 'rest_of_world'],
+        'Congo - Kinshasa' => ['code' => 'CD', 'group' => 'rest_of_world'],
+        'Cook Islands' => ['code' => 'CK', 'group' => 'rest_of_world'],
+        'Costa Rica' => ['code' => 'CR', 'group' => 'rest_of_world'],
+        'Cote dIvoire' => ['code' => 'CI', 'group' => 'rest_of_world'],
+        'Cuba' => ['code' => 'CU', 'group' => 'rest_of_world'],
+        'Curaçao' => ['code' => 'CW', 'group' => 'rest_of_world'],
+        'Djibouti' => ['code' => 'DJ', 'group' => 'rest_of_world'],
+        'Dominica' => ['code' => 'DM', 'group' => 'rest_of_world'],
+        'Dominican Republic' => ['code' => 'DO', 'group' => 'rest_of_world'],
+        'Ecuador' => ['code' => 'EC', 'group' => 'rest_of_world'],
+        'Egypt' => ['code' => 'EG', 'group' => 'rest_of_world'],
+        'El Salvador' => ['code' => 'SV', 'group' => 'rest_of_world'],
+        'Equatorial Guinea' => ['code' => 'GQ', 'group' => 'rest_of_world'],
+        'Eritrea' => ['code' => 'ER', 'group' => 'rest_of_world'],
+        'Ethiopia' => ['code' => 'ET', 'group' => 'rest_of_world'],
+        'Falkland Islands' => ['code' => 'FK', 'group' => 'rest_of_world'],
+        'Fiji' => ['code' => 'FJ', 'group' => 'rest_of_world'],
+        'French Guiana' => ['code' => 'GF', 'group' => 'rest_of_world'],
+        'Gabon' => ['code' => 'GA', 'group' => 'rest_of_world'],
+        'Gambia' => ['code' => 'GM', 'group' => 'rest_of_world'],
+        'Georgia' => ['code' => 'GE', 'group' => 'rest_of_world'],
+        'Ghana' => ['code' => 'GH', 'group' => 'rest_of_world'],
+        'Grenada' => ['code' => 'GD', 'group' => 'rest_of_world'],
+        'Guadeloupe' => ['code' => 'GP', 'group' => 'rest_of_world'],
+        'Guam' => ['code' => 'GU', 'group' => 'rest_of_world'],
+        'Guatemala' => ['code' => 'GT', 'group' => 'rest_of_world'],
+        'Guinea' => ['code' => 'GN', 'group' => 'rest_of_world'],
+        'Guinea-Bissau' => ['code' => 'GW', 'group' => 'rest_of_world'],
+        'Guyana' => ['code' => 'GY', 'group' => 'rest_of_world'],
+        'Haiti' => ['code' => 'HT', 'group' => 'rest_of_world'],
+        'Honduras' => ['code' => 'HN', 'group' => 'rest_of_world'],
+        'Iran' => ['code' => 'IR', 'group' => 'rest_of_world'],
+        'Iraq' => ['code' => 'IQ', 'group' => 'rest_of_world'],
+        'Jamaica' => ['code' => 'JM', 'group' => 'rest_of_world'],
+        'Kazakhstan' => ['code' => 'KZ', 'group' => 'rest_of_world'],
+        'Kenya' => ['code' => 'KE', 'group' => 'rest_of_world'],
+        'Kiribati' => ['code' => 'KI', 'group' => 'rest_of_world'],
+        'Kyrgyzstan' => ['code' => 'KG', 'group' => 'rest_of_world'],
+        'Lebanon' => ['code' => 'LB', 'group' => 'rest_of_world'],
+        'Lesotho' => ['code' => 'LS', 'group' => 'rest_of_world'],
+        'Liberia' => ['code' => 'LR', 'group' => 'rest_of_world'],
+        'Libya' => ['code' => 'LY', 'group' => 'rest_of_world'],
+        'Madagascar' => ['code' => 'MG', 'group' => 'rest_of_world'],
+        'Malawi' => ['code' => 'MW', 'group' => 'rest_of_world'],
+        'Maldives' => ['code' => 'MV', 'group' => 'rest_of_world'],
+        'Mali' => ['code' => 'ML', 'group' => 'rest_of_world'],
+        'Marshall Islands' => ['code' => 'MH', 'group' => 'rest_of_world'],
+        'Martinique' => ['code' => 'MQ', 'group' => 'rest_of_world'],
+        'Mauritania' => ['code' => 'MR', 'group' => 'rest_of_world'],
+        'Mauritius' => ['code' => 'MU', 'group' => 'rest_of_world'],
+        'Mayotte' => ['code' => 'YT', 'group' => 'rest_of_world'],
+        'Micronesia' => ['code' => 'FM', 'group' => 'rest_of_world'],
+        'Moldova' => ['code' => 'MD', 'group' => 'rest_of_world'],
+        'Mongolia' => ['code' => 'MN', 'group' => 'rest_of_world'],
+        'Montserrat' => ['code' => 'MS', 'group' => 'rest_of_world'],
+        'Morocco' => ['code' => 'MA', 'group' => 'rest_of_world'],
+        'Mozambique' => ['code' => 'MZ', 'group' => 'rest_of_world'],
+        'Namibia' => ['code' => 'NA', 'group' => 'rest_of_world'],
+        'Nauru' => ['code' => 'NR', 'group' => 'rest_of_world'],
+        'New Caledonia' => ['code' => 'NC', 'group' => 'rest_of_world'],
+        'Nicaragua' => ['code' => 'NI', 'group' => 'rest_of_world'],
+        'Niger' => ['code' => 'NE', 'group' => 'rest_of_world'],
+        'Nigeria' => ['code' => 'NG', 'group' => 'rest_of_world'],
+        'Niue' => ['code' => 'NU', 'group' => 'rest_of_world'],
+        'North Korea' => ['code' => 'KP', 'group' => 'rest_of_world'],
+        'Northern Mariana Islands' => ['code' => 'MP', 'group' => 'rest_of_world'],
+        'Palau' => ['code' => 'PW', 'group' => 'rest_of_world'],
+        'Panama' => ['code' => 'PA', 'group' => 'rest_of_world'],
+        'Papua New Guinea' => ['code' => 'PG', 'group' => 'rest_of_world'],
+        'Paraguay' => ['code' => 'PY', 'group' => 'rest_of_world'],
+        'Peru' => ['code' => 'PE', 'group' => 'rest_of_world'],
+        'Puerto Rico' => ['code' => 'PR', 'group' => 'rest_of_world'],
+        'Reunion' => ['code' => 'RE', 'group' => 'rest_of_world'],
+        'Russia' => ['code' => 'RU', 'group' => 'rest_of_world'],
+        'Rwanda' => ['code' => 'RW', 'group' => 'rest_of_world'],
+        'Samoa' => ['code' => 'WS', 'group' => 'rest_of_world'],
+        'Sao Tome & Principe' => ['code' => 'ST', 'group' => 'rest_of_world'],
+        'Senegal' => ['code' => 'SN', 'group' => 'rest_of_world'],
+        'Seychelles' => ['code' => 'SC', 'group' => 'rest_of_world'],
+        'Sierra Leone' => ['code' => 'SL', 'group' => 'rest_of_world'],
+        'Sint Maarten' => ['code' => 'SX', 'group' => 'rest_of_world'],
+        'Solomon Islands' => ['code' => 'SB', 'group' => 'rest_of_world'],
+        'Somalia' => ['code' => 'SO', 'group' => 'rest_of_world'],
+        'South Sudan' => ['code' => 'SS', 'group' => 'rest_of_world'],
+        'St. Barthelemy' => ['code' => 'BL', 'group' => 'rest_of_world'],
+        'St. Helena' => ['code' => 'SH', 'group' => 'rest_of_world'],
+        'St. Kitts & Nevis' => ['code' => 'KN', 'group' => 'rest_of_world'],
+        'St. Lucia' => ['code' => 'LC', 'group' => 'rest_of_world'],
+        'St. Vincent & Grenadines' => ['code' => 'VC', 'group' => 'rest_of_world'],
+        'Sudan' => ['code' => 'SD', 'group' => 'rest_of_world'],
+        'Suriname' => ['code' => 'SR', 'group' => 'rest_of_world'],
+        'Syria' => ['code' => 'SY', 'group' => 'rest_of_world'],
+        'Tajikistan' => ['code' => 'TJ', 'group' => 'rest_of_world'],
+        'Tanzania' => ['code' => 'TZ', 'group' => 'rest_of_world'],
+        'Timor-Leste' => ['code' => 'TL', 'group' => 'rest_of_world'],
+        'Togo' => ['code' => 'TG', 'group' => 'rest_of_world'],
+        'Tonga' => ['code' => 'TO', 'group' => 'rest_of_world'],
+        'Trinidad & Tobago' => ['code' => 'TT', 'group' => 'rest_of_world'],
+        'Tunisia' => ['code' => 'TN', 'group' => 'rest_of_world'],
+        'Turkmenistan' => ['code' => 'TM', 'group' => 'rest_of_world'],
+        'Turks & Caicos Islands' => ['code' => 'TC', 'group' => 'rest_of_world'],
+        'Tuvalu' => ['code' => 'TV', 'group' => 'rest_of_world'],
+        'U.S. Virgin Islands' => ['code' => 'VI', 'group' => 'rest_of_world'],
+        'Uganda' => ['code' => 'UG', 'group' => 'rest_of_world'],
+        'Ukraine' => ['code' => 'UA', 'group' => 'rest_of_world'],
+        'Uruguay' => ['code' => 'UY', 'group' => 'rest_of_world'],
+        'Uzbekistan' => ['code' => 'UZ', 'group' => 'rest_of_world'],
+        'Vanuatu' => ['code' => 'VU', 'group' => 'rest_of_world'],
+        'Venezuela' => ['code' => 'VE', 'group' => 'rest_of_world'],
+        'Yemen' => ['code' => 'YE', 'group' => 'rest_of_world'],
+        'Zambia' => ['code' => 'ZM', 'group' => 'rest_of_world'],
+        'Zimbabwe' => ['code' => 'ZW', 'group' => 'rest_of_world'],
+    ];
+}
+// Get country data for select country and shipping calculations
+
+
+
 // Codys Exponential Decay Function 
 function exponentialDecay($A, $k, $t) {
     return $A * exp(-$k * $t);
@@ -200,6 +452,7 @@ function calculate_product_price($product_id, $width, $length, $qty, $discount_r
     $finalPppOnAva = $finalPppOnAva - $discountAmount;
     $adjustedPrice = $finalPppOnAva * $globalPriceAdjust;
 
+    error_log("Cost Per Part Raw:" . $finalPppOnAva);
 
     /* AH rolls fix 9.12.2025 */
     if($shape_type ==="rolls"){
@@ -297,62 +550,14 @@ function custom_price_input_fields_prefill() {
         
             echo '<label class="custom-price-calc__label product-page__address-6">';
             echo  '<select id="input_country" class="product-page__calc-input product-page__calc-input-small" name="custom_country" required>';
-                $countries = array(
-                    'United Kingdom' => 'United Kingdom',
-                    'Albania'        => 'Albania',
-                    'Andorra'        => 'Andorra',
-                    'Austria'        => 'Austria',
-                    'Belgium'        => 'Belgium',
-                    'Bosnia & Herzegovina'       => 'Bosnia & Herzegovina',
-                    'Bulgaria'       => 'Bulgaria',
-                    'Canada'         => 'Canada',
-                    'Croatia'        => 'Croatia',
-                    'Cyprus'         => 'Cyprus',
-                    'Czechia'        => 'Czechia',
-                    'Denmark'        => 'Denmark',
-                    'Estonia'        => 'Estonia',
-                    'Faroe Islands'  => 'Faroe Islands',
-                    'Finland'        => 'Finland',
-                    'France'         => 'France',
-                    'Germany'        => 'Germany',
-                    'Gibraltar'      => 'Gibraltar',
-                    'Greece'         => 'Greece',
-                    'Greenland'      => 'Greenland',
-                    'Guernsey'       => 'Guernsey',
-                    'Hungary'        => 'Hungary',
-                    'Iceland'        => 'Iceland',
-                    'Ireland'        => 'Ireland',
-                    'Israel'         => 'Israel',
-                    'Italy'          => 'Italy',
-                    'Jersey'         => 'Jersey',
-                    'Latvia'         => 'Latvia',
-                    'Liechtenstein'  => 'Liechtenstein',
-                    'Lithuania'      => 'Lithuania',
-                    'Luxembourg'     => 'Luxembourg',
-                    'Malta'          => 'Malta',
-                    'Mexico'         => 'Mexico',
-                    'Monaco'         => 'Monaco',
-                    'Montenegro'     => 'Montenegro',
-                    'Netherlands'    => 'Netherlands',
-                    'North Macedonia' => 'North Macedonia',
-                    'Norway'         => 'Norway',
-                    'Poland'         => 'Poland',
-                    'Portugal'       => 'Portugal',
-                    'Romania'        => 'Romania',
-                    'San Marino'     => 'San Marino',
-                    'Serbia'         => 'Serbia',
-                    'Slovakia'       => 'Slovakia',
-                    'Slovenia'       => 'Slovenia',
-                    'Spain'          => 'Spain',
-                    'Sweden'         => 'Sweden',
-                    'Switzerland'    => 'Switzerland',
-                    'Turkey'         => 'Turkey',
-                    'United States'  => 'United States',
-                    'Vatican City'  => 'Vatican City',
-                );
-                foreach ($countries as $value => $label) {
-                    echo '<option value="' . esc_attr($value) . '"' . selected($country, $value, false) . '>' . esc_html($label) . '</option>';
-                } 
+
+            $country_data = get_country_data();
+            ksort($country_data); // Optional: sort alphabetically for nicer UX
+            foreach ($country_data as $country_name => $data) {
+                echo '<option value="' . esc_attr($country_name) . '" ' . selected($country, $country_name, false) . '>' 
+                    . esc_html($country_name) . 
+                '</option>';
+            }
             echo '</select>';
             
 
@@ -441,14 +646,7 @@ function custom_price_input_fields_prefill() {
 
         <p class="product-page__square-rectangle-message"><i class="fa-solid fa-circle-info product-page__square-rectangle-message-icon"></i> You are asking us to manufacture a <span id="tabs_status_message">custom shape</span><span id="tabs_status_message_2">. Enter your values below</p>';
         
-        $roll_link = get_field('roll_link', $product_id);
-        
-        if ($roll_link) {
-            //the_field('roll_link', $product_id);
-            $url_1 = $roll_link['url'];
-            $title_1 = $roll_link['title'];
-            echo '<a class="product-page__rolls-link" href="'.esc_html( $url_1 ).'">'.esc_html( $title_1 ).'</a>';
-        }
+
         echo '<!-- File Upload Fields -->
         <div id="pdf_upload_container">
         <label id="pdf_upload_label" class="product-page__file-upload-label">Upload .PDF Drawing</label>
@@ -569,7 +767,8 @@ function custom_price_input_fields_prefill() {
                 if (!empty($sold_as_roll_length_value)) {
                     $sold_as_roll_length = $sold_as_roll_length_value;
                 }
-                echo '<div id="shipments_display" style="display: none; padding: 0.4rem 0.99rem; background: #efefef; border: 2px solid #ddd;"><a href="#" id="add_shipments" data-id="'.$sold_as_roll_length.'" class="product-page__shipments-btn">Add Shipment(s)</a>
+                echo '<div id="shipments_display" style="display: none; padding: 0.4rem 0.99rem; background: #efefef; border: 2px solid #ddd;">
+                    <a href="#" id="add_shipments" data-id="'.$sold_as_roll_length.'" class="product-page__shipments-btn">Add Shipment(s)</a>
                     <a id="reset_button" class="product-page__generate-price product-page__reset" href="#">Reset</a>
                     <div id="order_info_box" class="product-page__order-info-box delivery-options-active">';
                         echo '<p class="product-page__order-info-message-1">Click on Add Shipment(s) to select a lead time</p>';
@@ -694,61 +893,14 @@ function custom_price_input_fields_prefill() {
         } else {
             // No saved address → full editable select
             echo '<select id="input_country" class="product-page__calc-input product-page__calc-input-small" name="custom_country" required>';
-            $countries = array(
-                'United Kingdom' => 'United Kingdom',
-                'Albania'        => 'Albania',
-                'Andorra'        => 'Andorra',
-                'Austria'        => 'Austria',
-                'Belgium'        => 'Belgium',
-                'Bosnia & Herzegovina'       => 'Bosnia & Herzegovina',
-                'Bulgaria'       => 'Bulgaria',
-                'Canada'         => 'Canada',
-                'Croatia'        => 'Croatia',
-                'Cyprus'         => 'Cyprus',
-                'Czechia'        => 'Czechia',
-                'Denmark'        => 'Denmark',
-                'Estonia'        => 'Estonia',
-                'Faroe Islands'  => 'Faroe Islands',
-                'Finland'        => 'Finland',
-                'France'         => 'France',
-                'Germany'        => 'Germany',
-                'Gibraltar'      => 'Gibraltar',
-                'Greece'         => 'Greece',
-                'Greenland'      => 'Greenland',
-                'Guernsey'       => 'Guernsey',
-                'Hungary'        => 'Hungary',
-                'Iceland'        => 'Iceland',
-                'Ireland'        => 'Ireland',
-                'Israel'         => 'Israel',
-                'Italy'          => 'Italy',
-                'Jersey'         => 'Jersey',
-                'Latvia'         => 'Latvia',
-                'Liechtenstein'  => 'Liechtenstein',
-                'Lithuania'      => 'Lithuania',
-                'Luxembourg'     => 'Luxembourg',
-                'Malta'          => 'Malta',
-                'Mexico'         => 'Mexico',
-                'Monaco'         => 'Monaco',
-                'Montenegro'     => 'Montenegro',
-                'Netherlands'    => 'Netherlands',
-                'North Macedonia' => 'North Macedonia',
-                'Norway'         => 'Norway',
-                'Poland'         => 'Poland',
-                'Portugal'       => 'Portugal',
-                'Romania'        => 'Romania',
-                'San Marino'     => 'San Marino',
-                'Serbia'         => 'Serbia',
-                'Slovakia'       => 'Slovakia',
-                'Slovenia'       => 'Slovenia',
-                'Spain'          => 'Spain',
-                'Sweden'         => 'Sweden',
-                'Switzerland'    => 'Switzerland',
-                'Turkey'         => 'Turkey',
-                'United States'  => 'United States',
-                'Vatican City'  => 'Vatican City',
-            );
-            foreach ($countries as $value => $label) {
-                echo '<option value="' . esc_attr($value) . '"' . selected($country, $value, false) . '>' . esc_html($label) . '</option>';
+            $country_data = get_country_data();
+
+            ksort($country_data); // Optional: sort alphabetically for nicer UX
+
+            foreach ($country_data as $country_name => $data) {
+                echo '<option value="' . esc_attr($country_name) . '" ' . selected($country, $country_name, false) . '>' 
+                    . esc_html($country_name) . 
+                '</option>';
             }
             echo '</select>';
         }
@@ -845,7 +997,6 @@ function calculate_secure_price() {
     $is_product_single = function_exists('get_field') ? get_field('is_product_single', $product_id) : false;
 
     $roll_length = function_exists('get_field') ? floatval(get_field('roll_length', $product_id)) : false;
-
     $roll_length_v = ($roll_length > 0) ? $roll_length / 1000 : 0;
 
     if ($is_product_single) {
@@ -874,7 +1025,7 @@ function calculate_secure_price() {
     $currency_rate = floatval($_POST['currency_rate']);
     $currency_symbol = $_POST['currency_symbol'];
 
-    if (!is_numeric($product_id) || $width <= 0 || $length <= 0 || $qty < 1 || !is_numeric($discount_rate)) {
+    if (!is_numeric($product_id) || $width <= 0 || $length <= 0 || $qty < 1) {
         wp_send_json_error(['message' => 'Invalid input values.']);
     }
 
@@ -901,28 +1052,6 @@ function calculate_secure_price() {
         return;
     }
 
-    /* CODE NO LONGER NEEDED*/
-    /*
-    if (!empty($_POST['street_address'])) {
-        $shipping_address = [
-            'street_address' => sanitize_text_field($_POST['street_address']),
-            'address_line2' => sanitize_text_field($_POST['address_line2']),
-            'city'          => sanitize_text_field($_POST['city']),
-            'county_state'  => sanitize_text_field($_POST['county_state']),
-            'zip_postal'    => sanitize_text_field($_POST['zip_postal']),
-            'country'       => sanitize_text_field($_POST['country']),
-        ];
-        WC()->session->set('custom_shipping_address', $shipping_address);
-    }
-    */
-
-    $total_price = calculate_product_price($product_id, $width, $length, $qty, $discount_rate, $shape_type, $product_id);
-
-    if (is_wp_error($total_price)) {
-        wp_send_json_error(['message' => $total_price->get_error_message()]);
-        return;
-    }
-    $per_part_price = $total_price / $qty;
 
 
     // Dynamically calculate sheets required
@@ -937,17 +1066,39 @@ function calculate_secure_price() {
     );
 
     $sheets_required = $sheet_result['sheets_required'];
-    error_log("sheets_required: " . $sheets_required);
-    $sheets_required_rolls = $sheet_result['sheets_required'] * $roll_length_v;
+    
 
-    /* AH rolls fix 9.12.2025 */
+    /* If rolls are selected apply fix  */
+    $sheets_required_rolls = $sheet_result['sheets_required'] * $roll_length_v;
     if($shape_type === "rolls"){
         $is_backorder = $sheets_required_rolls > $stock_quantity;
     } else {
         $is_backorder = $sheets_required > $stock_quantity;
     }
-    /* AH rolls fix 9.12.2025 */
+    /* If rolls are selected apply fix  */
 
+    // === ROLLS FULL BACKORDER LOGIC (NEW) ===
+    $user_id = get_current_user_id();
+    $credit_options = get_field('credit_options', 'user_' . $user_id);
+    $allow_credit = $credit_options['allow_user_credit_option'] ?? false;
+
+    $is_full_backorder_rolls = false;
+
+    if ($shape_type === 'rolls' && $is_backorder) {
+        $is_full_backorder_rolls = true;
+        $discount_rate = 0.05;   // Blanket 5% discount for Rolls full backorder
+        error_log("Rolls FULL backorder triggered - forcing 5% discount on entire order. Qty: $qty, Stock: $stock_quantity");
+    }
+    // === ROLLS FULL BACKORDER LOGIC (NEW) ===
+
+    $total_price = calculate_product_price($product_id, $width, $length, $qty, $discount_rate, $shape_type);
+
+    if (is_wp_error($total_price)) {
+        wp_send_json_error(['message' => $total_price->get_error_message()]);
+        return;
+    }
+
+    $per_part_price = $total_price / $qty;
 
     // SEND DATA TO algorith-core-functionality.js
     wp_send_json_success([
@@ -956,6 +1107,7 @@ function calculate_secure_price() {
         'sheets_required' => $sheets_required,
         'stock_quantity' => $stock_quantity,
         'is_backorder' => $is_backorder,
+        'is_full_backorder_rolls' => $is_full_backorder_rolls,
         'sheet_width_mm' => $sheet_width_mm,
         'sheet_length_mm' => $sheet_length_mm,
         'entered_quantity' => $qty,
@@ -1528,121 +1680,250 @@ function calculate_shipping_cost($total_del_weight, $country) {
             [290, 299, 2365.27],
             [299, PHP_INT_MAX, 2439.60],
         ],
+        'middle_east' => [ // Shared tiers for Middle East (Done)
+            [0, 0.5, 51.48],
+            [0.5, 1, 55.66],
+            [1, 1.5, 59.85],
+            [1.5, 2, 63.52],
+            [2, 2.5, 67.37],
+            [2.5, 3, 71.21],
+            [3, 3.5, 75.04],
+            [3.5, 4, 78.89],
+            [4, 4.5, 82.71],
+            [4.5, 5, 86.43],
+            [5, 5.5, 90.12],
+            [5.5, 6, 93.84],
+            [6, 6.5, 97.55],
+            [6.5, 7, 101.25],
+            [7, 7.5, 104.96],
+            [7.5, 8, 108.66],
+            [8, 8.5, 112.37],
+            [8.5, 9, 116.07],
+            [9, 9.5, 119.78],
+            [9.5, 10, 123.63],
+            [10, 15, 162.14],
+            [15, 20, 199.47],
+            [20, 25, 226.35],
+            [25, 30, 258.50],
+            [30, 35, 298.26],
+            [35, 40, 338.00],
+            [40, 45, 377.76],
+            [45, 50, 417.52],
+            [50, 60, 497.02],
+            [60, 70, 578.61],
+            [70, 80, 678.81],
+            [80, 90, 779.02],
+            [90, 100, 879.22],
+            [100, 110, 979.42],
+            [110, 120, 1079.64],
+            [120, 130, 1179.85],
+            [130, 140, 1280.05],
+            [140, 150, 1380.25],
+            [150, 160, 1480.45],
+            [160, 170, 1580.67],
+            [170, 180, 1680.88],
+            [180, 190, 1781.08],
+            [190, 200, 1881.28],
+            [200, 210, 1981.49],
+            [210, 220, 2081.71],
+            [220, 230, 2181.91],
+            [230, 240, 2282.11],
+            [240, 250, 2382.31],
+            [250, 260, 2482.52],
+            [260, 270, 2582.74],
+            [270, 280, 2682.94],
+            [280, 290, 2783.14],
+            [290, 299, 2873.32],
+            [299, PHP_INT_MAX, 2963.50],
+        ],
+        'australasia' => [ // Shared tiers for Australasia (Done)
+            [0, 0.5, 56.15],
+            [0.5, 1, 58.93],
+            [1, 1.5, 61.71],
+            [1.5, 2, 65.50],
+            [2, 2.5, 69.50],
+            [2.5, 3, 73.49],
+            [3, 3.5, 77.49],
+            [3.5, 4, 81.48],
+            [4, 4.5, 85.47],
+            [4.5, 5, 89.53],
+            [5, 5.5, 93.58],
+            [5.5, 6, 97.63],
+            [6, 6.5, 101.68],
+            [6.5, 7, 105.73],
+            [7, 7.5, 109.78],
+            [7.5, 8, 113.83],
+            [8, 8.5, 117.88],
+            [8.5, 9, 121.93],
+            [9, 9.5, 125.98],
+            [9.5, 10, 130.24],
+            [10, 15, 172.85],
+            [15, 20, 215.02],
+            [20, 25, 253.14],
+            [25, 30, 296.65],
+            [30, 35, 342.57],
+            [35, 40, 388.47],
+            [40, 45, 434.39],
+            [45, 50, 480.31],
+            [50, 60, 572.13],
+            [60, 70, 665.63],
+            [70, 80, 774.27],
+            [80, 90, 882.90],
+            [90, 100, 991.52],
+            [100, 110, 1100.14],
+            [110, 120, 1208.76],
+            [120, 130, 1317.40],
+            [130, 140, 1426.02],
+            [140, 150, 1534.64],
+            [150, 160, 1643.26],
+            [160, 170, 1751.89],
+            [170, 180, 1860.53],
+            [180, 190, 1969.15],
+            [190, 200, 2077.77],
+            [200, 210, 2186.39],
+            [210, 220, 2295.01],
+            [220, 230, 2403.65],
+            [230, 240, 2512.27],
+            [240, 250, 2620.89],
+            [250, 260, 2729.51],
+            [260, 270, 2838.14],
+            [270, 280, 2946.78],
+            [280, 290, 3055.40],
+            [290, 299, 3153.15],
+            [299, PHP_INT_MAX, 3203.34],
+        ],
+        'asia' => [ // Shared tiers for Australasia (Done)
+            [0, 0.5, 62.88],
+            [0.5, 1, 67.39],
+            [1, 1.5, 72.89],
+            [1.5, 2, 78.42],
+            [2, 2.5, 83.87],
+            [2.5, 3, 89.32],
+            [3, 3.5, 94.77],
+            [3.5, 4, 100.24],
+            [4, 4.5, 105.69],
+            [4.5, 5, 110.92],
+            [5, 5.5, 116.16],
+            [5.5, 6, 121.39],
+            [6, 6.5, 126.63],
+            [6.5, 7, 131.88],
+            [7, 7.5, 137.11],
+            [7.5, 8, 142.35],
+            [8, 8.5, 147.60],
+            [8.5, 9, 152.82],
+            [9, 9.5, 158.07],
+            [9.5, 10, 163.17],
+            [10, 15, 214.11],
+            [15, 20, 265.07],
+            [20, 25, 316.21],
+            [25, 30, 376.19],
+            [30, 35, 445.85],
+            [35, 40, 515.54],
+            [40, 45, 585.20],
+            [45, 50, 654.88],
+            [50, 60, 794.21],
+            [60, 70, 935.48],
+            [70, 80, 1093.90],
+            [80, 90, 1252.35],
+            [90, 100, 1410.79],
+            [100, 110, 1569.23],
+            [110, 120, 1727.67],
+            [120, 130, 1886.10],
+            [130, 140, 2044.54],
+            [140, 150, 2202.98],
+            [150, 160, 2361.43],
+            [160, 170, 2519.87],
+            [170, 180, 2678.29],
+            [180, 190, 2836.74],
+            [190, 200, 2995.18],
+            [200, 210, 3153.62],
+            [210, 220, 3312.06],
+            [220, 230, 3470.49],
+            [230, 240, 3628.93],
+            [240, 250, 3787.37],
+            [250, 260, 3945.82],
+            [260, 270, 4104.26],
+            [270, 280, 4262.68],
+            [280, 290, 4421.13],
+            [290, 299, 4563.72],
+            [299, PHP_INT_MAX, 4706.31],
+        ],
+        'rest_of_world' => [ // Shared tiers for rest_of_world
+            [0, 0.5, 67.55],
+            [0.5, 1, 73.71],
+            [1, 1.5, 79.87],
+            [1.5, 2, 86.03],
+            [2, 2.5, 92.10],
+            [2.5, 3, 98.15],
+            [3, 3.5, 104.20],
+            [3.5, 4, 110.26],
+            [4, 4.5, 116.31],
+            [4.5, 5, 122.19],
+            [5, 5.5, 128.07],
+            [5.5, 6, 133.95],
+            [6, 6.5, 139.83],
+            [6.5, 7, 145.71],
+            [7, 7.5, 151.59],
+            [7.5, 8, 157.47],
+            [8, 8.5, 163.35],
+            [8.5, 9, 169.23],
+            [9, 9.5, 175.11],
+            [9.5, 10, 180.47],
+            [10, 15, 234.04],
+            [15, 20, 287.73],
+            [20, 25, 342.53],
+            [25, 30, 406.52],
+            [30, 35, 479.77],
+            [35, 40, 553.04],
+            [40, 45, 626.30],
+            [45, 50, 699.57],
+            [50, 60, 846.10],
+            [60, 70, 994.60],
+            [70, 80, 1160.84],
+            [80, 90, 1327.09],
+            [90, 100, 1493.33],
+            [100, 110, 1659.58],
+            [110, 120, 1825.81],
+            [120, 130, 1992.05],
+            [130, 140, 2158.30],
+            [140, 150, 2324.54],
+            [150, 160, 2490.79],
+            [160, 170, 2657.01],
+            [170, 180, 2823.26],
+            [180, 190, 2989.50],
+            [190, 200, 3155.75],
+            [200, 210, 3321.99],
+            [210, 220, 3488.22],
+            [220, 230, 3654.47],
+            [230, 240, 3820.71],
+            [240, 250, 3986.96],
+            [250, 260, 4153.20],
+            [260, 270, 4319.43],
+            [270, 280, 4485.67],
+            [280, 290, 4651.92],
+            [290, 299, 4801.53],
+            [299, PHP_INT_MAX, 4951.93],
+        ],
     ];
 
-    // Map countries to cost tier groups
-    $country_groups = [
-        'United Kingdom' => 'United Kingdom',
-        'Albania' => 'Europe_3',
-        'Andorra' => 'Europe_2',
-        'Austria' => 'Europe_2',
-        'Belgium' => 'Europe_1',
-        'Bosnia & Herzegovina' => 'Europe_3',
-        'Bulgaria' => 'Europe_2',
-        'Canada' => 'America_1',
-        'Croatia' => 'Europe_2',
-        'Cyprus' => 'Europe_2',
-        'Czechia' => 'Europe_2',
-        'Denmark' => 'Europe_2',
-        'Estonia' => 'Europe_2',
-        'Faroe Islands' => 'Europe_3',
-        'Finland' => 'Europe_2',
-        'France' => 'Europe_1',
-        'Germany' => 'Europe_1',
-        'Gibraltar' => 'Europe_2',
-        'Greece' => 'Europe_2',
-        'Greenland' => 'Europe_3',
-        'Guernsey' => 'Europe_1',
-        'Hungary' => 'Europe_2',
-        'Iceland' => 'Europe_3',
-        'Ireland' => 'Europe_1',
-        'Israel' => 'Europe_3',
-        'Italy' => 'Europe_2',
-        'Jersey' => 'Europe_1',
-        'Latvia' => 'Europe_2',
-        'Liechtenstein'  => 'Europe_3',
-        'Lithuania' => 'Europe_2',
-        'Luxembourg' => 'Europe_1',
-        'Malta' => 'Europe_2',
-        'Mexico' => 'America_1',
-        'Monaco' => 'Europe_1',
-        'Montenegro' => 'Europe_3',
-        'Netherlands' => 'Europe_1',
-        'North Macedonia' => 'Europe_3',
-        'Norway' => 'Europe_3',
-        'Poland' => 'Europe_2',
-        'Portugal' => 'Europe_2',
-        'Romania' => 'Europe_2',
-        'San Marino' => 'Europe_2',
-        'Serbia' => 'Europe_3',
-        'Slovakia' => 'Europe_2',
-        'Slovenia' => 'Europe_2',
-        'Spain' => 'Europe_2',
-        'Sweden' => 'Europe_2',
-        'Switzerland' => 'Europe_3',
-        'Turkey' => 'Europe_3',
-        'United States' => 'America_1',
-        'Vatican City' => 'Europe_2',
+
+    $country_data = get_country_data();
+
+    // Get country info or fallback
+    $country_info = $country_data[$country] ?? [
+        'group' => 'rest_of_world'
     ];
 
-    // Get the appropriate cost tier based on country
-    switch ($country) {
-        case 'United Kingdom':
-        case 'Albania':
-        case 'Andorra':
-        case 'Austria':
-        case 'Belgium':
-        case 'Bosnia & Herzegovina':
-        case 'Bulgaria':
-        case 'Canada':
-        case 'Croatia':
-        case 'Cyprus':
-        case 'Czechia':
-        case 'Denmark':
-        case 'Estonia':
-        case 'Faroe Islands':
-        case 'Finland':
-        case 'France':
-        case 'Germany':
-        case 'Gibraltar': 
-        case 'Greece':  
-        case 'Greenland':          
-        case 'Guernsey':
-        case 'Hungary':
-        case 'Iceland':
-        case 'Ireland':
-        case 'Israel':   
-        case 'Italy':
-        case 'Jersey':
-        case 'Latvia':
-        case 'Liechtenstein':   
-        case 'Lithuania':
-        case 'Luxembourg':
-        case 'Malta':
-        case 'Mexico':                
-        case 'Monaco':
-        case 'Montenegro':
-        case 'Netherlands':
-        case 'North Macedonia':
-        case 'Norway':
-        case 'Poland':
-        case 'Portugal':
-        case 'Romania':
-        case 'San Marino':
-        case 'Serbia':
-        case 'Slovakia':  
-        case 'Slovenia': 
-        case 'Spain':
-        case 'Sweden':
-        case 'Switzerland':
-        case 'Turkey':
-        case 'United States':
-        case 'Vatican City':    
-            $tiers = $cost_tiers[$country_groups[$country]];
-            break;
-        default:
-            return 0;
+    $group = $country_info['group'];
+
+    // Make sure the group exists in your tiers
+    if (!isset($cost_tiers[$group])) {
+        return 0;
     }
+
+    $tiers = $cost_tiers[$group];
+
+
 
     // Find the cost based on weight
     foreach ($tiers as $tier) {
@@ -1658,6 +1939,13 @@ function calculate_shipping_cost($total_del_weight, $country) {
 
 
 
+// VALIDATION HELPER FUNCTION TO CHECK COUNTRY EXISTS IN ARRAY 
+function is_valid_country($country) {
+    $countries = get_country_data();
+    return isset($countries[$country]);
+}
+// VALIDATION HELPER FUNCTION TO CHECK COUNTRY EXISTS IN ARRAY 
+
 
 // 5. CREATE CART ITEM DATA AND STORE AS SESSION
 
@@ -1667,6 +1955,7 @@ function add_custom_price_cart_item_data_secure($cart_item_data, $product_id) {
     $is_product_single = function_exists('get_field') ? get_field('is_product_single', $product_id) : false;
     $roll_length = floatval(get_field('roll_length', $product_id));
     $roll_length_v = ($roll_length > 0) ? $roll_length / 1000 : 0;
+
     $cart_item_data['custom_inputs'] = [];
 
     if (
@@ -1676,13 +1965,18 @@ function add_custom_price_cart_item_data_secure($cart_item_data, $product_id) {
         isset($_POST['custom_zip_postal']) &&
         isset($_POST['custom_country'])
     ) {
+        $raw_country = sanitize_text_field($_POST['custom_country']);
+        $country = is_valid_country($raw_country) ? $raw_country : 'United Kingdom';
+        if ($country !== $raw_country && defined('WP_DEBUG') && WP_DEBUG) {
+            error_log("Invalid country submitted: " . $raw_country . " | Fallback applied: United Kingdom");
+        }
         $cart_item_data['custom_inputs']['shipping_address'] = [
             'street_address' => sanitize_text_field($_POST['custom_street_address']),
             'address_line2' => sanitize_text_field($_POST['custom_address_line2']),
             'city' => sanitize_text_field($_POST['custom_city']),
             'county_state' => sanitize_text_field($_POST['custom_county_state']),
             'zip_postal' => sanitize_text_field($_POST['custom_zip_postal']),
-            'country' => sanitize_text_field($_POST['custom_country']),
+            'country' => $country,
         ];
         WC()->session->set('custom_shipping_address', $cart_item_data['custom_inputs']['shipping_address']);
     }
@@ -1707,7 +2001,8 @@ function add_custom_price_cart_item_data_secure($cart_item_data, $product_id) {
         return $cart_item_data;
     }
 
-    $country = isset($cart_item_data['custom_inputs']['shipping_address']['country']) ? $cart_item_data['custom_inputs']['shipping_address']['country'] : 'United Kingdom';
+    //$country = isset($cart_item_data['custom_inputs']['shipping_address']['country']) ? $cart_item_data['custom_inputs']['shipping_address']['country'] : 'United Kingdom';
+    $country = $cart_item_data['custom_inputs']['shipping_address']['country'] ?? 'United Kingdom';
 
     if ($is_product_single) {
         $product_weight = $product->get_weight();
@@ -1830,6 +2125,7 @@ function add_custom_price_cart_item_data_secure($cart_item_data, $product_id) {
     $final_shipping = calculate_shipping_cost($total_del_weight, $country);
 
     $sheets_required = $sheet_result['sheets_required'];
+    error_log("sheets_required: " . $sheets_required);
     $is_backorder_raw = $sheets_required > $stock_quantity;
 
     // Force clear scheduled session if no credit (prevent UI/session artifacts for non-credit users)
@@ -1927,15 +2223,24 @@ function add_custom_price_cart_item_data_secure($cart_item_data, $product_id) {
             $today_timestamp = strtotime($today);
             $despatch_timestamp = strtotime($despatch_ymd);
             $calendar_days = ($despatch_timestamp - $today_timestamp) / (60 * 60 * 24);
-
-            if ($calendar_days <= 1) $disc = 0; // 24Hr (Next day)
-            elseif ($calendar_days <= 4) $disc = 0.015; // 2–4 days (48Hr)
-            elseif ($calendar_days <= 6) $disc = 0.02; // 5–6 days (5 Days)
-            elseif ($calendar_days <= 12) $disc = 0.025; // 7–12 days (7 Days)
-            elseif ($calendar_days <= 13) $disc = 0.03; // 13 days (12 Days)
-            elseif ($calendar_days <= 29) $disc = 0.035; // 14–29 days (14–15 Days)
-            elseif ($calendar_days <= 35) $disc = 0.04; // 30–35 days (30 Days)
-            else $disc = 0.05; // 36+ days (35 Days)
+            
+            if ($calendar_days <= 1) {
+                $disc = 0;           // 24Hrs
+            } elseif ($calendar_days <= 4) {
+                $disc = 0.015;       // 48Hrs
+            } elseif ($calendar_days <= 6) {
+                $disc = 0.02;        // 5 Days
+            } elseif ($calendar_days <= 12) {
+                $disc = 0.025;       // 7 Days
+            } elseif ($calendar_days <= 13) {
+                $disc = 0.03;        // 12 Days
+            } elseif ($calendar_days <= 29) {
+                $disc = 0.035;       // 14 Days
+            } elseif ($calendar_days <= 34) {
+                $disc = 0.04;        // 30–34 Days
+            } else {
+                $disc = 0.05;        // 35 Days and above ← this was the bug
+            }
             
             /* new calendar days discounts */ 
 
@@ -1985,35 +2290,72 @@ function add_custom_price_cart_item_data_secure($cart_item_data, $product_id) {
         $despatch_notes = $despatch_notes;
     } else {
         // Non-scheduled: Unified handling for backorder and instock
-        $border = floatval(get_field('border_around', $product_id) * 10); //bug
-        $v1 = $part_width_mm + (2 * $border); //wrong
-        $v2 = $part_length_mm + (2 * $border); //wrong
+        $border = floatval(get_field('border_around', $product_id) * 10);
+        $v1 = $part_width_mm + (2 * $border); 
+        $v2 = $part_length_mm + (2 * $border); 
         $parts_per_row = floor($sheet_width_mm / $v1);
         $parts_per_column = floor($sheet_length_mm / $v2);
         $calculated_parts_per_sheet = $parts_per_row * $parts_per_column;
 
-        $server_total_price = calculate_product_price($product_id, $part_width_mm, $part_length_mm, $quantity, $discount_rate, $shape_type);
-        if (is_wp_error($server_total_price)) {
-            if (defined('WP_DEBUG') && WP_DEBUG) {
-                error_log("add_custom_price_cart_item_data_secure: Error calculating price for product ID $product_id: " . $server_total_price->get_error_message());
-            }
-            return $cart_item_data;
-        }
 
-        if ($stock_quantity <= 0) {
+        $is_full_backorder_rolls = isset($_POST['is_full_backorder_rolls']) && ($_POST['is_full_backorder_rolls'] === '1' || $_POST['is_full_backorder_rolls'] === true || $_POST['is_full_backorder_rolls'] === 'true');
+        error_log("is_full_backorder_rolls from POST: " . var_export($is_full_backorder_rolls, true));
+        
+        error_log("Results:");
+        error_log("is_full_backorder_rolls: " . $is_full_backorder_rolls);
+
+        $server_total_price = 0;
+        $despatch_notes = '';
+        //$shipments = '';
+        $is_backorder = false;
+        $backorder_data = [];
+
+        if ($is_full_backorder_rolls && $shape_type === 'rolls') {
+            // Trust the exact discounted price the user saw on the product page
+            $server_total_price = floatval($_POST['custom_price']) / $quantity;
+
+            $despatch_notes = sprintf(
+                '%d rolls to be despatched in 35 Days (working days) (5%% discount)',
+                $quantity
+            );
+            $shipments = date('d/m/Y', strtotime('+35 days'));
+            $is_backorder = true;
+
+            $backorder_data = [
+                'is_full_backorder_rolls' => true,
+                'parts_backorder' => $quantity,
+                'able_to_dispatch' => 0,
+                'discount_rate' => 0.05
+            ];
+
+
+        }
+        elseif ($stock_quantity <= 0) {
             // Full backorder
             $discount_rate = 0.05;
             $server_total_price = calculate_product_price($product_id, $part_width_mm, $part_length_mm, $quantity, $discount_rate, $shape_type);
             $despatch_notes = sprintf('%d parts to be despatched in 35 Days (working days) (5%% Discount)', $quantity);
-            $shipments = date('d/m/Y', strtotime('+35 days'));
+            //$shipments = date('d/m/Y', strtotime('+35 days'));
+            $shipments = "21/04/2026";
             $is_backorder = true;
 
 
         } elseif ($is_backorder_raw) {
 
-            // Partial backorder - Use the exact price the user just saw on the product page
-            // This prevents recalculation drift and floating-point differences
             $server_total_price = floatval($_POST['custom_price']) * $sheets_required;
+
+            $dispatch_days = 1; // 24 hr default
+            if ($discount_rate == 0.015) $dispatch_days = 2;
+            elseif ($discount_rate == 0.02) $dispatch_days = 5;
+            elseif ($discount_rate == 0.025) $dispatch_days = 7;
+            elseif ($discount_rate == 0.03) $dispatch_days = 12;
+            elseif ($discount_rate == 0.035) $dispatch_days = 14;
+            elseif ($discount_rate == 0.04) $dispatch_days = 30;
+            elseif ($discount_rate == 0.05) $dispatch_days = 35;
+
+            $shipments_dispatch = date('d/m/Y', strtotime('+' . $dispatch_days . ' days'));
+            $shipments_backorder = date('d/m/Y', strtotime('+35 days'));
+            $shipments = [$shipments_dispatch, $shipments_backorder];
 
             // Still calculate the split numbers only for despatch_notes and backorder_data
             $calculated_parts_per_sheet = $sheet_result['parts_per_sheet'];
@@ -2028,16 +2370,13 @@ function add_custom_price_cart_item_data_secure($cart_item_data, $product_id) {
                 $parts_backorder
             );
 
-            $shipments_dispatch = $shipments;
-            $shipments_backorder = date('d/m/Y', strtotime('+35 days'));
-            $shipments = [$shipments_dispatch, $shipments_backorder];
-
             $backorder_data = [
                 'backorder_total' => $server_total_price,
                 'parts_backorder' => $parts_backorder,
                 'able_to_dispatch' => $able_to_dispatch,
                 'parts_per_sheet' => $calculated_parts_per_sheet,
             ];
+
             $is_backorder = true;
 
             // Optional validation (keeps your existing safety check)
@@ -2054,58 +2393,6 @@ function add_custom_price_cart_item_data_secure($cart_item_data, $product_id) {
                 }
             }
 
-            /*
-
-            $sheets_backorder = $sheets_required - $stock_quantity;
-
-            $calculated_parts_per_sheet = $sheet_result['parts_per_sheet'];
-            $parts_from_stock = $stock_quantity * $calculated_parts_per_sheet; 
-            $able_to_dispatch = min($parts_from_stock, $quantity);
-            $parts_backorder = $quantity - $able_to_dispatch;
-
-            $per_part_base = $base_total_price_no_disc / $quantity;
-            $dispatch_price = $able_to_dispatch * $per_part_base * (1 - $discount_rate);
-            $backorder_price = $parts_backorder * $per_part_base * 0.95; 
-            $server_total_price = $dispatch_price + $backorder_price;
-
-            $despatch_notes = sprintf(
-                '%d parts to be despatched in %s, %d parts to be despatched in 35 days (5%% discount)',
-                $able_to_dispatch,
-                $delivery_time,
-                $parts_backorder
-            );
-            $shipments_dispatch = $shipments;
-            $shipments_backorder = date('d/m/Y', strtotime('+35 days'));
-            $shipments = [$shipments_dispatch, $shipments_backorder];
-
-            $backorder_data = [
-                'backorder_total' => $server_total_price,
-                'parts_backorder' => $parts_backorder,
-                'able_to_dispatch' => $able_to_dispatch,
-                'parts_per_sheet' => $calculated_parts_per_sheet,
-            ];
-            $is_backorder = true;
-
-  
-            if (isset($_POST['custom_parts_per_sheet'])) {
-                $client_parts_per_sheet = intval($_POST['custom_parts_per_sheet']);
-                $client_parts_backorder = intval($_POST['custom_parts_backorder']);
-                $client_able_to_dispatch = intval($_POST['custom_able_to_dispatch']);
-                if (
-                    $calculated_parts_per_sheet != $client_parts_per_sheet ||
-                    $parts_backorder != $client_parts_backorder ||
-                    $able_to_dispatch != $client_able_to_dispatch
-                ) {
-                    if (defined('WP_DEBUG') && WP_DEBUG) {
-                        error_log("add_custom_price_cart_item_data_secure: Backorder data validation failed. Client parts_per_sheet: {$client_parts_per_sheet}, Server: $calculated_parts_per_sheet, etc.");
-                    }
-                    $is_backorder = false;
-                    $backorder_data = [];
-                    $despatch_notes = sprintf('%d parts to be despatched in %s', $quantity, $delivery_time); 
-                }
-            }
-
-            */
 
 
         } else {
@@ -2119,6 +2406,7 @@ function add_custom_price_cart_item_data_secure($cart_item_data, $product_id) {
                 $quantity,
                 $delivery_time
             );
+            $server_total_price = calculate_product_price($product_id, $part_width_mm, $part_length_mm, $quantity, $discount_rate, $shape_type);
         }
 
 
@@ -2127,16 +2415,26 @@ function add_custom_price_cart_item_data_secure($cart_item_data, $product_id) {
 
 
         // Price per sheet for cart
-        $server_price_per_sheet = $sheets_required > 0 ? $server_total_price / $sheets_required : $server_total_price;
-        $client_price = floatval($_POST['custom_price']);
-        if (abs($server_price_per_sheet - $client_price) > 0.01) {
-            if (defined('WP_DEBUG') && WP_DEBUG) {
-                error_log("add_custom_price_cart_item_data_secure: Price mismatch for product ID $product_id. Client price per sheet: $client_price, Server price per sheet: $server_price_per_sheet, Total price: $server_total_price, Shape Type: $shape_type");
-            }
+        if($is_full_backorder_rolls && $shape_type === 'rolls'){
+            $cart_item_data['custom_inputs']['price'] = $server_total_price;
+            $cart_item_data['custom_inputs']['total_price'] = $server_total_price;
+            $cart_item_data['custom_inputs']['is_full_backorder_rolls'] = true;
+            error_log("Rolls FULL backorder - final cart price set to TOTAL: " . $server_total_price);
         }
-        $cart_item_data['custom_inputs']['price'] = $server_price_per_sheet;
-        $cart_item_data['custom_inputs']['total_price'] = $server_total_price;
+        else {
+            $server_price_per_sheet = $sheets_required > 0 ? $server_total_price / $sheets_required : $server_total_price;
+            $client_price = floatval($_POST['custom_price']);
+
+            if (abs($server_price_per_sheet - $client_price) > 0.01) {
+                if (defined('WP_DEBUG') && WP_DEBUG) {
+                    error_log("add_custom_price_cart_item_data_secure: Price mismatch for product ID $product_id. Client price per sheet: $client_price, Server price per sheet: $server_price_per_sheet, Total price: $server_total_price, Shape Type: $shape_type");
+                }
+            }
+            $cart_item_data['custom_inputs']['price'] = $server_price_per_sheet;
+            $cart_item_data['custom_inputs']['total_price'] = $server_total_price;
+        }
     }
+
 
 
     // Collect the dates from scheduled orders v2
@@ -2288,7 +2586,7 @@ function init_custom_shipping_method() {
 
                 // === DETECT RESTORED CART & GET UNIQUE CAPTURED TOTAL ===
                 $has_restored = false;
-                $captured_shipping_data = []; // Use associative array to deduplicate by date
+                $captured_shipping_data = [];
 
                 foreach ($cart->get_cart() as $item) {
                     if (!empty($item['restored_from_capture'])) {
@@ -2308,9 +2606,7 @@ function init_custom_shipping_method() {
                 $total_shipping = 0;
 
                 if ($has_restored && !empty($captured_shipping_data)) {
-                    // Sum unique dates' shipping costs
                     $total_shipping = array_sum($captured_shipping_data);
-                    error_log("Custom shipping method using captured total (unique dates) for restored cart: £{$total_shipping}");
                 } else {
                     // Normal cart: live calculation
                     $shipping_by_date = group_shipping_by_date($cart);
@@ -2321,9 +2617,46 @@ function init_custom_shipping_method() {
                         //     $clean_cost = round(floatval($total_shipping), 2);
                         // }
                     }
-                    error_log("Custom shipping method using live calculation for normal cart: £{$total_shipping}");
-                    error_log("Custom shipping passed value: £{$data['final_shipping']}");
                 }
+
+                // BEGIN OVERSIZE SURCHARGE LOGIC 
+                $oversize_surcharge = 0;
+                error_log("Total Shipping(1): " . $total_shipping);
+                foreach ($cart->get_cart() as $cart_item) {
+                    $product_id = $cart_item['product_id'];
+
+                    // Check ACF field - if checked, skip surcharge for this product
+                    $disable_oversize_surcharge = get_field('disable_oversize_surcharge', $product_id);
+
+                    if (!$disable_oversize_surcharge) {
+                        $product = wc_get_product($product_id);
+                        if ($product) {
+                            error_log("Oversize Triggered:");
+                            //$width = floatval($product->get_width() * 10);   // Shipping Width from backend
+                            //$length = floatval($product->get_length() * 10); // Shipping Length from backend
+                            $width = $cart_item['custom_inputs']['width'];
+                            $length = $cart_item['custom_inputs']['length'];
+                            error_log("Width: " . $width);
+                            error_log("Length: " . $length);
+                            if ($width >= 1000 || $length >= 1000) {
+                                error_log("Oversize Surcharge Triggered");
+                                $oversize_surcharge = 30;
+                                error_log("Oversize Surcharge: " . $oversize_surcharge);
+                                break; // Only once per order
+                            }
+                        }
+                    }
+                }
+                // END OVERSIZE SURCHARGE LOGIC 
+
+                // Add the surcharge to the total
+                if ($oversize_surcharge > 0) {
+                    error_log("Total Shipping(2): " . $total_shipping);
+                    $total_shipping += $oversize_surcharge;
+                }
+                // END NEW: OVERSIZE SURCHARGE LOGIC 
+
+                error_log("Total Shipping(3): " . $total_shipping);
 
                 // === ADD THE RATE ===
                 if ($total_shipping > 0) {
@@ -2335,7 +2668,7 @@ function init_custom_shipping_method() {
                         'calc_tax' => 'per_order',
                         'package'  => $package,
                     ]);
-                    error_log("Custom shipping method added rate: £{$total_shipping}");
+                    error_log("Custom shipping method added FINAL rate: £{$total_shipping}");
                 }
             }
 
@@ -2525,61 +2858,11 @@ function add_custom_shipping_to_order($order, $data) {
         $order->set_shipping_state($shipping_address['county_state']);
         $order->set_shipping_postcode($shipping_address['zip_postal']);
         
-        // Map full country names to ISO country codes for WooCommerce
-        $country_codes = [
-            'United Kingdom' => 'GB',
-            'Albania' => 'AL',
-            'Andorra' => 'AD',
-            'Austria' => 'AT',
-            'Belgium' => 'BE',
-            'Bosnia & Herzegovina' => 'BA',
-            'Bulgaria' => 'BG',
-            'Canada' => 'CA',
-            'Croatia' => 'HR',
-            'Cyprus' => 'CY',
-            'Czechia' => 'CZ',
-            'Denmark' => 'DK',
-            'Estonia' => 'EE',
-            'Faroe Islands' => 'FO',     
-            'Finland' => 'FI',  
-            'France' => 'FR',
-            'Germany' => 'DE', 
-            'Gibraltar' => 'GI',
-            'Greece' => 'GR',
-            'Greenland' => 'GL',
-            'Guernsey' => 'GG',
-            'Hungary' => 'HU',
-            'Iceland' => 'IS',
-            'Ireland' => 'IE',
-            'Israel' => 'IL',
-            'Italy' => 'IT',
-            'Jersey' => 'JE',
-            'Latvia' => 'LV',
-            'Liechtenstein' => 'LI',
-            'Lithuania' => 'LT',
-            'Luxembourg' => 'LU',
-            'Malta' => 'MT',
-            'Mexico' => 'MX',
-            'Monaco' => 'MC',
-            'Montenegro' => 'ME',
-            'Netherlands' => 'NL',
-            'North Macedonia' => 'MK',
-            'Norway' => 'NO',
-            'Poland' => 'PL',
-            'Portugal' => 'PT',     
-            'Romania' => 'RO',      
-            'San Marino' => 'SM',
-            'Serbia' => 'RS',
-            'Slovakia' => 'SK',     
-            'Slovenia' => 'SI',
-            'Spain' => 'ES',
-            'Sweden' => 'SE',
-            'Switzerland' => 'CH',
-            'Turkey' => 'TR',
-            'United States' => 'US',
-            'Vatican City' => 'VA',
-        ];
-        $country_code = isset($country_codes[$shipping_address['country']]) ? $country_codes[$shipping_address['country']] : '';
+        $country_data = get_country_data();
+        $country_name = $shipping_address['country'] ?? '';
+
+        $country_code = $country_data[$country_name]['code'] ?? '';
+
         if ($country_code) {
             $order->set_shipping_country($country_code);
         }
@@ -2922,20 +3205,9 @@ function apply_secure_custom_price($cart) {
         }
 
         if (isset($cart_item['custom_inputs'])) {
-            if (isset($cart_item['custom_inputs']['is_scheduled']) && $cart_item['custom_inputs']['is_scheduled']) {
-                $price_per_sheet = floatval($cart_item['custom_inputs']['price']);
-                if ($price_per_sheet > 0) {
-                    $cart_item['data']->set_price($price_per_sheet);
-                    continue;
-                }
-            }
-            $width = $cart_item['custom_inputs']['width'];
-            $length = $cart_item['custom_inputs']['length'];
-            $qty = $cart_item['custom_inputs']['qty'];
-            $discount_rate = isset($cart_item['custom_inputs']['discount_rate']) ? $cart_item['custom_inputs']['discount_rate'] : 0;
-            $sheets_required = isset($cart_item['custom_inputs']['sheets_required']) ? intval($cart_item['custom_inputs']['sheets_required']) : 1;
-            $is_backorder = isset($cart_item['custom_inputs']['is_backorder']) ? $cart_item['custom_inputs']['is_backorder'] : false;
-            $shape_type = $cart_item['custom_inputs']['shape_type'] ?? 'custom-shape-drawing'; 
+
+            $shape_type = $cart_item['custom_inputs']['shape_type'] ?? 'custom-shape-drawing';
+            
 
             if (!in_array($shape_type, ['custom-shape-drawing', 'square-rectangle', 'circle-radius', 'stock-sheets', 'rolls'])) {
                 if (defined('WP_DEBUG') && WP_DEBUG) {
@@ -2943,6 +3215,34 @@ function apply_secure_custom_price($cart) {
                 }
                 $shape_type = 'custom-shape-drawing';
             }
+
+            $is_full_backorder_rolls = !empty($cart_item['custom_inputs']['is_full_backorder_rolls']);
+
+            // === NEW: Respect Rolls full backorder total price ===
+            if ($is_full_backorder_rolls && $shape_type === 'rolls') {
+                $final_price = floatval($cart_item['custom_inputs']['total_price'] ?? $cart_item['custom_inputs']['price'] ?? 0);
+                if ($final_price > 0) {
+                    $cart_item['data']->set_price($final_price);
+                    continue;   // Skip all further recalculation
+                }
+            }
+
+            if (isset($cart_item['custom_inputs']['is_scheduled']) && $cart_item['custom_inputs']['is_scheduled']) {
+                $price_per_sheet = floatval($cart_item['custom_inputs']['price']);
+                if ($price_per_sheet > 0) {
+                    $cart_item['data']->set_price($price_per_sheet);
+                    continue;
+                }
+            }
+
+            $width = $cart_item['custom_inputs']['width'];
+            $length = $cart_item['custom_inputs']['length'];
+            $qty = $cart_item['custom_inputs']['qty'];
+            $discount_rate = isset($cart_item['custom_inputs']['discount_rate']) ? $cart_item['custom_inputs']['discount_rate'] : 0;
+            $sheets_required = isset($cart_item['custom_inputs']['sheets_required']) ? intval($cart_item['custom_inputs']['sheets_required']) : 1;
+            $is_backorder = isset($cart_item['custom_inputs']['is_backorder']) ? $cart_item['custom_inputs']['is_backorder'] : false;
+
+
 
             if ($is_backorder && !empty($cart_item['custom_inputs']['backorder_data'])) {
                 $backorder_data = $cart_item['custom_inputs']['backorder_data'];
@@ -3135,14 +3435,14 @@ function update_order_shipping_fields($order, $data) {
 
 
 // CLEAR SESSION AFTER ORDER IS PLACED
-/*
+
 add_action('woocommerce_checkout_order_processed', 'clear_custom_shipping_session', 10, 1);
 function clear_custom_shipping_session($order_id) {
     //WC()->session->set('custom_shipping_address', null);
     WC()->session->set('custom_qty', null); 
     WC()->session->set('custom_shipments', null); 
 }
-*/
+
 // CLEAR SESSION AFTER ORDER IS PLACED
 
 
@@ -3360,77 +3660,35 @@ add_action('template_redirect', 'set_custom_shipping_country_for_tax_calculation
 function set_custom_shipping_country_for_tax_calculation() {
     if (is_cart() || is_checkout()) {
         $shipping_address = WC()->session->get('custom_shipping_address');
+
         if ($shipping_address && isset($shipping_address['country'])) {
             $custom_country = $shipping_address['country'];
-            // Map full country names to ISO country codes for WooCommerce
-            $country_codes = [
-                'United Kingdom' => 'GB',
-                'Albania' => 'AL',
-                'Andorra' => 'AD',
-                'Austria' => 'AT',
-                'Belgium' => 'BE',
-                'Bosnia & Herzegovina' => 'BA',
-                'Bulgaria' => 'BG',
-                'Canada' => 'CA',
-                'Croatia' => 'HR',
-                'Cyprus' => 'CY',
-                'Czechia' => 'CZ',
-                'Denmark' => 'DK',
-                'Estonia' => 'EE',    
-                'Faroe Islands' => 'FO',
-                'Finland' => 'FI',
-                'France' => 'FR',
-                'Germany' => 'DE',   
-                'Gibraltar' => 'GI',
-                'Greece' => 'GR',
-                'Greenland' => 'GL',
-                'Guernsey' => 'GG',
-                'Hungary' => 'HU',
-                'Iceland' => 'IS',
-                'Ireland' => 'IE',
-                'Israel' => 'IL',
-                'Italy' => 'IT',
-                'Jersey' => 'JE',
-                'Latvia' => 'LV',
-                'Liechtenstein' => 'LI',
-                'Lithuania' => 'LT',
-                'Luxembourg' => 'LU',
-                'Malta' => 'MT',
-                'Mexico' => 'MX',
-                'Monaco' => 'MC',
-                'Montenegro' => 'ME',
-                'Netherlands' => 'NL',
-                'North Macedonia' => 'MK',
-                'Norway' => 'NO',
-                'Poland' => 'PL',
-                'Portugal' => 'PT',     
-                'Romania' => 'RO',      
-                'San Marino' => 'SM',
-                'Serbia' => 'RS',  
-                'Slovakia' => 'SK',     
-                'Slovenia' => 'SI',
-                'Spain' => 'ES',
-                'Sweden' => 'SE',
-                'Switzerland' => 'CH',
-                'Turkey' => 'TR',
-                'United States' => 'US',
-                'Vatican City' => 'VA',
-            ];
-            $country_code = isset($country_codes[$custom_country]) ? $country_codes[$custom_country] : '';
-            if ($country_code) {
-                WC()->customer->set_shipping_country($country_code);
-                // Optionally set other address fields for more precise tax rules if needed
-                WC()->customer->set_shipping_address($shipping_address['street_address']);
-                WC()->customer->set_shipping_address_2($shipping_address['address_line2']);
-                WC()->customer->set_shipping_city($shipping_address['city']);
-                WC()->customer->set_shipping_state($shipping_address['county_state']);
-                WC()->customer->set_shipping_postcode($shipping_address['zip_postal']);
+
+            $country_data = get_country_data();
+            $country_info = $country_data[$custom_country] ?? null;
+
+            $country_code = $country_info['code'] ?? '';
+
+                //If valid country code found
+                if ($country_code) {
+                    WC()->customer->set_shipping_country($country_code);
+
+                    WC()->customer->set_shipping_address($shipping_address['street_address']);
+                    WC()->customer->set_shipping_address_2($shipping_address['address_line2']);
+                    WC()->customer->set_shipping_city($shipping_address['city']);
+                    WC()->customer->set_shipping_state($shipping_address['county_state']);
+                    WC()->customer->set_shipping_postcode($shipping_address['zip_postal']);
+                } else {
+                    // NEW: fallback if country not found in mapping
+                    $store_country = WC()->countries->get_base_country();
+                    WC()->customer->set_shipping_country($store_country);
+                }
+
+            } else {
+                    // Fallback to store base country only if no session data
+                    $store_country = WC()->countries->get_base_country();
+                    WC()->customer->set_shipping_country($store_country);
             }
-        } else {
-                // Fallback to store base country only if no session data
-                $store_country = WC()->countries->get_base_country();
-                WC()->customer->set_shipping_country($store_country);
-        }
     }
 }
 // DYNAMICALLY SET THE CUSTOMERS PRODUCT PAGE SHIPPING ADDRESS FOR TAX CALCULATIONS BASED ON SESSION
@@ -3763,7 +4021,7 @@ function get_shipment_lead_time_discount( $despatch_ymd ) {
 }
 // Delivery Options Discount helper
 
-// make sure scheduled delivery 'custom_shipment' session is destroyed after 15 minutes
+// Make sure scheduled delivery 'custom_shipment' session is destroyed after 15 minutes
 add_action('init', 'cleanup_expired_custom_shipments');
 
 function cleanup_expired_custom_shipments() {
@@ -3779,4 +4037,50 @@ function cleanup_expired_custom_shipments() {
         WC()->session->__unset('custom_shipments_last_activity');
     }
 }
-// make sure scheduled delivery 'custom_shipment' session is destroyed after 15 minutes
+// Make sure scheduled delivery 'custom_shipment' session is destroyed after 15 minutes
+
+
+// Delivery options partial backorder - enforce 35 day jquery datepicker
+add_action('wp_ajax_save_partial_backorder_data', 'save_partial_backorder_data_callback');
+add_action('wp_ajax_nopriv_save_partial_backorder_data', 'save_partial_backorder_data_callback');
+
+function save_partial_backorder_data_callback() {
+    check_ajax_referer('custom_price_nonce', 'nonce');
+
+    $is_partial = filter_var($_POST['is_partial_backorder'] ?? false, FILTER_VALIDATE_BOOLEAN);
+    $able       = intval($_POST['able_to_dispatch'] ?? 0);
+    $back       = intval($_POST['parts_backorder'] ?? 0);
+
+    WC()->session->set('is_partial_backorder', $is_partial);
+    WC()->session->set('able_to_dispatch', $able);
+    WC()->session->set('parts_backorder', $back);
+
+    wp_send_json_success();
+}
+
+
+add_action('wp_ajax_get_current_shipments', 'get_current_shipments_callback');
+add_action('wp_ajax_nopriv_get_current_shipments', 'get_current_shipments_callback');
+
+function get_current_shipments_callback() {
+    check_ajax_referer('custom_price_nonce', 'nonce');
+
+    $shipments   = WC()->session->get('custom_shipments', []);
+    $custom_qty  = WC()->session->get('custom_qty', 0);
+    $total_parts = array_sum(array_column($shipments, 'parts'));
+    $remaining   = max(0, $custom_qty - $total_parts);
+
+    wp_send_json_success([
+        'shipments'            => $shipments,
+        'custom_qty'           => $custom_qty,
+        'remaining_parts'      => $remaining,
+        'custom_shipments_parts' => WC()->session->get('custom_shipments_parts', 0),
+        'total_fees'           => array_sum(array_column($shipments, 'total_fee')),
+        // NEW fields for modal validation
+        'is_partial_backorder' => WC()->session->get('is_partial_backorder', false),
+        'able_to_dispatch'     => WC()->session->get('able_to_dispatch', 0),
+        'parts_backorder'      => WC()->session->get('parts_backorder', 0),
+        'total_ordered_qty'    => $custom_qty
+    ]);
+}
+// Delivery options partial backorder - enforce 35 day jquery datepicker

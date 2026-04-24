@@ -335,7 +335,7 @@ require_once('includes/validation-for-product-width-and-length.php');
 // validation for product width and length - (to be deleted)
 
 // Fix for VAT exclusion on checkout page if country is not GB
-require_once('includes/ensure-vat-is-not-included-on-checkout-page.php');
+require_once('includes/ensure-vat-is-not-included-on-checkout-page-v2.php');
 // Fix for VAT exclusion on checkout page if country is not GB
 
 // Add additional custom PO and VAT input fields to checkout form
@@ -509,7 +509,7 @@ require_once('includes/capture_cart_v9.php');
 // Capture Cart Contents
 
 // Get the roll length value and inject a div element into the rolls tab field
-//require_once('includes/rolls-tab-inject-rolls-length-data.php');
+require_once('includes/rolls-tab-inject-rolls-length-data.php');
 // Get the roll length value and inject a div element into the rolls tab field
 
 // Conditionally add styling to woccommerce notice if is_scheduled exists
@@ -549,13 +549,35 @@ require_once('includes/clear_address_button_on_product_page.php');
 require_once('includes/custom-shop-page-select-filter.php');
 // Custom shop page select menu filter
 
+// Apply 5% voucher discount to single orders when on backorder
+require_once('includes/apply_5_percent_voucher_discount_to_singles.php');
+// Apply 5% voucher discount to single orders when on backorder
+
 /* TEMPORARILY REMOVE LOAD TEXTDOMAIN WARNING THAT ARE FLOODING MY LOGS */
 require_once('includes/remove_load_textdomain_logs.php');
 /* TEMPORARILY REMOVE LOAD TEXTDOMAIN WARNING THAT ARE FLOODING MY LOGS */
 
+add_filter( 'wp_rest_cache/allowed_endpoints', function ( $allowed_endpoints ) {
+    if ( ! isset( $allowed_endpoints['contact-form-7/v1'] ) ) {
+        $allowed_endpoints['contact-form-7/v1'] = [];
+    }
+    if ( ! in_array( 'contact-forms', $allowed_endpoints['contact-form-7/v1'], true ) ) {
+        $allowed_endpoints['contact-form-7/v1'][] = 'contact-forms';
+    }
+    return $allowed_endpoints;
+}, 10, 1 );
 
 
-
+/* CODE NOT WORKING? */
+/*
+add_action( 'wpo_wcpdf_custom_styles', 'wpo_wcpdf_custom_styles', 10, 2 );
+function wpo_wcpdf_custom_styles ( $document_type, $document ) {
+	?> 
+	.product .meta .weight { display: none; } 
+	<?php
+}
+	*/
+/* CODE NOT WORKING? */
 
 
 // change price in schema.org json file 
@@ -615,12 +637,14 @@ require_once('includes/ajax-for-calendar-admin-multiple.php'); // Enqueue ajax f
 require_once('includes/ajax-for-calendar-admin-select-shipments.php'); // Enqueue ajax for calendar admin *
 require_once('includes/ajax-for-calendar-admin-tracking-number.php'); // Enqueue ajax for calendar admin *
 require_once('includes/ajax-for-calendar-admin-tracking-url.php'); // Enqueue ajax for calendar admin *
+require_once('includes/ajax-for-calendar-admin-pdf-date.php'); // Enqueue ajax for pdf date *
 require_once('includes/show-final-dispatch-action.php'); // Enqueue ajax for calendar admin *
 require_once('includes/split_schedule_add_to_calendar.php');
 require_once('includes/payment-gateway-disable-items-for-credit-account-v2.php'); // disable payment gateway options if logged in as credit account user
 require_once('includes/add-credit-account-fund-status-to-product-page.php'); // display credit account fund details on product page
 require_once('includes/send-credit-arrears-emails.php'); // send an email if the customers runs out of credit
 require_once('includes/clear_wc_sessions_when_user_vists_product_page.php'); // Clear the WC Sessions when a user first vists the product page
+require_once('includes/enqueue-jquery-datepicker-calendar.php'); // enqueue jquary datepicker for calendar backend
 /* END DELIVERY OPTIONS FUNCTIONS */
 
 

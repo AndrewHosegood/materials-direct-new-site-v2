@@ -89,6 +89,11 @@
         border: 0;
         padding: 0.5rem 1rem;
         font-size: 0.92rem;
+        cursor: pointer;
+        transition: background 0.15s ease-in;
+    }
+    &__generate-price:hover {
+        background: color.adjust(variables.$primary-color, $lightness: -7%);
     }
     &__generate-price.hide {
         display: none;
@@ -385,6 +390,10 @@
         width: 126px;
         margin-right: 8px;
         text-align: center;
+        transition: background 0.15s ease-in;
+    }
+    &__drawing-guide-btn:hover {
+        background: color.adjust(variables.$primary-color, $lightness: -7%);
     }
     &__drawing-guide-text {
         font-size: 0.78rem;
@@ -736,10 +745,18 @@
         background: variables.$secondary-color;
     }
     &__view-product-details {
-        padding: 1.8rem 0;
+        padding: 1.5rem 0;
     }
     &__view-product-details-link {
-        font-size: 0.88rem;
+        font-size: 0.9rem;
+        padding: 0 4px;
+        color: variables.$primary-color;
+        font-weight: 500;
+        text-decoration: none;
+    }
+    &__view-product-details-link:hover {
+        color: color.adjust(variables.$primary-color, $lightness: -10%);
+        text-decoration: underline;
     }
     &__technical-data-table {
         width: 100%;
@@ -1036,7 +1053,7 @@
     }
 }
 .single-product div.product .stock.out-of-stock {
-    margin-bottom: 1.5rem;
+    margin-bottom: 1rem;
 }
 
 .single-product .site-main {
@@ -1052,6 +1069,10 @@
     border-radius: 0;
     font-weight: 400;
     font-size: 0.92rem;
+}
+
+.woocommerce div.product form.cart .button:hover {
+    background: color.adjust(variables.$secondary-color, $lightness: -10%);
 }
 
 .woocommerce-page div.product div.summary {
@@ -1187,6 +1208,9 @@ div#order_info_box #parts_remaining {
         color: white;
         cursor: pointer;
     }
+    &__saved-edit:hover {
+        background: color.adjust(variables.$secondary-color, $lightness: -10%);
+    }
     &__clear-address {
         font-size: 0.8rem;
         background: variables.$secondary-color;
@@ -1194,6 +1218,9 @@ div#order_info_box #parts_remaining {
         margin-left: 0.5rem;
         color: white;
         cursor: pointer;
+    }
+    &__clear-address:hover {
+        background: color.adjust(variables.$secondary-color, $lightness: -10%);
     }
 }
 .shipping-address-form-single {

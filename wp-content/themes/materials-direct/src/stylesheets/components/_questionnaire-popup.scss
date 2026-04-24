@@ -1,0 +1,177 @@
+@use "../abstracts/breakpoints";
+@use "../abstracts/variables";
+@use 'sass:color';
+
+.popup-feedback .wpcf7 form.sent .wpcf7-response-output {
+	  border-color: #a8a8a8 !important;
+	  margin: 0.5em 0em 0.3em !important;
+}
+.popup-feedback .wpcf7 form.invalid .wpcf7-response-output {
+	  border-color: #a8a8a8 !important;
+	  margin: 0.5em 0em 0.3em !important;
+}
+.popup-feedback .wpcf7-not-valid-tip {
+    margin: -4px 0 0 0 !important;
+}
+.star-question {
+	display: block;
+    color: #2d3e4f;
+}
+.rating-container {
+	width:100%;
+	height: 40px;
+	display: block;
+}
+.rating p {
+	padding: 0 !important;
+}
+.popup-feedback {
+	margin-top:4.2rem !important;
+    @include breakpoints.iphone {
+        margin-top:3.1rem !important;
+    }
+}
+.survey_button {
+	width: 100%;
+	background: variables.$primary-color;
+	color: white;
+    padding: 0.35rem 0.2rem;
+    cursor: pointer;
+    @include breakpoints.iphone {
+        padding: 0.3rem;
+    }
+    border-radius: 0.2rem;
+    &:hover {
+        background: color.adjust(variables.$primary-color, $lightness: -10%);
+    }
+}
+.survey_button-close {
+	width: 100%;
+	background: variables.$secondary-color;
+	color: white;
+    padding: 0.35rem 0.2rem;
+    text-align: center;
+    margin-top: 0.5rem;
+    @include breakpoints.iphone {
+        padding: 0.3rem;
+    }
+    border-radius: 0.2rem;
+        &:hover {
+        background: color.adjust(variables.$secondary-color, $lightness: -10%);
+    }
+}
+.pum-theme-5887 .pum-title, .pum-theme-default-theme .pum-title {
+	background: variables.$primary-color;
+    color: white !important;
+    position: absolute !important;
+    left: 0 !important;
+    top: 0 !important;
+    padding: 0.8rem;
+	width: 100%;
+}
+#popmake-5934 {
+	width: 95%;
+    margin-left:2.5%;
+    @include breakpoints.iphone {
+        width:475px;
+    }
+    & .pum-content p {
+        padding: 0rem;
+        line-height: 1.6rem;
+    }
+    & .pum-content p span .suggested-improvements {
+		width: 100%;
+        height: 95px;
+        min-height: 95px;
+        margin-bottom: -0.9rem;
+        padding: 0.5rem;
+        box-shadow: 0px 0px 4px rgba(0, 0, 0, 0.03);
+        border: 1px solid #eee;
+        font-size: 0.8rem;
+        color: variables.$secondary-color;
+        display:none;
+    }
+    & .pum-content p span .suggested-improvements:focus-visible {
+        outline: 0;
+    }
+    & .pum-content p span .suggested-improvements.active {
+	    display: block;
+    }
+    & .pum-content p label {
+	    line-height: 0.5rem;
+    }
+    & .pum-content p span {
+	    margin-top: 9px;
+        margin-bottom: 6px;
+    }
+    & .pum-content p .wpcf7-spinner {
+        display: none;
+	    position: absolute;
+        right: 0;
+        bottom: 3px;
+    }
+}
+
+.suggested-improvements-yes, .suggested-improvements-no {
+    margin: 0 10px 0 0;
+    color: variables.$secondary-color;
+    padding: 0px 2px;
+    line-height: 1.3rem;
+}
+.suggested-improvements-yes.active, .suggested-improvements-no.active {
+    background: variables.$primary-color;
+    color: white;
+}
+.hidden-radios p .wpcf7-form-control-wrap .wpcf7-form-control {
+	display: none;
+}
+// .hidden-radios p .wpcf7-form-control-wrap:nth-child(1) .wpcf7-not-valid-tip {
+//     position: absolute;
+//     top: 155px;
+// }
+// .hidden-radios p .wpcf7-form-control-wrap:nth-child(2) .wpcf7-not-valid-tip {
+//     position: absolute;
+//     top: 259px;
+// }
+// .wpcf7-form-control-wrap {
+//     position: unset;
+// }
+.rating {
+  margin-top: 0px;
+  border: none;
+  float: left;
+}
+
+.rating p > label {
+  color: #a9b5be;
+  float: right;
+}
+
+.rating p > label:before {
+  margin: 5px;
+  font-size: 1.55em;
+   @include breakpoints.iphone {
+        font-size: 1.25em;
+   }
+  font-family: FontAwesome;
+  content: "\f005";
+  display: inline-block;
+}
+
+.rating p > input {
+  display: none;
+}
+
+.rating p > input:checked ~ label,
+.rating p:not(:checked) > label:hover,
+.rating p:not(:checked) > label:hover ~ label {
+  color: #F79426;
+}
+
+.rating p > input:checked + label:hover,
+.rating p > input:checked ~ label:hover,
+.rating p > label:hover ~ input:checked ~ label,
+.rating p > input:checked ~ label:hover ~ label {
+  color: #FECE31;
+}
+/* Popup Maker */

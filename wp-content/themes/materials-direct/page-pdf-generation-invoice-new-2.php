@@ -19,8 +19,6 @@ require_once TCPDF_INCLUDE_PATH;
 
 date_default_timezone_set('Europe/London');
 
-$pdf_date = date('jS F Y');
-
 $id = isset($_GET['id']) ? absint($_GET['id']) : 0;
 //$order_no = isset($_GET['order_no']) ? sanitize_text_field($_GET['order_no']) : '';
 $order_no = isset($_GET['order_no']) ? intval($_GET['order_no']) : 0;
@@ -311,6 +309,8 @@ try {
             $last = $row['last'];
             $cart_discount_price = $row['cart_discount_price'];
             $cart_discount_percent = $row['cart_discount_percent'];
+            $pdf_despatch_date = $row['pdf_despatch_date'];
+
             $address_1 = $row['address_1'];
             $address_2 = $row['address_2'];
             $address_3 = $row['address_3'];
@@ -649,6 +649,12 @@ try {
 
             $temp_value = $tax_rate . ", " . $cppnew . ", " . $shipping_display_new . ", " . $tf_3 . ", " . $md_value . ", " . $discount_code_value_new;
 
+            if($pdf_despatch_date){
+                $pdf_date = date('jS F Y', strtotime($pdf_despatch_date));
+            } else {
+                $pdf_date = date('jS F Y');
+            }
+
             // Order Details (First Table)
             if (!$order_details_added) {
                 $formatted_date_pdf = date('jS F Y', strtotime($row['date']));
@@ -687,7 +693,7 @@ try {
             //$cpp
             //$cppnew
             
-            $invoice_details_html .= '<td>' . $title . $ps . $dra . $dxf . $wdt . $lgt . $wdti . $lgti . $rad . "<br>" . $mcofc_fair_formatted . $sch . $str . "<br>Scheduled Qty: " . $schedule_qty . "<br> cost_per_part_raw: " . $cost_per_part_raw . "<br>discount_rate: " . $discount_rate . "<br>total_1: " .$total_1. "<br>cpp " .$cpp. "<br>cppnew: " .$cppnew. "<br>Rolls Length: " .$rolls_length.  '</td>'; 
+            $invoice_details_html .= '<td>' . $title . $ps . $dra . $dxf . $wdt . $lgt . $wdti . $lgti . $rad . "<br>" . $mcofc_fair_formatted . $sch . $str . "<br>Discount Amount: " . $discount_amount . "<br> cost_per_part_raw: " . $cost_per_part_raw . "<br>discount_rate: " . $discount_rate . "<br>total_1: " .$total_1. "<br>cpp " .$cpp. "<br>cppnew: " .$cppnew. "<br>Sceduled QTY: " .$schedule_qty. "<br>Discount Amount: " .$discount_amount. '</td>'; 
             //$invoice_details_html .= '<td>' . $row['title'] . '<br>Part shape: ' . $part_shape  . '<br>Width (MM): ' . $width . '<br>Length (MM): ' . $length . '<br><br>Schedule: ' .$row['schedule'] . '</td>';
 
             $invoice_details_html .= '<td>' . $row['schedule_qty'] . '</td>';

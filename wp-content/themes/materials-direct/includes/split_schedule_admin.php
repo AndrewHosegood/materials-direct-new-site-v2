@@ -86,6 +86,7 @@ function view_admin_content() {
                     <!-- <th style="width: 155px;">Merged Single Shipments</th> -->
                     <th style="width: 75px;">Select Shipments</th>
                     <th>Manage Merged Shipments</th>
+                    <th>PDF Despatch Date</th>
                     <th>Shipment Tracking</th>
                     <th>Shipment Tracking URL</th>
                 </tr>
@@ -377,6 +378,15 @@ function view_admin_content() {
                                 } ?>    
                                     
                             <?php } ?>    
+                        </td>
+                        <td class="calendar__btn-bg calender__column-flex" <?php echo $status_bg; ?>>
+                            <input 
+                                    type="text" 
+                                    style="width: 80px"
+                                    class="datepicker pdf-despatch-date-input" 
+                                    data-id="<?php echo esc_attr($id); ?>" 
+                                    value="<?php echo esc_attr(isset($row['pdf_despatch_date']) ? $row['pdf_despatch_date'] : ''); ?>" 
+                                />
                         </td>
                         <td class="calendar__btn-bg calender__column-flex" <?php echo $status_bg; ?>>
                             <?php 

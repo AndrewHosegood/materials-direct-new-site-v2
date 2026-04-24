@@ -756,14 +756,16 @@ function update_order_status() {
                         $total_delivery_count = $order_count * $delivery_count;
 
                         $shipping_subtract = $total_shipping_duplicates / $total_delivery_count; // we need to subtract to total for duplicate dates from the $shipping_responses total
-
+						
+                      	/*
                         if($flag == 1){
                             $my_shipping_response = $shipping_display_new / $meta_qty;
                         } else {
                             $my_shipping_response = $shipping_display_new;
                         }
-
-
+						*/
+                      
+						$my_shipping_response = $shipping_display_new;
 
                         $vat_amount = $cppnew + $mcofc_fair_value_display + $my_shipping_response - $tf_3 - $voucher_percent;
                         //$vat_amount = 100;
@@ -961,7 +963,7 @@ function update_order_status() {
                         $invoice_details_html .= '<tr>';
                         $invoice_details_html .= '<td>' . $row['sku'] . '</td>';
                         //$invoice_details_html .= '<td>' . $title . $ps . $dra . $dxf . $wdt . $wdti . $lgt . $lgti . $rad . "<br>" . $mcofc_fair_formatted . $sch . $str . '</td>';
-                        $invoice_details_html .= '<td>' . $title . $ps . $dra . $dxf . $wdt . $lgt . $wdti . $lgti . $rad . "<br>" . $mcofc_fair_formatted . $sch . $str . "<br>Scheduled Qty: " . $schedule_qty . "<br> cost_per_part_raw: " . $cost_per_part_raw . "<br>discount_rate: " . $discount_rate . "<br>total_1: " .$total_1. "<br>cpp " .$cpp. "<br>cppnew: " .$cppnew. "<br>Rolls Length: " .$rolls_length.  '</td>'; 
+                        $invoice_details_html .= '<td>' . $title . $ps . $dra . $dxf . $wdt . $lgt . $wdti . $lgti . $rad . "<br>" . $mcofc_fair_formatted . $sch . $str . "<br>Scheduled Qty: " . $schedule_qty . "<br> cost_per_part_raw: " . $cost_per_part_raw . "<br>discount_rate: " . $discount_rate . "<br>total_1: " .$total_1. "<br>cpp " .$cpp. "<br>cppnew: " .$cppnew. "<br>Rolls Length: " .$rolls_length. "<br>My Shipping Response: " .$my_shipping_response. "<br>Meta Quantity" .$meta_qty. "<br>Flag: " .$flag. '</td>'; 
                         //$invoice_details_html .= '<td>' . $title . $ps . $dra . $dxf . $wdt . $wdti . $lgt . $lgti . $rad . "<br>" . $mcofc_fair_formatted . $scd . $sch . $str . '</td>';
                         //$invoice_details_html .= '<td>' . $row['title'] . '<br>Part shape: ' . $part_shape  . '<br>Width (MM): ' . $width . '<br>Length (MM): ' . $length . '<br><br>Schedule: ' .$row['schedule'] . '</td>';
 
@@ -1033,12 +1035,12 @@ function update_order_status() {
                                 $totals_html .= '<td>£'.$subtotal_display.'</td>';
                                 $totals_html .= '</tr>';
                     
-                                if($mcf_v != 0){
+                                //if($mcf_v != 0){
                                     $totals_html .= '<tr>';
                                     $totals_html .= '<td>All COFCs & Fairs</td>';
                                     $totals_html .= '<td>£'.$mcofc_fair_value.'</td>';
                                     $totals_html .= '</tr>';
-                                }
+                                //}
                                 $totals_html .= '<tr>';
                                 $totals_html .= '<td>Shipping Total (ex. VAT)</td>';
                                 $totals_html .= '<td>£'.$my_shipping_response .'</td>';

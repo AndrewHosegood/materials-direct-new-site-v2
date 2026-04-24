@@ -81,7 +81,13 @@ get_header();
 
         </div><!-- .blog-card-grid -->
 
-        <?php the_posts_navigation(); ?>
+        <?php
+        the_posts_pagination(array(
+            'mid_size'  => 2,
+            'prev_text' => '« Prev Page',
+            'next_text' => 'Next Page »',
+        ));
+        ?>
 
     <?php else : ?>
 

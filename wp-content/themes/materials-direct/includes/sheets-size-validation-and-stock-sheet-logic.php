@@ -78,16 +78,16 @@ function combined_custom_jquery_for_dimensions_and_stock_sheets() {
                 $button.prop('disabled', false); // Force enable button
                 removeMessage(); // No validation needed
             } 
-            // else if(selectedTab === "rolls"){
-            //     stocksheetWidthB = stocksheetWidth;
-            //     stocksheetLengthB = stocksheetLength;
-            //     $widthInput.val(stocksheetWidthB).prop('readonly', true).trigger('change');
-            //     $lengthInput.val(stocksheetLengthB).prop('readonly', true).trigger('change');
-            //     $widthInput.addClass("disabled");
-            //     $lengthInput.addClass("disabled");
-            //     $button.prop('disabled', false); // Force enable button
-            //     removeMessage(); // No validation needed
-            // }
+            else if(selectedTab === "rolls"){
+                stocksheetWidthB = stocksheetWidth;
+                stocksheetLengthB = stocksheetLength;
+                $widthInput.val(stocksheetWidthB).prop('readonly', true).trigger('change');
+                $lengthInput.val(stocksheetLengthB).prop('readonly', true).trigger('change');
+                $widthInput.addClass("disabled");
+                $lengthInput.addClass("disabled");
+                $button.prop('disabled', false); // Force enable button
+                removeMessage(); // No validation needed
+            }
             else {
                 stocksheetWidthB = stocksheetWidth - allowedBorder;
                 stocksheetLengthB = stocksheetLength - allowedBorder;

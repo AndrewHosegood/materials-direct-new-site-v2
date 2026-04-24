@@ -24,11 +24,20 @@
     &__form-input-1 input {
          font-weight: 400;
     }
+    &__form-input-1 input:focus-visible {
+        outline: 0;
+    }
     &__form-input-1b input {
          font-weight: 400;
     }
+    &__form-input-1b input:focus-visible {
+        outline: 0;
+    }
     &__form-input-2 input {
          font-weight: 400;
+    }
+    &__form-input-2 input:focus-visible {
+        outline: 0;
     }
     &__form-input-2 textarea {
          font-weight: 400;
@@ -36,6 +45,9 @@
          @include breakpoints.iphone {
             height: 330px;
          }
+    }
+    &__form-input-2 textarea:focus-visible {
+        outline: 0;
     }
     &__form-input-1 {
         width: 100%;

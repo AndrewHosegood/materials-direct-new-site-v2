@@ -3,35 +3,69 @@ add_action( 'wp_head', 'get_the_roll_length_value_form_insert' );
 
 function get_the_roll_length_value_form_insert() {
 
-	// Only run on single product pages
     if ( ! is_product() ) {
         return;
     }
 
-	$ah_roll_length = (float) get_field('roll_length');
+    $ah_roll_length = (float) get_field('roll_length');
+?>
 
-    ?>
+<script type="text/javascript">
+jQuery(document).ready(function($) {
 
-    <script type="text/javascript">
+    let rollLength = <?php echo json_encode($ah_roll_length); ?>;
+    let rollLengthCalc = rollLength / 1000;
 
-		jQuery(document).ready(function($) {
+    let originalText = null;
 
-			$("#rolls").click(function(){ 
+    function getOriginalStock() {
+        if (!originalText) {
+            originalText = $('.live-stock-wrapper .in-stock').text();
+        }
+        return originalText;
+    }
 
-				let rollLength = <?php echo $ah_roll_length; ?>;
+    $('input[name="tabs_input"]').on('change', function() {
 
-				if ($('.rollsLengthInput').length === 0) { 
-					$('#cont_length_mm .product-page__rolls-label-text-1').after(
-						`<div class="rollsLengthInput">
-							${rollLength / 1000}
-						</div>`
-					);
-				}
-				
-			});
+        var $stockEl = $('.live-stock-wrapper .in-stock');
+        var selectedVal = $(this).val();
+
+        let baseText = getOriginalStock();
+        let number = parseFloat(baseText);
+
+        // 👉 ROLLS SELECTED
+        if (selectedVal === 'rolls') {
+
+            if (!isNaN(number) && rollLengthCalc > 0) {
+
+                var newNumber = number / rollLengthCalc;
+
+                if (!Number.isInteger(newNumber)) {
+                    newNumber = Math.floor(newNumber);
+                }
+
+                var label = newNumber == 1 ? 'Roll' : 'Rolls In Stock';
+                $stockEl.text(newNumber + ' ' + label);
+            }
+
+            // Add the roll length display (only once)
+            if ($('.rollsLengthInput').length === 0) { 
+                $('#cont_length_mm .product-page__rolls-label-text-1').after(
+                    `<div class="rollsLengthInput">
+                        ${rollLengthCalc}
+                    </div>`
+                );
+            }
+
+        } else {
+            // 👉 ANY OTHER TAB → RESET BACK
+            $stockEl.text(baseText);
+        }
 
     });
-    </script>
 
-    <?php
+});
+</script>
+
+<?php
 }

@@ -1430,8 +1430,8 @@ function send_customer_email() {
         $message .= '
                             </tbody>
                         </table>
-                        
-                        <a style="background: #ef9003; padding: 10px 17px; color: #ffffff; text-decoration: none;" href="' . esc_url(home_url('/my-account/')) . '">Go To Your My Account Page And Place Your Order</a>
+                        <br>
+                        <a style="background: #ef9003; padding: 10px 17px; color: #ffffff; text-decoration: none;" href="' . esc_url(home_url('/my-account/')) . '">Go To My Account Page & Place Order</a>
                     </div>
                 </div>
             </body>

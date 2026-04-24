@@ -403,6 +403,54 @@ jQuery(document).ready(function($) {
         });
 
 
+
+
+
+        $('.pdf-despatch-date-input').on('keyup change', function() {
+            var $input = $(this);
+            var id = $input.data('id');
+            var pdf_despatch_date = $input.val().trim();
+
+            // Prevent AJAX if no ID or no date
+            if (!id || !pdf_despatch_date) {
+                return;
+            }
+
+            var loadingImage = $('<img src="/wp-content/uploads/2024/03/loading7_gray.gif" class="calendar__loading-image" style="position:absolute; right:8px; top:8px;">');
+
+            // Append loading spinner inside the <td>
+            $input.closest('td').css('position', 'relative').append(loadingImage);
+
+            $.ajax({
+                type: 'POST',
+                url: ajax_object.ajax_url,
+                data: {
+                    action: 'update_pdf_despatch_date',   // <-- This is the new AJAX action name
+                    id: id,
+                    pdf_despatch_date: pdf_despatch_date
+                },
+                beforeSend: function() {
+                    loadingImage.show();
+                },
+                success: function(response) {
+                    console.log('PDF Despatch Date saved:', response);
+                    // Optional: you can add a small green flash if you want visual feedback
+                    $input.css('background', '#d4edda');
+                    setTimeout(function() {
+                        $input.css('background', '');
+                    }, 800);
+                },
+                error: function(xhr, status, error) {
+                    console.error('PDF Despatch Date AJAX error:', xhr.responseText);
+                    alert('Error saving PDF Despatch Date. Please try again.');
+                },
+                complete: function() {
+                    loadingImage.remove();
+                }
+            });
+        });
+
+
         /*
         $('.calendar__table tbody tr').eq(-2).addClass('my-class-name');
 

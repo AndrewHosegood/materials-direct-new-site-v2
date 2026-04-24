@@ -29,10 +29,29 @@ function add_modal_to_product_page_footer() {
                     <a class="delivery-options-modal__close-btn" href="#"><i class="fa-solid fa-xmark delivery-options-modal__icon-close"></i></a>
                 </div>
                 <div class="delivery-options-modal__content">
-                    <p class="delivery-options-modal__info">You have <span id="remaining-parts"><?php echo esc_html($remaining_parts); ?></span> parts remaining to set delivery date(s) for.</p>
-                    
+                    <!-- <p class="delivery-options-modal__info">You have <span id="remaining-parts"><?php //echo esc_html($remaining_parts); ?></span> parts remaining to set delivery date(s) for.</p> -->
+                    <p class="delivery-options-modal__info">You have <span id="remaining-parts" data-total-ordered="0" data-backorder-parts="0">0</span> parts remaining to set delivery date(s) for.</p>
+                                                                     
                     <label class="delivery-options-modal__label">Despatch Date</label>
 
+                    <!-- Normal datepicker - for in-stock parts -->
+                    <!-- <input type="text" 
+                        id="delivery_date" 
+                        autocomplete="off" 
+                        class="datepicker delivery-options-modal__form-field" 
+                        name="despatch_date" 
+                        value="" 
+                        placeholder="dd/mm/yyyy"> -->
+
+                    <!-- Backorder datepicker - forced 35+ days -->
+                    <!-- <input type="text" 
+                        id="delivery_date_backorder" 
+                        autocomplete="off" 
+                        class="datepicker delivery-options-modal__form-field" 
+                        name="despatch_date" 
+                        value="" 
+                        placeholder="dd/mm/yyyy" 
+                        style="display:none;"> -->
                     
                     <?php if($stock_status === "onbackorder"){ ?>
                         <input type="text" id="delivery_date_backorder" autocomplete="off" class="datepicker delivery-options-modal__form-field" name="despatch_date" value="" placeholder="dd/mm/yyyy">

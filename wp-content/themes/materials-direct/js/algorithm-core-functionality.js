@@ -32,9 +32,9 @@ jQuery(document).ready(function($) {
             $('#fair_label').hide();
             $('#fair_label_credit_account').hide();
             $('#input_width, #input_length, #input_qty, #input_radius').prop('readonly', false);
-            $('#cont_width_mm').show();
-            $('#cont_length_mm').show();
-            $('.product-page__input-wrap.part-qty').show();
+            //$('#cont_width_mm').show();
+            //$('#cont_length_mm').show();
+            //$('.product-page__input-wrap.part-qty').show();
             $('.product-page__rolls-link').hide();
             enableButtons();
 
@@ -76,9 +76,9 @@ jQuery(document).ready(function($) {
             $('#fair_label').hide();
             $('#fair_label_credit_account').hide();
             $('#input_width, #input_length, #input_qty, #input_radius').prop('readonly', false);
-            $('#cont_width_mm').hide();
-            $('#cont_length_mm').hide();
-            $('.product-page__input-wrap.part-qty').show();
+            //$('#cont_width_mm').hide();
+            //$('#cont_length_mm').hide();
+            //$('.product-page__input-wrap.part-qty').show();
             $('.product-page__rolls-link').hide();
             enableButtons();
 
@@ -121,9 +121,9 @@ jQuery(document).ready(function($) {
             $('#fair_label_credit_account').hide();
             $('#input_width, #input_length, #input_qty, #input_radius').prop('readonly', false);
             $('.product-page__rolls-label-text-2').text('Quantity of sheets:');
-            $('#cont_width_mm').show();
-            $('#cont_length_mm').show();
-            $('.product-page__input-wrap.part-qty').show();
+            //$('#cont_width_mm').show();
+            //$('#cont_length_mm').show();
+            //$('.product-page__input-wrap.part-qty').show();
             $('.product-page__rolls-link').hide();
             enableButtons();
 
@@ -155,9 +155,9 @@ jQuery(document).ready(function($) {
             $('#tabs_status_message').html('Roll');
             // $('.product-page__rolls-label-text-1').text('Length (Metres):');
             // $('.product-page__rolls-label-text-2').text('Quantity of rolls:');
-            $('#cont_width_mm').hide();
-            $('#cont_length_mm').hide();
-            $('.product-page__input-wrap.part-qty').hide();
+            //$('#cont_width_mm').hide();
+            //$('#cont_length_mm').hide();
+            //$('.product-page__input-wrap.part-qty').hide();
             $('#fair_label').hide();
             $('#fair_label_credit_account').hide();
             $('.product-page__rolls-link').show();
@@ -177,7 +177,7 @@ jQuery(document).ready(function($) {
             $('.product-page__rolls-label-text-2').text('Total number of parts:');
             $('#fair_label').show();
             $('#fair_label_credit_account').show();
-            $('.product-page__input-wrap.part-qty').show();
+            //$('.product-page__input-wrap.part-qty').show();
             $('.product-page__rolls-link').hide();
         }
     }
@@ -365,6 +365,26 @@ function updateDatepickerMinDate() {
     // NEW: Helper to get last shipment date (parses from table, returns Date or null)
 
 
+    // Helper: is this date "immediate" (must use stock only) or backorder-eligible (>=35 days from today)
+    function isImmediateDate(despatch_date_str) {
+        if (!despatch_date_str) return false;
+        const [dd, mm, yyyy] = despatch_date_str.split('/').map(Number);
+        const despatch = new Date(yyyy, mm - 1, dd);
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        despatch.setHours(0, 0, 0, 0);
+
+        const diffTime = despatch - today;
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+        return diffDays < 35;   // < 35 days = immediate / stock only
+    }
+
+    // Global variables that will hold the latest data every time modal opens
+    window.currentShipments = [];
+    window.partialBackorderData = { isPartial: false, ableToDispatch: 0, totalOrdered: 0 };
+
+
     // End new code for dynamic jquery picker
 
 
@@ -469,6 +489,7 @@ function updateDatepickerMinDate() {
     // Toggle modal on clicking Add Shipments button
     $('#add_shipments').on('click', function(e) {
         e.preventDefault();
+
         $('.product-page__tabs .product-page__tabs-list').hide(); 
         
         var shipmentId = $(this).data('id');
@@ -478,7 +499,49 @@ function updateDatepickerMinDate() {
         } else {
             $('.product-page__tabs').css('background-image', 'url(/wp-content/themes/materials-direct/images/tabbed-menu-background-2.png)'); 
         }
-        // NEW: AJAX fetch fresh remaining parts from session
+
+        // NEW Ajax
+        $.ajax({
+            url: ajax_params.ajax_url,
+            type: 'POST',
+            data: {
+                action: 'get_current_shipments',
+                nonce: ajax_params.nonce
+            },
+            success: function(response) {
+                $('#price-spinner-overlay').fadeOut(200);
+
+                if (response.success) {
+                    const data = response.data;
+
+                    // Update remaining parts
+                    $('#remaining-parts').text(data.remaining_parts);
+
+                    // Store fresh data for validation
+                    window.currentShipments = data.shipments || [];
+                    window.partialBackorderData = {
+                        isPartial: !!data.is_partial_backorder,
+                        ableToDispatch: parseInt(data.able_to_dispatch) || 0,
+                        totalOrdered: parseInt(data.total_ordered_qty) || 0
+                    };
+
+                    console.log('Modal opened with fresh partial-backorder data:', window.partialBackorderData);
+
+                    // Show modal
+                    $('.delivery-options-modal__outer').fadeIn();
+                } else {
+                    alert('Error fetching current shipment data.');
+                }
+            },
+            error: function() {
+                $('#price-spinner-overlay').fadeOut(200);
+                alert('Could not load shipment data. Please refresh the page.');
+            }
+        });
+        // END NEW Ajax
+
+        // OLD: AJAX fetch fresh remaining parts from session
+        /*
         $.ajax({
             url: ajax_params.ajax_url,
             type: 'POST',
@@ -499,7 +562,8 @@ function updateDatepickerMinDate() {
                 console.error('AJAX error fetching remaining parts.');
             }
         });
-        // END NEW: AJAX fetch fresh remaining parts from session
+        */
+        // END OLD: AJAX fetch fresh remaining parts from session
 
         setTimeout(updateDatepickerMinDate, 100); // new code for dynamic jquery picker
         $('.delivery-options-modal__outer').fadeToggle();
@@ -508,14 +572,21 @@ function updateDatepickerMinDate() {
     // Close modal on clicking the close button
     $('.delivery-options-modal__close-btn').on('click', function(e) {
         e.preventDefault();
+        
+        if (typeof window.releasePageLock === 'function') {
+            window.releasePageLock();
+        }
+        
         $('.delivery-options-modal__outer').fadeOut();
         $('.delivery-options-modal').removeClass('active');
+        
+        console.log('Modal closed + lock released');
     });
 
     // Handle modal form submission
     $('.delivery-options-modal__submit').on('click', function(e) {
         e.preventDefault();
-        $('.delivery-options-modal__outer').fadeOut();
+        //$('.delivery-options-modal__outer').fadeOut();
         const despatch_date = $('input[name="despatch_date"]').val();
         const parts = parseInt($('input[name="shipment_parts"]').val());
         const add_manufacturers_cofc_ss = $('#add_manufacturers_COFC_ss').is(':checked') ? 10 : 0; //new cofc delivery options
@@ -531,7 +602,35 @@ function updateDatepickerMinDate() {
             return;
         }
 
+        //  NEW PARTIAL BACKORDER VALIDATION 
+        if (window.partialBackorderData.isPartial) {
+            //alert("TRIGGERED");
+            const isImmediate = isImmediateDate(despatch_date);
+
+            // Calculate how many parts are ALREADY scheduled on immediate dates
+            let currentImmediate = 0;
+            window.currentShipments.forEach(function(shipment) {
+                if (isImmediateDate(shipment.date)) {
+                    currentImmediate += parseInt(shipment.parts);
+                }
+            });
+
+            if (isImmediate && (currentImmediate + parts) > window.partialBackorderData.ableToDispatch) {
+                alert('Your quantity includes backordered items. Please change your order dates to 35 days from today or change your delivery quantity');
+                // Clear the fields exactly as you requested
+                $('input[name="despatch_date"]').val('');
+                $('input[name="shipment_parts"]').val('');
+                // Optional: uncheck COFC checkboxes
+                $('.styled-checkbox-cofc').prop('checked', false);
+                return;   // STOP – do not save this shipment
+            }
+        }
+        //  END NEW VALIDATION 
+
+
+
         $('.delivery-options-modal__outer').fadeOut();
+        $('#price-spinner-overlay').fadeIn(200);
     
 
         console.log('Modal Checkbox States:', {
@@ -548,7 +647,6 @@ function updateDatepickerMinDate() {
         });
 
 
-        $('#price-spinner-overlay').fadeIn(200);
 
         $.ajax({
             url: ajax_params.ajax_url,
@@ -564,18 +662,22 @@ function updateDatepickerMinDate() {
             },
             success: function(response) {
                 $('#price-spinner-overlay').fadeOut(200);
+
                 if (response.success) {
                     // Update the shipments table
                     $('.delivery-options-shipment__outer').html(response.data.table_html);
+
                     // Update remaining parts in modal
                     $('#remaining-parts').text(response.data.remaining_parts);
                     $('#parts_remaining').text(response.data.remaining_parts);
+
                     // Clear input fields
                     $('input[name="despatch_date"]').val('');
                     $('input[name="shipment_parts"]').val('');
                     $('input[name="add_manufacturers_COFC_ss"][value="10"]').prop('checked', false);
                     $('input[name="add_fair_ss"][value="95"]').prop('checked', false);
                     $('input[name="add_materials_direct_COFC_ss"][value="12.50"]').prop('checked', false);
+
                     // Close modal if no parts remain
                     if (response.data.remaining_parts <= 0) {
                         console.log('Remaining <=0 after add, allowCredit:', allowCredit);
@@ -583,11 +685,10 @@ function updateDatepickerMinDate() {
                         $('.product-page__order-info-message-1').text("Scheduled shipments now complete. Now click Add To Cart");
                         $('#add_shipments').hide();
                         if (allowCredit) {
-                            calculateScheduledPrice(); // thursday new code
+                            calculateScheduledPrice(); 
+                            releasePageLock();
                         }
-                    } else {
-                        //$('#order_info_box').fadeIn(); // Ensure order_info_box stays visible
-                    }
+                    } 
                 } else {
                     alert('Error: ' + (response.data.message || 'Unable to save shipment.'));
                 }
@@ -598,6 +699,8 @@ function updateDatepickerMinDate() {
             }
         });
     });
+
+
 
     // Handle shipment deletion
     $(document).on('click', '.delete-shipment', function(e) {
@@ -649,6 +752,7 @@ function updateDatepickerMinDate() {
         $('#generate_price').on('click', function() {
 
             const selectedTab = $('input[name="tabs_input"]:checked').val();
+
             if (selectedTab === 'custom-shape-drawing') {
                 const pdfPath = $('#pdf_path').val().trim();
                 if (!pdfPath) {
@@ -710,6 +814,7 @@ function updateDatepickerMinDate() {
                 },
                 success: function(response) {
                     $('#price-spinner-overlay').fadeOut(200);
+
                     if (response.success) {
                         const price = response.data.price;
                         const adjustedPrice = response.data.per_part;
@@ -718,8 +823,10 @@ function updateDatepickerMinDate() {
                         const sheet_width_mm = response.data.sheet_width_mm;
                         const sheet_length_mm = response.data.sheet_length_mm;
                         const border = parseFloat(response.data.border_around || 0.2) * 10;
-
                         const roll_length = response.data.roll_length;
+                        const is_full_backorder_rolls = response.data.is_full_backorder_rolls || false;
+
+                        console.log("is_full_backorder_rolls: " + is_full_backorder_rolls);
 
                         // add per part cost to hidden field 
                         $('#cpp').val(adjustedPrice);
@@ -771,13 +878,12 @@ function updateDatepickerMinDate() {
                         }
 
 
-                        console.log("sheetsRequired: " + sheetsRequired);
 
 
-                        // Calculate price per sheet for the hidden field
-                        let cart_price = price / sheetsRequired;
+
 
                         // Initialize variables for partial backorder
+                        let cart_price = price / sheetsRequired;
                         let sheets_backorder = 0;
                         let total_parts_d;
                         let parts_from_stock;
@@ -789,9 +895,7 @@ function updateDatepickerMinDate() {
                         let calcPartialbackorderFinal;
                         let v1;
                         let v2;
-                        // Calculate partial backorder figures
-                        //const v1 = width + (2 * border);
-                        //const v2 = length + (2 * border);
+
                         if(selectedTab === 'stock-sheets'){
                             v1 = width;
                             v2 = length;
@@ -809,11 +913,98 @@ function updateDatepickerMinDate() {
                         const parts_per_row = Math.floor(usable_width / v1);
                         const parts_per_column = Math.floor(usable_length / v2);
                         const parts_per_sheet = parts_per_row * parts_per_column;
-                    
 
 
                         let priceHtml = '';
+                                                
+                        
+                        // === ROLLS FULL BACKORDER (NEW BEHAVIOUR) ===
+                        if (is_full_backorder_rolls) {
+                            priceHtml = '<div class="product-page__display-price-outer"><div><h4 class="product-page__display-price-heading">Here is your instant quote</h4></div><div class="product-page__display-price-inner"><div class="product-page__display-price">Cost per roll: <span class="product-page__display-price-text">' + currency_symbol + '' + (adjustedPrice * currency_rate).toFixed(2) + '</span></div><div class="product-page__display-price">Total roll costs: <span class="product-page__display-price-text">' + currency_symbol + "" + (price * currency_rate).toFixed(2) + '</span></div></div></div>';
+                            priceHtml += '<div class="product-page__backorder-message"><p class="product-page__backorder-message-text"><strong>Notice:</strong> This order is currently on backorder only. Please allow 35 Days for complete order fulfillment with a 5% discount applied to the total order.</p></div>';
 
+                            cart_price = price;   // use the discounted price sent from server
+
+                            // UPdate select menu
+                            const $select = $('#input_discount_rate');
+                            const originalOptions = $select.html();
+
+                            function updateDispatchOptions(is_full_backorder_rolls) {
+                                if (is_full_backorder_rolls) {
+                                    $select
+                                        .html('<option value="0.05">35 Days (working days) (5% Discount)</option>')
+                                        .val('0.05');
+                                } else {
+                                    $select.html(originalOptions);
+                                }
+                            }
+
+                            // Add hidden field for full Rolls backorder so the cart hook can detect it
+                            if (is_full_backorder_rolls) {
+                                $('<input>').attr({
+                                    type: 'hidden',
+                                    name: 'is_full_backorder_rolls',
+                                    value: '1'
+                                }).appendTo('form.cart');
+
+                                updateDispatchOptions(is_full_backorder_rolls);
+                            }
+
+
+                        }
+                        // === PARTIAL BACKORDER (unchanged for non-Rolls tabs) ===
+                        else if (isBackorder && stock_quantity > 0) {
+                            if (parts_per_sheet <= 0) {
+                                $('#custom_price_display').html('Error: Invalid sheet calculation. Part does not fit on sheet.');
+                                return;
+                            }
+
+                            const selectedTab = $('input[name="tabs_input"]:checked').val();
+
+                            if (selectedTab === 'rolls') {
+                                // Keep your existing rolls partial logic if you still want it for some edge cases,
+                                // but according to your new requirement we are abandoning partial for rolls.
+                                // You can remove this branch later if you want.
+                            } else {
+                                // Non-rolls partial backorder (unchanged)
+                                sheets_backorder = sheetsRequired - stock_quantity;
+                                total_parts_d = qty;
+                                parts_from_stock = stock_quantity * parts_per_sheet;
+                                able_to_dispatch = Math.min(parts_from_stock, total_parts_d);
+                                parts_backorder = total_parts_d - able_to_dispatch;
+                                backorder_adjustedPriceDisplay = adjustedPrice * 0.95;
+                                calcPartialbackorderdiscount_1 = able_to_dispatch * adjustedPrice;
+                                calcPartialbackorderdiscount_2 = parts_backorder * backorder_adjustedPriceDisplay;
+                                calcPartialbackorderFinal = (calcPartialbackorderdiscount_1 + calcPartialbackorderdiscount_2).toFixed(2);
+                                cart_price = calcPartialbackorderFinal / sheetsRequired;
+
+                                priceHtml = '<div class="product-page__display-price-outer"><div><h4 class="product-page__display-price-heading">Here is your instant quote</h4></div><div class="product-page__display-price-inner"><div class="product-page__display-price">Cost per part: <span class="product-page__display-price-text">£' + (adjustedPrice * currency_rate).toFixed(2) + '<span style="font-size: 0.82rem; font-weight: 400;"> (' + currency_symbol + "" + (backorder_adjustedPriceDisplay * currency_rate).toFixed(2) + ' for backorder parts)</span></span></div><div class="product-page__display-price">Total part costs: <span class="product-page__display-price-text">' + currency_symbol + "" + (calcPartialbackorderFinal * currency_rate).toFixed(2) + '</span></div></div></div>';
+                                priceHtml += '<div class="product-page__backorder-message"><p class="product-page__backorder-message-text"><strong>Notice:</strong> This order exceeds current stock, it requires an additional ' + sheets_backorder + ' sheets (' + parts_backorder + ' parts) to be back ordered. We are able to despatch: ' + able_to_dispatch + ' parts within ' + discount_display + '. Please allow 35 Days to complete the back ordered items. A 5% discount will apply to these parts.</p></div>';
+                            }
+                        } 
+                        // === CLASSIC FULL BACKORDER (stock <= 0) ===
+                        else if (isBackorder && stock_quantity <= 0) {
+                            if(selectedTab === 'rolls'){
+                                priceHtml = '<div class="product-page__display-price-outer"><div><h4 class="product-page__display-price-heading">Here is your instant quote</h4></div><div class="product-page__display-price-inner"><div class="product-page__display-price">Cost per roll: <span class="product-page__display-price-text">' + currency_symbol + '' + (adjustedPrice * currency_rate).toFixed(2) + '</span></div><div class="product-page__display-price">Total roll costs: <span class="product-page__display-price-text">' + currency_symbol + "" + (price * currency_rate).toFixed(2) + '</span></div></div></div>';
+                            } else {
+                                priceHtml = '<div class="product-page__display-price-outer"><div><h4 class="product-page__display-price-heading">Here is your instant quote</h4></div><div class="product-page__display-price-inner"><div class="product-page__display-price">Cost per part: <span class="product-page__display-price-text">' + currency_symbol + '' + (adjustedPrice * currency_rate).toFixed(2) + '</span></div><div class="product-page__display-price">Total part costs: <span class="product-page__display-price-text">' + currency_symbol + "" + (price * currency_rate).toFixed(2) + '</span></div></div></div>';
+                            }
+                            priceHtml += '<div class="product-page__backorder-message"><p class="product-page__backorder-message-text"><strong>Notice:</strong> This order is currently on backorder only. Please allow 35 Days for complete order fulfillment with a 5% discount applied to the total order.</p></div>';
+                        } 
+                        // === NORMAL IN-STOCK CASE ===
+                        else {
+                            if(selectedTab === 'rolls'){
+                                priceHtml = '<div class="product-page__display-price-outer"><div><h4 class="product-page__display-price-heading">Here is your instant quote</h4></div><div class="product-page__display-price-inner"><div class="product-page__display-price">Cost per metre: <span class="product-page__display-price-text">' + currency_symbol + '' + (adjustedPrice / roll_length * currency_rate).toFixed(2) + '</span></div><div class="product-page__display-price">Total roll costs: <span class="product-page__display-price-text">' + currency_symbol + "" + (price * currency_rate).toFixed(2) + '</span></div></div></div>';
+                            } else {
+                                priceHtml = '<div class="product-page__display-price-outer"><div><h4 class="product-page__display-price-heading">Here is your instant quote</h4></div><div class="product-page__display-price-inner"><div class="product-page__display-price">Cost per part: <span class="product-page__display-price-text">' + currency_symbol + '' + (adjustedPrice * currency_rate).toFixed(2) + '</span></div><div class="product-page__display-price">Total part costs: <span class="product-page__display-price-text">' + currency_symbol + "" + (price * currency_rate).toFixed(2) + '</span></div></div></div>';
+                            }
+                        }
+                        
+
+
+
+
+                        /*
                         if (isBackorder && stock_quantity > 0) {
 
                             if (parts_per_sheet <= 0) {
@@ -832,7 +1023,6 @@ function updateDatepickerMinDate() {
                             calcPartialbackorderFinal = (calcPartialbackorderdiscount_1 + calcPartialbackorderdiscount_2).toFixed(2);
                             cart_price = calcPartialbackorderFinal / sheetsRequired; 
                             
-
                             priceHtml = '<div class="product-page__display-price-outer"><div><h4 class="product-page__display-price-heading">Here is your instant quote</h4></div><div class="product-page__display-price-inner"><div class="product-page__display-price">Cost per part: <span class="product-page__display-price-text">£' + (adjustedPrice * currency_rate).toFixed(2) + '<span style="font-size: 0.82rem; font-weight: 400;"> (' + currency_symbol + "" + (backorder_adjustedPriceDisplay * currency_rate).toFixed(2) + ' for backorder parts)</span></span></div><div class="product-page__display-price">Total part costs: <span class="product-page__display-price-text">' + currency_symbol + "" + (calcPartialbackorderFinal * currency_rate).toFixed(2) + '</span></div></div></div>';
                         
                             if(selectedTab === 'rolls'){
@@ -840,32 +1030,20 @@ function updateDatepickerMinDate() {
                             } else {
                                 priceHtml += '<div class="product-page__backorder-message"><p class="product-page__backorder-message-text"><strong>Notice:</strong> This order exceeds current stock, it requires an additional ' + sheets_backorder + ' sheets (' + parts_backorder + ' parts) to be back ordered. We are able to despatch: ' + able_to_dispatch + ' parts within ' + discount_display + '. Please allow 35 Days to complete the back ordered items. A 5% discount will apply to these parts.</p></div>';
                             }
-                    
-
                         } else if (isBackorder && stock_quantity <= 0) {
-                            // Full backorder case (stock_quantity <= 0)
                             priceHtml = '<div class="product-page__display-price-outer"><div><h4 class="product-page__display-price-heading">Here is your instant quote</h4></div><div class="product-page__display-price-inner"><div class="product-page__display-price">Cost per part: <span class="product-page__display-price-text">' + currency_symbol + '' + (adjustedPrice * currency_rate).toFixed(2) + '</span></div><div class="product-page__display-price">Total part costs: <span class="product-page__display-price-text">' + currency_symbol + "" + (price * currency_rate).toFixed(2) + '</span></div></div></div>';
                             priceHtml += '<div class="product-page__backorder-message"><p class="product-page__backorder-message-text"><strong>Notice:</strong> This order is currently on backorder only. Please allow 35 Days for complete order fulfillment with a 5% discount applied to the total order.</p></div>';
                         } else {
-                            // No backorder case
-                            
                             if(selectedTab === 'rolls'){
                                 priceHtml = '<div class="product-page__display-price-outer"><div><h4 class="product-page__display-price-heading">Here is your instant quote</h4></div><div class="product-page__display-price-inner"><div class="product-page__display-price">Cost per metre: <span class="product-page__display-price-text">' + currency_symbol + '' + (adjustedPrice / roll_length * currency_rate).toFixed(2) + '</span></div><div class="product-page__display-price">Total roll costs: <span class="product-page__display-price-text">' + currency_symbol + "" + (price * currency_rate).toFixed(2) + '</span></div></div></div>';
                             } else {
                                 priceHtml = '<div class="product-page__display-price-outer"><div><h4 class="product-page__display-price-heading">Here is your instant quote</h4></div><div class="product-page__display-price-inner"><div class="product-page__display-price">Cost per part: <span class="product-page__display-price-text">' + currency_symbol + '' + (adjustedPrice * currency_rate).toFixed(2) + '</span></div><div class="product-page__display-price">Total part costs: <span class="product-page__display-price-text">' + currency_symbol + "" + (price * currency_rate).toFixed(2) + '</span></div></div></div>';
                             }
                         }
-
-
                         
-                        // Temp for degugging
-                        /*
-                        if (isBackorder) {
-                            priceHtml += '<div class="product-page__backorder-message"><p class="product-page__backorder-message-text"><strong>Debug:</strong> Usable Width: '+usable_width+'<br>Usable Length: '+usable_length+'<br>Parts Per Row: '+parts_per_row+'<br>Parts Per Column: '+parts_per_column+'<br>Parts Per Sheet: '+parts_per_sheet+'<br>Sheets Backorder: '+sheets_backorder+'<br>Total Parts D: '+total_parts_d+'<br>Parts From Stock: '+parts_from_stock+'<br>Able To Dispatch: '+able_to_dispatch+'<br>Parts Backorder: '+parts_backorder+'<br>Adjusted Price: '+adjustedPrice+'<br>Backorder Adjusted Price: '+backorder_adjustedPrice+'<br>Calc 1: '+calcPartialbackorderdiscount_1+'<br>Calc 2: '+calcPartialbackorderdiscount_2+'<br>Total part costs: '+calcPartialbackorderFinal+'<br>Is Backorder: '+isBackorder+'<br></p></div>';
-                        }
-                        priceHtml += '<div class="product-page__backorder-message"><p class="product-page__backorder-message-text"><strong>Debug:</strong> Parts Per Sheet: '+parts_per_sheet+'<br>Sheets Required: '+sheetsRequired+'<br>Sheet Width: '+sheet_width_mm+'<br>Usable Width: '+usable_width+'<br>Parts per row: '+parts_per_row+'<br>Discount Rate: '+discount_rate+'<br>Discount Display: '+discount_display+'</p></div>';
                         */
-                        // Temp for degugging
+                        
+
 
 
 
@@ -910,6 +1088,37 @@ function updateDatepickerMinDate() {
                         }
 
                         $('input[name="quantity"]').val(sheetsRequired); 
+
+                        // New fix for partial backorder datepicker
+                        if (isBackorder && stock_quantity > 0) {
+                            $.ajax({
+                                url: ajax_params.ajax_url,
+                                type: 'POST',
+                                data: {
+                                    action: 'save_partial_backorder_data',
+                                    is_partial_backorder: true,
+                                    able_to_dispatch: able_to_dispatch,
+                                    parts_backorder: parts_backorder,
+                                    nonce: ajax_params.nonce
+                                },
+                                success: function() { /* fire-and-forget – we only care that it saved */ }
+                            });
+                        } else {
+                            // Non-partial case – clear the flags
+                            $.ajax({
+                                url: ajax_params.ajax_url,
+                                type: 'POST',
+                                data: {
+                                    action: 'save_partial_backorder_data',
+                                    is_partial_backorder: false,
+                                    able_to_dispatch: qty,
+                                    parts_backorder: 0,
+                                    nonce: ajax_params.nonce
+                                },
+                                success: function() { /* fire-and-forget */ }
+                            });
+                        }
+                        // New fix for partial backorder datepicker
 
                         
                     } else {
