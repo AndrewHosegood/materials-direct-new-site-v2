@@ -5,16 +5,6 @@ Template Name: PDF Generation For Admin (New Version 4)
 
 $domain = $_SERVER['HTTP_HOST'];
 
-// if($domain == "localhost:8888"){
-//     require_once('/Applications/MAMP/htdocs/materials-direct-new/wp-content/themes/creative-mon/pdf-generation/examples/tcpdf_include.php');
-// } 
-// elseif($domain == "newbuild.staging-materials-direct.co.uk"){
-//     require_once('/kunden/homepages/2/d4298640024/htdocs/newbuild/wp-content/themes/materials-direct/pdf-generation/examples/tcpdf_include.php');
-// }
-// else {
-//     require_once('/home/customer/www/materials-direct.com/public_html/wp-content/themes/creative-mon/pdf-generation/examples/tcpdf_include.php');
-// }
-
 require_once TCPDF_INCLUDE_PATH;
 
 date_default_timezone_set('Europe/London');
@@ -40,20 +30,10 @@ $shipping_display_sum = 0;
 $mcf_v_sum = 0;
 $subtotal_2_sum = 0;
 
-//echo $id . "<br>";
-//echo $order_no . "<br>";
-//echo $new_date . "<br>";
-
 //print_r($order);
 
 global $wpdb;
 
-
-
-// Get the voucher discount rate
-//$voucher_discount = $order->get_meta('_voucher_discount'); // Retrieve the meta value
-//$voucher_discount = $order->get_meta('_voucher_discount') ?: 0;
-// Get the voucher discount rate
 
 if ( $order instanceof WC_Order ) {
     $voucher_discount = $order->get_meta('_voucher_discount') ?: 0;
@@ -145,7 +125,7 @@ try {
             $shipping_address_1 . ", " . $shipping_address_2 . "\n" .
             $shipping_city . "\n" . $shipping_postcode . "\n" . $shipping_state . "\n" . $shipping_country;
 
-        $logo_path = get_stylesheet_directory_uri() . '/pdf-generation/examples/images/logo_example.jpg';
+        $logo_path = get_stylesheet_directory() . '/pdf-generation/examples/images/logo_example.jpg';
 
 
         class MDPDF extends TCPDF {
@@ -203,7 +183,8 @@ try {
         // Add a single page
         $pdf->AddPage();
 
-
+        $pdf->Image($logo_path, 10, 10, 50);
+        
         // Start building the HTML content
         $html = '<table style="border-collapse: collapse; width: 100%; margin: 0 auto; padding: 20px; margin-top: 0; margin-bottom: 0px; padding: 3px;">';
 
@@ -470,7 +451,7 @@ try {
             $vat_amount = $cppnew + $mcofc_fair_value_display + $my_shipping_response - $tf_3 - $voucher_percent;
 
 
-            if($country == "United Kingdom"){
+            if($country == "GB"){
                 $vat_display_top = ($cppnew * $tax_rate) / 100;
                 $vat_display = ($vat_amount * $tax_rate) / 100;
                 $vat_sum_top += $vat_display_top;
@@ -481,10 +462,6 @@ try {
                 $vat_sum += $vat_display;
             }
             // calculate VAT
-
-            // echo $cppnew;
-            // echo "<br>";
-            // echo $tax_rate;
 
 
 
@@ -693,8 +670,10 @@ try {
             //$cpp
             //$cppnew
             
-            $invoice_details_html .= '<td>' . $title . $ps . $dra . $dxf . $wdt . $lgt . $wdti . $lgti . $rad . "<br>" . $mcofc_fair_formatted . $sch . $str . "<br>Discount Amount: " . $discount_amount . "<br> cost_per_part_raw: " . $cost_per_part_raw . "<br>discount_rate: " . $discount_rate . "<br>total_1: " .$total_1. "<br>cpp " .$cpp. "<br>cppnew: " .$cppnew. "<br>Sceduled QTY: " .$schedule_qty. "<br>Discount Amount: " .$discount_amount. '</td>'; 
+            //$invoice_details_html .= '<td>' . $title . $ps . $dra . $dxf . $wdt . $lgt . $wdti . $lgti . $rad . "<br>" . $mcofc_fair_formatted . $sch . $str . "<br>Discount Amount: " . $discount_amount . "<br> cost_per_part_raw: " . $cost_per_part_raw . "<br>discount_rate: " . $discount_rate . "<br>total_1: " .$total_1. "<br>cpp " .$cpp. "<br>cppnew: " .$cppnew. "<br>Sceduled QTY: " .$schedule_qty. "<br>Discount Amount: " .$discount_amount. '</td>'; 
             //$invoice_details_html .= '<td>' . $row['title'] . '<br>Part shape: ' . $part_shape  . '<br>Width (MM): ' . $width . '<br>Length (MM): ' . $length . '<br><br>Schedule: ' .$row['schedule'] . '</td>';
+            $invoice_details_html .= '<td>' . $row['title'] . '<br>Part shape: ' . $part_shape  . '<br>Width (MM): ' . $width . '<br>Length (MM): ' . $length . '<br><br>Schedule: ' .$row['schedule'] . '<br>VAT Display:' .$vat_display. '<br>tax_rate: ' .$tax_rate. '<br>Country:' .$country. '<br>my_shipping_response' .$my_shipping_response. '<br>tf_3: ' .$tf_3. '<br>voucher_percent: ' .$voucher_percent. '</td>';
+
 
             $invoice_details_html .= '<td>' . $row['schedule_qty'] . '</td>';
             $invoice_details_html .= '<td>' . number_format($row['cost_per_part_raw'], 4) . '</td>';

@@ -226,6 +226,22 @@
         top: 0px;
         right: 1rem;
     }
+    & .wpcf7-not-valid-tip {
+        background: variables.$primary-color;
+        color: white;
+        display: inline-block;
+        width: auto;
+        height: auto;
+        font-size: 0.8rem;
+        line-height: 1.15rem;
+        text-align: center;
+        border-radius: 16px;
+        padding: 0 5px;
+        font-weight: 700;
+        position: absolute;
+        top: 0px;
+        right: 1rem;
+    }
     & .our-partners .owl-stage-outer {
         z-index: 9;
     }

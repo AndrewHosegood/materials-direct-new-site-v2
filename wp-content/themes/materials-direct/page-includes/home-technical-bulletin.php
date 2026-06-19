@@ -5,7 +5,16 @@
             <h2 class="technical-bulletin__heading"><?php the_field('technical_bulletin_heading'); ?></h2>
 
             <p class="technical-bulletin__content"><?php the_field('technical_bulletin_content'); ?></p> 
-            <a href="#" class="technical-bulletin__btn"><?php the_field('technical_bulletin_button'); ?></a>
+
+
+            <?php 
+            $bulletin_link = get_field('technical_bulletin_redirect_link'); 
+            if($bulletin_link){ ?>
+                <a class="technical-bulletin__btn-redirect" href="<?php echo $bulletin_link; ?>"><?php the_field('technical_bulletin_redirect_button'); ?></a>
+            <?php } else { ?>
+                <a href="#" class="technical-bulletin__btn"><?php the_field('technical_bulletin_button'); ?></a>
+            <?php } ?>
+            
         </div>
         <div class="technical-bulletin__right-col">
             <?php 

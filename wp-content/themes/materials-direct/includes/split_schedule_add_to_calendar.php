@@ -102,6 +102,9 @@ function split_schedule_insert_data($order_id) {
 
     if($order){
         foreach ($order_items as $item_id => $item) {
+            // echo "<pre>";
+            // print_r($item);
+            // echo "</pre>";
 
             if ($item->get_meta('is_scheduled') != 1) {
                 continue; 
@@ -184,12 +187,15 @@ function split_schedule_insert_data($order_id) {
             $delivery_count = count($matches);
             $stock_quantity = $item->get_meta('stock_quantity');
 
+            echo "Stock Quantity: " . $stock_quantity;
+
             if($stock_quantity <= 0){
                 $my_backorder = 1;
             } else {
                 $my_backorder = 0;
             }
 
+            echo "My Backorder: " . $my_backorder;
 
             foreach ($matches as $index => $match) {
                 $schedule_qty  = (int) str_replace(',', '', $match[1]);
@@ -298,7 +304,7 @@ function split_schedule_insert_data($order_id) {
                         'length'                => $length,
                         'width_inch'            => 0,
                         'length_inch'           => 0,
-                        'radius'                => 0,
+                        'radius'                => $length / 2,
                         'radius_inch'           => 0,
                         'qty'                   => $item->get_meta('qty'),
                         'mm'                    => 0,
@@ -313,8 +319,8 @@ function split_schedule_insert_data($order_id) {
                         'mcofc_fair_value'    => $mcofc_fair_value,
                         'md_title'              => 0,
                         'md_value'              => 0,
-                        'rolls_value'           => 0,
-                        'rolls_length'          => 0,
+                        'rolls_value'           => $rolls_value, // here
+                        'rolls_length'          => $roll_length, // here
                         'repayment_terms'       => $repayment_terms,
                         'date'                => $formattedDateNew,
                 ];
@@ -413,8 +419,6 @@ function split_schedule_insert_data($order_id) {
     if ($has_inserted) {
 
         $order = wc_get_order($order_id);
-
-        echo "is_scheduled value: " . $is_scheduled_check;
         
         $table_name = $wpdb->prefix . 'split_schedule_orders';
         $sql = $wpdb->prepare("SELECT * FROM $table_name WHERE order_no = %d", $order_id);
@@ -628,7 +632,7 @@ function split_schedule_insert_data($order_id) {
                 $cppnew = $cpp;
                 $cart_discount_amount = ($cppnew * $cart_discount_percent) / 100;
                 $subtotal_display = number_format($cppnew, 2);
-                $subtotal_display_2 = $cppnew + $shipping_display_new;
+                //$subtotal_display_2 = $cppnew + $shipping_display_new;
                 $cart_discount_price_new = $cart_discount_amount;
                 $tf_3 = round($cart_discount_price_new, 2);
                 $tf_3_calc += round($cart_discount_price_new, 2);
@@ -675,7 +679,7 @@ function split_schedule_insert_data($order_id) {
 
                 $vat_percent = 20;
 
-                if($country == "United Kingdom"){
+                if($country == "GB"){
                     $vat_display = ($vat_amount * $vat_percent) / 100;
                 } else {
                     $vat_display = 0;
@@ -804,7 +808,7 @@ function split_schedule_insert_data($order_id) {
 
         $message_3 .= '<tr>';
         $message_3 .= '<th class="td" scope="row" style="color: #636363; border: 1px solid #e5e5e5; vertical-align: middle; text-align: left;">Payment method:</th>';
-        $message_3 .= '<td class="td" style="color: #636363; border: 1px solid #e5e5e5; vertical-align: middle; text-align: center;">'.$payment_title.'</td>';
+        $message_3 .= '<td class="td" style="color: #636363; border: 1px solid #e5e5e5; vertical-align: middle; text-align: center; font-size: 7.5px;">'.$payment_title.'</td>';
         $message_3 .= '</tr>';
 
         $message_3 .= '<tr>';
@@ -859,7 +863,7 @@ function split_schedule_insert_data($order_id) {
         $message_3 .= '<tr>';
         $message_3 .= '<td valign="top" width="50%" style="text-align: left; font-family: Helvetica, Roboto, Arial, sans-serif; border: 0; padding: 0;">';
         $message_3 .= '<h2 style="color: #ef9003; display: block; font-family: Helvetica, Roboto, Arial, sans-serif; font-size: 18px; font-weight: bold; line-height: 130%; margin: 0 0 18px; text-align: left;">Billing address</h2>';
-        $message_3 .= '<address class="address" style="padding: 12px; color: #636363; border: 1px solid #e5e5e5;">'.$order->get_billing_first_name().'<br>'.$order->get_billing_last_name().'<br>'.$order->get_billing_company().'<br>'.$order->get_billing_address_1().'<br>'.$order->get_billing_address_2().'<br>'.$order->get_billing_city().'<br>'.$order->get_billing_postcode().'<br><a href="tel:'.$billing_phone_link.'" style="color: #202020; font-weight: normal; text-decoration: underline;">'.$order->get_billing_phone().'</a><br>'.$order->get_billing_email().'</address>';
+        $message_3 .= '<address class="address" style="padding: 12px; color: #636363; border: 1px solid #e5e5e5;">'.$order->get_billing_first_name().' '.$order->get_billing_last_name().' '.$order->get_billing_company().'<br>'.$order->get_billing_address_1().'<br>'.$order->get_billing_address_2().'<br>'.$order->get_billing_city().'<br>'.$order->get_billing_postcode().'<br><a href="tel:'.$order->get_billing_phone().'" style="color: #202020; font-weight: normal; text-decoration: underline;">'.$order->get_billing_phone().'</a><br>'.$order->get_billing_email().'</address>';
         $message_3 .= '</td>';
         $message_3 .= '</tr>';
         $message_3 .= '</tbody>';

@@ -153,7 +153,7 @@ jQuery(document).ready(function($) {
         }
         else if (selectedTab === 'rolls') {
             $('#tabs_status_message').html('Roll');
-            // $('.product-page__rolls-label-text-1').text('Length (Metres):');
+            $('.product-page__rolls-label-text-1').text('Length (Metres):');
             // $('.product-page__rolls-label-text-2').text('Quantity of rolls:');
             //$('#cont_width_mm').hide();
             //$('#cont_length_mm').hide();
@@ -450,6 +450,7 @@ function updateDatepickerMinDate() {
                     const border = parseFloat(response.data.border_around) * 10;
                     const selectedTab = $('input[name="tabs_input"]:checked').val();
 
+
                     let priceHtml = '<div class="product-page__display-price-outer"><div><h4 class="product-page__display-price-heading">Here is your instant quote</h4></div><div class="product-page__display-price-inner"><div class="product-page__display-price">Cost per part: <span class="product-page__display-price-text">' + currency_symbol + '' + (per_part * currency_rate).toFixed(2) + '</span></div><div class="product-page__display-price">Total part costs: <span class="product-page__display-price-text">' + currency_symbol + "" + (price * currency_rate).toFixed(2) + '</span></div></div></div>';
                         priceHtml += '<div class="product-page__backorder-message"><p class="product-page__backorder-message-text"><strong>Notice:</strong> This is a scheduled delivery order with varying discounts applied based on despatch dates.</p></div>';
 
@@ -573,10 +574,6 @@ function updateDatepickerMinDate() {
     $('.delivery-options-modal__close-btn').on('click', function(e) {
         e.preventDefault();
         
-        if (typeof window.releasePageLock === 'function') {
-            window.releasePageLock();
-        }
-        
         $('.delivery-options-modal__outer').fadeOut();
         $('.delivery-options-modal').removeClass('active');
         
@@ -686,7 +683,6 @@ function updateDatepickerMinDate() {
                         $('#add_shipments').hide();
                         if (allowCredit) {
                             calculateScheduledPrice(); 
-                            releasePageLock();
                         }
                     } 
                 } else {

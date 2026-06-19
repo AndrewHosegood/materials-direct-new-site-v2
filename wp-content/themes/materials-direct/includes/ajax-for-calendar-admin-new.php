@@ -9,27 +9,11 @@ function update_order_status() {
 
     $http = "https"; //change to https for staging and live
 
-     //require_once('/kunden/homepages/2/d4298640024/htdocs/newbuild/wp-content/themes/materials-direct/pdf-generation/examples/tcpdf_include.php');
-    /*
-    if($domain == "localhost:8888"){
-        require_once('/Applications/MAMP/htdocs/materials-direct-new/wp-content/themes/materials-direct/pdf-generation/examples/tcpdf_include.php');
-    } else {
-        require_once('/kunden/homepages/2/d4298640024/htdocs/newbuild/wp-content/themes/materials-direct/pdf-generation/examples/tcpdf_include.php');
-    }
-    */
      
     require_once TCPDF_INCLUDE_PATH;
 
     date_default_timezone_set('Europe/London');
 
-    $pdf_date = date('jS F Y');
-
-    // Retrieve order ID and status from AJAX request
-    // $id = '135';
-    // $status = 'dispatch';
-    // $order_no = '1339';
-    // $new_date = '2026-03-16';
-    // $is_merged = '';
 
     $id = $_POST['id'];
     $status = $_POST['status'];
@@ -133,10 +117,6 @@ function update_order_status() {
             global $wpdb;
 
 
-            // Get the voucher discount rate
-            //$voucher_discount = $order->get_meta('_voucher_discount'); // Retrieve the meta value
-            // Get the voucher discount rate
-
             if ( $order instanceof WC_Order ) {
                 $voucher_discount = $order->get_meta('_voucher_discount') ?: 0;
             } else {
@@ -221,7 +201,7 @@ function update_order_status() {
                     $shipping_address_1 . ", " . $shipping_address_2 . "\n" .
                     $shipping_city . "\n" . $shipping_postcode . "\n" . $shipping_state . "\n" . $shipping_country;
 
-                    $logo_path = get_stylesheet_directory_uri() . '/pdf-generation/examples/images/logo_example.jpg';
+                    $logo_path = get_stylesheet_directory() . '/pdf-generation/examples/images/logo_example.jpg';
 
                     
 
@@ -238,14 +218,6 @@ function update_order_status() {
 
                     // Path to save the PDF
 
-                    //$tempFilePath1 = '/kunden/homepages/2/d4298640024/htdocs/newbuild/wp-content/themes/materials-direct/pdf-generation/pdf/Materials-Direct-DELIVERY-NOTE-' . $pdf_filename . '-' . $formatted_date_pdf . '-1.pdf';
-                    /*
-                    if ($domain == "localhost:8888") {
-                        $tempFilePath1 = '/Applications/MAMP/htdocs/materials-direct-new/wp-content/themes/creative-mon/pdf-generation/pdf/Materials-Direct-DELIVERY-NOTE-' . $pdf_filename . '-' . $formatted_date_pdf . '-1.pdf';
-                    } else {
-                        $tempFilePath1 = '/kunden/homepages/2/d4298640024/htdocs/newbuild/wp-content/themes/materials-direct/pdf-generation/pdf/Materials-Direct-DELIVERY-NOTE-' . $pdf_filename . '-' . $formatted_date_pdf . '-1.pdf';
-                    }
-                    */
                     $tempFilePath1 = TEMP_PDF_BASE_DIR . 'Materials-Direct-DELIVERY-NOTE-' . $pdf_filename . '-' . $formatted_date_pdf . '-1.pdf';
                     
 
@@ -294,6 +266,7 @@ function update_order_status() {
                     //$pdf1->SetAutoPageBreak(TRUE, PDF_MARGIN_BOTTOM);
                     $pdf1->AddPage();
 
+                    $pdf1->Image($logo_path, 10, 10, 50);
 
                     // Start building the HTML content
                     $html = '<table style="border-collapse: collapse; width: 100%; margin: 0 auto; padding: 20px; margin-top: 0; margin-bottom: 0px; padding: 3px;">';
@@ -356,6 +329,12 @@ function update_order_status() {
                         $shipment_tracking = $row['shipment_tracking'];
                         $shipment_tracking_url = $row['shipment_tracking_url'];
                         $firstname = $row['firstname'];
+                        $pdf_despatch_date = $row['pdf_despatch_date']; // new code monday
+                        if($pdf_despatch_date){
+                            $pdf_date = date('jS F Y', strtotime($pdf_despatch_date));
+                        } else {
+                            $pdf_date = date('jS F Y');
+                        }
                         if($row['repayment_terms'] == 0){
                             $repayment_terms = 30;
                         } else {
@@ -475,15 +454,6 @@ function update_order_status() {
 
                     // === Create second PDF: Invoice ===
 
-                    //$tempFilePath2 = '/kunden/homepages/2/d4298640024/htdocs/newbuild/wp-content/themes/materials-direct/pdf-generation/pdf/Materials-Direct-INVOICE-' . $pdf_filename . '-' . $formatted_date_pdf . '-2.pdf';
-
-                    
-                    
-                    // if ($domain == "localhost:8888") {
-                    //     $tempFilePath2 = '/Applications/MAMP/htdocs/materials-direct-new/wp-content/themes/creative-mon/pdf-generation/pdf/Materials-Direct-INVOICE-' . $pdf_filename . '-' . $formatted_date_pdf . '-2.pdf';
-                    // } else {
-                    //     $tempFilePath2 = '/kunden/homepages/2/d4298640024/htdocs/newbuild/wp-content/themes/materials-direct/pdf-generation/pdf/Materials-Direct-INVOICE-' . $pdf_filename . '-' . $formatted_date_pdf . '-2.pdf';
-                    // }
                     
                     $tempFilePath2 = TEMP_PDF_BASE_DIR . 'Materials-Direct-INVOICE-'      . $pdf_filename . '-' . $formatted_date_pdf . '-2.pdf';
 
@@ -539,7 +509,7 @@ function update_order_status() {
                     //$pdf2->SetAutoPageBreak(TRUE, PDF_MARGIN_BOTTOM);
                     $pdf2->AddPage();
 
-
+                    $pdf2->Image($logo_path, 10, 10, 50);
                     
 
                     // Write content
@@ -771,7 +741,7 @@ function update_order_status() {
                         //$vat_amount = 100;
 
 
-                        if($country == "United Kingdom"){
+                        if($country == "GB"){
                             $vat_display_top = ($cppnew * $tax_rate) / 100;
                             $vat_display = ($vat_amount * $tax_rate) / 100;
                             $vat_sum_top += $vat_display_top;
@@ -963,8 +933,8 @@ function update_order_status() {
                         $invoice_details_html .= '<tr>';
                         $invoice_details_html .= '<td>' . $row['sku'] . '</td>';
                         //$invoice_details_html .= '<td>' . $title . $ps . $dra . $dxf . $wdt . $wdti . $lgt . $lgti . $rad . "<br>" . $mcofc_fair_formatted . $sch . $str . '</td>';
-                        $invoice_details_html .= '<td>' . $title . $ps . $dra . $dxf . $wdt . $lgt . $wdti . $lgti . $rad . "<br>" . $mcofc_fair_formatted . $sch . $str . "<br>Scheduled Qty: " . $schedule_qty . "<br> cost_per_part_raw: " . $cost_per_part_raw . "<br>discount_rate: " . $discount_rate . "<br>total_1: " .$total_1. "<br>cpp " .$cpp. "<br>cppnew: " .$cppnew. "<br>Rolls Length: " .$rolls_length. "<br>My Shipping Response: " .$my_shipping_response. "<br>Meta Quantity" .$meta_qty. "<br>Flag: " .$flag. '</td>'; 
-                        //$invoice_details_html .= '<td>' . $title . $ps . $dra . $dxf . $wdt . $wdti . $lgt . $lgti . $rad . "<br>" . $mcofc_fair_formatted . $scd . $sch . $str . '</td>';
+                        //$invoice_details_html .= '<td>' . $title . $ps . $dra . $dxf . $wdt . $lgt . $wdti . $lgti . $rad . "<br>" . $mcofc_fair_formatted . $sch . $str . "<br>Scheduled Qty: " . $schedule_qty . "<br> cost_per_part_raw: " . $cost_per_part_raw . "<br>discount_rate: " . $discount_rate . "<br>total_1: " .$total_1. "<br>cpp " .$cpp. "<br>cppnew: " .$cppnew. "<br>Rolls Length: " .$rolls_length. "<br>My Shipping Response: " .$my_shipping_response. "<br>Meta Quantity" .$meta_qty. "<br>Flag: " .$flag. '</td>'; 
+                        $invoice_details_html .= '<td>' . $title . $ps . $dra . $dxf . $wdt . $wdti . $lgt . $lgti . $rad . "<br>" . $mcofc_fair_formatted . $scd . $sch . $str . '</td>';
                         //$invoice_details_html .= '<td>' . $row['title'] . '<br>Part shape: ' . $part_shape  . '<br>Width (MM): ' . $width . '<br>Length (MM): ' . $length . '<br><br>Schedule: ' .$row['schedule'] . '</td>';
 
                         $invoice_details_html .= '<td>' . $row['schedule_qty'] . '</td>';

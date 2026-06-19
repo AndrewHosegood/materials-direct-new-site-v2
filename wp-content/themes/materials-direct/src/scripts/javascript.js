@@ -363,13 +363,110 @@ jQuery(document).ready(function($){
         // force users to enter 3 or more in width and length field
 
         // add width and length values based on circle radius input
-        $('#input_radius').on('keyup', function() {
-            var keyup_value = $(this).val() * 2;
+        $('#input_radius').on('blur', function() {
+            let $input = $(this);
+            let val = $input.val().trim();
+            
+            // Clear length and width first (as in your original logic)
+            $("#input_length").val('');
+            $("#input_width").val('');
+            
+            // Remove any non-numeric characters except decimal point
+            val = val.replace(/[^0-9.]/g, '');
+            
+            if (val === '') {
+                $input.val('');
+                $("#generate_price").prop("disabled", true);
+                return;
+            }
+
+            let num = parseFloat(val);
+            
+            // Check if it's a valid number
+            if (isNaN(num)) {
+                alert("Please enter a valid number");
+                $input.val('');
+                $("#generate_price").prop("disabled", true);
+                return;
+            }
+
+            // Enforce minimum value
+            if (num < 1.5) {
+                if (num > 0) {
+                    alert("Please add a radius of 1.5 mm or greater");
+                }
+                $input.val('');
+                $("#generate_price").prop("disabled", true);
+                return;
+            }
+
+            // === Force maximum 2 decimal places ===
+            const decimalPart = val.split('.')[1];
+            if (decimalPart && decimalPart.length > 2) {
+                num = Math.round(num * 100) / 100;
+                alert("Radius has been rounded to 2 decimal places");
+            }
+
+            // Format nicely (max 2 decimals, remove unnecessary trailing zeros)
+            let formatted = num.toFixed(2).replace(/\.?0+$/, '');
+            $input.val(formatted);
+
+            // Apply radius logic
+            var keyup_value = num * 2;
+            
             $("#input_length").val(keyup_value);
             $("#input_width").val(keyup_value);
             $("#generate_price").prop("disabled", false);
         });
         // add width and length values based on circle radius input
+
+        // validate width input field
+
+        function enforceDimensions(inputSelector, fieldName) {
+            $(inputSelector).on('blur', function() {
+                let $input = $(this);
+                let val = $input.val().trim();
+                
+                val = val.replace(/[^0-9.]/g, '');
+                
+                if (val === '') {
+                    $input.val('');
+                    return;
+                }
+
+                let num = parseFloat(val);
+                
+                if (isNaN(num)) {
+                    alert("Please enter a valid number");
+                    $input.val('');
+                    return;
+                }
+
+                if (num < 3) {
+                    if (num > 0) {
+                        alert("Please add a width or length of 3mm or more");
+                    }
+                    $input.val('');
+                    return;
+                }
+
+                // Round to 2 decimal places if needed
+                const decimalPart = val.split('.')[1];
+                if (decimalPart && decimalPart.length > 2) {
+                    num = Math.round(num * 100) / 100;
+                    alert(fieldName + " has been rounded to 2 decimal places");
+                }
+
+                let formatted = num.toFixed(2).replace(/\.?0+$/, '');
+                $input.val(formatted);
+            });
+        }
+
+        // Apply to both fields
+        enforceDimensions('#input_width', 'Width');
+        enforceDimensions('#input_length', 'Length');
+
+
 
         // add inch values to width field
         $('#input_width_inches').on('input', function() {
@@ -384,12 +481,6 @@ jQuery(document).ready(function($){
                 $("#generate_price").prop("disabled", true);
             }
         });
-        // $('#input_width_inches').on('keyup', function() {
-        //     var inch_width_keyup_value = $(this).val() * 25.4;
-        //     console.log("Value: " + inch_width_keyup_value);
-        //     $("#input_width").val(inch_width_keyup_value);
-        //     $("#generate_price").prop("disabled", false);
-        // });
         // add inch values to width field
 
         // add inch values to length field
@@ -405,12 +496,6 @@ jQuery(document).ready(function($){
                 $("#generate_price").prop("disabled", true);
             }
         });
-        // $('#input_length_inches').on('keyup', function() {
-        //     var inch_length_keyup_value = $(this).val() * 25.4;
-        //     console.log(inch_length_keyup_value);
-        //     $("#input_length").val(inch_length_keyup_value);
-        //     $("#generate_price").prop("disabled", false);
-        // });
         // add inch values to length field
 
         // add inch values to length field
@@ -608,7 +693,14 @@ jQuery(document).ready(function($){
                 $('.suggested-improvements-no').addClass('active');
         });
         /* Questionnaire */
-
+        /* Home Technical Bulletin */
+        // display modal if download PDF is clicked
+        $(".technical-bulletin__btn").click(function(event){
+            event.preventDefault();
+            $(".newsletter-signup__modal").addClass("zoom-in");
+            $(".newsletter-signup").css({ display: 'block', visibility: 'visible' });
+        });
+        /* Home Technical Bulletin */
         // Owl Carousel
         $('.testimonials__carousel').owlCarousel({
             loop:true,

@@ -173,11 +173,9 @@
 
                                             <a class="manufacturing-latest-products__link" href="<?php the_permalink(); ?>">
                                                 <div class="woocommerce-shop__soft-border"></div>
-                                                <?php if (has_post_thumbnail()) { ?>
+                                                <?php if (has_post_thumbnail()) : ?>
                                                     <?php the_post_thumbnail( 'woocommerce_thumbnail', array( 'class' => 'manufacturing-latest-products__image' ) ); ?>
-                                                    <?php } else { ?>
-                                                        <img src="/wp-content/uploads/woocommerce-placeholder-600x600.webp" alt="Placeholder Image" class="manufacturing-latest-products__image wp-post-image">
-                                                   <?php } ?>
+                                                <?php endif; ?>
                                             </a>
                                         </div>
                                         <div class="manufacturing-latest-products__info-card">
@@ -248,16 +246,19 @@
                 <?php $colour_1 = get_sub_field('our_latest_products_fc_co_background_colour', get_the_ID()); ?>
                 <section class="manufacturing-latest-products text-center" style="background: <?php echo esc_attr( $colour_1 ); ?>;">
                 <h2 class="manufacturing-latest-products__heading"><?php the_sub_field('our_latest_products_fc_co_heading'); ?></h2>
-                <?php $pruduct_1 = get_sub_field('product_id_1'); ?>
-                <?php $pruduct_2 = get_sub_field('product_id_2'); ?>
-                <?php $pruduct_3 = get_sub_field('product_id_3'); ?>
+                <?php $product_1 = get_sub_field('product_id_1'); ?>
+                <?php $product_2 = get_sub_field('product_id_2'); ?>
+                <?php $product_3 = get_sub_field('product_id_3'); ?>
+                <?php //$product_1 = 2004; ?>
+                <?php //$product_2 = 4807; ?>
+                <?php //$product_3 = 4236; ?>
                 <?php
                 // Query the first 3 products (by newest date) under the "Electrical Insulators" category
                 $args = array(
                     'post_type'      => 'product',
                     'posts_per_page' => 3,
                     'orderby'        => 'post__in', // preserves your chosen order
-                    'post__in'       => array( $pruduct_1, $pruduct_2, $pruduct_3 ), // product IDs you want
+                    'post__in'       => array( $product_1, $product_2, $product_3 ), // product IDs you want
                     'post_status'    => 'publish',
                 );
 
@@ -358,8 +359,10 @@
 
             <?php $link_3a = get_sub_field('custom_cut_materials_fc_button_1'); ?>
             <?php $link_3b = get_sub_field('custom_cut_materials_fc_button_2'); ?>
+            <?php $custom_cut_bg_colour = get_sub_field('custom_cut_materials_fc_background_colour') ?>
+            
 
-            <section class="manufacturing-single-column text-center">
+            <section class="manufacturing-single-column text-center" style="<?php if($custom_cut_bg_colour){ echo "background:" . $custom_cut_bg_colour . ";"; } ?>">
                 <div class="container manufacturing-single-column__container">
                     <h2 class="manufacturing-single-column__heading"><?php the_sub_field('custom_cut_materials_fc_heading'); ?></h2>
                     <div class="manufacturing-single-column__content">
@@ -389,7 +392,7 @@
 
             <!-- 4 column banner -->
             <?php if (have_rows('selling_points', 'options')) : ?>
-                <div class="featured-icons">
+                <div class="featured-icons" style="<?php if($custom_cut_bg_colour){ echo "background:" . $custom_cut_bg_colour . ";"; } ?>">
                     <div class="container featured-icons__container">
 
                         <?php while (have_rows('selling_points', 'options')) : the_row(); ?>
@@ -415,10 +418,19 @@
             <section class="manufacturing-instant-quotes text-center">
                 <h3 class="manufacturing-instant-quotes__heading"><?php the_sub_field('custom_cut_materials_fc_heading_2'); ?></h3>
                 <div class="container">
-                    <div class="manufacturing-instant-quotes__content">
-                        <span class="manufacturing-instant-quotes__content-left"><?php the_sub_field('custom_cut_materials_fc_content_left'); ?></span>
-                        <span class="manufacturing-instant-quotes__content-right"><?php the_sub_field('custom_cut_materials_fc_content_right'); ?></span>
-                    </div>
+                    
+                        <div class="manufacturing-instant-quotes__content">
+                            <?php if(get_sub_field('custom_cut_materials_fc_content_left')){ ?>
+                                <span class="manufacturing-instant-quotes__content-left"><?php the_sub_field('custom_cut_materials_fc_content_left'); ?></span>
+                            <?php } ?>
+                            <?php if(get_sub_field('custom_cut_materials_fc_content_right')){ ?>
+                                <span class="manufacturing-instant-quotes__content-right"><?php the_sub_field('custom_cut_materials_fc_content_right'); ?></span>
+                            <?php } ?>
+                            <?php if(get_sub_field('custom_cut_materials_fc_content_center')){ ?>
+                                <span class="manufacturing-instant-quotes__content-center"><?php the_sub_field('custom_cut_materials_fc_content_center'); ?></span>
+                            <?php } ?>
+                        </div>
+                    
                 </div>
 
 

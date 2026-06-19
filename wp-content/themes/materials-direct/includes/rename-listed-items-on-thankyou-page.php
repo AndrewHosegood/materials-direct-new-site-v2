@@ -2,13 +2,29 @@
 add_filter('woocommerce_order_item_get_formatted_meta_data', 'remove_specific_order_item_meta', 10, 2);
 
 function remove_specific_order_item_meta($formatted_meta, $item) {
+
     // List of meta keys you want to remove
     $meta_keys_to_remove = ['sheets_required', 'parts_backorder', 'able_to_dispatch', 'parts_per_sheet'];
 
     $shape_type_value = null;
+
+    $has_part_shape = false;
+
+    foreach ($formatted_meta as $meta) {
+
+        if (
+            strtolower(trim($meta->key)) === 'part shape'
+        ) {
+            $has_part_shape = true;
+            break;
+        }
+    }
+
     
     // Loop through each formatted meta item
     foreach ($formatted_meta as $key => $meta) {
+
+
         // Check if the meta key is in our removal list
         if (in_array($meta->key, $meta_keys_to_remove)) {
             unset($formatted_meta[$key]); // Remove it from the list
@@ -16,9 +32,18 @@ function remove_specific_order_item_meta($formatted_meta, $item) {
         }
 
         if ($meta->key === 'shape_type') {
+
             $shape_type_value = $meta->value;
-            $formatted_meta[$key]->display_key = 'Shape Type'; // Change the label
-            $formatted_meta[$key]->display_value = ucwords(str_replace('-', ' ', $meta->value));
+
+            // Capture carts already have a visible Part shape field
+            if ($has_part_shape) {
+                unset($formatted_meta[$key]);
+                continue;
+            }
+
+            // Normal orders only have shape_type,
+            // so show it as Part Shape
+            $formatted_meta[$key]->display_key = 'Part Shape';
         }
 
         if ($meta->key === 'despatch_notes') {
@@ -47,6 +72,10 @@ function remove_specific_order_item_meta($formatted_meta, $item) {
         if ($meta->key === 'ah_shipping_cost') {
             $formatted_meta[$key]->display_key = 'Shipping Cost'; // Change the label
         }
+        if ($meta->key === 'is_backorder') {
+            $formatted_meta[$key]->display_key = 'Item on backorder'; // Change the label
+            $formatted_meta[$key]->display_value = ($meta->value == '1') ? 'Yes' : 'No';
+        }
     }
 
     // Determine if this is a roll product (case insensitive)
@@ -54,12 +83,12 @@ function remove_specific_order_item_meta($formatted_meta, $item) {
 
     // Second pass: apply conditional visibility
     foreach ($formatted_meta as $key => $meta) {
-        if ($meta->key === 'roll_length') {
+        if ($meta->key === 'roll_length' || $meta->key === 'Roll Length (Metres)') {
             if (!$is_rolls) {
                 unset($formatted_meta[$key]);
             }
         }
-        elseif ($meta->key === 'length') {
+        elseif ($meta->key === 'length' || $meta->key === 'Length (MM)') {
             if ($is_rolls) {
                 unset($formatted_meta[$key]);
             }

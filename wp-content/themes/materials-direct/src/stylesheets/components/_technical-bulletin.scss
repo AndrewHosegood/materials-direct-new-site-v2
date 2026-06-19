@@ -3,7 +3,7 @@
 
 .technical-bulletin {
     background: variables.$secondary-color;
-    padding: 2.25rem 0 3.1rem 0;
+    padding: 2.55rem 0 3.1rem 0;
     &__subheading {
         color: variables.$primary-color;
         font-size: 1.19rem;
@@ -33,14 +33,14 @@
         width: 100%;
         margin-right: 0%;
         @include breakpoints.tablet {
-            width: 72.5%;
-            margin-right: 5%;
+            width: 67%;
+            margin-right: 6%;
         }
     }
     &__right-col {
         width: 0%;
          @include breakpoints.tablet {
-            width: 22.5%;
+            width: 27%;
          }
     }
     &__container {
@@ -63,6 +63,16 @@
         font-weight: 300;
     }
     &__btn {
+        background: variables.$primary-color;
+        color: white;
+        padding: 1.1rem 1.5rem;
+        border-radius: 0.2rem;
+        margin-top: 1rem;
+        display: inline-block;
+        font-weight: 600;
+        font-size: 0.9rem;
+    }
+    &__btn-redirect {
         background: variables.$primary-color;
         color: white;
         padding: 1.1rem 1.5rem;

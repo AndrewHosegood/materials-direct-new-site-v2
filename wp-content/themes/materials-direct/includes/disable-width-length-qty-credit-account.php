@@ -16,8 +16,13 @@ function disable_width_length_qty_if_credit_account() {
 
                 $('#generate_price').on('click', function() {
 
+
                     // Disable fields after generate_price click for credit users
-                    $('#input_width, #input_length, #input_qty, #input_radius').prop('readonly', true);
+                    //$('#input_width, #input_length, #input_qty, #input_radius').prop('readonly', true);
+                    $('#input_width').prop('readonly', $('#input_width').val().trim() !== '');
+                    $('#input_length').prop('readonly', $('#input_length').val().trim() !== '');
+                    $('#input_qty').prop('readonly', $('#input_qty').val().trim() !== '');
+                    $('#input_radius').prop('readonly', $('#input_radius').val().trim() !== '');
                     $('#use_inches').prop('disabled', true);
 
 					//product-page__grey-panel

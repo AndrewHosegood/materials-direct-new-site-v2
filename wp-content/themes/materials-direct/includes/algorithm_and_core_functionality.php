@@ -324,10 +324,6 @@ function calculate_product_price($product_id, $width, $length, $qty, $discount_r
     // Now safely get shipping dimensions
     $shipping_length = $product->get_length();
 
-    error_log("Shipping length from backend?: " . $ah_length);
-    // error_log("Shipping width: " . $ah_width);
-    // new
-
 
     $width = floatval($width);
     $length = floatval($length);
@@ -452,7 +448,6 @@ function calculate_product_price($product_id, $width, $length, $qty, $discount_r
     $finalPppOnAva = $finalPppOnAva - $discountAmount;
     $adjustedPrice = $finalPppOnAva * $globalPriceAdjust;
 
-    error_log("Cost Per Part Raw:" . $finalPppOnAva);
 
     /* AH rolls fix 9.12.2025 */
     if($shape_type ==="rolls"){
@@ -549,6 +544,7 @@ function custom_price_input_fields_prefill() {
             <label class="custom-price-calc__label product-page__address-5"><input class="product-page__calc-input product-page__calc-input-small" type="text" id="input_zip_postal" name="custom_zip_postal" placeholder="ZIP/Postal Code" value="' . $zip_postal . '" required></label>';
         
             echo '<label class="custom-price-calc__label product-page__address-6">';
+
             echo  '<select id="input_country" class="product-page__calc-input product-page__calc-input-small" name="custom_country" required>';
 
             $country_data = get_country_data();
@@ -560,13 +556,10 @@ function custom_price_input_fields_prefill() {
             }
             echo '</select>';
             
-
-            // BACKUP HIDDEN FIELD – this is the key fix
-            // When a saved address exists (form is hidden), this hidden input is last in the DOM
-            // so $_POST['custom_country'] will always be the session value, even if JS resets the select
             if (WC()->session->get('custom_shipping_address')) {
-                echo '<input type="hidden" name="custom_country" value="' . esc_attr($country) . '">';
+                echo '<input type="hidden" id="saved_country" name="custom_country" value="' . esc_attr($country) . '">';
             }
+
 
             echo '</label>';
             echo '</div>';
@@ -583,10 +576,60 @@ function custom_price_input_fields_prefill() {
                 if($address['zip_postal']){ echo $address['zip_postal'] . "<br>"; }
                 if($address['country']){ echo $address['country'] . "<br>"; }
                 echo '</p>';
-                echo '<a class="shipping-address-form-single__saved-edit">Edit Address</a>';
+                echo '<a class="shipping-address-form__clear-address" id="clear-shipping-address">Clear Address</a>';
                 echo '</div>';
             }
+        ?>    
+        <?php if (WC()->session->get('custom_shipping_address')) : ?>
+        <script>
+            jQuery(document).ready(function($) {
+                $(document).on('click', '#clear-shipping-address', function(e) {
+                    e.preventDefault();
+                    if (!confirm('Are you sure you want to clear the saved shipping address?')) {
+                        return;
+                    }
 
+                    $.ajax({
+                        url: '<?php echo admin_url('admin-ajax.php'); ?>',
+                        type: 'POST',
+                        data: {
+                            action: 'clear_custom_shipping_address',
+                            nonce: '<?php echo esc_js($clear_nonce); ?>'
+                        },
+                        success: function(response) {
+
+                            if (response.success) {
+                                $('input[type="hidden"][name="custom_country"]').remove();
+                                $('.shipping-address-form__saved').remove();
+                                $('#input_street_address').val('');
+                                $('#input_address_line2').val('');
+                                $('#input_city').val('');
+                                $('#input_county_state').val('');
+                                $('#input_zip_postal').val('');
+                                $('#input_country').val('United Kingdom');
+                                $('#shipping-address-form-single').removeClass('shipping-address-form__hide');
+                            } else {
+                                alert('Error clearing address. Please try again.');
+                            }
+                        },
+                        error: function() {
+                            alert('Ajax error. Please refresh the page.');
+                        }
+                    });
+                });
+            });
+        </script>
+        <?php endif; ?>
+        <script>
+            // force the selecet menu in the DOM to use the selected country instead of United Kingdowm
+            jQuery(function($){
+                var savedCountry = $('#saved_country').val();
+                if(savedCountry){
+                    $('#input_country').val(savedCountry);
+                }
+            });
+        </script>
+        <?php
         echo '<input type="hidden" id="custom_price" name="custom_price" value="">';
         echo '<div id="custom_price_display"></div>';
         return;
@@ -695,34 +738,64 @@ function custom_price_input_fields_prefill() {
 
         // MOCOF FAIR CONTENT
 
+        $no_cofc = function_exists('get_field') ? get_field('no_cofc', $product->get_id()) : '';
+        $is_cofc_disabled = ($no_cofc === 'yes');
+        $cofc_disabled_attr = $is_cofc_disabled ? 'disabled="disabled"' : '';
+        $cofc_wrapper_class = $is_cofc_disabled ? 'cofc-disabled' : '';
+
+        $no_fair = function_exists('get_field') ? get_field('no_fair', $product->get_id()) : '';
+        $is_fair_disabled = ($no_fair === 'yes');
+        $fair_disabled_attr = $is_fair_disabled ? 'disabled="disabled"' : '';
+        $fair_wrapper_class = $is_fair_disabled ? 'fair-disabled' : '';
+
+        $no_mcofc = function_exists('get_field') ? get_field('no_mcofc', $product->get_id()) : '';
+        $is_mcofc_disabled = ($no_mcofc === 'yes');
+        $mcofc_disabled_attr = $is_mcofc_disabled ? 'disabled="disabled"' : '';
+        $mcofc_wrapper_class = $is_mcofc_disabled ? 'mcofc-disabled' : '';
+
         echo '<div id="cofc_hide_show"><div class="product-page__optional-fees" style="display:none;">
 
             <h4 class="product-page__optional-fees-title">Do you require these addons with your product?</h4>
 
-            <div class="product-page__checkbox-label unstyled">
-                <p class="product-page__checkbox-title">Add Manufacturers COFC</p>
-                <input type="checkbox" name="add_manufacturers_COFC" value="10" class="styled-checkbox" id="add_manufacturers_COFC">
-                <label>
+            <div class="product-page__checkbox-label unstyled '.$cofc_wrapper_class.'">
+                <p class="product-page__checkbox-title">Add Manufacturers COFC</p>';
+
+                if($no_cofc === 'yes'){
+                    echo '<p class="product-page__cofc-not-available">Not available for this product</p>';
+                }
+
+        echo '<input type="checkbox" name="add_manufacturers_COFC" value="10" class="styled-checkbox" id="add_manufacturers_COFC" '.$cofc_disabled_attr.'>
+                <label for="add_manufacturers_COFC">
                 <span class="product-page__checkbox-heading">Manufacturers COFC <span class="product-page__checkbox-price">£10</span>
                     <span class="cfc__tooltip" data-tooltip="A Manufacturers Certificate of Conformity (MCOFC) is a document that manufacturers issue to confirm that a product has been made to a specific standard and meets quality and regulatory requirements.">?</span>
                 </span>
                 </label>
             </div><br>
 
-            <div id="fair_label" class="product-page__checkbox-label unstyled">
-                <p class="product-page__checkbox-title">Add First Article Inspection Report</p>
-                <input type="checkbox" name="add_fair" value="95" class="styled-checkbox" id="add_fair">
-                <label>
+            <div id="fair_label" class="product-page__checkbox-label unstyled '.$fair_wrapper_class.'">
+                <p class="product-page__checkbox-title">Add First Article Inspection Report</p>';
+
+                if($no_fair === 'yes'){
+                    echo '<p class="product-page__cofc-not-available">Not available for this product</p>';
+                }
+
+        echo '<input type="checkbox" name="add_fair" value="95" class="styled-checkbox" id="add_fair" '.$fair_disabled_attr.'>
+                <label for="add_fair">
                 <span class="product-page__checkbox-heading">FAIR <span class="product-page__checkbox-price">£95</span>
                     <span class="cfc__tooltip" data-tooltip="A First Article Inspection Report (FAIR) or ISIR is the first item we make for the customer and measure to confirm all dimensions meet the drawing and tolerances.">?</span>
                 </span>
                 </label>
             </div><br>
 
-            <div class="product-page__checkbox-label unstyled">
-                <p class="product-page__checkbox-title">Add Materials Direct COFC?</p>
-                <input type="checkbox" name="add_materials_direct_COFC" value="12.50" class="styled-checkbox" id="add_materials_direct_COFC">
-                <label>
+            <div class="product-page__checkbox-label unstyled '.$mcofc_wrapper_class.'">
+                <p class="product-page__checkbox-title">Add Materials Direct COFC?</p>';
+
+                if($no_mcofc === 'yes'){
+                    echo '<p class="product-page__cofc-not-available">Not available for this product</p>';
+                }
+
+        echo '<input type="checkbox" name="add_materials_direct_COFC" value="12.50" class="styled-checkbox" id="add_materials_direct_COFC" '.$mcofc_disabled_attr.'>
+                <label for="add_materials_direct_COFC">
                 <span class="product-page__checkbox-heading">Materials Direct COFC <span class="product-page__checkbox-price">£12.50</span>
                     <span class="cfc__tooltip" data-tooltip="A certificate from Materials Direct confirming that the part meets the criteria ordered (RoHS and REACH compliant).">?</span>
                 </span>
@@ -865,6 +938,12 @@ function custom_price_input_fields_prefill() {
         <input type="hidden" id="cpp" name="cost_per_part" value="">';
 
 
+
+
+
+
+
+
         echo '<div class="product-page__stages-heading"><h3 class="product-page__stages-heading-content two">Enter your delivery address</h3></div>';
 
         if(WC()->session->get('custom_shipping_address')){
@@ -883,33 +962,29 @@ function custom_price_input_fields_prefill() {
             <label class="custom-price-calc__label product-page__address-5"><input class="product-page__calc-input product-page__calc-input-small" type="text" id="input_zip_postal" name="custom_zip_postal" placeholder="ZIP/ Postal Code" value="' . $zip_postal . '" required></label>';
             
         echo '<label class="custom-price-calc__label product-page__address-6">'; 
-
-        // === CHANGED: Country field logic ===
-        if (WC()->session->get('custom_shipping_address')) {
-            // Saved address exists → show read-only single option
-            echo '<select id="input_country" class="product-page__calc-input product-page__calc-input-small" name="custom_country" required>';
-            echo '<option value="' . esc_attr($country) . '" selected>' . esc_html($country) . '</option>';
-            echo '</select>';
-        } else {
-            // No saved address → full editable select
+            
+            
             echo '<select id="input_country" class="product-page__calc-input product-page__calc-input-small" name="custom_country" required>';
             $country_data = get_country_data();
-
-            ksort($country_data); // Optional: sort alphabetically for nicer UX
-
+            
+            ksort($country_data); 
+            
             foreach ($country_data as $country_name => $data) {
                 echo '<option value="' . esc_attr($country_name) . '" ' . selected($country, $country_name, false) . '>' 
                     . esc_html($country_name) . 
                 '</option>';
             }
+            
             echo '</select>';
-        }
+
+            if (WC()->session->get('custom_shipping_address')) {
+                echo '<input type="hidden" id="saved_country" name="custom_country" value="' . esc_attr($country) . '">';
+            }
+        
 
         echo '</label>';
         echo '</div>';
 
-   
-        
 
         if(WC()->session->get('custom_shipping_address')){
             $address = WC()->session->get('custom_shipping_address');
@@ -923,7 +998,6 @@ function custom_price_input_fields_prefill() {
                 if($address['zip_postal']){ echo $address['zip_postal'] . "<br>"; }
                 if($address['country']){ echo $address['country'] . "<br>"; }
             echo '</p>';
-            echo '<a class="shipping-address-form__saved-edit">Edit Address</a>';
             echo '<a class="shipping-address-form__clear-address" id="clear-shipping-address">Clear Address</a>';
             echo '</div>';
         }
@@ -934,7 +1008,7 @@ function custom_price_input_fields_prefill() {
     <?php if (WC()->session->get('custom_shipping_address')) : ?>
     <script>
     jQuery(document).ready(function($) {
-        $('#clear-shipping-address').on('click', function(e) {
+        $(document).on('click', '#clear-shipping-address', function(e) {
             e.preventDefault();
             if (!confirm('Are you sure you want to clear the saved shipping address?')) {
                 return;
@@ -948,28 +1022,21 @@ function custom_price_input_fields_prefill() {
                     nonce: '<?php echo esc_js($clear_nonce); ?>'
                 },
                 success: function(response) {
+
                     if (response.success) {
-                        // Refresh the address section (or whole page)
-                        location.reload(); // Simplest – reloads product page to show full form
-                        // Alternative: dynamically show full form without reload (more advanced)
+                        $('input[type="hidden"][name="custom_country"]').remove();
+                        $('.shipping-address-form__saved').remove();
+                        $('#input_street_address').val('');
+                        $('#input_address_line2').val('');
+                        $('#input_city').val('');
+                        $('#input_county_state').val('');
+                        $('#input_zip_postal').val('');
+                        $('#input_country').val('United Kingdom');
+                        $('#shipping-address-form').removeClass('shipping-address-form__hide');
                     } else {
                         alert('Error clearing address. Please try again.');
                     }
                 },
-                // error: function(jqXHR, textStatus, errorThrown) {
-                //     console.log('AJAX failed:', {
-                //         status: jqXHR.status,
-                //         statusText: jqXHR.statusText,
-                //         responseText: jqXHR.responseText,
-                //         textStatus: textStatus,
-                //         errorThrown: errorThrown
-                //     });
-                //     let msg = 'Clear address failed.\nStatus: ' + jqXHR.status + ' ' + jqXHR.statusText;
-                //     if (jqXHR.responseText === '0' || jqXHR.responseText.includes('-1')) {
-                //         msg += '\n(Nonce/security check failed – try refreshing the page)';
-                //     }
-                //     alert(msg + '\nCheck browser console (F12 → Console) for full details.');
-                // }
                 error: function() {
                     alert('Ajax error. Please refresh the page.');
                 }
@@ -977,7 +1044,16 @@ function custom_price_input_fields_prefill() {
         });
     });
     </script>
-<?php endif; ?>
+    <?php endif; ?>
+    <script>
+        // force the selecet menu in the DOM to use the selected country instead of United Kingdowm
+        jQuery(function($){
+            var savedCountry = $('#saved_country').val();
+            if(savedCountry){
+                $('#input_country').val(savedCountry);
+            }
+        });
+    </script>
 <?php
 }
 // 2. HTML FORM WITH SPINNER
@@ -1087,7 +1163,6 @@ function calculate_secure_price() {
     if ($shape_type === 'rolls' && $is_backorder) {
         $is_full_backorder_rolls = true;
         $discount_rate = 0.05;   // Blanket 5% discount for Rolls full backorder
-        error_log("Rolls FULL backorder triggered - forcing 5% discount on entire order. Qty: $qty, Stock: $stock_quantity");
     }
     // === ROLLS FULL BACKORDER LOGIC (NEW) ===
 
@@ -1324,9 +1399,11 @@ function group_shipping_by_date($cart) {
     $shipping_by_date = [];
 
     foreach ($cart->get_cart() as $cart_item) {
+
         if (isset($cart_item['custom_inputs']['total_del_weight'], $cart_item['custom_inputs']['shipping_address']['country'])) {
             $total_del_weight = floatval($cart_item['custom_inputs']['total_del_weight']);
             $country = $cart_item['custom_inputs']['shipping_address']['country'];
+
 
             if (isset($cart_item['custom_inputs']['scheduled_shipments'])) {
                 // Scheduled delivery case
@@ -1341,6 +1418,7 @@ function group_shipping_by_date($cart) {
                     if (isset($shipping_by_date[$date])) {
                         $shipping_by_date[$date]['quantity'] += 1;
                         $shipping_by_date[$date]['total_del_weight'] += $portion_weight;
+                        $shipping_by_date[$date]['country'] = $country;
                     } else {
                         $shipping_by_date[$date] = [
                             'quantity' => 1,
@@ -1372,6 +1450,7 @@ function group_shipping_by_date($cart) {
                             if (isset($shipping_by_date[$date])) {
                                 $shipping_by_date[$date]['quantity'] += 1; // Count as separate shipment portion
                                 $shipping_by_date[$date]['total_del_weight'] += $portion_weight;
+                                $shipping_by_date[$date]['country'] = $country;
                             } else {
                                 $shipping_by_date[$date] = [
                                     'quantity' => 1,
@@ -1387,6 +1466,7 @@ function group_shipping_by_date($cart) {
                     if (isset($shipping_by_date[$date])) {
                         $shipping_by_date[$date]['quantity'] += 1;
                         $shipping_by_date[$date]['total_del_weight'] += $total_del_weight;
+                        $shipping_by_date[$date]['country'] = $country;
                     } else {
                         $shipping_by_date[$date] = [
                             'quantity' => 1,
@@ -1401,7 +1481,6 @@ function group_shipping_by_date($cart) {
 
     // Calculate final shipping costs after all aggregations
     foreach ($shipping_by_date as $date => &$data) {
-        error_log("Final Total Del Weight" . $data['total_del_weight']);
         $data['final_shipping'] = calculate_shipping_cost($data['total_del_weight'], $data['country']);
     }
 
@@ -1419,7 +1498,7 @@ function group_shipping_by_date($cart) {
 function calculate_shipping_cost($total_del_weight, $country) {
     // Define cost tiers for each country or group of countries
     $cost_tiers = [
-        'United Kingdom' => [ // (Done)
+        'United Kingdom' => [ 
             [0, 10, 13.29],
             [10, 15, 18.76],
             [15, 20, 24.23],
@@ -1456,7 +1535,7 @@ function calculate_shipping_cost($total_del_weight, $country) {
             [290, 299, 331.13],
             [299, PHP_INT_MAX, 341.13],
         ],
-        'Europe_1' => [ // Shared tiers for France, Germany, Monaco (Done)
+        'Europe_1' => [ // Shared tiers for France, Germany, Monaco etc
             [0, 0.5, 38.01],
             [0.5, 1, 39.83],
             [1, 1.5, 41.66],
@@ -1512,7 +1591,7 @@ function calculate_shipping_cost($total_del_weight, $country) {
             [290, 299, 1248.63],
             [299, PHP_INT_MAX, 1288.74],
         ],
-        'Europe_2' => [ // Shared tiers for Spain, Sweden, Vatican City (Done)
+        'Europe_2' => [ // Shared tiers for Spain, Sweden, Vatican City etc
             [0, 0.5,  43.34],
             [0.5, 1, 47.38],
             [1, 1.5, 51.41],
@@ -1568,7 +1647,7 @@ function calculate_shipping_cost($total_del_weight, $country) {
             [290, 299, 1522.02],
             [299,  PHP_INT_MAX, 1575.39],
         ],
-        'Europe_3' => [ // Shared tiers for Greenland, Iceland, Isreal (done)
+        'Europe_3' => [ // Shared tiers for Greenland, Iceland, Isreal etc
             [0, 0.5, 45.47],
             [0.5, 1, 49.90],
             [1, 1.5, 54.32],
@@ -1624,7 +1703,7 @@ function calculate_shipping_cost($total_del_weight, $country) {
             [290, 299, 2050.10],
             [299, PHP_INT_MAX, 2120.29],
         ],
-        'America_1' => [ // Shared tiers for USA (Done)
+        'America_1' => [ // Shared tiers for USA etc
             [0, 0.5, 37.97],
             [0.5, 1, 41.79],
             [1, 1.5, 45.64],
@@ -1680,7 +1759,7 @@ function calculate_shipping_cost($total_del_weight, $country) {
             [290, 299, 2365.27],
             [299, PHP_INT_MAX, 2439.60],
         ],
-        'middle_east' => [ // Shared tiers for Middle East (Done)
+        'middle_east' => [ // Shared tiers for Middle East etc
             [0, 0.5, 51.48],
             [0.5, 1, 55.66],
             [1, 1.5, 59.85],
@@ -1736,7 +1815,7 @@ function calculate_shipping_cost($total_del_weight, $country) {
             [290, 299, 2873.32],
             [299, PHP_INT_MAX, 2963.50],
         ],
-        'australasia' => [ // Shared tiers for Australasia (Done)
+        'australasia' => [ // Shared tiers for Australasia etc
             [0, 0.5, 56.15],
             [0.5, 1, 58.93],
             [1, 1.5, 61.71],
@@ -1792,7 +1871,7 @@ function calculate_shipping_cost($total_del_weight, $country) {
             [290, 299, 3153.15],
             [299, PHP_INT_MAX, 3203.34],
         ],
-        'asia' => [ // Shared tiers for Australasia (Done)
+        'asia' => [ // Shared tiers for Australasia etc
             [0, 0.5, 62.88],
             [0.5, 1, 67.39],
             [1, 1.5, 72.89],
@@ -1958,6 +2037,7 @@ function add_custom_price_cart_item_data_secure($cart_item_data, $product_id) {
 
     $cart_item_data['custom_inputs'] = [];
 
+    /* Begin collection of $_POST values for custom shipping address */
     if (
         isset($_POST['custom_street_address']) &&
         isset($_POST['custom_city']) &&
@@ -1967,9 +2047,7 @@ function add_custom_price_cart_item_data_secure($cart_item_data, $product_id) {
     ) {
         $raw_country = sanitize_text_field($_POST['custom_country']);
         $country = is_valid_country($raw_country) ? $raw_country : 'United Kingdom';
-        if ($country !== $raw_country && defined('WP_DEBUG') && WP_DEBUG) {
-            error_log("Invalid country submitted: " . $raw_country . " | Fallback applied: United Kingdom");
-        }
+
         $cart_item_data['custom_inputs']['shipping_address'] = [
             'street_address' => sanitize_text_field($_POST['custom_street_address']),
             'address_line2' => sanitize_text_field($_POST['custom_address_line2']),
@@ -1978,8 +2056,26 @@ function add_custom_price_cart_item_data_secure($cart_item_data, $product_id) {
             'zip_postal' => sanitize_text_field($_POST['custom_zip_postal']),
             'country' => $country,
         ];
+        /* We store the shipping address as a WP session for use in the add_custom_shipping_to_order() function */
+        /* Later in the add_custom_shipping_to_order() function the session value is then saved as order meta */
         WC()->session->set('custom_shipping_address', $cart_item_data['custom_inputs']['shipping_address']);
+
+        // Update all existing cart items to use the latest address
+        if (WC()->cart && !WC()->cart->is_empty()) {
+
+            $new_address = $cart_item_data['custom_inputs']['shipping_address'];
+
+            foreach (WC()->cart->get_cart() as $cart_item_key => $cart_item) {
+
+                WC()->cart->cart_contents[$cart_item_key]['custom_inputs']['shipping_address']
+                    = $new_address;
+            }
+
+            WC()->cart->set_session();
+
+        }
     }
+    /* End collection of $_POST values for custom shipping address */
 
     // Add file paths to cart data
     if (isset($_POST['pdf_path']) && !empty($_POST['pdf_path'])) {
@@ -2007,9 +2103,6 @@ function add_custom_price_cart_item_data_secure($cart_item_data, $product_id) {
     if ($is_product_single) {
         $product_weight = $product->get_weight();
         if (!is_numeric($product_weight) || $product_weight <= 0) {
-            if (defined('WP_DEBUG') && WP_DEBUG) {
-                error_log("add_custom_price_cart_item_data_secure: Invalid weight for single product ID {$product_id}");
-            }
             $total_del_weight = 0;
         } else {
             $total_del_weight = floatval($product_weight);
@@ -2058,7 +2151,6 @@ function add_custom_price_cart_item_data_secure($cart_item_data, $product_id) {
 
     $quantity = intval($_POST['custom_qty']);
     $product_weight = $product->get_weight();
-    error_log("Product Weight" . $product_weight);
 
     $discount_rate = isset($_POST['custom_discount_rate']) ? floatval($_POST['custom_discount_rate']) : 0;
 
@@ -2125,7 +2217,6 @@ function add_custom_price_cart_item_data_secure($cart_item_data, $product_id) {
     $final_shipping = calculate_shipping_cost($total_del_weight, $country);
 
     $sheets_required = $sheet_result['sheets_required'];
-    error_log("sheets_required: " . $sheets_required);
     $is_backorder_raw = $sheets_required > $stock_quantity;
 
     // Force clear scheduled session if no credit (prevent UI/session artifacts for non-credit users)
@@ -2141,6 +2232,7 @@ function add_custom_price_cart_item_data_secure($cart_item_data, $product_id) {
     }
 
     $shipments_session = WC()->session->get('custom_shipments', []);
+    $shipments_count = count($shipments_session);
     $is_scheduled = $allow_credit && !empty($shipments_session) && array_sum(array_column($shipments_session, 'parts')) == $quantity;
 
     $despatch_string = ''; // thurdsay retrieve discount rate
@@ -2203,7 +2295,7 @@ function add_custom_price_cart_item_data_secure($cart_item_data, $product_id) {
             //$formatted_line = number_format($s['parts']) . " parts to be despatched on {$despatch_date} {$lead_time_label}";
             $despatch_notes .= $formatted_line . "\n";
             $despatch_string .= $formatted_line_discount; // thurdsay retrieve discount rate
-            $ah_despatch_date .= $formatted_line_date;
+            //$ah_despatch_date .= $formatted_line_date;
             $enhanced_shipments[] = [
                 'date'            => $despatch_date,
                 'parts'           => $s['parts'],
@@ -2280,7 +2372,7 @@ function add_custom_price_cart_item_data_secure($cart_item_data, $product_id) {
                 error_log("add_custom_price_cart_item_data_secure: Scheduled price mismatch for product ID $product_id. Client price per sheet: $client_price, Server price per sheet: $server_price_per_sheet, Total price: $server_total_price, Shape Type: $shape_type");
             }
         }
-
+        $cart_item_data['custom_inputs']['shipments_count'] = $shipments_count;
         $cart_item_data['custom_inputs']['price'] = $server_price_per_sheet;
         $cart_item_data['custom_inputs']['total_price'] = $server_total_price;
 
@@ -2299,14 +2391,9 @@ function add_custom_price_cart_item_data_secure($cart_item_data, $product_id) {
 
 
         $is_full_backorder_rolls = isset($_POST['is_full_backorder_rolls']) && ($_POST['is_full_backorder_rolls'] === '1' || $_POST['is_full_backorder_rolls'] === true || $_POST['is_full_backorder_rolls'] === 'true');
-        error_log("is_full_backorder_rolls from POST: " . var_export($is_full_backorder_rolls, true));
-        
-        error_log("Results:");
-        error_log("is_full_backorder_rolls: " . $is_full_backorder_rolls);
 
         $server_total_price = 0;
         $despatch_notes = '';
-        //$shipments = '';
         $is_backorder = false;
         $backorder_data = [];
 
@@ -2335,8 +2422,7 @@ function add_custom_price_cart_item_data_secure($cart_item_data, $product_id) {
             $discount_rate = 0.05;
             $server_total_price = calculate_product_price($product_id, $part_width_mm, $part_length_mm, $quantity, $discount_rate, $shape_type);
             $despatch_notes = sprintf('%d parts to be despatched in 35 Days (working days) (5%% Discount)', $quantity);
-            //$shipments = date('d/m/Y', strtotime('+35 days'));
-            $shipments = "21/04/2026";
+            $shipments = date('d/m/Y', strtotime('+35 days'));
             $is_backorder = true;
 
 
@@ -2419,7 +2505,6 @@ function add_custom_price_cart_item_data_secure($cart_item_data, $product_id) {
             $cart_item_data['custom_inputs']['price'] = $server_total_price;
             $cart_item_data['custom_inputs']['total_price'] = $server_total_price;
             $cart_item_data['custom_inputs']['is_full_backorder_rolls'] = true;
-            error_log("Rolls FULL backorder - final cart price set to TOTAL: " . $server_total_price);
         }
         else {
             $server_price_per_sheet = $sheets_required > 0 ? $server_total_price / $sheets_required : $server_total_price;
@@ -2511,8 +2596,6 @@ function add_custom_price_cart_item_data_secure($cart_item_data, $product_id) {
     $cart_item_data['custom_inputs']['despatch_date'] = $aggregated;
 
     // Collect the dates from scheduled orders v2
-
-
 
     $cart_item_data['custom_inputs'] = array_merge($cart_item_data['custom_inputs'], [
         'width' => floatval($_POST['custom_width']),
@@ -2621,42 +2704,46 @@ function init_custom_shipping_method() {
 
                 // BEGIN OVERSIZE SURCHARGE LOGIC 
                 $oversize_surcharge = 0;
-                error_log("Total Shipping(1): " . $total_shipping);
+
                 foreach ($cart->get_cart() as $cart_item) {
                     $product_id = $cart_item['product_id'];
-
+                    
                     // Check ACF field - if checked, skip surcharge for this product
                     $disable_oversize_surcharge = get_field('disable_oversize_surcharge', $product_id);
+                    if ($disable_oversize_surcharge) {
+                        continue;
+                    }
 
-                    if (!$disable_oversize_surcharge) {
-                        $product = wc_get_product($product_id);
-                        if ($product) {
-                            error_log("Oversize Triggered:");
-                            //$width = floatval($product->get_width() * 10);   // Shipping Width from backend
-                            //$length = floatval($product->get_length() * 10); // Shipping Length from backend
-                            $width = $cart_item['custom_inputs']['width'];
-                            $length = $cart_item['custom_inputs']['length'];
-                            error_log("Width: " . $width);
-                            error_log("Length: " . $length);
-                            if ($width >= 1000 || $length >= 1000) {
-                                error_log("Oversize Surcharge Triggered");
-                                $oversize_surcharge = 30;
-                                error_log("Oversize Surcharge: " . $oversize_surcharge);
-                                break; // Only once per order
-                            }
-                        }
+                    // Get dimensions - support both normal carts and restored carts
+                    $width = 0;
+                    $length = 0;
+
+                    if (!empty($cart_item['custom_inputs'])) {
+                        // Normal cart
+                        $width  = floatval($cart_item['custom_inputs']['width'] ?? 0);
+                        $length = floatval($cart_item['custom_inputs']['length'] ?? 0);
+                        $final_shipment_count = !empty($cart_item['custom_inputs']['shipments_count']) ? (int)$cart_item['custom_inputs']['shipments_count'] : 1;
+                    } elseif (!empty($cart_item['cart_metadata'])) {
+                        // Restored cart
+                        $width  = floatval($cart_item['cart_metadata']['Width'] ?? $cart_item['cart_metadata']['Width (MM)'] ?? 0);
+                        $length = floatval($cart_item['cart_metadata']['Length'] ?? $cart_item['cart_metadata']['Length (MM)'] ?? 0);
+                        $final_shipment_count = floatval($cart_item['cart_metadata']['shipments_count'] ?? $cart_item['cart_metadata']['shipments_count'] ?? 1);
+                    }
+
+                    if ($width >= 1000 || $length >= 1000) {
+                        $oversize_surcharge += 30 * $final_shipment_count;
+                        error_log("Oversize Surcharge: " . $oversize_surcharge);
                     }
                 }
                 // END OVERSIZE SURCHARGE LOGIC 
 
                 // Add the surcharge to the total
                 if ($oversize_surcharge > 0) {
-                    error_log("Total Shipping(2): " . $total_shipping);
                     $total_shipping += $oversize_surcharge;
+                    error_log("Added oversize surcharge: £{$oversize_surcharge} | New total: £{$total_shipping}");
                 }
                 // END NEW: OVERSIZE SURCHARGE LOGIC 
 
-                error_log("Total Shipping(3): " . $total_shipping);
 
                 // === ADD THE RATE ===
                 if ($total_shipping > 0) {
@@ -2668,7 +2755,6 @@ function init_custom_shipping_method() {
                         'calc_tax' => 'per_order',
                         'package'  => $package,
                     ]);
-                    error_log("Custom shipping method added FINAL rate: £{$total_shipping}");
                 }
             }
 
@@ -2712,11 +2798,9 @@ function display_shipments_section_cart() {
     // For restored carts: use captured data
     if ($has_restored && !empty($restored_shipments)) {
         $shipping_by_date = $restored_shipments;
-        error_log('display_shipments_section_cart: Using restored/captured shipments for restored cart');
     } else {
         // Normal cart: calculate live
         $shipping_by_date = group_shipping_by_date($cart);
-        error_log('display_shipments_section_cart: Using live group_shipping_by_date for normal cart');
     }
 
     if (empty($shipping_by_date)) {
@@ -2754,26 +2838,8 @@ function display_shipments_section_cart() {
 // NEW - DISPLAY SHIPMENTS SECTION ABOVE CART TOTALS
 
 
-// DISPLAY SHIPPING ADDRESS ON CHECKOUT PAGE
-add_action('woocommerce_review_order_before_payment', 'display_shipping_address_on_checkout');
-function display_shipping_address_on_checkout() {
 
-    $shipping_address = WC()->session->get('custom_shipping_address');
-    if ($shipping_address) {
-        echo '<div class="custom-shipping-address">';
-        echo '<h3>Shipping Details</h3>';
-        echo '<p><strong>Shipping Address: </strong>';
-        echo '' . esc_html($shipping_address['street_address']) . ', ';
-        if (!empty($shipping_address['address_line2'])) {
-            echo '' . esc_html($shipping_address['address_line2']) . ', ';
-        }
-        echo '' . esc_html($shipping_address['city']) . ', ' . esc_html($shipping_address['county_state']) . ', ' . esc_html($shipping_address['zip_postal']) . ', ';
-        echo '' . esc_html($shipping_address['country']) . '';
-        echo '</p>';
-        echo '</div>';
-    }
-}
-// DISPLAY SHIPPING ADDRESS ON CHECKOUT PAGE
+
 
 
 // DISPLAY SHIPMENTS SECTION ABOVE CHECKOUT TOTALS
@@ -2804,9 +2870,10 @@ function display_shipments_section_checkout() {
 
 
 // ENSURE SHIPPING RATE IS ADDED TO ORDER
-
+ /* This function saves the custom shipping address session value as order meta ensuring that the session value is always only temporary */
 add_action('woocommerce_checkout_create_order', 'add_custom_shipping_to_order', 20, 2);
 function add_custom_shipping_to_order($order, $data) {
+
     $cart = WC()->cart;
     $shipping_by_date = group_shipping_by_date($cart);
 
@@ -2825,29 +2892,35 @@ function add_custom_shipping_to_order($order, $data) {
 
     }
 
-    if ($total_shipping > 0) {
-        // Create a new shipping item
-        $shipping_item = new WC_Order_Item_Shipping();
-        $shipping_item->set_method_id('custom_shipping_method');
-        $shipping_item->set_method_title('Shipping Total');
-        $shipping_item->set_total($total_shipping);
-
-        // Add meta safely now
-        foreach ($shipping_meta as $date => $amount) {
-            error_log("Amount triggered");
-            error_log($amount);
-            $shipping_item->add_meta_data(
-                'ah_shipping_cost',
-                wc_format_decimal($amount),
-                false
-            );
-        }
-
-        // Add the shipping item to the order
-        $order->add_item($shipping_item);
-    }
     // Update shipping address from session
-    $shipping_address = WC()->session->get('custom_shipping_address');
+
+    /* We now get the $cart_item shipping address values from the cart object (instead of using sessions) - This is more robust */
+    /* We then store the $cart_item['custom_inputs']['shipping_address'] value as $shipping_address  */
+    /* We then resave the $cart_item['custom_inputs']['shipping_address'] value into the WC()->session */
+    /* The WC()->session shipping address value is then sent to the cart as the 'custom shipping address' value */
+    /* This solution ensures that if ever the WC()->session shipping address value is empty the shipping address will still remain */
+    $shipping_address = null;
+
+    if (WC()->cart) {
+        foreach (WC()->cart->get_cart() as $cart_item) {
+            if (!empty($cart_item['custom_inputs']['shipping_address']) && is_array($cart_item['custom_inputs']['shipping_address'])) {
+                $shipping_address = $cart_item['custom_inputs']['shipping_address'];
+                // If ever the session is empty we restore the session again here
+                WC()->session->set(
+                    'custom_shipping_address',
+                    $shipping_address
+                );
+                break;
+            }
+        }
+    }
+
+    // Fallback to session
+    if (empty($shipping_address) && WC()->session) {
+        $shipping_address = WC()->session->get('custom_shipping_address');
+    }
+
+
     if ($shipping_address && is_array($shipping_address)) {
         $order->set_shipping_first_name(isset($data['billing_first_name']) ? $data['billing_first_name'] : '');
         $order->set_shipping_last_name(isset($data['billing_last_name']) ? $data['billing_last_name'] : '');
@@ -3042,16 +3115,6 @@ function show_custom_input_details_in_cart($item_data, $cart_item) {
         }
 
 
-        // Dynamically Display Radius Value
-        // if ($cart_item['custom_inputs']['shape_type'] == "circle-radius") {
-        
-        // $width_value = $cart_item['custom_inputs']['width'] / 2;
-        //     $item_data[] = [
-        //         'name' => 'Radius (MM)',
-        //         'value' => $width_value
-        //     ];
-
-        // }
 
         // Width
         if (isset($cart_item['custom_inputs']['width'])) {
@@ -3282,154 +3345,18 @@ function apply_secure_custom_price($cart) {
 
 
 
+// SAVE SESSION 'custom_shipping_address' AS POST META  
+add_action('woocommerce_checkout_create_order', 'save_custom_address_to_order', 10, 2);
 
-
-
-
-// DISPLAY SHIPPING ADDRESS ON THANKYOU PAGE
-add_action('woocommerce_thankyou', 'display_shipping_address_on_thankyou', 10, 1);
-function display_shipping_address_on_thankyou($order_id) {
-
-    $order = wc_get_order($order_id);
-    $shipping_address = false;
-    $despatch_notes = false;
-
-    foreach ($order->get_items() as $item_id => $item) {
-        $custom_shipping_address = $item->get_meta('custom_shipping_address');
-        $item_despatch_notes = $item->get_meta('despatch_notes');
-        if ($custom_shipping_address && is_array($custom_shipping_address)) {
-            $shipping_address = $custom_shipping_address;
-        }
-        if ($item_despatch_notes) {
-            $despatch_notes = $item_despatch_notes;
-        }
-        // Break after the first item with data to avoid duplicates
-        if ($shipping_address || $despatch_notes) {
-            break;
+function save_custom_address_to_order($order, $data) {
+    if (isset(WC()->session) && WC()->session) {
+        $address = WC()->session->get('custom_shipping_address');
+        if ($address) {
+            $order->update_meta_data('_custom_shipping_address', $address);
         }
     }
 }
-// DISPLAY SHIPPING ADDRESS ON THANKYOU PAGE
-
-
-
-
-// SAVE SHIPPING ADDRESS TO ORDER META AND DISPLAY IN EMAILS
-/*
-add_action('woocommerce_checkout_create_order_line_item', 'save_shipping_address_to_order_item', 10, 4);
-function save_shipping_address_to_order_item($item, $cart_item_key, $values, $order) {
-    if (isset($values['custom_inputs']['shipping_address'])) {
-        $shipping_address = $values['custom_inputs']['shipping_address'];
-        $item->add_meta_data('custom_shipping_address', $shipping_address, true);
-    }
-}
-    */
-// SAVE SHIPPING ADDRESS TO ORDER META AND DISPLAY IN EMAILS
-
-
-
-
-// DISPLAY SHIPPING ADDRESS/NOTES IN ORDER EMAILS
-/*
-add_action('woocommerce_email_customer_details', 'add_custom_shipping_address_below_billing', 25, 4);
-function add_custom_shipping_address_below_billing($order, $sent_to_admin, $plain_text, $email) {
-    // Loop through order items to find the first shipping address
-    $shipping_address = null;
-    $despatch_notes = null;
-
-    foreach ($order->get_items() as $item_id => $item) {
-        $meta_address = $item->get_meta('custom_shipping_address');
-        $meta_despatch_notes = $item->get_meta('despatch_notes');
-        if (!empty($meta_address['street_address'])) {
-            $shipping_address = $meta_address;
-        }
-        if ($meta_despatch_notes) {
-            $despatch_notes = $meta_despatch_notes;
-        }
-        if ($shipping_address || $despatch_notes) {
-            break; // Only show first item with data
-        }
-    }
-
-    if (!$shipping_address && !$despatch_notes) return;
-
-    if ($plain_text) {
-        echo "\nShipping Address:\n";
-        echo $shipping_address['street_address'] . "\n";
-        if (!empty($shipping_address['address_line2'])) {
-            echo $shipping_address['address_line2'] . "\n";
-        }
-        echo $shipping_address['city'] . ', ' . $shipping_address['county_state'] . ', ' . $shipping_address['zip_postal'] . "\n";
-        echo $shipping_address['country'] . "\n";
-    } else {
-
-echo '<div class="custom-order-details" style="margin-top:10px;">';
-        if ($despatch_notes) {
-            echo '<h3>Despatch Notes?</h3>';
-            echo '<p>' . esc_html($despatch_notes) . '</p>';
-        }
-        if ($shipping_address) {
-            echo '<h3>Shipping Address?</h3>';
-            echo esc_html($shipping_address['street_address']) . '<br>';
-            if (!empty($shipping_address['address_line2'])) {
-                echo esc_html($shipping_address['address_line2']) . '<br>';
-            }
-            echo esc_html($shipping_address['city']) . ', ' . esc_html($shipping_address['county_state']) . ', ' . esc_html($shipping_address['zip_postal']) . '<br>';
-            echo esc_html($shipping_address['country']) . '<br>';
-        }
-        echo '</div>';
-
-    }
-}
-*/
-// DISPLAY SHIPPING ADDRESS/NOTES IN ORDER EMAILS
-
-
-
-
-// DISPLAY GLOBAL SHIPPING ADDRESS BELOW CART TABLES
-add_action('woocommerce_before_cart_totals', 'display_global_shipping_address_cart', 1, 2);
-function display_global_shipping_address_cart() {
-    $shipping_address = WC()->session->get('custom_shipping_address');
-    if (!$shipping_address) return;
-
-    echo '<div class="global-shipping-address" style="margin-top:20px;">';
-    echo '<h3 class="global-shipping-address-title">Shipping Details</h3>';
-    echo '<p><strong>Shipping Address: </strong><p class="global-shipping-address-list">';
-    echo esc_html($shipping_address['street_address']) . '<br>';
-    if (!empty($shipping_address['address_line2'])) {
-        echo esc_html($shipping_address['address_line2']) . '<br>';
-    }
-    echo esc_html($shipping_address['city']) . '<br>' . esc_html($shipping_address['county_state']) . '<br>' . esc_html($shipping_address['zip_postal']) . '<br>';
-    echo esc_html($shipping_address['country']) . '';
-    echo '</p></p>';
-    echo '</div>';
-}
-// DISPLAY GLOBAL SHIPPING ADDRESS BELOW CART TABLES
-
-
-
-
-// SAVE THE WP SESSION SHIPPING ADDRESS TO THE ORDERS PAGE
-add_action('woocommerce_checkout_create_order', 'update_order_shipping_fields', 20, 2);
-function update_order_shipping_fields($order, $data) {
-    // Try to get shipping address from session
-    $shipping_address = WC()->session->get('custom_shipping_address');
-
-    if ($shipping_address && is_array($shipping_address)) {
-        // Map your custom fields to WooCommerce shipping fields
-        $order->set_shipping_first_name(isset($data['billing_first_name']) ? $data['billing_first_name'] : '');
-        $order->set_shipping_last_name(isset($data['billing_last_name']) ? $data['billing_last_name'] : '');
-        $order->set_shipping_company(isset($data['billing_company']) ? $data['billing_company'] : '');
-        $order->set_shipping_address_1($shipping_address['street_address']);
-        $order->set_shipping_address_2(!empty($shipping_address['address_line2']) ? $shipping_address['address_line2'] : '');
-        $order->set_shipping_city($shipping_address['city']);
-        $order->set_shipping_state($shipping_address['county_state']);
-        $order->set_shipping_postcode($shipping_address['zip_postal']);
-        $order->set_shipping_country($shipping_address['country']);
-    }
-}
-// SAVE THE WP SESSION SHIPPING ADDRESS TO THE ORDERS PAGE
+// SAVE SESSION 'custom_shipping_address' AS POST META  
 
 
 
@@ -3547,8 +3474,6 @@ function display_custom_inputs_on_product_page() {
         return; // dimensions missing → do nothing
     }
 
-    //$sheet_length_mm = $product->get_length() * 10; // cm → mm
-    //$sheet_width_mm = $product->get_width() * 10;   // cm → mm
     $sheet_length_mm = (float) $length * 10;
     $sheet_width_mm  = (float) $width  * 10;
 

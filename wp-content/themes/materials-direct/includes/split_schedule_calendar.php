@@ -48,6 +48,8 @@ function _calendar(){
           $width = esc_js($row['width']);
           $length = esc_js($row['length']);
           $radius = esc_js($row['radius']);
+          $rolls_value  = esc_js($row['rolls_value']);
+          $rolls_length = esc_js($row['rolls_length']);
           $dimension_type = esc_js($row['dimension_type']);
           $qty = esc_js($row['qty']);
           $status = esc_js($row['status']);
@@ -58,7 +60,7 @@ function _calendar(){
 
           $my_title = "#" . $order_no . "-" . $title;
 
-            $jsonEvents .= "{id: '$id', title: '$my_title', start: '$date', extendedProps: {custom: '$order_no', custom_title: '$title', part_shape: '$part_shape', part_shape_link: '$part_shape_link', dxf_part_shape_link: '$dxf_part_shape_link', width: '$width', length: '$length', radius: '$radius', dimension_type: '$dimension_type', qty: '$qty', status: '$status', schedule: '$schedule', schedule_qty: '$schedule_qty', pdf: '$pdf', dxf: '$dxf', firstname: '$firstname', lastname: '$lastname', company: '$company', date: '$date' }},";
+            $jsonEvents .= "{id: '$id', title: '$my_title', start: '$date', extendedProps: {custom: '$order_no', custom_title: '$title', part_shape: '$part_shape', part_shape_link: '$part_shape_link', dxf_part_shape_link: '$dxf_part_shape_link', width: '$width', length: '$length', radius: '$radius', rolls_value: '$rolls_value', rolls_length: '$rolls_length', dimension_type: '$dimension_type', qty: '$qty', status: '$status', schedule: '$schedule', schedule_qty: '$schedule_qty', pdf: '$pdf', dxf: '$dxf', firstname: '$firstname', lastname: '$lastname', company: '$company', date: '$date' }},";
     
         }
 
@@ -192,30 +194,84 @@ function _calendar(){
               // const linkNotes = document.getElementById('linkNotes');
               // linkNotes.textContent = info.event.extendedProps.notes;
 
+              const partShapeValue = info.event.extendedProps.part_shape;
+
               const partShape = document.getElementById('partShape');
-              partShape.textContent = info.event.extendedProps.part_shape;
+              partShape.textContent = partShapeValue;
 
               const dxfShapeLink = document.getElementById('dxfShapeLink');
               dxfShapeLink.innerHTML = info.event.extendedProps.dxf;
               dxfShapeLink.href = info.event.extendedProps.dxf_part_shape_link;
 
+              const dxfUploadRow = document.getElementById('dxfUploadRow');
+
+              if (
+                  info.event.extendedProps.dxf === '' ||
+                  info.event.extendedProps.dxf === null
+              ) {
+                  dxfUploadRow.style.display = 'none';
+              } else {
+                  dxfUploadRow.style.display = 'block';
+              }
+
+
+
               const partShapeLink = document.getElementById('partShapeLink');
               partShapeLink.innerHTML = info.event.extendedProps.pdf;
               partShapeLink.href = info.event.extendedProps.part_shape_link;
 
-              const modalPartsHeading = document.querySelector('.modal__parts-heading');
+              const pdfUploadRow = document.getElementById('pdfUploadRow');
 
-              if (info.event.extendedProps.pdf === '') {
-                  modalPartsHeading.style.display = 'none';
+              if (
+                  info.event.extendedProps.pdf === '' ||
+                  info.event.extendedProps.pdf === null
+              ) {
+                  pdfUploadRow.style.display = 'none';
               } else {
-                  modalPartsHeading.style.display = 'inline';
+                  pdfUploadRow.style.display = 'block';
               }
+
+              const partRollLength = document.getElementById('partRollLength');
+              partRollLength.textContent = info.event.extendedProps.rolls_length;
 
               const partWidth = document.getElementById('partWidth');
               partWidth.innerHTML = info.event.extendedProps.width;
 
               const partLength = document.getElementById('partLength');
               partLength.innerHTML = info.event.extendedProps.length;
+
+
+              const lengthRow = document.getElementById('lengthRow');
+              const rollLengthRow = document.getElementById('rollLengthRow');
+
+              if (partShapeValue === 'rolls') {
+
+                  lengthRow.style.display = 'none';
+                  rollLengthRow.style.display = 'block';
+
+              } else {
+
+                  lengthRow.style.display = 'block';
+                  rollLengthRow.style.display = 'none';
+
+              }
+
+
+              const radiusRow = document.getElementById('radiusRow');
+
+              if (
+                  partShapeValue &&
+                  partShapeValue.toLowerCase() === 'circle-radius'
+              ) {
+
+                  radiusRow.style.display = 'block';
+
+              } else {
+
+                  radiusRow.style.display = 'none';
+
+              }
+
 
               const partRadius = document.getElementById('partRadius');
               partRadius.innerHTML = info.event.extendedProps.radius;
@@ -245,8 +301,8 @@ function _calendar(){
               const formattedDate = formatDate(originalDate);
               //console.log(formattedDate); 
 
-              const schedule_date = document.getElementById('schedule_date');
-              schedule_date.textContent = formattedDate; 
+              // const schedule_date = document.getElementById('schedule_date');
+              // schedule_date.textContent = formattedDate; 
 
               const schedule_date_2 = document.getElementById('schedule_date_2');
               schedule_date_2.textContent = formattedDate; 
@@ -339,17 +395,30 @@ function _calendar(){
                   </div>
           
                   <p class=""><strong>Part Shape:</strong> <span id="partShape">Part Shape</span></p>
-                  <p class=""><strong class="modal__parts-heading">PDF Upload:</strong> <a target="_blank" id="partShapeLink">PDF Shape Link</a></p>
-                  <p class=""><strong class="modal__parts-heading">DXF Upload:</strong> <a target="_blank" id="dxfShapeLink">DXF Shape Link</a></p>
+                  <p id="pdfUploadRow" class=""><strong class="modal__parts-heading">PDF Upload:</strong> <a target="_blank" id="partShapeLink">PDF Shape Link</a></p>
+                  <p id="dxfUploadRow" class=""><strong class="modal__parts-heading">DXF Upload:</strong> <a target="_blank" id="dxfShapeLink">DXF Shape Link</a></p>
                   <p class=""><span><strong>Width:</strong> <span id="partWidth">Width</span><small class="modal__part-mm">mm</small></span></p>
-                  <p class=""><span><strong>Length:</strong> <span id="partLength">Length</span><small class="modal__part-mm">mm</small></span></p>
-                  <p class=""><span><strong>Radius:</strong> <span id="partRadius">Radius</span><small class="modal__part-mm">mm</small></span></p>
+                  <p id="lengthRow" class=""><span><strong>Length:</strong> <span id="partLength">Length</span><small class="modal__part-mm">mm</small></span></p>
+
+                  <p id="rollLengthRow">
+                      <span>
+                          <strong>Roll Length:</strong>
+                          <span id="partRollLength">Roll Length</span>
+                          <small>metres</small>
+                      </span>
+                  </p>
+
+                  <p id="radiusRow"><span><strong>Radius:</strong> <span id="partRadius">Radius</span><small class="modal__part-mm">mm</small></span></p>
                   <p> <strong>Total number of parts:</strong> <span id="partTotal">Total number of parts</span></p>
                   <br>
                   <p><strong>Scheduled Deliveries (<span id="batchStatus">Batch Status</span>):</strong></p>
+
                   <p><strong>Quantity: </strong><span id="schedule_qty">Part Quantity</span></p>
-                  <p><strong>Depatch Date: </strong><span id="schedule_date_2">[scheduled-date]</span></p>
-                  <p><strong>Delivery Status:</strong> <span id="schedule_qty">Delivery Status</span> parts to be delivered on <span id="schedule_date">[scheduled-date]</span></p>
+
+
+                  <p><strong>Depatch Date: </strong><span id="schedule_date_2">[scheduled-date]</span></p> 
+
+
                   <p><strong>Delivery Status:</strong> <span id="status">Status</span></p>
                   
 

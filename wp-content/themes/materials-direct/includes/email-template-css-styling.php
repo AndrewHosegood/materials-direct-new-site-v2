@@ -78,6 +78,11 @@ function custom_woocommerce_email_table_styles( $css ) {
             border-top: 1px solid #ccc !important;
             border-left: 1px solid #ccc !important;
         }
+        #template_body table.email-order-details tfoot .order-customer-note td {
+            padding-left: 10px;
+            padding-top: 15px;
+            padding-bottom: 15px;
+        }
         #template_body table.email-order-details tfoot .woocommerce-Price-amount {
             font-size: 16px;
         }

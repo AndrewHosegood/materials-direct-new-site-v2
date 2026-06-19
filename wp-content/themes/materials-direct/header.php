@@ -15,6 +15,15 @@
 <head>
 	<meta charset="<?php bloginfo( 'charset' ); ?>">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<meta property="og:title" content="Materials Direct" />
+	<meta property="og:type" content="website" />
+	<meta property="og:url" content="https://staging2.materials-direct.com/" />
+	<meta property="og:image" content="https://staging2.materials-direct.com/wp-content/uploads/2026/06/og-image.jpg" />
+	<meta property="og:description" content="Materials Direct provides custom materials conversion with instant pricing, all manufactured within 24 hours and built to your requirements." />
+	<meta property="og:site_name" content="Materials Direct" />
+	<meta property="og:logo" content="Materials Direct" />
+
 	<link rel="profile" href="https://gmpg.org/xfn/11">
 
 	<?php wp_head(); ?>
@@ -105,15 +114,47 @@
 	</header><!-- #masthead -->
 
 
+	<?php echo do_shortcode('[newsletter-signup]'); ?>
+
+
+	<?php
+	/*
+	if ( is_order_received_page() ) {
+
+		$order_id = absint( get_query_var('order-received') );
+
+		if ( $order_id ) {
+
+			$order = wc_get_order( $order_id );
+
+			if ( $order ) {
+
+				$ah_address = $order->get_meta('_custom_shipping_address');
+				$ah_shipping_locked = $order->get_meta('_shipping_locked');
+
+				echo '<pre class="99999">';
+				print_r($ah_address);
+				echo '</pre>';
+
+				echo '<pre class="66666">';
+				print_r($ah_shipping_locked);
+				echo '</pre>';
+			}
+		}
+	}
+	*/
+	?>
+
+
 
 	<?php 
 	/* temporarily show the session shipping address country value  */
-	/*
-	$shipping_address = WC()->session->get('custom_shipping_address');
-	echo "<pre>";
-	print_r($shipping_address);
-	echo "</pre>";
-	*/
+
+	// $shipping_address = WC()->session->get('custom_shipping_address');
+	// echo "<pre>";
+	// print_r($shipping_address);
+	// echo "</pre>";
+
 	// if ($checkout_country !== 'United Kingdom') {
 	// 	echo "We are United Kingdon";
 	// } else {

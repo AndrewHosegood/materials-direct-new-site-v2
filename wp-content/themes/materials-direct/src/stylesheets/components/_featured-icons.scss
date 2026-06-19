@@ -2,9 +2,11 @@
 @use "../abstracts/variables";
 
 .featured-icons {
-    margin: 2.5rem 0 2.65rem 0;
+    padding: 0.5rem 0 2.65rem 0;
+    margin-bottom: 0;
     @include breakpoints.iphone {
-        margin: 3.8rem 0 3.65rem 0;
+        padding: 1.8rem 0 2rem 0;
+        margin-bottom: 0;
     }
     &__container {
         display: grid;

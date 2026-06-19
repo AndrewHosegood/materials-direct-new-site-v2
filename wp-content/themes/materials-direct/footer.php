@@ -10,7 +10,9 @@
  */
 
 ?>
-
+	<div class="survey-popup">
+		<div class="container"></div>
+	</div>
 	<footer class="footer">
 		<div class="container footer__container">
 			<div class="footer__col">

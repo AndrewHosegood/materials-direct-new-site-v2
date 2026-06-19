@@ -18,7 +18,7 @@ get_header();
 ?>
 
 
-<main id="primary" class="site-main container">
+<main id="primary" class="site-main container aaaaa">
 
     <?php if ( have_posts() ) : ?>
 		<section class="news">

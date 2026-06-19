@@ -55,6 +55,7 @@
 @use "components/voucher-discount";
 @use "components/cart-expiry-countdown";
 @use "components/questionnaire-popup";
+@use "components/newsletter-signup";
 
 @use "layout/footer";
 @use "layout/header";
@@ -73,6 +74,8 @@
 @use "pages/news";
 @use "pages/company";
 @use "pages/search";
+@use "pages/category";
+@use "pages/credit-account-application";
 
 
 @use "shame/shame";

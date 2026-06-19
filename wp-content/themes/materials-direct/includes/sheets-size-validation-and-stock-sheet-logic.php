@@ -75,6 +75,8 @@ function combined_custom_jquery_for_dimensions_and_stock_sheets() {
                 $lengthInput.val(stocksheetLengthB).prop('readonly', true).trigger('change');
                 $widthInput.addClass("disabled");
                 $lengthInput.addClass("disabled");
+                $('#fair_label').hide();
+                 $('#fair_label_credit_account').hide();
                 $button.prop('disabled', false); // Force enable button
                 removeMessage(); // No validation needed
             } 
@@ -85,6 +87,8 @@ function combined_custom_jquery_for_dimensions_and_stock_sheets() {
                 $lengthInput.val(stocksheetLengthB).prop('readonly', true).trigger('change');
                 $widthInput.addClass("disabled");
                 $lengthInput.addClass("disabled");
+                $('#fair_label').hide();
+                 $('#fair_label_credit_account').hide();
                 $button.prop('disabled', false); // Force enable button
                 removeMessage(); // No validation needed
             }
@@ -160,6 +164,13 @@ function combined_custom_jquery_for_dimensions_and_stock_sheets() {
                 validateInputs();
             }
         );
+
+
+        // Fix browser back-button cache issue
+        window.addEventListener('pageshow', function() {
+            setTimeout(handleTabChange, 100);
+        });
+
     });
     </script>
     <?php

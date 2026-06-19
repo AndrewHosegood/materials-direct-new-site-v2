@@ -20,6 +20,21 @@ function add_modal_to_product_page_footer() {
             $backorders   = $product->get_backorders(); // 'no', 'notify', or 'yes'
             $stock_status = $product->get_stock_status();
 
+            $no_cofc_ss = function_exists('get_field') ? get_field('no_cofc', $product->get_id()) : '';
+            $is_cofc_disabled_ss = ($no_cofc_ss === 'yes');
+            $cofc_disabled_attr_ss = $is_cofc_disabled_ss ? 'disabled="disabled"' : '';
+            $cofc_wrapper_class_ss = $is_cofc_disabled_ss ? 'cofc-disabled' : '';
+
+            $no_fair_ss = function_exists('get_field') ? get_field('no_fair', $product->get_id()) : '';
+            $is_fair_disabled_ss = ($no_fair_ss === 'yes');
+            $fair_disabled_attr_ss = $is_fair_disabled_ss ? 'disabled="disabled"' : '';
+            $fair_wrapper_class_ss = $is_fair_disabled_ss ? 'fair-disabled' : '';
+
+            $no_mcofc_ss = function_exists('get_field') ? get_field('no_mcofc', $product->get_id()) : '';
+            $is_mcofc_disabled_ss = ($no_mcofc_ss === 'yes');
+            $mcofc_disabled_attr_ss = $is_mcofc_disabled_ss ? 'disabled="disabled"' : '';
+            $mcofc_wrapper_class_ss = $is_mcofc_disabled_ss ? 'mcofc-disabled' : '';
+
         }
         ?>
         <div class="delivery-options-modal__outer" style="display: none;"> 
@@ -29,29 +44,10 @@ function add_modal_to_product_page_footer() {
                     <a class="delivery-options-modal__close-btn" href="#"><i class="fa-solid fa-xmark delivery-options-modal__icon-close"></i></a>
                 </div>
                 <div class="delivery-options-modal__content">
-                    <!-- <p class="delivery-options-modal__info">You have <span id="remaining-parts"><?php //echo esc_html($remaining_parts); ?></span> parts remaining to set delivery date(s) for.</p> -->
-                    <p class="delivery-options-modal__info">You have <span id="remaining-parts" data-total-ordered="0" data-backorder-parts="0">0</span> parts remaining to set delivery date(s) for.</p>
-                                                                     
+                    <p class="delivery-options-modal__info">You have <span id="remaining-parts"><?php echo esc_html($remaining_parts); ?></span> parts remaining to set delivery date(s) for.</p>
+                    
                     <label class="delivery-options-modal__label">Despatch Date</label>
 
-                    <!-- Normal datepicker - for in-stock parts -->
-                    <!-- <input type="text" 
-                        id="delivery_date" 
-                        autocomplete="off" 
-                        class="datepicker delivery-options-modal__form-field" 
-                        name="despatch_date" 
-                        value="" 
-                        placeholder="dd/mm/yyyy"> -->
-
-                    <!-- Backorder datepicker - forced 35+ days -->
-                    <!-- <input type="text" 
-                        id="delivery_date_backorder" 
-                        autocomplete="off" 
-                        class="datepicker delivery-options-modal__form-field" 
-                        name="despatch_date" 
-                        value="" 
-                        placeholder="dd/mm/yyyy" 
-                        style="display:none;"> -->
                     
                     <?php if($stock_status === "onbackorder"){ ?>
                         <input type="text" id="delivery_date_backorder" autocomplete="off" class="datepicker delivery-options-modal__form-field" name="despatch_date" value="" placeholder="dd/mm/yyyy">
@@ -72,25 +68,42 @@ function add_modal_to_product_page_footer() {
 
                         <h4 class="product-page__optional-fees-title">Do you require these addons with your product?</h4>
 
-                        <div class="product-page__checkbox-label">
+                        <div class="product-page__checkbox-label  <?php echo $cofc_wrapper_class_ss; ?>">
                             <p class="product-page__checkbox-title">Add Manufacturers COFC</p>
-                            <input type="checkbox" name="add_manufacturers_COFC_ss" value="10" id="add_manufacturers_COFC_ss" class="styled-checkbox-cofc">
+
+                            <?php
+                                if($no_cofc_ss === 'yes'){
+                                    echo '<p class="product-page__cofc-not-available">Not available for this product</p>';
+                                }
+                            ?>
+
+                            <input type="checkbox" name="add_manufacturers_COFC_ss" value="10" id="add_manufacturers_COFC_ss" class="styled-checkbox-cofc" <?php echo $cofc_disabled_attr_ss; ?>>
                             <label style="display: block;" for="add_manufacturers_COFC_ss" class="product-page__checkbox-heading">Manufacturers COFC <span class="product-page__checkbox-price">£10</span>
                                 <span class="cfc__tooltip" data-tooltip="A Manufacturers Certificate of Conformity (MCOFC) is a document that manufacturers issue to confirm that a product has been made to a specific standard and meets quality and regulatory requirements.">?</span>
                             </label>
                         </div><br>
 
-                        <div id="fair_label_credit_account" class="product-page__checkbox-label">
+                        <div id="fair_label_credit_account" class="product-page__checkbox-label <?php echo $fair_wrapper_class_ss; ?>">
                             <p class="product-page__checkbox-title">Add First Article Inspection Report</p>
-                            <input type="checkbox" name="add_fair_ss" value="95" id="add_fair_ss" class="styled-checkbox-cofc">
+                            <?php
+                                if($no_fair_ss === 'yes'){
+                                    echo '<p class="product-page__cofc-not-available">Not available for this product</p>';
+                                }
+                            ?>
+                            <input type="checkbox" name="add_fair_ss" value="95" id="add_fair_ss" class="styled-checkbox-cofc" <?php echo $fair_disabled_attr_ss; ?>>
                             <label style="display: block;" for="add_fair_ss" class="product-page__checkbox-heading">FAIR <span class="product-page__checkbox-price">£95</span>
                                 <span class="cfc__tooltip" data-tooltip="A First Article Inspection Report (FAIR) or ISIR is the first item we make for the customer and measure to confirm all dimensions meet the drawing and tolerances.">?</span>
                             </label>
                         </div><br>
 
-                        <div class="product-page__checkbox-label">
+                        <div class="product-page__checkbox-label <?php echo $mcofc_wrapper_class_ss; ?>">
                             <p class="product-page__checkbox-title">Add Materials Direct COFC?</p>
-                            <input type="checkbox" name="add_materials_direct_COFC_ss" value="12.50" id="add_materials_direct_COFC_ss" class="styled-checkbox-cofc">
+                             <?php
+                                if($no_mcofc_ss === 'yes'){
+                                    echo '<p class="product-page__cofc-not-available">Not available for this product</p>';
+                                }
+                            ?>
+                            <input type="checkbox" name="add_materials_direct_COFC_ss" value="12.50" id="add_materials_direct_COFC_ss" class="styled-checkbox-cofc" <?php echo $mcofc_disabled_attr_ss; ?>>
                             <label style="display: block;" for="add_materials_direct_COFC_ss" class="product-page__checkbox-heading">Materials Direct COFC <span class="product-page__checkbox-price">£12.50</span>
                                 <span class="cfc__tooltip" data-tooltip="A certificate from Materials Direct confirming that the part meets the criteria ordered (RoHS and REACH compliant).">?</span>
                             </label>

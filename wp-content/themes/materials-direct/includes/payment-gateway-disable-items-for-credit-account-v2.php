@@ -15,9 +15,16 @@ function ah_payment_gateway_disable_items($available_gateways) {
     // Determine if cart contains a credit-enabled item
     $has_credit_item = false;
 
-    foreach (WC()->cart->get_cart() as $cart_item) {
-        if (!empty($cart_item['custom_inputs']['allow_credit'])) {
+    foreach (WC()->cart->get_cart() as $cart_item_key => $cart_item) {
+
+        $allow_credit_custom = !empty($cart_item['custom_inputs']['allow_credit']);
+        $allow_credit_capture = !empty($cart_item['cart_metadata']['allow_credit']);
+
+
+        if ($allow_credit_custom || $allow_credit_capture) {
+
             $has_credit_item = true;
+
             break;
         }
     }

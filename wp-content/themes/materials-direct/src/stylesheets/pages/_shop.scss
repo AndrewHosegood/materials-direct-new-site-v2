@@ -191,9 +191,9 @@
 }
 
 .woocommerce-page {
-    & .woocommerce-products-header {
-        display: none;
-    }
+    // & .woocommerce-products-header {
+    //     display: none;
+    // }
     & ul.products li.product .button {
         background: variables.$primary-color;
         color: white;
@@ -236,4 +236,8 @@
 .woocommerce-shop__cat-hover-image.active {
     z-index: 9;
     opacity: 1;
+}
+
+.woocommerce .woocommerce-ordering select:focus-visible {
+    outline: 0;
 }

@@ -213,6 +213,15 @@
     &__form {
         margin:0;
     }
+    &__form input:focus-visible {
+        outline: 0;
+    }
+    &__form textarea:focus-visible {
+        outline: 0;
+    }
+    &__form .wpcf7 form.sent .wpcf7-response-output {
+        border-color: variables.$primary-color;
+    }
     &__contact-address {
         margin: 0;
         @include breakpoints.tablet {

@@ -941,6 +941,12 @@
         border-radius: 0.15rem;
         display: none;
     }
+    &__cofc-not-available {
+        padding: 0;
+        font-size: 0.75rem;
+        font-style: italic;
+        line-height: 1rem;
+    }
 }
 
 .has-tooltip {
@@ -1215,7 +1221,7 @@ div#order_info_box #parts_remaining {
         font-size: 0.8rem;
         background: variables.$secondary-color;
         padding: 0.7rem 1rem;
-        margin-left: 0.5rem;
+        margin-left: 0;
         color: white;
         cursor: pointer;
     }
@@ -1320,3 +1326,27 @@ div#order_info_box #parts_remaining {
     padding: 0.79rem 0.5rem;
 }
 /* Fix select menus in IOS */
+
+.cofc-disabled {
+  opacity: 0.6;
+}
+
+.fair-disabled {
+    opacity: 0.6;
+}
+
+.mcofc-disabled {
+    opacity: 0.6;
+}
+
+.cofc-disabled label {
+  cursor: not-allowed;
+}
+
+.fair-disabled label {
+  cursor: not-allowed;
+}
+
+.mcofc-disabled label {
+  cursor: not-allowed;
+}

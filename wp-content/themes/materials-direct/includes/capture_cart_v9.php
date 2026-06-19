@@ -24,6 +24,10 @@ function get_cart_capture_data() {
             $address  = $inputs['shipping_address'] ?? [];
             $fees     = $cart_item['optional_fees'] ?? [];
 
+            // echo "<pre>";
+            // print_r($inputs);
+            // echo "</pre>";
+
             $product       = $cart_item['data'];
             $product_id    = $cart_item['product_id'];
             $variation_id  = $cart_item['variation_id'] ?? 0;
@@ -51,11 +55,19 @@ function get_cart_capture_data() {
                 'Width' => floatval($inputs['width'] ?? 0),
                 'Length' => floatval($inputs['length'] ?? 0),
                 'Radius' => floatval($inputs['custom_radius'] ?? 0),
+                'Roll Length' => floatval($inputs['roll_length'] ?? 0),
                 'Notes' => sanitize_text_field($inputs['despatch_notes'] ?? ''),
                 'Shipping Weights' => floatval($inputs['total_del_weight'] ?? 0),
                 'Total number of parts' => intval($inputs['qty'] ?? 0),
+
+                'is_scheduled' => intval($inputs['is_scheduled'] ?? 0),
+                'despatch_string' => sanitize_text_field($inputs['despatch_string'] ?? ''),
+                'stock_quantity' => sanitize_text_field($inputs['stock_quantity'] ?? ''),
+                'allow_credit' => floatval($inputs['allow_credit'] ?? 0),
+
                 'Manufacturers COFC' => floatval($fees['add_manufacturers_COFC'] ?? 0),
-                'First Article Inspection Report' => floatval($inputs['add_fair'] ?? 0),
+                'Materials Direct COFC' => floatval($fees['add_materials_direct_COFC'] ?? 0),
+                'First Article Inspection Report' => floatval($fees['add_fair'] ?? 0),
 
                 'Width (Inch)' => floatval($inputs['width_inches'] ?? 0),
                 'Length (Inch)' => floatval($inputs['length_inches'] ?? 0),
@@ -74,11 +86,11 @@ function get_cart_capture_data() {
                 'discount_raw_new' => floatval($inputs['discount_rate'] ?? 0),
                 'cost_per_part_raw' => floatval($inputs['cost_per_part'] ?? 0),
                 'country_value' => sanitize_text_field($inputs['country'] ?? ''),
-                '_Shipping Total' => floatval($inputs['final_shipping'] ?? 0), // currently using this value
+                '_Shipping Total' => floatval($inputs['final_shipping'] ?? 0), 
                 'shipping_by_date' => $live_shipping,
-                //'shipping_total_raw' => array_sum(array_column($live_shipping, 'final_shipping')),
-                'shipping_by_date' => $inputs['shipping_by_date'] ?? [],  // full array
+                'shipping_by_date' => $inputs['shipping_by_date'] ?? [],  
                 'shipping_total_raw' => floatval($inputs['final_shipping_total'] ?? 0),
+                'shipments_count' => floatval($inputs['shipments_count'] ?? 1),
 
                 // === Address mapping ===
                 'Address-1' => sanitize_text_field($address['street_address'] ?? ''),
@@ -94,7 +106,14 @@ function get_cart_capture_data() {
     }
 
     return $results;
+
 }
+// END COLLECT THE DATA 
+
+
+
+
+
 
 // CREATE CUSTOM POST TYPE
 function register_capture_cart_cpt() {
@@ -114,6 +133,11 @@ function register_capture_cart_cpt() {
     ]);
 }
 add_action('init', 'register_capture_cart_cpt');
+// END CREATE CUSTOM POST TYPE
+
+
+
+
 
 // ADD CUSTOM ADMIN MENU PAGE
 function add_captured_carts_admin_menu() {
@@ -128,6 +152,8 @@ function add_captured_carts_admin_menu() {
     );
 }
 add_action('admin_menu', 'add_captured_carts_admin_menu');
+// END ADD CUSTOM ADMIN MENU PAGE
+
 
 
 
@@ -156,7 +182,7 @@ function enqueue_captured_carts_admin_scripts($hook) {
 }
 add_action('wp_enqueue_scripts', 'enqueue_captured_carts_admin_scripts'); // Changed to wp_enqueue_scripts for front-end
 add_action('admin_enqueue_scripts', 'enqueue_captured_carts_admin_scripts'); // Keep for admin
-
+// END ENQUEUE ADMIN SCRIPTS
 
 
 
@@ -201,12 +227,20 @@ function display_captured_carts_table() {
                         <th style="font-size: 11.5px;"><strong>Part Shape</strong></th> 
                         <th style="font-size: 11.5px;"><strong>Width</strong></th>
                         <th style="font-size: 11.5px;"><strong>Length</strong></th>
-                        <th style="font-size: 11.5px;"><strong>Width (Inch)</strong></th>
-                        <th style="font-size: 11.5px;"><strong>Length (Inch)</strong></th>
+                        <!-- <th style="font-size: 11.5px;"><strong>Width (Inch)</strong></th>
+                        <th style="font-size: 11.5px;"><strong>Length (Inch)</strong></th> -->
                         <th style="font-size: 11.5px;"><strong>Radius</strong></th>
                         <th style="font-size: 11.5px; width: 120px;"><strong>Notes</strong></th>
-                        <th style="font-size: 11.5px;"><strong>PDF Drawing</strong></th>
-                        <th style="font-size: 11.5px;"><strong>DXF Drawing</strong></th>
+                        <!-- <th style="font-size: 11.5px;"><strong>Manufacturers COFC</strong></th>
+                        <th style="font-size: 11.5px;"><strong>Materials Direct COFC</strong></th>
+                        <th style="font-size: 11.5px;"><strong>First Article Inspection Report</strong></th> -->
+                        <!-- <th style="font-size: 11.5px;"><strong>PDF Drawing</strong></th>
+                        <th style="font-size: 11.5px;"><strong>DXF Drawing</strong></th> -->
+                        <!--<th style="font-size: 11.5px;"><strong>Is Scheduled</strong></th>-->
+                        <!--<th style="font-size: 11.5px;"><strong>Stock Quantity</strong></th>
+                        <th style="font-size: 11.5px;"><strong>Despatch String</strong></th>
+                        <th style="font-size: 11.5px;"><strong>Shipments Count</strong></th> -->
+                        <!-- <th style="font-size: 11.5px;"><strong>Allow Credit</strong></th> -->
                         <th style="font-size: 11.5px;"><strong>Total Parts</strong></th>
                         <th style="font-size: 11.5px;"><strong>Subtotal</strong></th>
                         <th style="font-size: 11.5px;"><strong>Is This A Delivery Option Order?</strong></th>
@@ -237,6 +271,11 @@ function display_captured_carts_table() {
                             $cpp = !empty($cart_item['Customer Shipping Weights']) ? esc_html($cart_item['Customer Shipping Weights']) : 'N/A';
                             $dxf = !empty($cart_item['Upload .DXF Drawing']) ? esc_html($cart_item['Upload .DXF Drawing']) : 'N/A';
                             $pdf = !empty($cart_item['Upload .PDF Drawing']) ? esc_html($cart_item['Upload .PDF Drawing']) : 'N/A';
+                            $is_scheduled = !empty($cart_item['is_scheduled']) ? esc_html($cart_item['is_scheduled']) : 'N/A';
+
+                            $stock_quantity = !empty($cart_item['stock_quantity']) ? esc_html($cart_item['stock_quantity']) : 'N/A';
+
+                            $despatch_string = !empty($cart_item['despatch_string']) ? esc_html($cart_item['despatch_string']) : 'N/A';
                             $width_inch = !empty($cart_item['Width (Inch)']) ? esc_html($cart_item['Width (Inch)']) : 'N/A';
                             $length_inch = !empty($cart_item['Length (Inch)']) ? esc_html($cart_item['Length (Inch)']) : 'N/A';
                             $thumb_image = !empty($cart_item['thumb_image']) ? esc_url($cart_item['thumb_image']) : 'https://placehold.co/150';
@@ -260,8 +299,14 @@ function display_captured_carts_table() {
                             $currently_showing = !empty($cart_item['_Currently Showing']) ? esc_html($cart_item['_Currently Showing']) : 'N/A';
                             $untitled = !empty($cart_item['_Untitled']) ? esc_html($cart_item['_Untitled']) : 'N/A';
                             $shipping_total = !empty($cart_item['_Shipping Total']) ? esc_html($cart_item['_Shipping Total']) : 'N/A';
-                            // $shipping_total_raw = !empty($cart_item['shipping_total_raw']) ? esc_html($cart_item['shipping_total_raw']) : 'N/A';
-                            //'shipping_by_date' => $inputs['shipping_by_date'] ?? []
+                            $shipments_count = !empty($cart_item['shipments_count']) ? esc_html($cart_item['shipments_count']) : 'N/A';
+                            
+                            $add_manufacturers_COFC = !empty($cart_item['Manufacturers COFC']) ? esc_html($cart_item['Manufacturers COFC']) : 'N/A';
+                            $add_materials_direct_COFC = !empty($cart_item['Materials Direct COFC']) ? esc_html($cart_item['Materials Direct COFC']) : 'N/A';
+                            $add_fair = !empty($cart_item['First Article Inspection Report']) ? esc_html($cart_item['First Article Inspection Report']) : 'N/A';
+
+                            $allow_credit_v = !empty($cart_item['allow_credit']) ? esc_html($cart_item['allow_credit']) : 'N/A';
+
                             $roll_length_metres = !empty($cart_item['Roll Length (Metres)']) ? esc_html($cart_item['Roll Length (Metres)']) : 'N/A';
                             $address_1 = !empty($cart_item['Address-1']) ? esc_html($cart_item['Address-1']) : 'N/A';
                             $address_2 = !empty($cart_item['Address-2']) ? esc_html($cart_item['Address-2']) : 'N/A';
@@ -312,15 +357,23 @@ function display_captured_carts_table() {
                                 <td style="font-size: 11.5px;"><?php echo esc_html($part_shape); ?></td>
                                 <td style="font-size: 11.5px;"><?php echo esc_html($width); ?></td>
                                 <td style="font-size: 11.5px;"><?php echo esc_html($length); ?></td>
-                                <td style="font-size: 11.5px;"><?php echo esc_html($width_inch); ?></td>
-                                <td style="font-size: 11.5px;"><?php echo esc_html($length_inch); ?></td>
+                                <!-- <td style="font-size: 11.5px;"><?php //echo esc_html($width_inch); ?></td>
+                                <td style="font-size: 11.5px;"><?php //echo esc_html($length_inch); ?></td> -->
                                 <td style="font-size: 11.5px;"><?php echo esc_html($radius); ?></td>
                                 <td style="font-size: 11.5px;"><?php echo esc_html($notes); ?></td>
-                                <td style="font-size: 11.5px;"><?php echo esc_html($pdf); ?></td>
-                                <td style="font-size: 11.5px;"><?php echo esc_html($dxf); ?></td>
+                                <!-- <td style="font-size: 11.5px;"><?php //echo esc_html($allow_credit_v); ?></td> -->
+                                <!-- <td style="font-size: 11.5px;"><?php //echo esc_html($add_manufacturers_COFC); ?></td>
+                                <td style="font-size: 11.5px;"><?php //echo esc_html($add_materials_direct_COFC); ?></td>
+                                <td style="font-size: 11.5px;"><?php //echo esc_html($add_fair); ?></td> -->
+                                <!-- <td style="font-size: 11.5px;"><?php //echo esc_html($pdf); ?></td>
+                                <td style="font-size: 11.5px;"><?php //echo esc_html($dxf); ?></td> -->
+                                <!--<td style="font-size: 11.5px;"><?php echo esc_html($is_scheduled); ?></td>-->
+                                <!--<td style="font-size: 11.5px;"><?php //echo esc_html($stock_quantity); ?></td>
+                                <td style="font-size: 11.5px;"><?php //echo esc_html($despatch_string); ?></td>
+                                <td style="font-size: 11.5px;"><?php //echo esc_html($shipments_count); ?></td> -->
                                 <td style="font-size: 11.5px;"><?php echo esc_html($total_number_of_parts); ?></td>
                                 <td style="font-size: 11.5px;"><?php echo wc_price($total_price); ?></td>
-                                <td style="font-size: 11.5px;"><?php if($delivery_option == 1){ echo "YES"; } else { echo "NO"; } ?></td>
+                                <td style="font-size: 11.5px;"><?php if($is_scheduled == 1){ echo "YES"; } else { echo "NO"; } ?></td>
                                 <td style="font-size: 11.5px;"><?php if($allow_credit == 1){ echo "YES"; } else { echo "NO"; } ?></td>
    
 
@@ -351,7 +404,7 @@ function display_captured_carts_table() {
                     } else {
                         ?>
                         <tr>
-                            <td colspan="23">No captured carts found.</td>
+                            <td colspan="19">No captured carts found.</td>
                         </tr>
                         <?php
                     }
@@ -368,6 +421,9 @@ function display_captured_carts_table() {
     </div>
     <?php
 }
+// END DISPLAY CAPTURED CARTS TABLE
+
+
 
 
 
@@ -396,7 +452,10 @@ function search_customer_emails() {
     wp_send_json_success(['emails' => $emails]);
 }
 add_action('wp_ajax_search_customer_emails', 'search_customer_emails');
-// AJAX HANDLER FOR EMAIL SEARCH
+// END AJAX HANDLER FOR EMAIL SEARCH
+
+
+
 
 
 // AJAX HANDLER FOR ADDING TO CART
@@ -460,14 +519,21 @@ function add_to_cart_from_capture() {
             'cart_metadata' => [
                 'Upload .DXF Drawing' => isset($cart_item['Upload .DXF Drawing']) ? $cart_item['Upload .DXF Drawing'] : 'N/A',
                 'Upload .PDF Drawing' => isset($cart_item['Upload .PDF Drawing']) ? $cart_item['Upload .PDF Drawing'] : 'N/A',
+                'is_scheduled' => isset($cart_item['is_scheduled']) ? $cart_item['is_scheduled'] : 'N/A',
+
+                'stock_quantity' => isset($cart_item['stock_quantity']) ? $cart_item['stock_quantity'] : 'N/A',
+
+                'despatch_string' => isset($cart_item['despatch_string']) ? $cart_item['despatch_string'] : 'N/A',
                 'Width (MM)' => isset($cart_item['Width']) ? $cart_item['Width'] : 'N/A',
                 'width_inch'    => isset($cart_item['Width (Inch)']) ? $cart_item['Width (Inch)'] : 'N/A',
                 'Length (MM)' => isset($cart_item['Length']) ? $cart_item['Length'] : 'N/A',
                 'length_inch'   => isset($cart_item['Length (Inch)']) ? $cart_item['Length (Inch)'] : 'N/A',
+                'Radius (MM)' => isset($cart_item['Radius']) ? floatval($cart_item['Radius']) : (isset($cart_item['Radius (MM)']) ? floatval($cart_item['Radius (MM)']) : 'N/A'),
+                'Roll Length (Metres)' => isset($cart_item['Roll Length']) ? $cart_item['Roll Length'] : 'N/A', // here
                 'Total number of parts' => isset($cart_item['Total number of parts']) ? $cart_item['Total number of parts'] : 'N/A',
-                'Despatch Notes' => isset($cart_item['Notes']) ? $cart_item['Notes'] : 'N/A',
+                'despatch_notes' => isset($cart_item['Notes']) ? $cart_item['Notes'] : 'N/A',  // was Despatch Notes
                 'Cost Per Part' => isset($cart_item['Cost Per Part']) ? $cart_item['Cost Per Part'] : 'N/A',
-                'Customer Shipping Weight(s)' => isset($cart_item['Customer Shipping Weights']) ? $cart_item['Customer Shipping Weights'] : 'N/A',
+                'total_del_weight' => isset($cart_item['Customer Shipping Weights']) ? $cart_item['Customer Shipping Weights'] : 'N/A', // was Customer Shipping Weight(s)
                 'Sheets Required' => isset($cart_item['Sheets Required']) ? $cart_item['Sheets Required'] : 'N/A',
                 'shipping_total_raw' => isset($cart_item['shipping_total_raw']) ? $cart_item['shipping_total_raw'] : 'N/A',
                 'rolls_value' => isset($cart_item['rolls_value']) ? $cart_item['rolls_value'] : 'N/A',
@@ -477,7 +543,7 @@ function add_to_cart_from_capture() {
                 'delivery_count' => isset($cart_item['delivery_count']) ? $cart_item['delivery_count'] : 'N/A',
                 'raw_date' => isset($cart_item['raw_date']) ? $cart_item['raw_date'] : 'N/A',
                 'discount_raw_new' => isset($cart_item['discount_raw_new']) ? $cart_item['discount_raw_new'] : 'N/A',
-                'cost_per_part_raw' => isset($cart_item['cost_per_part_raw']) ? $cart_item['cost_per_part_raw'] : 'N/A',
+                'cost_per_part' => isset($cart_item['cost_per_part_raw']) ? $cart_item['cost_per_part_raw'] : 'N/A', // was cost_per_part_raw
                 '_is_split_schedule' => isset($cart_item['_is_split_schedule']) ? $cart_item['_is_split_schedule'] : 'N/A',
                 'mcofc_fair_final_hidden' => isset($cart_item['mcofc_fair_final_hidden']) ? $cart_item['mcofc_fair_final_hidden'] : 'N/A',
                 'country_value' => isset($cart_item['country_value']) ? $cart_item['country_value'] : 'N/A',
@@ -485,14 +551,19 @@ function add_to_cart_from_capture() {
                 '_Currently Showing' => isset($cart_item['_Currently Showing']) ? $cart_item['_Currently Showing'] : 'N/A',
                 '_Untitled' => isset($cart_item['_Untitled']) ? $cart_item['_Untitled'] : 'N/A',
                 '_Shipping Total' => isset($cart_item['_Shipping Total']) ? $cart_item['_Shipping Total'] : 'N/A',
-                'Roll Length (Metres)' => isset($cart_item['Roll Length (Metres)']) ? $cart_item['Roll Length (Metres)'] : 'N/A',
                 'form_id' => isset($cart_item['form_id']) ? $cart_item['form_id'] : 'N/A', // Explicitly include form_id
                 'captured_optional_fees'     => floatval($cart_item['captured_optional_fees'] ?? 0),
+                'Manufacturers COFC'          => floatval($cart_item['Manufacturers COFC'] ?? 0),
+                'Materials Direct COFC'       => floatval($cart_item['Materials Direct COFC'] ?? 0),
+                'First Article Inspection Report' => floatval($cart_item['First Article Inspection Report'] ?? 0),
+                'shipments_count' => floatval($cart_item['shipments_count'] ?? 0),
+                'allow_credit' => floatval($cart_item['allow_credit'] ?? 0),
             ],
         ];
 
         
-        
+
+
 
         // Set custom price with validation
         if (isset($cart_item['Total Price']) && is_numeric($cart_item['Total Price']) && floatval($cart_item['Total Price']) > 0 && $quantity > 0) {
@@ -592,9 +663,6 @@ function add_to_cart_from_capture() {
 
 
 
-
-
-
         /* GET THE SHIPMENTS DATA FOR DISPLAY ON THE CART PAGE AFTER RESTORE */
         $display_shipments = [];
 
@@ -636,29 +704,9 @@ function add_to_cart_from_capture() {
         }
        /* GET THE SHIPMENTS DATA FOR DISPLAY ON THE CART PAGE AFTER RESTORE */
 
-        
-
 
 
         WC()->cart->calculate_totals();
-
-
-        /*
-        if ($captured_optional_fees > 0) {
-            WC()->cart->add_fee(
-                'All COFC\'s & FAIR\'s',
-                $captured_optional_fees,
-                true,  // taxable
-                ''     // no tax class
-            );
-            error_log('Restored optional fees total: £' . $captured_optional_fees . ' for post ID ' . $post_id);
-            $fees_after_add = WC()->cart->get_fees();
-            error_log('Fees after adding restored fee: ' . print_r($fees_after_add, true));
-            WC()->cart->calculate_totals();
-        }
-        */
-
-
 
 
 
@@ -698,8 +746,6 @@ function add_to_cart_from_capture() {
         }
 
 
-
-
         wp_send_json_success([
             'message' => 'Item added to cart successfully.',
             //'cart_url' => wc_get_cart_url() . '?refresh=' . time(),
@@ -710,7 +756,6 @@ function add_to_cart_from_capture() {
     }
 }
 add_action('wp_ajax_add_to_cart_from_capture', 'add_to_cart_from_capture');
-
 // END AJAX HANDLER FOR ADDING TO CART
 
 
@@ -915,7 +960,14 @@ add_action('woocommerce_before_calculate_totals', function ($cart) {
 }, 10, 1);
 // END APPLY CUSTOM PRICE TO CART ITEMS
 
+
+
+
+
 // DISPLAY META DATA IN CART
+/* we are also using the following functions to display meta for regular carts: */
+/* 1. meta-labels-admin-orders-and-thankyou-page.php */
+/* 2. rename-listed-items-on-thankyou-page.php */
 add_filter('woocommerce_cart_item_name', function ($item_name, $cart_item, $cart_item_key) {
     $hidden_keys = [
         'Sheets Required',
@@ -925,8 +977,10 @@ add_filter('woocommerce_cart_item_name', function ($item_name, $cart_item, $cart
         'delivery_count',
         'raw_date',
         'discount_raw_new',
-        'cost_per_part_raw',
+        'cost_per_part',
         '_is_split_schedule',
+        'is_scheduled',
+        'despatch_string',
         'mcofc_fair_final_hidden',
         'country_value',
         'on_backorder',
@@ -940,90 +994,155 @@ add_filter('woocommerce_cart_item_name', function ($item_name, $cart_item, $cart
         'width_inch',
         'length_inch',
         'captured_optional_fees',
+        'Manufacturers COFC',
+        'Materials Direct COFC',
+        'First Article Inspection Report',
+        'Radius (MM)',
+        'shipments_count',
+        'stock_quantity',
+        'despatch_notes',
+        'allow_credit',
     ];
 
     if (isset($cart_item['cart_metadata']) && is_array($cart_item['cart_metadata'])) {
         $metadata = $cart_item['cart_metadata'];
         $item_name .= '<dl class="cart-item-metadata">';
 
-        // Pre-handled fields (unchanged)
+        // === Part Shape - with nice formatting for restored carts ===
         if (!empty($metadata['Part shape']) && $metadata['Part shape'] !== 'N/A') {
-            $item_name .= '<dt style="margin: 0.4rem 0"><strong>Part Shape:</strong> ' . esc_html($metadata['Part shape']) . '</dt>';
+            $part_shape = $metadata['Part shape'];
+            $part_shape_display = ucwords(str_replace(['-', '_'], ' ', $part_shape));
+            $item_name .= '<dt style="margin: 0.4rem 0"><strong>Part Shape:</strong> ' 
+                        . esc_html($part_shape_display) . '</dt>';
+        }
+
+        // === 1. Restyle the 'pdf_path' and 'dxf_path' meta values so that they display as clickable links ===
+        // ** Take note for regular orders we are styling up these meta links using display-pdf-dxf-on-cart-checkout-page.php **
+        foreach (['Upload .PDF Drawing', 'Upload .DXF Drawing'] as $key) {
+            if (!isset($metadata[$key])) continue;
+            
+            $raw_value = trim($metadata[$key]);
+            if (!empty($raw_value) && $raw_value !== 'N/A') {
+                $filename = basename($raw_value);
+                if (empty($filename) || $filename === $raw_value) {
+                    $filename = $raw_value;
+                }
+
+                $url = $raw_value;
+                // if (strpos($raw_value, 'http') !== 0 && strpos($raw_value, '/') === 0) {
+                //     $url = home_url($raw_value);
+                // }
+                if (strpos($raw_value, '/pdf-and-dxf-uploads/') === 0) {
+
+                    $upload_dir = wp_upload_dir();
+                    $url = $upload_dir['baseurl'] . $raw_value;
+
+                } else {
+
+                    $url = $raw_value;
+                }
+
+                $label = ($key === 'Upload .PDF Drawing') ? 'PDF Drawing' : 'DXF Drawing';
+
+                $item_name .= '<dt style="margin: 0.4rem 0"><strong>' . esc_html($label) . ':</strong> '
+                           . '<a href="' . esc_url($url) . '" target="_blank">' . esc_html($filename) . '</a></dt>';
+            }
+        }
+
+        // === 2. Pre-handled fields ===
+        $radius_value = null;
+        if (isset($metadata['Radius (MM)']) && $metadata['Radius (MM)'] !== 'N/A') {
+            $radius_value = $metadata['Radius (MM)'];
+        } elseif (isset($metadata['Radius']) && $metadata['Radius'] !== 0) {
+            $radius_value = $metadata['Radius'];
+        }
+
+        if ($radius_value !== null && floatval($radius_value) > 0) {
+            $item_name .= '<dt style="margin: 0.4rem 0"><strong>Radius (MM):</strong> ' 
+                        . esc_html($radius_value) . '</dt>';
         }
         if (!empty($metadata['Width (MM)']) && $metadata['Width (MM)'] !== 'N/A') {
             $item_name .= '<dt style="margin: 0.4rem 0"><strong>Width (MM):</strong> ' . esc_html($metadata['Width (MM)']) . '</dt>';
         }
-        if (!empty($metadata['Length (MM)']) && $metadata['Length (MM)'] !== 'N/A' 
-            && !(isset($metadata['rolls_value']) && strtolower($metadata['rolls_value']) === 'rolls')) {
-            $item_name .= '<dt style="margin: 0.4rem 0"><strong>Length (MM):</strong> ' . esc_html($metadata['Length (MM)']) . '</dt>';
+        if (!empty($metadata['Roll Length (Metres)']) && $metadata['Roll Length (Metres)'] !== 'N/A') {
+            $part_shape = strtolower($metadata['Part shape'] ?? '');
+            if (strpos($part_shape, 'roll') !== false || 
+                $part_shape === 'rolls' || 
+                strtolower($metadata['rolls_value'] ?? '') === 'rolls') {
+                
+                $item_name .= '<dt style="margin: 0.4rem 0"><strong>Roll Length (Metres):</strong> ' 
+                            . esc_html($metadata['Roll Length (Metres)']) . '</dt>';
+            }
         }
+
+        if (!empty($metadata['Length (MM)']) && $metadata['Length (MM)'] !== 'N/A' ) {
+
+            $part_shape = strtolower($metadata['Part shape'] ?? '');
+    
+            if (strpos($part_shape, 'roll') === false && $part_shape !== 'rolls') {
+                $item_name .= '<dt style="margin: 0.4rem 0"><strong>Length (MM):</strong> ' . esc_html($metadata['Length (MM)']) . '</dt>';
+            }
+
+        }
+
         if (!empty($metadata['width_inch']) && $metadata['width_inch'] !== 'N/A') {
             $item_name .= '<dt style="margin: 0.4rem 0"><strong>Width (INCHES):</strong> ' . esc_html($metadata['width_inch']) . '</dt>';
         }
         if (!empty($metadata['length_inch']) && $metadata['length_inch'] !== 'N/A') {
             $item_name .= '<dt style="margin: 0.4rem 0"><strong>Length (INCHES):</strong> ' . esc_html($metadata['length_inch']) . '</dt>';
         }
+
+
         if (!empty($metadata['Total number of parts']) && $metadata['Total number of parts'] !== 'N/A') {
-            $item_name .= '<dt style="margin: 0.4rem 0"><strong>Total number of parts:</strong> ' . esc_html($metadata['Total number of parts']) . '</dt>';
-        }
-        if (!empty($metadata['Despatch Notes']) && $metadata['Despatch Notes'] !== 'N/A') {
-            $item_name .= '<dt style="margin: 0.4rem 0"><strong>Despatch Notes:</strong> ' . esc_html($metadata['Despatch Notes']) . '</dt>';
-        }
-        if (!empty($metadata['Customer Shipping Weight(s)']) && $metadata['Customer Shipping Weight(s)'] !== 'N/A') {
-            $weight = round( (float) $metadata['Customer Shipping Weight(s)'], 3 );
-            $item_name .= '<dt style="margin: 0.4rem 0"><strong>Customer Shipping Weight(s):</strong> ' . $weight . 'kg</dt>';
-        }
-        if (isset($metadata['Roll Length (Metres)']) && isset($metadata['rolls_value']) 
-            && strtolower($metadata['rolls_value']) === 'rolls' 
-            && $metadata['Roll Length (Metres)'] !== 'N/A' && !empty($metadata['Roll Length (Metres)'])) {
-            $item_name .= '<dt class="roll-length-metres" style="margin: 0.4rem 0"><strong>Roll Length (Metres):</strong> ' . esc_html($metadata['Roll Length (Metres)']) . '</dt>';
-        }
-        $captured_fee = floatval($metadata['captured_optional_fees'] ?? 0);
-        if ($captured_fee > 0) {
-            $item_name .= '<dt style="margin: 0.4rem 0"><strong>All COFC\'s & FAIR\'s:</strong> ' . wc_price($captured_fee) . '</dt>';
+            
+            $part_shape = strtolower($metadata['Part shape'] ?? '');
+            $is_roll = (strpos($part_shape, 'roll') !== false || $part_shape === 'rolls');
+            
+            $label = $is_roll ? 'Total number of rolls:' : 'Total number of parts:';
+            
+            $item_name .= '<dt style="margin: 0.4rem 0"><strong>' . $label . '</strong> ' 
+                        . esc_html($metadata['Total number of parts']) . '</dt>';
         }
 
-        // Loop
+
+        if (!empty($metadata['despatch_notes']) && $metadata['despatch_notes'] !== 'N/A') {
+            $item_name .= '<dt style="margin: 0.4rem 0"><strong>Despatch Notes:</strong><br> ' . esc_html($metadata['despatch_notes']) . '</dt>';
+        }
+        if (!empty($metadata['total_del_weight']) && $metadata['total_del_weight'] !== 'N/A') {
+            $weight = round( (float) $metadata['total_del_weight'], 3 );
+            $item_name .= '<dt style="margin: 0.4rem 0"><strong>Customer Shipping Weight(s):</strong> ' . $weight . 'kg</dt>';
+        }
+
+        // === 3. COFC / FAIR fees ===
+        $fees_to_show = [
+            'Manufacturers COFC'              => $metadata['Manufacturers COFC'] ?? 0,
+            'First Article Inspection Report' => $metadata['First Article Inspection Report'] ?? 0,
+            'Materials Direct COFC'           => $metadata['Materials Direct COFC'] ?? 0,
+        ];
+
+        foreach ($fees_to_show as $label => $amount) {
+            $amount = floatval($amount);
+            if ($amount > 0) {
+                $item_name .= '<dt style="margin: 0.4rem 0"><strong>' . esc_html($label) . ':</strong> ' 
+                            . wc_price($amount) . '</dt>';
+            }
+        }
+
+        // === 4. Generic fallback for any remaining fields ===
         foreach ($metadata as $key => $value) {
             if (in_array($key, $hidden_keys)) {
                 continue;
             }
 
-            // Skip pre-handled
+            // Skip already handled fields
             if (in_array($key, [
                 'Part shape', 'Width (MM)', 'Length (MM)', 'Total number of parts',
-                'Despatch Notes', 'Customer Shipping Weight(s)', 'Roll Length (Metres)', 'rolls_value'
+                'Despatch Notes', 'total_del_weight', 'Roll Length (Metres)', 'rolls_value',
+                'Upload .PDF Drawing', 'Upload .DXF Drawing'
             ])) {
                 continue;
             }
 
-            // PDF / DXF handling — always attempt filename extraction
-            if ($key === 'Upload .PDF Drawing' || $key === 'Upload .DXF Drawing') {
-                $raw_value = trim($value);
-                if (!empty($raw_value) && $raw_value !== 'N/A') {
-
-                    // Always get filename
-                    $filename = basename($raw_value);
-                    if (empty($filename) || $filename === $raw_value) {
-                        $filename = $raw_value; // fallback if basename fails
-                    }
-
-                    // Build full URL if relative
-                    $url = $raw_value;
-                    if (strpos($raw_value, 'http') !== 0 && strpos($raw_value, '/') === 0) {
-                        $url = home_url($raw_value);
-                    }
-
-                    $label = ($key === 'Upload .PDF Drawing') ? 'PDF Drawing' : 'DXF Drawing';
-
-                    $item_name .= '<dt style="margin: 0.4rem 0"><strong>' . esc_html($label) . ':</strong> '
-                               . '<a href="' . esc_url($url) . '" target="_blank">' . esc_html($filename) . '</a></dt>';
-
-                }
-                continue; // Skip generic
-            }
-
-            // Generic fallback
             if ($value !== 'N/A' && !empty($value)) {
                 $item_name .= '<dt style="margin: 0.4rem 0"><strong>' . esc_html($key) . ':</strong> ' 
                            . esc_html($value) . '</dt>';
@@ -1041,6 +1160,49 @@ add_filter('woocommerce_cart_item_name', function ($item_name, $cart_item, $cart
 
 
 
+
+
+// TEMPORARY DEBUG INFORMATION
+/*
+add_filter('woocommerce_cart_item_name', function ($item_name, $cart_item, $cart_item_key) {
+
+    // Only show for restored items
+    if (!empty($cart_item['restored_from_capture'])) {
+        
+        $item_name .= '<div style="margin: 15px 0; padding: 15px; background: #f8f9fa; border: 2px solid #0073aa; border-radius: 5px; font-size: 12px; overflow: auto; max-height: 400px;">';
+        $item_name .= '<strong style="color: #d63638;">🔍 DEBUG: Full Restored Cart Item Data</strong><br><br>';
+        
+        // Full cart_item array
+        $item_name .= '<strong>$cart_item:</strong><pre style="background:#fff; padding:10px; border:1px solid #ddd;">' . 
+                     htmlspecialchars(print_r($cart_item, true)) . '</pre>';
+
+        // Specifically the cart_metadata
+        if (!empty($cart_item['cart_metadata'])) {
+            $item_name .= '<strong>$cart_item[\'cart_metadata\']:</strong><pre style="background:#fff; padding:10px; border:1px solid #ddd;">' . 
+                         htmlspecialchars(print_r($cart_item['cart_metadata'], true)) . '</pre>';
+        }
+
+        // Restored shipments
+        if (!empty($cart_item['restored_shipments'])) {
+            $item_name .= '<strong>$cart_item[\'restored_shipments\']:</strong><pre style="background:#fff; padding:10px; border:1px solid #ddd;">' . 
+                         htmlspecialchars(print_r($cart_item['restored_shipments'], true)) . '</pre>';
+        }
+
+        $item_name .= '</div>';
+    }
+
+    return $item_name;
+
+}, 10, 3);
+*/
+// TEMPORARY DEBUG INFORMATION
+
+
+
+
+
+
+
 // ADD CART METADATA TO ORDER ITEM META DURING CHECKOUT
 add_action('woocommerce_checkout_create_order_line_item', function ($item, $cart_item_key, $values, $order) {
     // Check if the cart item is restored from a captured cart
@@ -1053,8 +1215,9 @@ add_action('woocommerce_checkout_create_order_line_item', function ($item, $cart
             'Length (MM)',
             'Total number of parts',
             'Sheets Required',
-            'Customer Shipping Weight(s)',
-            'Despatch Notes',
+            'total_del_weight',
+            'despatch_notes',
+            'stock_quantity',
             'Upload .PDF Drawing',
             'Upload .DXF Drawing',
             'Sheets Required',
@@ -1066,8 +1229,10 @@ add_action('woocommerce_checkout_create_order_line_item', function ($item, $cart
             'delivery_count',
             'raw_date',
             'discount_raw_new',
-            'cost_per_part_raw',
+            'cost_per_part',
             '_is_split_schedule',
+            'is_scheduled',
+            'despatch_string',
             'mcofc_fair_final_hidden',
             'country_value',
             '_Currently Showing',
@@ -1088,6 +1253,22 @@ add_action('woocommerce_checkout_create_order_line_item', function ($item, $cart
                 );
             }
         }
+
+        /*
+        * Add standard WooCommerce shape_type meta
+        * so restored orders behave like normal orders.
+        */
+        if (
+            isset($values['cart_metadata']['Part shape']) &&
+            $values['cart_metadata']['Part shape'] !== 'N/A'
+        ) {
+            $item->add_meta_data(
+                'shape_type',
+                $values['cart_metadata']['Part shape'],
+                true
+            );
+        }
+
     }
 }, 10, 4);
 
@@ -1237,7 +1418,9 @@ function send_customer_email() {
             $captured_carts->the_post();
             $current_post_id = get_the_ID();
             $cart_item = get_post_meta($current_post_id, 'cart_item', true);
+
             $delivery_option = get_post_meta($current_post_id, 'delivery_option', true) ?: 'N/A';
+
             if ($delivery_option == 1) {
                 $has_delivery_option = true;
             }
@@ -1281,7 +1464,7 @@ function send_customer_email() {
             ? '<p style="color: #ff0000;">Our system has detected that you do not have a credit account. You will need to have a credit account to fulfil this order. You can click <a style="color:red;" href="' . esc_url(home_url('/credit-account-application/')) . '">here</a> to submit a Credit Account request online. Or alternatively call the Materials Direct accounts department on <a style="color:red;" href="mailto:+44(0)1908222211">+44 (0)1908 222211</a> for help with this.</p>'
             : '';
 
-        //$expiration_hours = get_field('captured_carts_expiry', 'option');
+
         $default_expiration_hours = get_field('captured_carts_expiry', 'option') ?: 48;
         $delivery_option = get_post_meta($post_id, 'delivery_option', true) ?: 'N/A';
         $expiration_hours = $default_expiration_hours;
@@ -1470,8 +1653,19 @@ function add_capture_cart_button_to_cart() {
 if (!is_user_logged_in()) return;
 
     $current_user = wp_get_current_user();
-    $current_user_can = get_field('captured_carts_admin_email', 'option');
-    if ($current_user->user_email !== $current_user_can) return;
+
+    $allowed_emails = [
+        strtolower(trim(get_field('captured_carts_admin_email', 'option'))),
+        strtolower(trim(get_field('captured_carts_admin_email_2', 'option')))
+    ];
+
+    if (!in_array(strtolower($current_user->user_email), $allowed_emails, true)) {
+        return;
+    }
+
+    // $current_user = wp_get_current_user();
+    // $current_user_can = get_field('captured_carts_admin_email', 'option');
+    // if ($current_user->user_email !== $current_user_can) return;
 
     $shipping_by_date = group_shipping_by_date(WC()->cart);
 
@@ -1517,6 +1711,11 @@ if (!is_user_logged_in()) return;
 }
 add_action('woocommerce_before_cart_totals', 'add_capture_cart_button_to_cart', 20);
 // END ADD CAPTURE CART BUTTON TO CART
+
+
+
+
+
 
 
 // HANDLE CART CAPTURE
@@ -1605,14 +1804,9 @@ function handle_capture_cart() {
                 update_post_meta($post_id, 'cart_group_id', $cart_group_id);
 
 
-                // Store Field 123 (Delivery Option) from gravity_form_lead
-                $delivery_option = isset($item['gravity_form_lead'][123]) ? sanitize_text_field($item['gravity_form_lead'][123]) : 'N/A';
-                update_post_meta($post_id, 'delivery_option', $delivery_option);
-
-                // Store Custom Expiry Schedule if delivery_option == 1
-                if ($delivery_option == 1) {
-                    update_post_meta($post_id, 'custom_expiry_schedule', '2'); // Default to 2 hours
-                }
+                // Store scheduled status
+                $is_scheduled = intval($item['is_scheduled'] ?? 0);
+                update_post_meta($post_id, 'is_scheduled', $is_scheduled);
 
                 $captured_count++;
             } else {
@@ -1633,6 +1827,10 @@ function handle_capture_cart() {
 
 add_action('template_redirect', 'handle_capture_cart');
 // END HANDLE CART CAPTURE
+
+
+
+
 
 
 // HANDLE SAVE CUSTOMER EMAIL
@@ -1761,6 +1959,7 @@ add_action('wp_ajax_save_customer_email', 'save_customer_email');
 // ADD CUSTOM MESSAGE TO THE MY-ACCOUNTS PAGE
 
 function display_custom_message_on_my_account() {
+
     if (!is_user_logged_in() || !function_exists('WC')) {
         return;
     }
@@ -1788,6 +1987,7 @@ function display_custom_message_on_my_account() {
 
     $captured_carts = new WP_Query($args);
 
+
     // Check if the user has ever had a captured cart (optional tracking)
     $has_had_carts = get_user_meta($user_id, 'has_had_captured_carts', true);
 
@@ -1807,8 +2007,30 @@ function display_custom_message_on_my_account() {
     }
 
     // Check for delivery_option in captured carts
+    
+    $has_delivery_option = false;
+
+    if ($captured_carts->have_posts()) {
+        while ($captured_carts->have_posts()) {
+            $captured_carts->the_post();
+            $post_id = get_the_ID();
+            $cart_item = get_post_meta($post_id, 'cart_item', true);
+            $is_scheduled = intval($cart_item['is_scheduled'] ?? 0);
+            error_log("is_scheduled = " . $is_scheduled);
+            // Scheduled orders are credit-account delivery-option orders.
+            // If any captured item is scheduled, treat the capture as requiring credit.
+            if ($is_scheduled === 1) {
+                $has_delivery_option = true;
+                error_log("has_delivery_option = " . $has_delivery_option);
+            }
+        }
+        wp_reset_postdata();
+    }
+     
+    /*
     $has_delivery_option = false;
     if ($captured_carts->have_posts()) {
+        error_log("TRIGGERED 5");
         while ($captured_carts->have_posts()) {
             $captured_carts->the_post();
             $post_id = get_the_ID();
@@ -1819,6 +2041,7 @@ function display_custom_message_on_my_account() {
         }
         wp_reset_postdata();
     }
+    */
 
     // Display captured carts
     if ($captured_carts->have_posts()) {
@@ -1928,14 +2151,13 @@ function display_custom_message_on_my_account() {
     }
 }
 add_action('woocommerce_account_dashboard', 'display_custom_message_on_my_account', 10);
-
-
 // END ADD CUSTOM MESSAGE TO THE MY-ACCOUNTS PAGE
 
 
 
-// ADD FORM ID TO THE ORDER OBJECT
 
+
+// SAVE form_id TO ORDER ITEM META DURING CHECKOUT
 add_action('woocommerce_checkout_create_order_line_item', function ($item, $cart_item_key, $values, $order) {
     // Check if cart_metadata exists and contains form_id
     if (isset($values['cart_metadata']) && is_array($values['cart_metadata']) && isset($values['cart_metadata']['form_id']) && $values['cart_metadata']['form_id'] !== 'N/A' && !empty($values['cart_metadata']['form_id'])) {
@@ -1945,75 +2167,12 @@ add_action('woocommerce_checkout_create_order_line_item', function ($item, $cart
         error_log('No valid form_id found for cart item key ' . $cart_item_key . ': ' . print_r($values['cart_metadata'] ?? [], true));
     }
 }, 10, 4);
+// SAVE form_id TO ORDER ITEM META DURING CHECKOUT
 
-// ADD FORM ID TO THE ORDER OBJECT
 
 
-// HIDE META OBJECTS ON THE THANKYOU PAGE
-/**
- * Save form_id to order item meta during checkout
- */
-add_action('woocommerce_checkout_create_order_line_item', function ($item, $cart_item_key, $values, $order) {
-    // Check if cart_metadata exists and contains form_id
-    if (isset($values['cart_metadata']) && is_array($values['cart_metadata']) && isset($values['cart_metadata']['form_id']) && $values['cart_metadata']['form_id'] !== 'N/A' && !empty($values['cart_metadata']['form_id'])) {
-        // Save only the form_id to the order item meta
-        $item->add_meta_data('form_id', sanitize_text_field($values['cart_metadata']['form_id']));
-    } else {
-        error_log('No valid form_id found for cart item key ' . $cart_item_key . ': ' . print_r($values['cart_metadata'] ?? [], true));
-    }
-}, 10, 4);
 
-/**
- * Inject jQuery and CSS to hide elements on Thank You page when form_id is 19
- */
 
-add_action('woocommerce_thankyou', function ($order_id) {
-    $order = wc_get_order($order_id);
-    $has_form_id_19 = false;
-
-    // Check if any order item has form_id equal to 19
-    foreach ($order->get_items() as $item_id => $item) {
-        $form_id = $item->get_meta('form_id', true);
-        if ($form_id === '19') {
-            $has_form_id_19 = true;
-            break;
-        }
-    }
-
-    // If form_id 19 is found, inject CSS and jQuery
-    if ($has_form_id_19) {
-
-        // Inject jQuery into footer to hide Width (MM), Length (MM), and form_id
-        add_action('wp_footer', function () {
-            ?>
-            <script type="text/javascript">
-                jQuery(document).ready(function($) {
-                    // Ensure jQuery is loaded
-                    if (typeof $ === 'undefined') {
-                        console.error('jQuery is not loaded on Thank You page');
-                        return;
-                    }
-                    // Target .wc-item-meta list and hide specific <li> elements
-                    // $('.wc-item-meta li').each(function() {
-                    //     var label = $(this).find('.wc-item-meta-label').text().trim();
-                    //     if (label === 'Width (MM):' || label === 'Length (MM):' || label === 'form_id:' || label === 'Part shape:') {
-                    //         $(this).hide();
-                    //         console.log('Hide element with label: ' + label);
-                    //     }
-                    // });
-                    $('.ss-despatch-notes').addClass('ss-despatch-notes-hide');
-                    console.log('Added ss-despatch-notes-hide class to .ss-despatch-notes and .hide-despatch-notes');
-                });
-            </script>
-            <?php
-            error_log('Injected jQuery to hide Width (MM), Length (MM), and form_id on Thank You page');
-        });
-    } else {
-        error_log('No form_id 19 found for order ID ' . $order_id . ', skipping CSS and jQuery injection');
-    }
-}, 10, 1);
-
-// HIDE META OBJECTS ON THE THANKYOU PAGE
 
 
 // AJAX HANDLER FOR SAVING CUSTOM EXPIRY SCHEDULE
@@ -2111,6 +2270,8 @@ function cleanup_expired_capture_carts() {
 
     $query = new WP_Query($args);
 
+    error_log('CAPTURE CART COUNT: ' . count($query->posts));
+
     if (!$query->have_posts()) {
         error_log('No capture_cart posts found for cleanup.');
         return;
@@ -2123,7 +2284,16 @@ function cleanup_expired_capture_carts() {
     while ($query->have_posts()) {
         $query->the_post();
         $post_id = get_the_ID();
+
+        error_log(
+            'EXPIRY DEBUG | Post ID: ' . $post_id .
+            ' | capture_date=' . get_post_meta($post_id, 'capture_date', true) .
+            ' | delivery_option=' . get_post_meta($post_id, 'delivery_option', true) .
+            ' | custom_expiry_schedule=' . get_post_meta($post_id, 'custom_expiry_schedule', true)
+        );
+
         $capture_date = get_post_meta($post_id, 'capture_date', true);
+
 
         if (empty($capture_date)) {
             error_log("No capture_date found for capture_cart post ID: $post_id");
@@ -2132,26 +2302,48 @@ function cleanup_expired_capture_carts() {
 
         // Convert capture_date to timestamp
         $capture_timestamp = strtotime($capture_date);
+
+        error_log(
+            'TIME DEBUG | capture_date=' . $capture_date .
+            ' | capture_timestamp=' . $capture_timestamp .
+            ' | current_time=' . $current_time
+        );
+
         if (false === $capture_timestamp) {
             error_log("Invalid capture_date for post ID: $post_id - $capture_date");
             continue;
         }
 
         // Determine expiration hours
-        $delivery_option = get_post_meta($post_id, 'delivery_option', true) ?: 'N/A';
+        $cart_item = get_post_meta($post_id, 'cart_item', true);
+
+        error_log(
+            'SCHEDULE DEBUG | post_id=' . $post_id .
+            ' | is_scheduled=' .
+            ($cart_item['is_scheduled'] ?? 'NOT FOUND')
+        );
+
+        
+
+        $is_scheduled = intval($cart_item['is_scheduled'] ?? 0);
         $expiration_hours = $default_expiration_hours;
-        if ($delivery_option == 1) {
-            $custom_expiry_schedule = get_post_meta($post_id, 'custom_expiry_schedule', true);
-            $expiration_hours = $custom_expiry_schedule && in_array($custom_expiry_schedule, ['2', '3', '4']) ? intval($custom_expiry_schedule) : 2;
-            error_log("Using custom_expiry_schedule for post ID $post_id: $expiration_hours hours");
-        } else {
-            error_log("Using default expiration for post ID $post_id: $expiration_hours hours");
-        }
+
+        error_log(
+            "Using ACF expiry setting for post ID {$post_id}: {$expiration_hours} hours. " .
+            "is_scheduled={$is_scheduled}"
+        );
 
 
 
         // Calculate time difference in hours
         $time_diff_hours = ($current_time - $capture_timestamp) / 3600;
+
+        error_log(
+            'EXPIRY CHECK | Post ID=' . $post_id .
+            ' | Age=' . round($time_diff_hours, 2) .
+            ' hours | Expiry=' . $expiration_hours .
+            ' hours'
+        );
 
         if ($time_diff_hours >= $expiration_hours) {
             // Delete the post
@@ -2188,29 +2380,7 @@ register_deactivation_hook(__FILE__, 'deactivate_capture_cart_cleanup');
 /* DELETE CAPTURED CARTS AFTER 48 HOURS */
 
 
-/* Add javascript/jquery fix to convert full url to file name */
-add_action('wp_footer', 'custom_thankyou_page_script');
-function custom_thankyou_page_script() {
-    if (is_wc_endpoint_url('order-received')) : ?>
-        <script>
-        jQuery(document).ready(function($) {
-          function updateFileLinkText(label) {
-            $('li:contains("' + label + '") a').each(function() {
-              var href = $(this).attr('href');
-              if (href && href.startsWith('http')) {
-                var fileName = href.split('/').pop();
-                $(this).text(fileName);
-              }
-            });
-          }
 
-          updateFileLinkText('Upload .PDF Drawing:');
-          updateFileLinkText('Upload .DXF Drawing:');
-        });
-        </script>
-    <?php endif;
-}
-/* Add javascript/jquery fix to convert full url to file name */
 
 
 
@@ -2258,6 +2428,11 @@ function restore_captured_optional_fees_late($cart) {
 // Hook late into fee calculation — this survives recalcs
 
 
+
+
+
+
+
 // Page-load hook: force recalc to trigger the above
 add_action('woocommerce_before_cart', 'force_cart_recalc_on_load', 1);
 function force_cart_recalc_on_load() {
@@ -2275,3 +2450,32 @@ function force_cart_recalc_on_load() {
     
 }
 // Page-load hook: force recalc to trigger the above
+
+
+
+
+
+
+
+// TEMPORARY DEBUG DISPLAY ON CART PAGE
+/*
+add_action('woocommerce_before_cart_totals', 'debug_show_cart_capture_data', 5);
+function debug_show_cart_capture_data() {
+    if (!is_cart()) return;
+    
+    $results = get_cart_capture_data();
+    
+    echo '<div style="background:#f8d7da; border:2px solid #dc3545; padding:15px; margin:15px 0; border-radius:5px;">';
+    echo '<strong style="color:#dc3545;">🔍 DEBUG: get_cart_capture_data() OUTPUT</strong><br><br>';
+    
+    if (empty($results)) {
+        echo '<p><strong>No data returned.</strong></p>';
+    } else {
+        echo '<pre style="background:#fff; padding:10px; max-height:600px; overflow:auto; font-size:12px;">';
+        print_r($results);
+        echo '</pre>';
+    }
+    
+    echo '</div>';
+}
+*/

@@ -2,6 +2,10 @@
 add_action('woocommerce_order_item_meta_end', 'add_order_number_to_admin_email_table', 10, 4);
 function add_order_number_to_admin_email_table($item_id, $item, $order, $plain_text) {
 
+    if ($order->get_status() !== 'pending') {
+        return;
+    }
+
     // Count the number of products in the order
     $total_product_lines = count($order->get_items());
 
@@ -9,7 +13,14 @@ function add_order_number_to_admin_email_table($item_id, $item, $order, $plain_t
     $voucher_discount = (float) $order->get_meta('_voucher_discount');
 
     // Get the shipping address
-    $address = WC()->session->get('custom_shipping_address');
+    //$address = WC()->session->get('custom_shipping_address');
+    $address = $order->get_meta('_custom_shipping_address');
+
+    if (!is_array($address)) {
+        $address = [];
+    }
+
+    //print_r($address);
 
     // Get despatch data from THIS item only
     $despatch_string = $item->get_meta('despatch_string', true);
@@ -82,13 +93,13 @@ function add_order_number_to_admin_email_table($item_id, $item, $order, $plain_t
 
     // Calculate average shipping per delivery (same for every line)
     $average_shipping = ($total_delivery_count > 0)
-        ? round($shipping_total / $total_delivery_count, 3)   // change to 2 if you prefer standard money rounding
+        ? round($shipping_total / $total_delivery_count, 3) 
         : 0;
 
     // Debug (remove or comment out after testing)
-    echo '<pre>Total deliveries in order: ' . $total_delivery_count . '<br>';
-    echo 'Total shipping: £' . $shipping_total . '<br>';
-    echo 'Average shipping per delivery: £' . number_format($average_shipping, 3) . '</pre>';
+    //echo '<pre>Total deliveries in order: ' . $total_delivery_count . '<br>';
+    //echo 'Total shipping: £' . $shipping_total . '<br>';
+    //echo 'Average shipping per delivery: £' . number_format($average_shipping, 3) . '</pre>';
     // ====================== END NEW LOGIC ======================
 
 

@@ -35,14 +35,25 @@ function add_voucher_field_to_checkout() {
                     },
                     success: function(response) {
                         if (response.success) {
-                            alert('Discount code applied!');
                             $('#voucher_code').prop('disabled', true);
                             $('#apply_voucher').prop('disabled', true);
-                            location.reload(); // Reload to reflect the discount
+                            $('body').trigger('update_checkout');
                         } else {
                             alert(response.data.message || 'Invalid discount code!');
                         }
                     }
+                    /*
+                    success: function(response) {
+                        if (response.success) {
+                            alert('Discount code applied!');
+                            $('#voucher_code').prop('disabled', true);
+                            $('#apply_voucher').prop('disabled', true);
+                            location.reload(); 
+                        } else {
+                            alert(response.data.message || 'Invalid discount code!');
+                        }
+                    }
+                    */
                 });
             });
         });

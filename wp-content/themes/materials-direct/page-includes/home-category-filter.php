@@ -1,6 +1,9 @@
 <div class="home-category-menu">
     <div class="home-category-menu__top">
         <h1 class="home-category-menu__title">Instant Online Pricing For Custom Parts <span class="home-category-menu__break">Manufactured Within 24 Hours!</span></h1>
+        <?php if ( $subheading = get_field('home_category_menu_main_subheading') ) : ?>
+            <h6 class="home-category-menu__subtitle"><?php echo esc_html( $subheading ); ?></h6>
+        <?php endif; ?>
     </div>
     <div class="home-category-menu__content">
         <?php if (have_rows('home_category_menu_cards')) : ?>
