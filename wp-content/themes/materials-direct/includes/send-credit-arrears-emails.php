@@ -8,7 +8,7 @@ function send_credit_limit_reminder_email_once() {
 	$user_id = get_current_user_id();
     $credit_limit_remaining = (float) get_field('credit_options_credit_limit_remaining', 'user_' . $user_id);
     $allow_credit = (bool) get_field('credit_options_allow_user_credit_option', 'user_' . $user_id);
-    $original_credit_allowence = (float) get_field('credit_options_original_credit_allowance', 'user_' . get_current_user_id());
+    $original_credit_allowence = (float) get_field('credit_options_original_credit_allowence', 'user_' . get_current_user_id());
 
 	// Validate ACF fields
     if (!is_numeric($credit_limit_remaining) || !$allow_credit) {

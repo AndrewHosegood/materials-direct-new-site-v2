@@ -78,9 +78,9 @@ function add_order_number_to_admin_email_table($item_id, $item, $order, $plain_t
     $total_delivery_count = 0;
     $order_items = $order->get_items();
     foreach ($order_items as $order_item) {
-        if ($order_item->get_meta('is_scheduled') != 1) {
-            continue;
-        }
+        // if ($order_item->get_meta('is_scheduled') != 1) {
+        //     continue;
+        // }
         $item_despatch_string = trim($order_item->get_meta('despatch_string'));
         if (empty($item_despatch_string)) {
             continue;
@@ -203,12 +203,12 @@ function add_order_number_to_admin_email_table($item_id, $item, $order, $plain_t
         echo '<li style="font-weight:bold; color:orange;" class="delivery-options-list__li">Products Purchased Subtotal: £' . number_format($subtotal_after_discount, 2) . '</li>';
         echo '<li style="font-weight:bold;" class="delivery-options-list__li">Total Price: £' . number_format($final_total, 2) . '</li><br>';
 
-        // echo '<li class="delivery-options-list__li">1. subtotal_after_discount: ' . esc_html($subtotal_after_discount) . '</li>';
-        // echo '<li class="delivery-options-list__li">2. tf_3: ' . esc_html($tf_3) . '</li>';
-        // echo '<li class="delivery-options-list__li">3. my_shipping_response: ' . esc_html($my_shipping_response) . '</li>';
-        // echo '<li class="delivery-options-list__li">4. total_vat_display: ' . esc_html($total_vat_display) . '</li>';
-        // echo '<li class="delivery-options-list__li">5. cofc_total: ' . esc_html($cofc_total) . '</li>';
-        // echo '<li class="delivery-options-list__li">6. voucher_percent: ' . esc_html($voucher_percent) . '</li><br>';
+        echo '<li class="delivery-options-list__li">1. subtotal_after_discount: ' . esc_html($subtotal_after_discount) . '</li>';
+        echo '<li class="delivery-options-list__li">2. tf_3: ' . esc_html($tf_3) . '</li>';
+        echo '<li class="delivery-options-list__li">3. my_shipping_response: ' . esc_html($my_shipping_response) . '</li>';
+        echo '<li class="delivery-options-list__li">4. total_vat_display: ' . esc_html($total_vat_display) . '</li>';
+        echo '<li class="delivery-options-list__li">5. cofc_total: ' . esc_html($cofc_total) . '</li>';
+        echo '<li class="delivery-options-list__li">6. voucher_percent: ' . esc_html($voucher_percent) . '</li><br>';
     }
 
     echo '</ul>';

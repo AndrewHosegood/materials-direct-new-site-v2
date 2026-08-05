@@ -6,7 +6,8 @@ function split_schedule_insert_data($order_id) {
     $domain = $_SERVER['HTTP_HOST'];
     $table_name = $wpdb->prefix . 'split_schedule_orders';
     $order = wc_get_order($order_id);
-    
+
+
     $my_shipping_response_calc = 0;
     $custom_fee_total = 0;
     $cart_discount_percent = 0;
@@ -46,10 +47,15 @@ function split_schedule_insert_data($order_id) {
     $numericAmount = str_replace(['-', '£'], '', $discount_value);
     $numericAmount = preg_replace('/[^0-9.,]/', '', $discount_value);
     // Extract the voucher discount value
-
+    
     if (!$order) {
         return;
     }
+
+    //echo "Order: " . $order_id;
+
+    //get sequential order number
+    $order_number = $order->get_order_number();
 
     // Prevent duplicate execution on page refresh
     if ($order->get_meta('_split_schedules_processed') === 'yes') {
@@ -71,16 +77,34 @@ function split_schedule_insert_data($order_id) {
     $scheduled_item_index = 0; // To generate unique invoice suffix
     $has_inserted = false;
 
+    // Determine if this order contains ANY scheduled products
+    $order_has_scheduled_items = false;
+
+    foreach ($order_items as $item) {
+        // echo "<pre>";
+        // print_r($item);
+        // echo "</pre>";
+        if ((int)$item->get_meta('is_scheduled') === 1) {
+            $order_has_scheduled_items = true;
+            break;
+        }
+    }
+    // Determine if this order contains ANY scheduled products
+
+
+    if (!$order_has_scheduled_items) {
+        return;
+    }
 
 
     // ====================== NEW AVERAGED SHIPPING LOGIC ======================
     // Count total number of scheduled deliveries across ALL products
     $total_delivery_count = 0;
+
     foreach ($order_items as $item) {
-        if ($item->get_meta('is_scheduled') != 1) {
-            continue;
-        }
+
         $despatch_string = trim($item->get_meta('despatch_string'));
+
         if (empty($despatch_string)) {
             continue;
         }
@@ -95,37 +119,48 @@ function split_schedule_insert_data($order_id) {
         ? round($shipping_total / $total_delivery_count, 3)   // or use 2 for standard money rounding
         : 0;
 
-    // ====================== END NEW LOGIC ======================
-
+    // ====================== END NEW AVERAGED SHIPPING LOGIC ======================
 
       
 
     if($order){
         foreach ($order_items as $item_id => $item) {
+
             // echo "<pre>";
             // print_r($item);
             // echo "</pre>";
 
-            if ($item->get_meta('is_scheduled') != 1) {
-                continue; 
-            }
 
             $despatch_string = trim($item->get_meta('despatch_string'));
+
 
             if (empty($despatch_string)) {
                 continue;
             }
+
+            // === SINGLE5 DISCOUNT LOGIC - PER ITEM ===
+            // apply the '_has_single5_discount' per line item only
+            $single5_discount = 0;
+            if ( $order->get_meta( '_has_single5_discount' ) === 'yes' ) {
+                $shape_type = $item->get_meta('shape_type');
+                if ( $shape_type === 'single-item' || empty($shape_type) ) {  // fallback if meta is empty
+                    $single5_discount = (float) $order->get_meta( '_single5_discount_amount' );
+                }
+            }
+            // === END SINGLE5 DISCOUNT LOGIC ===
 
             $scheduled_item_index++;
 
             $product      = $item->get_product();
             $sku          = $product ? $product->get_sku() : '';
             $product_name = str_replace('™', '', $item->get_name());
-            $invoice_no   = 50101 + intval($order_id) . "-" . $scheduled_item_index;
+            $invoice_no   = 50101 + intval($order_number) . "-" . $scheduled_item_index;
 
             // Dimensions
-            $width        = $item->get_meta('width') ?: 0;
-            $length       = $item->get_meta('length') ?: 0;
+            //$width        = $item->get_meta('width') ?: 0;
+            //$length       = $item->get_meta('length') ?: 0;
+            $width = $item->get_meta('width') ?: $item->get_meta('Width (MM)') ?: 0;
+            $length = $item->get_meta('length') ?: $item->get_meta('Length (MM)') ?: 0;
             $width_in     = $width / 25.4;
             $length_in    = $length / 25.4;
             $radius       = $width / 2;
@@ -138,7 +173,11 @@ function split_schedule_insert_data($order_id) {
             $dxf_file_name= $dxf_url ? basename($dxf_url) : '';
 
             // Shape & rolls
-            $shape_type   = $item->get_meta('shape_type');
+            if(empty($item->get_meta('shape_type'))){
+                $shape_type = 'single-item';
+            } else {
+                $shape_type   = $item->get_meta('shape_type');
+            }
             $rolls_value  = ($shape_type === 'rolls') ? 'Rolls' : '';
             $roll_length  = $item->get_meta('roll_length') ?: '';
 
@@ -187,7 +226,7 @@ function split_schedule_insert_data($order_id) {
             $delivery_count = count($matches);
             $stock_quantity = $item->get_meta('stock_quantity');
 
-            echo "Stock Quantity: " . $stock_quantity;
+            //echo "Stock Quantity: " . $stock_quantity;
 
             if($stock_quantity <= 0){
                 $my_backorder = 1;
@@ -195,7 +234,7 @@ function split_schedule_insert_data($order_id) {
                 $my_backorder = 0;
             }
 
-            echo "My Backorder: " . $my_backorder;
+            //echo "My Backorder: " . $my_backorder;
 
             foreach ($matches as $index => $match) {
                 $schedule_qty  = (int) str_replace(',', '', $match[1]);
@@ -271,7 +310,8 @@ function split_schedule_insert_data($order_id) {
                         'firstname'             => $billing_firstname,
                         'lastname'              => $billing_lastname,
                         'company'               => $billing_company,
-                        'order_no'              => $order_id,
+                        'order_no_admin'        => $order_id,
+                        'order_no'              => $order_number,
                         'customer_po'           => $po_ref_no,
                         'sku'                   => $sku,
                         'order_count'           => $scheduled_item_index,
@@ -314,15 +354,16 @@ function split_schedule_insert_data($order_id) {
                         'last'                  => $last, //
                         'cart_discount_price'   => $cart_discount_price,
                         'cart_discount_percent' => $cart_discount_percent,
-                        'mcofc_fair'          => $mcofc_fair,
-                        'mcofc_fair_string'   => $mcofc_fair_string,
-                        'mcofc_fair_value'    => $mcofc_fair_value,
+                        'has_single5_discount'  => $single5_discount,
+                        'mcofc_fair'            => $mcofc_fair,
+                        'mcofc_fair_string'     => $mcofc_fair_string,
+                        'mcofc_fair_value'      => $mcofc_fair_value,
                         'md_title'              => 0,
                         'md_value'              => 0,
                         'rolls_value'           => $rolls_value, // here
                         'rolls_length'          => $roll_length, // here
                         'repayment_terms'       => $repayment_terms,
-                        'date'                => $formattedDateNew,
+                        'date'                  => $formattedDateNew,
                 ];
 
 
@@ -364,7 +405,7 @@ function split_schedule_insert_data($order_id) {
                     $message .= '<h3 style="display: block; font-family: &quot;Helvetica Neue&quot;, Helvetica, Roboto, Arial, sans-serif; font-weight: bold; line-height: 130%; margin: 0 0 18px; text-align: left; font-size: 22px; color: #000000;">Scheduled Date: '.$requiredDate.'</h3>';
                     $message .= $billing_firstname . ' ' . $billing_lastname . ' has placed a delivery options order. Details are below:';
                     $message .= '<ul>';
-                    $message .= '<li>Order ID: '. $order_id .'</li>';
+                    $message .= '<li>Order ID: '. $order_number .'</li>';
                     $message .= '<li>Product Name: '. $product_name .'</li>';
                     $message .= '<li>Client Name: '. $billing_firstname .' ' . $billing_lastname . ' ' . $billing_company .'</li>';
                     $message .= '<li>Part Shape: '. $shape_type .'</li>';
@@ -421,7 +462,7 @@ function split_schedule_insert_data($order_id) {
         $order = wc_get_order($order_id);
         
         $table_name = $wpdb->prefix . 'split_schedule_orders';
-        $sql = $wpdb->prepare("SELECT * FROM $table_name WHERE order_no = %d", $order_id);
+        $sql = $wpdb->prepare("SELECT * FROM $table_name WHERE order_no = %d", $order_number);
 
         $order_date = $order->get_date_created();
 
@@ -443,7 +484,7 @@ function split_schedule_insert_data($order_id) {
 
         $message_3 .= '<h2 style="font-family: Helvetica, Roboto, Arial, sans-serif; color: #ef9003; display: block; font-size: 18px; font-weight: bold; line-height: 130%; margin: 0 0 18px; text-align: left;">';
         $message_3 .= 'Customer PO: '.$po_ref_no.'<br>';
-        $message_3 .= 'MD Order: #'.$order_id.' <br>';
+        $message_3 .= 'MD Order: #'.$order_number.' <br>';
         $message_3 .= 'Order Date: ' . $order_date_formatted;
         $message_3 .= '</h2>';
         $message_3 .= '<div style="margin-bottom: 40px;">';
@@ -573,7 +614,8 @@ function split_schedule_insert_data($order_id) {
                 $meta_shipping_total_2 = $row['meta_shipping_total'];
                 $delivery_count = $row['delivery_count'];
                 $order_count = $row['order_count'];
-                $voucher_code = $row['voucher_code'];
+                //$voucher_code = $row['voucher_code'];
+                $voucher_code = (float) str_replace([',', ' '], '', $row['voucher_code']);
                 $ah_voucher_percent = $row['voucher_percent'];
                 $cost_per_part_raw = $row['cost_per_part_raw'];
                 $country = $row['country'];
@@ -589,6 +631,7 @@ function split_schedule_insert_data($order_id) {
                 $md_value = $row['md_value'];
                 $ah_cart_discount_price = $row['cart_discount_price'];
                 $cart_discount_prices[] = $ah_cart_discount_price;
+                $has_single5_discount = $row['has_single5_discount'];
                 $rolls_value = $row['rolls_value'];
                 $rolls_length = $row['rolls_length'];
 
@@ -675,7 +718,7 @@ function split_schedule_insert_data($order_id) {
 
                 // Get the fair values
 
-                $vat_amount = $cppnew + $my_shipping_response - $tf_3 + $md_value_final + $mcofc_fair_numeric - $voucher_percent; 
+                $vat_amount = $cppnew + $my_shipping_response - $tf_3 + $md_value_final + $mcofc_fair_numeric - $voucher_percent - $has_single5_discount; 
 
                 $vat_percent = 20;
 
@@ -689,7 +732,7 @@ function split_schedule_insert_data($order_id) {
 
                 $subtotal = $cppnew;
                 //$total_final = $subtotal + $shipping_display_new + $vat_display - $tf_3 + $md_value_final - $discount_code_value_new + $mcofc_fair_numeric;
-                $total_final = $subtotal + $my_shipping_response + $vat_display - $tf_3 + $md_value_final + $mcofc_fair_numeric - $voucher_percent; 
+                $total_final = $subtotal + $my_shipping_response + $vat_display - $tf_3 + $md_value_final + $mcofc_fair_numeric - $voucher_percent - $has_single5_discount; 
                 $newtotal = floor($total_final * 100) / 100;
 
                 // Generate the PDF link for my-account
@@ -705,12 +748,12 @@ function split_schedule_insert_data($order_id) {
                 // Generate the PDF link for my-account
 
 
-                if($order_count > 1){
+                //if($order_count > 1){
                     $message_3 .= '<p style="margin: 0; padding: 0;">'.$row['title'].'</p>';
                     $message_3 .= '<p style="margin: 0; padding: 0;">Part shape: '.$row['part_shape'].'</p>';
                     $message_3 .= '<p style="margin: 0; padding: 0;">Width (mm): '.$row['width'].'</p>';
                     $message_3 .= '<p style="margin: 0; padding: 0;">Length (mm): '.$row['length'].'</p>';
-                }
+                //}
                 
                 $message_3 .= '<p style="margin: 0; padding: 0;">Qty: '.$row['schedule_qty'].'</p>';
                 $message_3 .= '<p style="margin: 0; padding: 0;">Dispatch Date: '.$formatted_date_pdf.'</p>';
@@ -732,6 +775,7 @@ function split_schedule_insert_data($order_id) {
                 $message_3 .= '<p style="margin: 0; padding: 0;">('.$mcofc_fair_numeric_title.' - £'.$mcofc_fair_numeric.') </p>';
                 $message_3 .= '<p style="margin: 0; padding: 0;"><strong style="color:#ef9003;">Products Purchased Subtotal: £'.$subtotal_display.'</strong></p>';
                 $message_3 .= '<p style="margin: 0; padding: 0;"><strong>Total Price: £'.number_format($total_final, 2).'</strong></p><br><br>';
+                //$message_3 .= '<p style="margin: 0; padding: 0;">'.number_format((float)$voucher_code, 2) .", ". $tf_3_calc .'</p><br><br>';
 
 
 
@@ -752,11 +796,9 @@ function split_schedule_insert_data($order_id) {
 
         /* Calculate the final VAT for display */
         $final_voucher_discount_calc = $order->get_subtotal() * $ah_voucher_percent;
-        $ah_final_vat = $order->get_subtotal() - $tf_3_calc - $final_voucher_discount_calc + $mcofc_fair_numeric_display + $my_shipping_response_calc;
+        $ah_final_vat = $order->get_subtotal() - $tf_3_calc - $final_voucher_discount_calc + $mcofc_fair_numeric_display + $my_shipping_response_calc - $has_single5_discount;
         $ah_final_vat_result = ($ah_final_vat * $tax_rate) / 100;
         /* Calculate the final VAT for display */
-
-
     
         $message_3 .= '</ul>';
         $message_3 .= '</td>';
@@ -775,12 +817,12 @@ function split_schedule_insert_data($order_id) {
         $message_3 .= '<td class="td" style="color: #ef9003; border: 1px solid #e5e5e5; vertical-align: middle; text-align: center;"><strong>£'.number_format($order->get_subtotal(), 2).'</strong></td>';
         $message_3 .= '</tr>';
                 
-        if(isset($cart_discount_percent)){
-            $message_3 .= '<tr>';
-            $message_3 .= '<th class="td" scope="row" style="color: #636363; border: 1px solid #e5e5e5; vertical-align: middle; text-align: left;">Discount:</th>';
-            $message_3 .= '<td class="td" style="color: #636363; border: 1px solid #e5e5e5; vertical-align: middle; text-align: center;"><span class="woocommerce-Price-amount amount"><span class="woocommerce-Price-currencySymbol">£-</span>'.$tf_3_calc.'</span></td>';
-            $message_3 .= '</tr>';
-        }
+        // if(isset($cart_discount_percent)){
+        //     $message_3 .= '<tr>';
+        //     $message_3 .= '<th class="td" scope="row" style="color: #636363; border: 1px solid #e5e5e5; vertical-align: middle; text-align: left;">Discount:</th>';
+        //     $message_3 .= '<td class="td" style="color: #636363; border: 1px solid #e5e5e5; vertical-align: middle; text-align: center;"><span class="woocommerce-Price-amount amount"><span class="woocommerce-Price-currencySymbol">£-</span>'.$tf_3_calc.'</span></td>';
+        //     $message_3 .= '</tr>';
+        // }
 
         if($mcofc_fair_numeric_display != 0){
             $message_3 .= '<tr>';
@@ -863,13 +905,17 @@ function split_schedule_insert_data($order_id) {
         $message_3 .= '<tr>';
         $message_3 .= '<td valign="top" width="50%" style="text-align: left; font-family: Helvetica, Roboto, Arial, sans-serif; border: 0; padding: 0;">';
         $message_3 .= '<h2 style="color: #ef9003; display: block; font-family: Helvetica, Roboto, Arial, sans-serif; font-size: 18px; font-weight: bold; line-height: 130%; margin: 0 0 18px; text-align: left;">Billing address</h2>';
-        $message_3 .= '<address class="address" style="padding: 12px; color: #636363; border: 1px solid #e5e5e5;">'.$order->get_billing_first_name().' '.$order->get_billing_last_name().' '.$order->get_billing_company().'<br>'.$order->get_billing_address_1().'<br>'.$order->get_billing_address_2().'<br>'.$order->get_billing_city().'<br>'.$order->get_billing_postcode().'<br><a href="tel:'.$order->get_billing_phone().'" style="color: #202020; font-weight: normal; text-decoration: underline;">'.$order->get_billing_phone().'</a><br>'.$order->get_billing_email().'</address>';
+        if($order->get_billing_company()){
+            $message_3 .= '<address class="address" style="padding: 12px; color: #636363; border: 1px solid #e5e5e5;">'.$order->get_billing_first_name().' '.$order->get_billing_last_name().'<br>'.$order->get_billing_company().'<br>'.$order->get_billing_address_1().'<br>'.$order->get_billing_address_2().'<br>'.$order->get_billing_city().'<br>'.$order->get_billing_postcode().'<br><a href="tel:'.$order->get_billing_phone().'" style="color: #202020; font-weight: normal; text-decoration: underline;">'.$order->get_billing_phone().'</a><br>'.$order->get_billing_email().'</address>';
+        } else {
+            $message_3 .= '<address class="address" style="padding: 12px; color: #636363; border: 1px solid #e5e5e5;">'.$order->get_billing_first_name().' '.$order->get_billing_last_name().'<br>'.$order->get_billing_address_1().'<br>'.$order->get_billing_address_2().'<br>'.$order->get_billing_city().'<br>'.$order->get_billing_postcode().'<br><a href="tel:'.$order->get_billing_phone().'" style="color: #202020; font-weight: normal; text-decoration: underline;">'.$order->get_billing_phone().'</a><br>'.$order->get_billing_email().'</address>';
+        }
         $message_3 .= '</td>';
         $message_3 .= '</tr>';
         $message_3 .= '</tbody>';
         $message_3 .= '</table>';
 
-        $subject_3 = 'Order Acknowledgement[#' .$order_id. ']'; 
+        $subject_3 = 'Order Acknowledgement[#' .$order_number. ']'; 
 
         // Retrieve the ACF field email addresses from backend
         $admin_email = get_field('delivery_options_order_acknowledgement_admin_email', 'option') ?: 'andrewh@materials-direct.com';

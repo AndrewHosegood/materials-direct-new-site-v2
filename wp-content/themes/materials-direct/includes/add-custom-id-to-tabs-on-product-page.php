@@ -13,5 +13,10 @@ add_action( 'woocommerce_after_single_product_summary', function() {
         $html
     );
 
+    // Now wrap the whole thing with your custom div
+    //$wrapped = '<div class="product-details-wrapper">' . $html . '</div>';
+
+    //echo $wrapped;
+
     echo $html;
 }, 9999 );

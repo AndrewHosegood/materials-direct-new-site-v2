@@ -125,6 +125,7 @@ function view_admin_content() {
                         $title = isset($row['title']) ? $row['title'] : '';
                         $date = isset($row['date']) ? $row['date'] : '';
                         $order_no = isset($row['order_no']) ? $row['order_no'] : '';
+                        $order_no_admin = isset($row['order_no_admin']) ? $row['order_no_admin'] : '';
                         $notes = isset($row['notes']) ? $row['notes'] : '';
                         $part_shape = isset($row['part_shape']) ? $row['part_shape'] : '';
                         $part_shape_link = isset($row['part_shape_link']) ? $row['part_shape_link'] : '';
@@ -195,6 +196,7 @@ function view_admin_content() {
                         </select>
                         <input type="hidden" name="id" value="' . $id . '">
                         <input type="hidden" name="order_no" value="' . $order_no . '">
+                        <input type="hidden" name="order_no_admin" value="' . $order_no_admin . '">
                         <input type="hidden" name="date" value="' . $date . '">
                         <a class="calender__btn-update" href="/wp-admin/admin.php?page=view_admin&calendar__search='.$search_term.'&Search=search">Update</a>
                         </form>
@@ -210,6 +212,7 @@ function view_admin_content() {
                         </select>
                         <input type="hidden" name="id" value="' . $id . '">
                         <input type="hidden" name="order_no" value="' . $order_no . '">
+                        <input type="hidden" name="order_no_admin" value="' . $order_no_admin . '">
                         <input type="hidden" name="date" value="' . $date . '">
                         <a class="calender__btn-update" href="/wp-admin/admin.php?page=view_admin&calendar__search='.$search_term.'&Search=search">Update</a>
                         </form>
@@ -223,6 +226,7 @@ function view_admin_content() {
                         </select>
                         <input type="hidden" name="id" value="' . $id . '">
                         <input type="hidden" name="order_no" value="' . $order_no . '">
+                        <input type="hidden" name="order_no_admin" value="' . $order_no_admin . '">
                         <a class="calender__btn-update" href="/wp-admin/admin.php?page=view_admin&calendar__search='.$calendar_search.'&Search=search">Update</a>
                         </form>
                         ';
@@ -303,7 +307,7 @@ function view_admin_content() {
                             <td <?php echo $status_bg; ?>>
                             <?php if($status == "made" || $status == "dispatch"){ ?>
                                 <?php //if($date_counts_by_order[$order_no][$date] == "1"){ ?>
-                                    <a target="_blank" href="/pdf-generation/?id=<?php echo $id; ?>&order_no=<?php echo $order_no; ?>&date=<?php echo $date; ?>">Click Here</a>
+                                    <a target="_blank" href="/pdf-generation/?id=<?php echo $id; ?>&order_no=<?php echo $order_no; ?>&order_no_admin=<?php echo $order_no_admin; ?>&date=<?php echo $date; ?>">Click Here</a>
                                 <?php //} ?>
                             <?php } else {
                                 echo "<p>Available once marked as made</p>";
@@ -314,7 +318,7 @@ function view_admin_content() {
                                 
                                 <?php if($status == "made" || $status == "dispatch"){ ?>
                                     <?php //if($date_counts_by_order[$order_no][$date] == "1"){ ?>
-                                        <a target="_blank" href="/pdf-generation-invoice/?id=<?php echo $id; ?>&order_no=<?php echo $order_no; ?>&date=<?php echo $date; ?>&title=<?php echo $title; ?>">Click Here</a>
+                                        <a target="_blank" href="/pdf-generation-invoice/?id=<?php echo $id; ?>&order_no=<?php echo $order_no; ?>&order_no_admin=<?php echo $order_no_admin; ?>&date=<?php echo $date; ?>&title=<?php echo $title; ?>">Click Here</a>
                                     <?php //} ?>
                                 <?php } else {
                                     echo "<p>Available once marked as made</p>";
@@ -504,7 +508,7 @@ function view_admin_content() {
                                 <a href="/wp-admin/admin.php?page=view_admin&calendar__search='.$row->order_no.'&date='.$row->date.'&Search=search" style="float: right; border: 1px solid #777; border-radius: 0.2rem; background: #eee; padding: 0.07rem 0.3rem; margin-left: 0.5rem; color: black;">Update</a>
                                 <button style="float:right; margin: 0 0 0 12px;" class="calendar__select-shipments-send">Send Customer Invoice & Dispatch Note</button>
 
-                                <a target="_blank" style="float:right; margin: 0 42px;" href="/pdf-generation-invoice/?id='.$row->id.'&order_no='.$row->order_no.'&date='.$row->date.'&is_merged=' .$row->is_merged. '&title='.$row->title.'">Preview Invoice</a>
+                                <a target="_blank" style="float:right; margin: 0 42px;" href="/pdf-generation-invoice/?id='.$row->id.'&order_no='.$row->order_no.'&order_no_admin='.$row->order_no_admin.'&date='.$row->date.'&is_merged=' .$row->is_merged. '&title='.$row->title.'">Preview Invoice</a>
 
                                 <a target="_blank" style="float:right; margin: 0 42px;" href="/pdf-generation/?id='.$row->id.'&order_no='.$row->order_no.'&date='.$row->date.'&is_merged='.$row->is_merged.'&title='.$row->title.'">Preview Despatch Note</a>
                                 <input type="hidden" name="id" value="'.$row->id.'">

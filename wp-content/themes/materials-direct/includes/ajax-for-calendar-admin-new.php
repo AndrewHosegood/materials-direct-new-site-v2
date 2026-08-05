@@ -3,12 +3,11 @@ add_action('wp_ajax_update_order_status', 'update_order_status');
 
 function update_order_status() {
 
-        global $wpdb;
-
+    global $wpdb;
+    
     $domain = $_SERVER['HTTP_HOST'];
 
     $http = "https"; //change to https for staging and live
-
      
     require_once TCPDF_INCLUDE_PATH;
 
@@ -18,6 +17,7 @@ function update_order_status() {
     $id = $_POST['id'];
     $status = $_POST['status'];
     $order_no = $_POST['order_no'];
+    $order_no_admin = $_POST['order_no_admin'];
     $new_date = $_POST['date'];
     $is_merged = $_POST['is_merged'];
 
@@ -27,8 +27,9 @@ function update_order_status() {
         $is_merged = 0;
     }
 
-    $order = wc_get_order($order_no);
+    $order = wc_get_order($order_no_admin);
   	$customer_email_send = $order->get_billing_email();
+
     $emails = [];
     if (have_rows('delivery_note_emails_customer', 'option')) {
         while (have_rows('delivery_note_emails_customer', 'option')) {
@@ -44,6 +45,7 @@ function update_order_status() {
     if (empty($admin_email_send)) {
         $admin_email_send = 'andrewh@materials-direct.com';     
     }
+
 
     $totals_html = '';
     $mcf_v_sum = 0;
@@ -68,8 +70,11 @@ function update_order_status() {
         array('%d') // Where format
     );
 
+
+
     // Check if update was successful
     if ($result !== false) {
+
 
         //echo "Status updated successfully";
 
@@ -86,6 +91,7 @@ function update_order_status() {
                     $schedule = $row['schedule'];
                     $date = $row['date'];
                     $order_no = $row['order_no'];
+                    $order_no_admin = $row['order_no_admin'];
                     $date = new DateTime($date);
                     $formatted_date_pdf = $date->format('jS F Y');
 
@@ -94,7 +100,7 @@ function update_order_status() {
                     $subject = 'Reminder - Delivery Options Order ('.$schedule.')';
                     $message = '<h2 style="display: block; font-family: &quot;Helvetica Neue&quot;, Helvetica, Roboto, Arial, sans-serif; font-weight: bold; line-height: 130%; margin: 0 0 18px; text-align: left; font-size: 26px; color: #000000;">Reminder for order #'.$order_no.'</h2>';
                     $message .= '<p>Hi Admin,<br>This is a reminder that delivery '.$schedule.' for #'.$order_no.' is due to be shipped on '.$formatted_date_pdf.'. Remember to aim to ship the delivery one week before due date.</p>';
-                    $message .= '<span style="margin-right:10px;">You can view the order <a href="'.$http.'://'.$domain.'/wp-admin/post.php?post='.$order_no.'&action=edit">HERE</a></span><span>and you can view the calendar entries <a href="'.$http.'://'.$domain.'/wp-admin/admin.php?page=view_admin">HERE</a></span>';
+                    $message .= '<span style="margin-right:10px;">You can view the order <a href="'.$http.'://'.$domain.'/wp-admin/post.php?post='.$order_no_admin.'&action=edit">HERE</a></span><span>and you can view the calendar entries <a href="'.$http.'://'.$domain.'/wp-admin/admin.php?page=view_admin">HERE</a></span>';
                     $headers = array('Content-Type: text/html; charset=UTF-8');
                     $mail_sent_3 = wp_mail( $admin_email, $subject, $message, $headers);
                     if ($mail_sent_3) {
@@ -274,7 +280,7 @@ function update_order_status() {
                     // Header Section (Logo + Company Info)
                     $html .= '<tr>';
                     $html .= '<td style="width: 45%; padding: 20px;">';
-                    $html .= '<img src="' . $logo_path . '" alt="Company Logo" style="width:150px; height:auto;">';
+                    $html .= '';
                     $html .= '</td>';
                     $html .= '<td style="width: 55%; padding: 20px; text-align:right; color: #999999;">';
                     $html .= '<p style="font-size:8px;">Materials Direct<br>76 Burners Lane, Kiln Farm<br>Milton Keynes, MK11 3HD<br>United Kingdom<br><br>Tel: +44 (0) 1908 222 211<br>Email: info@materials-direct.com<br>www.materials-direct.com</p>';
@@ -313,7 +319,7 @@ function update_order_status() {
                         $order_count = $row['order_count'];
                         $country = $row['country'];
                         $cart_discount_percent = (float) $row['cart_discount_percent'];
-            
+                        $has_single5_discount = !empty($row['has_single5_discount']) ? (float) $row['has_single5_discount'] : 0;
                         $md_value = $row['md_value'];
                         $part_shape = $row['part_shape'];
                         $width = $row['width'];
@@ -521,7 +527,7 @@ function update_order_status() {
                     // Header Section (Logo + Company Info)
                     $html2 .= '<tr>';
                     $html2 .= '<td style="width: 45%; padding: 20px;">';
-                    $html2 .= '<img src="' . $logo_path . '" alt="Company Logo" style="width:150px; height:auto;">';
+                    $html2 .= '';
                     $html2 .= '</td>';
                     $html2 .= '<td style="width: 55%; padding: 20px; text-align:right; color: #999999;">';
                     $html2 .= '<p style="font-size:8px;">Materials Direct<br>76 Burners Lane, Kiln Farm<br>Milton Keynes, MK11 3HD<br>United Kingdom<br><br>Tel: +44 (0) 1908 222 211<br>Email: info@materials-direct.com<br>www.materials-direct.com</p>';
@@ -560,7 +566,7 @@ function update_order_status() {
                         $order_count = $row['order_count'];
                         $country = $row['country'];
                         $cart_discount_percent = (float) $row['cart_discount_percent'];
-            
+                        $has_single5_discount = !empty($row['has_single5_discount']) ? (float) $row['has_single5_discount'] : 0;
                         $md_value = $row['md_value'];
                         $part_shape = $row['part_shape'];
                         $width = $row['width'];
@@ -737,7 +743,7 @@ function update_order_status() {
                       
 						$my_shipping_response = $shipping_display_new;
 
-                        $vat_amount = $cppnew + $mcofc_fair_value_display + $my_shipping_response - $tf_3 - $voucher_percent;
+                        $vat_amount = $cppnew + $mcofc_fair_value_display + $my_shipping_response - $tf_3 - $voucher_percent - $has_single5_discount;
                         //$vat_amount = 100;
 
 
@@ -755,7 +761,7 @@ function update_order_status() {
 
 
                         // calculate totals
-                        $total_final = $cppnew + $my_shipping_response + $vat_display - $tf_3 + $md_value + $mcofc_fair_value_display - $voucher_percent;
+                        $total_final = $cppnew + $my_shipping_response + $vat_display - $tf_3 + $md_value + $mcofc_fair_value_display - $voucher_percent - $has_single5_discount;
                         //$total_final = 100;
                         $newtotal = floor($total_final * 100) / 100; // Total inc VAT
                         $total_sum += $newtotal;
@@ -905,7 +911,7 @@ function update_order_status() {
                         //collect the values for the invoice numbers on merged dates
 
                         // calculate subtotal display
-                        $subtotal_display_2 = $cppnew + $mcofc_fair_value + $my_shipping_response - $tf_3 - $discount_code_value_new;
+                        $subtotal_display_2 = $cppnew + $mcofc_fair_value + $my_shipping_response - $tf_3 - $discount_code_value_new - $has_single5_discount;
                         $subtotal_2_sum += $subtotal_display_2;
                         // calculate subtotal display
 
@@ -974,6 +980,13 @@ function update_order_status() {
                                 $totals_html .= '<td>Order Discounts</td>';
                                 $totals_html .= '<td>£-'.number_format($tf_3_sum, 2).'</td>';
                                 $totals_html .= '</tr>';
+
+                                if($has_single5_discount != 0){
+                                    $totals_html .= '<tr>';
+                                    $totals_html .= '<td>Order Discounts (Single Item)</td>';
+                                    $totals_html .= '<td>£-' .$has_single5_discount. '</td>';
+                                    $totals_html .= '</tr>';
+                                }
         
                                 if($discount_code_value_new != 0){
                                     $totals_html .= '<tr>';
@@ -1020,6 +1033,13 @@ function update_order_status() {
                                 $totals_html .= '<td>Order Discounts</td>';
                                 $totals_html .= '<td>£-'.number_format($tf_3, 2).'</td>';
                                 $totals_html .= '</tr>';
+
+                                if($has_single5_discount != 0){
+                                    $totals_html .= '<tr>';
+                                    $totals_html .= '<td>Order Discounts (Single Item)</td>';
+                                    $totals_html .= '<td>£-' .$has_single5_discount. '</td>';
+                                    $totals_html .= '</tr>';
+                                }
                     
                                 if($discount_code_value_new != 0){
                                     $totals_html .= '<tr>';

@@ -117,3 +117,41 @@ function rename_single5_label( $label, $coupon ) {
     }
     return $label;
 }
+
+
+/* ========= 5. Add custom meta to order when single5 discount (virtual coupon) is applied. ========= */
+
+add_action( 'woocommerce_checkout_order_processed', 'add_single5_discount_order_meta', 20, 3 );
+add_action( 'woocommerce_store_api_checkout_order_processed', 'add_single5_discount_order_meta', 20, 1 ); // For Blocks checkout if needed
+
+function add_single5_discount_order_meta( $order_id, $posted_data = null, $order = null ) {
+    if ( ! $order ) {
+        $order = wc_get_order( $order_id );
+    }
+    if ( ! $order ) {
+        return;
+    }
+
+    $coupon_code = 'single5';
+    $used_coupons = $order->get_used_coupons(); // Returns array of lowercase codes
+
+    if ( in_array( strtolower( $coupon_code ), array_map( 'strtolower', $used_coupons ), true ) ) {
+        // Flag that the discount was applied
+        $order->update_meta_data( '_has_single5_discount', 'yes' );
+        
+        // Optional: Store the discount amount for this specific coupon
+        $discount_total = 0;
+        foreach ( $order->get_items( 'coupon' ) as $coupon_item ) {
+            if ( strtolower( $coupon_item->get_code() ) === strtolower( $coupon_code ) ) {
+                $discount_total += (float) $coupon_item->get_discount();
+                // You could also save per-line-item details if needed
+            }
+        }
+        
+        if ( $discount_total > 0 ) {
+            $order->update_meta_data( '_single5_discount_amount', $discount_total );
+        }
+
+        $order->save();
+    }
+}

@@ -248,3 +248,5 @@ do_action( 'woocommerce_before_cart' ); ?>
     }
 </script>
 <!-- End convert shipping to current currency rate -->
+
+

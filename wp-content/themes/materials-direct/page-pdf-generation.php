@@ -3,17 +3,7 @@
 Template Name: PDF Generation (Delivery Note)
 */
 
-$domain = $_SERVER['HTTP_HOST'];
-
-if($domain == "localhost:8888"){
-    require_once('/Applications/MAMP/htdocs/materials-direct-new/wp-content/themes/creative-mon/pdf-generation/examples/tcpdf_include.php');
-} 
-elseif($domain == "newbuild.staging-materials-direct.co.uk"){
-    require_once('/kunden/homepages/2/d4298640024/htdocs/wp-content/themes/creative-mon/pdf-generation/examples/tcpdf_include.php');
-}
-else {
-    require_once('/home/customer/www/materials-direct.com/public_html/wp-content/themes/creative-mon/pdf-generation/examples/tcpdf_include.php');
-}
+require_once TCPDF_INCLUDE_PATH;
 
 date_default_timezone_set('Europe/London');
 
@@ -21,13 +11,14 @@ $pdf_date = date('jS F Y');
 
 $id = isset($_GET['id']) ? absint($_GET['id']) : 0;
 $order_no = isset($_GET['order_no']) ? sanitize_text_field($_GET['order_no']) : '';
+$order_no_admin = isset($_GET['order_no_admin']) ? intval($_GET['order_no_admin']) : 0;
 $new_date = isset($_GET['date']) ? sanitize_text_field($_GET['date']) : '';
 $is_merged = isset($_GET['is_merged']) ? sanitize_text_field($_GET['is_merged']) : '';
 
 // $id = $_GET['id'];
 // $order_no = $_GET['order_no'];
 // $new_date = $_GET['date'];
-$order = wc_get_order($order_no);
+$order = wc_get_order($order_no_admin);
 $totals_html = '';
 
 

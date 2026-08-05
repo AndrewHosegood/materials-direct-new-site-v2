@@ -2,6 +2,9 @@
 add_filter( 'woocommerce_email_styles', 'custom_woocommerce_email_table_styles' );
 function custom_woocommerce_email_table_styles( $css ) {
   	$css .= "
+        #body_content_inner_cell {
+            padding: 20px 32px 8px 32px !important;
+        }
         #body_content_inner_cell #body_content_inner .email-introduction {
             padding-bottom: 0;
         }
@@ -16,6 +19,7 @@ function custom_woocommerce_email_table_styles( $css ) {
             color: #ef9003;
             font-weight: bold;
             line-height: 22px;
+            text-decoration: none;
         }
         #template_header_image {
             padding: 28px 32px;
@@ -27,9 +31,6 @@ function custom_woocommerce_email_table_styles( $css ) {
         #template_body td#body_content {
             background: #f4f4f4 !important;
         }
-		#template_body table.email-order-details  {
-			border: 1px solid #ccc !important;
-		}
         #template_body table.email-order-details thead th  {
 			padding: 8px 12px !important;
             border-bottom: 1px solid #ccc;
@@ -67,7 +68,10 @@ function custom_woocommerce_email_table_styles( $css ) {
             color: #ef9003;
         }
         #template_body table.email-order-details .order_item td {
-            border: 0px solid #ccc !important;
+            border-top:none !important;
+            border-right:none !important;
+            border-bottom:none !important;
+            border-left:none !important;
         }
         #template_body table.email-order-details tfoot .order-totals th {
             padding: 8px 12px !important;
@@ -86,15 +90,41 @@ function custom_woocommerce_email_table_styles( $css ) {
         #template_body table.email-order-details tfoot .woocommerce-Price-amount {
             font-size: 16px;
         }
+        #template_body table tr.order-totals .text-align-left {
+            padding-left: 12px;
+            border-bottom: 1px solid #ccc;
+            border-right: 1px solid #ccc;
+        }
+        #template_body table tr.order-totals .text-align-right {
+            padding-right: 12px;
+            border-bottom: 1px solid #ccc;
+        }
+        #template_body table tr.order-totals div {
+            max-width: 100% !important;
+            width: 100%;
+        }
+        #template_body table tr.order-totals-last .text-align-left {
+            padding-bottom: 12px;
+            border-bottom: 0px solid #ccc;
+        }
+        #template_body table tr.order-totals-last .text-align-right {
+            padding-bottom: 12px;
+            border-bottom: 0px solid #ccc;
+        }
+        #template_body table tr.order-totals .text-align-right .woocommerce-Price-amount {
+            font-size: 16px;
+        }
         #addresses .address-title {
             color: #ef9003;
-            margin: 10px 0;
             display: block;
         }
         #addresses .address {
             border: 1px solid #ccc;
+            background: #ffffff;
             padding: 10px;
             font-style: italic;
+            margin-top: 5px;
+            margin-bottom: 10px;
         }
         .email-additional-content {
             display: none;

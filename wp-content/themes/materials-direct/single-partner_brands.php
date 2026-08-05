@@ -18,12 +18,18 @@ get_header();
 			<div class="item brands-banner__item">
 
 				<?php $banner_image = get_sub_field('brands_banner_background_image'); ?>
-				<?php $banner_height = get_sub_field('brands_banner_height'); ?>
+				<?php
+          if(get_field('brands_banner_height')){
+              $banner_height = get_field('brands_banner_height'); 
+          } else {
+              $banner_height = '355'; 
+          }
+        ?>
 				<?php $banner_logo = get_sub_field('brands_banner_logo'); ?>
 
-				<div class="brands-banner__container" style="background-image: url(<?php echo $banner_image['url']; ?>);">
+				<div class="brands-banner__container" style="background-image: url(<?php echo $banner_image['url']; ?>); height: <?php echo $banner_height; ?>px;">
 					
-					<div class="brands-banner__content">
+					<div class="brands-banner__content" style="height: <?php echo $banner_height; ?>px;">
 						<img src="<?php echo $banner_logo['url']; ?>" alt="<?php echo $banner_logo['alt']; ?>" class="brands-banner__logo">
 						<span class="brands-banner__content-wrap"><?php the_sub_field('brands_banner_content'); ?></span>
 					</div>
@@ -36,14 +42,6 @@ get_header();
 	
 </section>
 <!-- Banner -->
-
-
-
-
-
-
-
-
 
 
 <div class="container">
@@ -73,24 +71,38 @@ get_header();
 	} ?>
 
     <?php if (!empty($partner_brands_categories_paged)) : ?>
-      <?php foreach ($partner_brands_categories_paged as $category) : 
-          $thumb = $category['brands_category_thumbnail'];
+
+
+      <?php 
+          foreach ($partner_brands_categories_paged as $category) : 
+              $thumb = $category['brands_category_thumbnail'] ?? null;
+              
+              // Determine image source and alt text
+              if (!empty($thumb) && is_array($thumb)) {
+                  $image_src = $thumb['url'];
+                  $image_alt = $thumb['alt'] ?? '';
+              } else {
+                  $image_src = wc_placeholder_img_src();           // WooCommerce default placeholder
+                  $image_alt = __('Placeholder', 'materials-direct');
+              }
       ?>
         <div class="partner-brands-content__wrapper">
-          <div class="partner-brands-content__thumb">
-            <?php if (!empty($thumb)) : ?>
-              <img class="partner-brands-content__img"
-                   src="<?php echo esc_url($thumb['url']); ?>"
-                   alt="<?php echo esc_attr($thumb['alt']); ?>">
-            <?php endif; ?>
+
+
+        <div class="partner-brands-content__thumb">
+            <img class="partner-brands-content__img"
+                 src="<?php echo esc_url($image_src); ?>"
+                 alt="<?php echo esc_attr($image_alt); ?>">
           </div>
+
+
 
           <div class="partner-brands-content__right">
             <h4 class="partner-brands-content__title">
               <?php echo esc_html($category['brands_category_title']); ?>
             </h4>
             <p class="partner-brands-content__description">
-              <?php echo esc_html($category['brands_category_description']); ?>
+              <?php echo wp_kses_post($category['brands_category_description']); ?>
             </p>
           </div>
 

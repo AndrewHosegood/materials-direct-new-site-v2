@@ -1,5 +1,29 @@
 jQuery(document).ready(function($) {
 
+    //back button fix for PDF/DXF Uploads
+    window.addEventListener('pageshow', function () {
+
+        const pdfInput = $('#uploadPdf')[0];
+        //const dxfInput = $('#uploadDxf')[0];
+
+        // If the browser has restored a file selection but our hidden
+        // AJAX path has been lost, clear the stale browser state.
+        if (pdfInput &&
+            pdfInput.files.length > 0 &&
+            $('#pdf_path').val() === '') {
+
+            $('#uploadPdf').val('');
+            $('#uploadDxf').val('');
+
+            $('#pdf_path').val('');
+            $('#dxf_path').val('');
+
+            disableButtons();
+        }
+
+    });
+    //end back button fix for PDF/DXF Uploads
+
     // Check if the product is single (via data attribute or AJAX)
     const isProductSingle = $('input[name="is_product_single"]').val() === '1';
     const allowCredit = $('input[name="allow_credit"]').val() === '1';
@@ -191,7 +215,9 @@ jQuery(document).ready(function($) {
     });
 
 
+
     // File upload handlers
+
     $('#uploadPdf').on('change', function() {
         if (this.files.length > 0) {
             uploadFile(this, 'pdf');
@@ -202,6 +228,7 @@ jQuery(document).ready(function($) {
             }
         }
     });
+
 
     $('#uploadDxf').on('change', function() {
         if (this.files.length > 0) {
@@ -340,7 +367,7 @@ function getBaseMinDate() {
 function updateDatepickerMinDate() {
     const inputSelector = 'input[name="despatch_date"]';
     const lastDate = getLastShipmentDate();
-    console.log("lastDate: " + lastDate);
+
     let newMinDate;
 
     if (lastDate) {
@@ -411,9 +438,7 @@ function updateDatepickerMinDate() {
         const qty = parseInt($('#input_qty').val());
         const shipping_address = validateShippingAddress();
         const currency_rate = $('#currency_rate_sum').val();
-        console.log("currency rate (ss): " + currency_rate);
         const currency_symbol =  $('#currency_rate_symbol').val();
-        console.log("currency symbol (ss): " + currency_symbol);
 
         if (!shipping_address) return;
 
@@ -491,6 +516,8 @@ function updateDatepickerMinDate() {
     $('#add_shipments').on('click', function(e) {
         e.preventDefault();
 
+        alert('Triggered!!');
+
         $('.product-page__tabs .product-page__tabs-list').hide(); 
         
         var shipmentId = $(this).data('id');
@@ -510,10 +537,15 @@ function updateDatepickerMinDate() {
                 nonce: ajax_params.nonce
             },
             success: function(response) {
+                console.log(response);
                 $('#price-spinner-overlay').fadeOut(200);
 
                 if (response.success) {
                     const data = response.data;
+
+                    alert(response.data)
+
+                    alert(data.remaining_parts);
 
                     // Update remaining parts
                     $('#remaining-parts').text(data.remaining_parts);
@@ -526,7 +558,6 @@ function updateDatepickerMinDate() {
                         totalOrdered: parseInt(data.total_ordered_qty) || 0
                     };
 
-                    console.log('Modal opened with fresh partial-backorder data:', window.partialBackorderData);
 
                     // Show modal
                     $('.delivery-options-modal__outer').fadeIn();
@@ -630,20 +661,6 @@ function updateDatepickerMinDate() {
         $('#price-spinner-overlay').fadeIn(200);
     
 
-        console.log('Modal Checkbox States:', {
-            manufacturers: $('#add_manufacturers_COFC_ss').is(':checked'),
-            fair: $('#add_fair_ss').is(':checked'),
-            materials: $('#add_materials_direct_COFC_ss').is(':checked')
-        });
-        console.log('Values Sending to PHP:', {
-            despatch_date,
-            parts,
-            add_manufacturers_cofc_ss,
-            add_fair_ss,
-            add_materials_direct_cofc_ss
-        });
-
-
 
         $.ajax({
             url: ajax_params.ajax_url,
@@ -677,8 +694,6 @@ function updateDatepickerMinDate() {
 
                     // Close modal if no parts remain
                     if (response.data.remaining_parts <= 0) {
-                        console.log('Remaining <=0 after add, allowCredit:', allowCredit);
-                        
                         $('.product-page__order-info-message-1').text("Scheduled shipments now complete. Now click Add To Cart");
                         $('#add_shipments').hide();
                         if (allowCredit) {
@@ -821,8 +836,6 @@ function updateDatepickerMinDate() {
                         const border = parseFloat(response.data.border_around || 0.2) * 10;
                         const roll_length = response.data.roll_length;
                         const is_full_backorder_rolls = response.data.is_full_backorder_rolls || false;
-
-                        console.log("is_full_backorder_rolls: " + is_full_backorder_rolls);
 
                         // add per part cost to hidden field 
                         $('#cpp').val(adjustedPrice);

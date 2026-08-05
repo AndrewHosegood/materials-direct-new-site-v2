@@ -209,11 +209,28 @@ function create_virtual_voucher_coupon_data($data, $code) {
         return $data; // Let WC handle real coupons or return false
     }
 
-    $voucher_discount = WC()->session->get('voucher_discount'); // e.g. 0.15
+    if ( ! WC()->session instanceof WC_Session ) {
+        return $data;
+    }
+
+    $voucher_discount = WC()->session->get('voucher_discount');
+
+    if ( ! is_numeric($voucher_discount) || $voucher_discount <= 0 ) {
+        return $data;
+    }
+
+    //$voucher_discount = WC()->session->get('voucher_discount'); // e.g. 0.15
+
+    //$voucher_discount = false;
+    /*
+    if ( WC()->session instanceof WC_Session ) {
+        $voucher_discount = WC()->session->get('voucher_discount');
+    }
 
     if (!$voucher_discount || !is_numeric($voucher_discount) || $voucher_discount <= 0) {
         return $data;
     }
+    */
 
     // Return array of coupon properties – WC creates virtual coupon from this
     return array(

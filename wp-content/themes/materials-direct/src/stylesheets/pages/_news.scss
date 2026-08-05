@@ -216,6 +216,11 @@
         color: variables.$primary-color;
         font-weight: 700;
     }
+    & ul {
+        font-size: 0.9rem;
+        list-style: disc;
+        margin: 0 0 0 0.9rem;
+    }
     & .button {
         padding: 0.7rem 1.5rem;
     }

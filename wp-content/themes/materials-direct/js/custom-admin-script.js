@@ -1,17 +1,14 @@
 jQuery(document).ready(function($) {
 
     $('.calendar__select-status').change(function() {
-        //alert('working 1');
+
         var id = $(this).closest('form').find('input[name="id"]').val();
         var status = $(this).val();
         var loadingImage = $('<img src="/wp-content/uploads/2024/03/loading7_gray.gif" class="calendar__loading-image">');
         var order_no = $(this).closest('form').find('input[name="order_no"]').val();
+        var order_no_admin = $(this).closest('form').find('input[name="order_no_admin"]').val();
         var date = $(this).closest('form').find('input[name="date"]').val();
 
-        // Alert the value of order_no
-        // alert(id);
-        // alert(order_no);
-        // alert(date);
 
         // Check if status is 'dispatch'
         if (status === 'dispatch') {
@@ -35,6 +32,7 @@ jQuery(document).ready(function($) {
                 id: id,
                 status: status,
                 order_no: order_no,
+                order_no_admin: order_no_admin,
                 date: date,
             },
             beforeSend: function() {
@@ -449,47 +447,6 @@ jQuery(document).ready(function($) {
                 }
             });
         });
-
-
-        /*
-        $('.calendar__table tbody tr').eq(-2).addClass('my-class-name');
-
-        $(document).on('change', '.my-class-name td form.calendar__form-0 select.calendar__select-status', function() {
-
-            if ($(this).val() === 'dispatch') {
-
-                let orderNo = $(this).siblings('input[name="order_no"]').val();
-                let makeActive = 1;
-
-                $.ajax({
-                    url: ajaxurl, 
-                    method: 'POST',
-                    data: { 
-                        action: 'show_final_dispatch_action', 
-                        makeActive: makeActive, 
-                        orderNo: orderNo 
-                    },
-                    success: function(response) {
-                        console.log('Data inserted successfully:', response);
-                    },
-                    error: function(xhr, status, error) {
-                        console.error('Error inserting data:', error);
-                    }
-                });
-
-            }
-        });
-        */
-
-
-        // $('.calendar__select-status').change(function(){
-        //     alert('working');
-        //     if($(this).val() === 'dispatch') {
-        //         // Do something when "dispatch" is selected
-        //         console.log("Dispatch option selected");
-        //         // Add your code here to do something
-        //     }
-        // });
 
 
 

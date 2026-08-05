@@ -10,14 +10,16 @@ require_once TCPDF_INCLUDE_PATH;
 date_default_timezone_set('Europe/London');
 
 $id = isset($_GET['id']) ? absint($_GET['id']) : 0;
-//$order_no = isset($_GET['order_no']) ? sanitize_text_field($_GET['order_no']) : '';
 $order_no = isset($_GET['order_no']) ? intval($_GET['order_no']) : 0;
+$order_no_admin = isset($_GET['order_no_admin']) ? intval($_GET['order_no_admin']) : 0;
+
 $new_date = isset($_GET['date']) ? sanitize_text_field($_GET['date']) : '';
 $is_merged = isset($_GET['is_merged']) ? sanitize_text_field($_GET['is_merged']) : '';
 $pdf_title = isset($_GET['pdf_title']) ? sanitize_text_field($_GET['pdf_title']) : 'Invoice';
 
 
-$order = wc_get_order($order_no);
+$order = wc_get_order($order_no_admin);
+
 $v_order = wc_get_order($id);
 
 $totals_html = '';
@@ -34,7 +36,6 @@ $subtotal_2_sum = 0;
 
 global $wpdb;
 
-
 if ( $order instanceof WC_Order ) {
     $voucher_discount = $order->get_meta('_voucher_discount') ?: 0;
 } else {
@@ -42,9 +43,8 @@ if ( $order instanceof WC_Order ) {
     error_log("PDF Invoice: Order not found for order_no = $order_no");
 }
 
-
-
 // Get the tax rates
+/*
 $tax_rates = [];
 
 foreach ($order->get_tax_totals() as $tax) {
@@ -58,7 +58,8 @@ foreach ($order->get_tax_totals() as $tax) {
 }
 
 $tax_rate = str_replace('%', '', $tax_rate);
-
+*/
+$tax_rate = 20;
 // Get the tax rates
 
 
@@ -85,8 +86,6 @@ if($is_merged == 1){
         $new_date
     );
 }
-
-
 
 
 
@@ -191,7 +190,8 @@ try {
         // Header Section (Logo + Company Info)
         $html .= '<tr>';
         $html .= '<td style="width: 45%; padding: 20px;">';
-        $html .= '<img src="' . $logo_path . '" alt="Company Logo" style="width:150px; height:auto;">';
+        //$html .= '<img src="' . $logo_path . '" alt="Company Logo" style="width:150px; height:auto;">';
+        $html .= '';
         $html .= '</td>';
         $html .= '<td style="width: 55%; padding: 20px; text-align:right; color: #999999;">';
         $html .= '<p style="font-size:8px;">Materials Direct<br>76 Burners Lane, Kiln Farm<br>Milton Keynes, MK11 3HD<br>United Kingdom<br><br>Tel: +44 (0) 1908 222 211<br>Email: info@materials-direct.com<br>www.materials-direct.com</p>';
@@ -227,12 +227,15 @@ try {
             $cost_per_part_raw = $row['cost_per_part_raw'];
             $discount_rate = $row['discount_rate'];
             $shipping_unique = $row['shipping_unique'];
-            $delivery_count = $row['delivery_count'];
-            $order_count = $row['order_count'];
+            //$delivery_count = $row['delivery_count'];
+            $delivery_count = (int) ($row['delivery_count'] ?? 0);
+            //$order_count = $row['order_count'];
+            $order_count = (int) ($row['order_count'] ?? 0);
             $country = $row['country'];
             $cart_discount_percent = (float) $row['cart_discount_percent'];
-
-            $md_value = $row['md_value'];
+            $has_single5_discount = !empty($row['has_single5_discount']) ? (float) $row['has_single5_discount'] : 0;
+            //$md_value = $row['md_value'];
+            $md_value = (float) ($row['md_value'] ?? 0);
             $part_shape = $row['part_shape'];
             $width = $row['width'];
             $length = $row['length'];
@@ -240,11 +243,14 @@ try {
             $width_inch = $row['width_inch'];
             $length_inch = $row['length_inch'];
             $voucher_code = $row['voucher_code'];
-            $voucher_percent = $row['voucher_percent'];
+            //$voucher_percent = $row['voucher_percent'];
+            $voucher_percent = (float) ($row['voucher_percent'] ?? 0);
             $shipping_weights = $row['shipping_weights'];
-            $total_shipping_duplicates = $row['shipping_duplicates'];
+            //$total_shipping_duplicates = $row['shipping_duplicates'];
+            $total_shipping_duplicates = (int) ($row['shipping_duplicates'] ?: 0);
             $meta_qty = $row['meta_shipping_qty'];
-            $meta_shipping_total = $row['meta_shipping_total'];
+            //$meta_shipping_total = $row['meta_shipping_total'];
+            $meta_shipping_total  = (float) ($row['meta_shipping_total'] ?? 0);
 
             $mcofc_fair = $row['mcofc_fair'];
             $mcofc_fair_string = $row['mcofc_fair_string'];
@@ -272,25 +278,28 @@ try {
                 $mcofc_fair_formatted = implode('<br>', $mcofc_fair_array);
             }
 
-            $mcofc_fair_value = $row['mcofc_fair_value'];
+            //$mcofc_fair_value = $row['mcofc_fair_value'];
+            $mcofc_fair_value     = (float) ($row['mcofc_fair_value'] ?? 0);
             $rolls_value = $row['rolls_value'];
             $rolls_length = $row['rolls_length'];
             $currency_rate = $row['currency_rate'];
             $currency = $row['currency'];
             $sku = $row['sku'];
-            $shipping_numeric = $row['shipping_numeric'];
+            //$shipping_numeric = $row['shipping_numeric'];
+            $shipping_numeric = (float) ($row['shipping_numeric'] ?? 0);
             $shipping = $row['shipping'];
             $dimension_type = $row['dimension_type'];
             $dimension_type = strtoupper($dimension_type);
-            $part_shape = $row['part_shape'];
             $pdf_part_shape_link = $row['pdf_part_shape_link'];
             $pdf_display = $row['pdf'];
             $dxf_part_shape_link = $row['dxf_part_shape_link'];
             $dxf_display = $row['dxf'];
             $last = $row['last'];
             $cart_discount_price = $row['cart_discount_price'];
-            $cart_discount_percent = $row['cart_discount_percent'];
+            //$cart_discount_percent = $row['cart_discount_percent'];
+            $cart_discount_percent = (float) ($row['cart_discount_percent'] ?? 0);
             $pdf_despatch_date = $row['pdf_despatch_date'];
+            $legacy_order = (float) ($row['legacy_order'] ?? 0);
 
             $address_1 = $row['address_1'];
             $address_2 = $row['address_2'];
@@ -343,7 +352,6 @@ try {
 
 
 
-
             //calculate subtotal
             $total_1 = $cost_per_part_raw * $schedule_qty;
             $discount_amount = ($total_1 * $discount_rate) / 100;
@@ -389,6 +397,7 @@ try {
 
 
 
+
             // calculate VAT
             $cart_discount_price_new = $cart_discount_amount;
             $tf_3 = round($cart_discount_price_new, 2);
@@ -400,18 +409,34 @@ try {
 
             $voucher_percent = $cppnew * $voucher_discount;
 
-            $total_delivery_count = $order_count * $delivery_count;
+            //$total_delivery_count = $order_count * $delivery_count;
 
-            $shipping_subtract = $total_shipping_duplicates / $total_delivery_count; // we need to subtract to total for duplicate dates from the $shipping_responses total
 
-            // if($flag == 1){
-            //     $my_shipping_response = $shipping_display_new / $meta_qty;
-            // } else {
-            //     $my_shipping_response = $shipping_display_new;
-            // }
 
-            $my_shipping_response = $shipping_display_new;
 
+            
+            //$shipping_subtract = $total_shipping_duplicates / $total_delivery_count; // we need to subtract to total for duplicate dates from the $shipping_responses total
+
+            
+            if ($legacy_order == 1){
+                if($flag == 1){
+                    $my_shipping_response = $shipping_display_new / $meta_qty;
+                } else {
+                    $my_shipping_response = $shipping_display_new;
+                }
+            } else {
+                $my_shipping_response = $shipping_display_new;
+            }
+            
+
+            /*
+            if($flag == 1){
+                $my_shipping_response = $shipping_display_new / $meta_qty;
+            } else {
+                $my_shipping_response = $shipping_display_new;
+            }
+            */
+            
             // Get the MCOFC and FAIR values
             // echo "<pre>";
             // print_r($mcofc_fair);
@@ -442,13 +467,10 @@ try {
             // Get the MCOFC and FAIR values
 
 
-
-
-
             //$subtotal_display
 
 
-            $vat_amount = $cppnew + $mcofc_fair_value_display + $my_shipping_response - $tf_3 - $voucher_percent;
+            $vat_amount = $cppnew + $mcofc_fair_value_display + $my_shipping_response - $tf_3 - $voucher_percent - $has_single5_discount;
 
 
             if($country == "GB"){
@@ -456,7 +478,14 @@ try {
                 $vat_display = ($vat_amount * $tax_rate) / 100;
                 $vat_sum_top += $vat_display_top;
                 $vat_sum += $vat_display;
-            } else {
+            } 
+            elseif($country == "United Kingdom"){
+                $vat_display_top = ($cppnew * $tax_rate) / 100;
+                $vat_display = ($vat_amount * $tax_rate) / 100;
+                $vat_sum_top += $vat_display_top;
+                $vat_sum += $vat_display;
+            }
+            else {
                 $vat_display_top = 0;
                 $vat_display = 0;
                 $vat_sum += $vat_display;
@@ -466,10 +495,12 @@ try {
 
 
             // calculate totals
-            $total_final = $cppnew + $my_shipping_response + $vat_display - $tf_3 + $md_value + $mcofc_fair_value_display - $voucher_percent;
+            $total_final = $cppnew + $my_shipping_response + $vat_display - $tf_3 + $md_value + $mcofc_fair_value_display - $voucher_percent - $has_single5_discount;
+            //$total_final = $cppnew + $my_shipping_response + $vat_display - $tf_3;
             $newtotal = floor($total_final * 100) / 100; // Total inc VAT
             $total_sum += $newtotal;
             // calculate totals
+
 
             // calculate MCOFC FAIR
             if(empty($row['mcofc_fair'])){
@@ -508,18 +539,17 @@ try {
             // calculate MCOFC FAIR
 
 
-
             //collect the values for product Description
             $ps = "<br>Part shape: ".$part_shape;
             
-            if($row['width_inch'] == 0){
+            if (empty($row['width_inch']) || $row['width_inch'] === '0') {
                  $wdti = "";
                  $wdt = "<br>Width (MM): ".$width;
              } else {
                  $wdti = "<br>Width (INCHES): ".$width_inch;
              }
 
-             if($row['length_inch'] == 0){
+             if (empty($row['length_inch']) || $row['length_inch'] === '0') {
                  $lgti = "";
                  $lgt = "<br>Length (MM): ".$length;
              } else {
@@ -527,13 +557,12 @@ try {
              }
 			
           	
-
-
-            if( $row['radius'] == 0 ){
-                $rad = "";
-            } else {
+            if ($part_shape === 'circle-radius' || $part_shape === 'Simple Circle') {
                 $rad = "<br>Radius (".$dimension_type."): ".$radius;
+            } else {
+                $rad = "";
             }
+
 
             //if(empty($row['pdf'])){
                 //$dra = "";
@@ -546,6 +575,8 @@ try {
             //} else {
                 //$dxf = "<br>DXF Drawing: ".$row['dxf'];
             //}
+
+
 
             if(empty($row['pdf'])){
                 $dra = "";
@@ -605,7 +636,7 @@ try {
             } else {
                 $mdcfc = "";
             }
-            
+
 
             $sch = '<br><br>Schedule: ' .$row['schedule'];
             $str = "<br><br>Unit price does not include any fair or manufacturers COFC";
@@ -620,7 +651,7 @@ try {
             //collect the values for the invoice numbers on merged dates
 
             // calculate subtotal display
-            $subtotal_display_2 = $cppnew + $mcofc_fair_value + $my_shipping_response - $tf_3 - $discount_code_value_new;
+            $subtotal_display_2 = $cppnew + $mcofc_fair_value + $my_shipping_response - $tf_3 - $discount_code_value_new - $has_single5_discount;
             $subtotal_2_sum += $subtotal_display_2;
             // calculate subtotal display
 
@@ -631,6 +662,8 @@ try {
             } else {
                 $pdf_date = date('jS F Y');
             }
+
+  
 
             // Order Details (First Table)
             if (!$order_details_added) {
@@ -654,9 +687,13 @@ try {
                 $order_details_added = true;
             }
 
+
+
             // Invoice Details (Second Table)
             $invoice_details_html .= '<tr>';
             $invoice_details_html .= '<td>' . $row['sku'] . '</td>';
+             $invoice_details_html .= '<td>' . $title . $ps . $dra . $dxf . $wdt . $wdti . $lgt . $lgti . $rad . "<br>" . $mcofc_fair_formatted . $scd . $sch . $str . '</td>';
+            //$invoice_details_html .= '<td>' . $title . $ps . $dra . $dxf . $wdt . $wdti . $lgt . $lgti . $rad . "<br>" . $mcofc_fair_formatted . $scd . $sch . $str . '<br>Flag' .$flag. '<br>Part Shape' .$part_shape. '<br>Shipping Display New' .$shipping_display_new. '<br>Meta Quantity: ' .$meta_qty. '</td>';
             //$invoice_details_html .= '<td>' . $title . $ps . $dra . $dxf . $wdt . $wdti . $lgt . $lgti . $rad . "<br>" . $mcofc_fair_formatted . $scd . $sch . $str .'New Total: '. $newtotal . '<br>cppnew: ' .$cppnew. '<br>My Shipping Response: ' .$my_shipping_response. '<br>Vat Display: ' .$vat_display. '<br>tf_3: ' .$tf_3. '<br>md_value: ' .$md_value. '<br>mcofc_fair_value_display: ' .$mcofc_fair_value_display. '<br>mcf_v: ' .$mcf_v. '<br>MCOFC Fair Value: ' .$mcofc_fair_value. '<br>Discount Code Value New: ' . $discount_code_value_new .  '</td>';
             //$invoice_details_html .= '<td>' . $title . $ps . $dra . $dxf . $wdt . $wdti . $lgt . $lgti . $rad . $mcf . $scd . $sch . $str . "<br>MCOFC Fair: " . $mcofc_fair_string . '</td>';
             //$invoice_details_html .= '<td>' . $title . $ps . $dra . $dxf . $wdt . $lgt . $wdti . $lgti . $rad . "<br>" . $mcofc_fair_formatted . $sch . $str .  '</td>';
@@ -672,7 +709,7 @@ try {
             
             //$invoice_details_html .= '<td>' . $title . $ps . $dra . $dxf . $wdt . $lgt . $wdti . $lgti . $rad . "<br>" . $mcofc_fair_formatted . $sch . $str . "<br>Discount Amount: " . $discount_amount . "<br> cost_per_part_raw: " . $cost_per_part_raw . "<br>discount_rate: " . $discount_rate . "<br>total_1: " .$total_1. "<br>cpp " .$cpp. "<br>cppnew: " .$cppnew. "<br>Sceduled QTY: " .$schedule_qty. "<br>Discount Amount: " .$discount_amount. '</td>'; 
             //$invoice_details_html .= '<td>' . $row['title'] . '<br>Part shape: ' . $part_shape  . '<br>Width (MM): ' . $width . '<br>Length (MM): ' . $length . '<br><br>Schedule: ' .$row['schedule'] . '</td>';
-            $invoice_details_html .= '<td>' . $row['title'] . '<br>Part shape: ' . $part_shape  . '<br>Width (MM): ' . $width . '<br>Length (MM): ' . $length . '<br><br>Schedule: ' .$row['schedule'] . '<br>VAT Display:' .$vat_display. '<br>tax_rate: ' .$tax_rate. '<br>Country:' .$country. '<br>my_shipping_response' .$my_shipping_response. '<br>tf_3: ' .$tf_3. '<br>voucher_percent: ' .$voucher_percent. '</td>';
+            //$invoice_details_html .= '<td>' . $row['title'] . '<br>Part shape: ' . $part_shape  . '<br>Width (MM): ' . $width . '<br>Length (MM): ' . $length . '<br><br>Schedule: ' .$row['schedule'] . '<br>cppnew:' .$cppnew. '<br>my_shipping_response: ' .$my_shipping_response. '<br>vat_display:' .$vat_display. '<br>tf_3: ' .$tf_3. '<br>md_value: ' .$md_value. '<br>mcofc_fair_value_display: ' .$mcofc_fair_value_display. '<br>voucher_percent: ' .$voucher_percent. '<br>cart_discount_price_new: ' .$cart_discount_price_new. '<br>cart_discount_amount: ' .$cart_discount_amount. '<br>cart_discount_percent: ' .$cart_discount_percent. '<br>discount_rate: ' .$discount_rate.'</td>';
 
 
             $invoice_details_html .= '<td>' . $row['schedule_qty'] . '</td>';
@@ -711,6 +748,13 @@ try {
                         $totals_html .= '<td>Order Discounts</td>';
                         $totals_html .= '<td>£-'.number_format($tf_3_sum, 2).'</td>';
                         $totals_html .= '</tr>';
+
+                        if($has_single5_discount != 0){
+                            $totals_html .= '<tr>';
+                            $totals_html .= '<td>Order Discounts (Single Item)</td>';
+                            $totals_html .= '<td>£-' .$has_single5_discount. '</td>';
+                            $totals_html .= '</tr>';
+                        }
 
                         if($discount_code_value_new != 0){
                             $totals_html .= '<tr>';
@@ -758,6 +802,13 @@ try {
                     $totals_html .= '<td>Order Discounts</td>';
                     $totals_html .= '<td>£-'.number_format($tf_3, 2).'</td>';
                     $totals_html .= '</tr>';
+
+                    if($has_single5_discount != 0){
+                        $totals_html .= '<tr>';
+                        $totals_html .= '<td>Order Discounts (Single Item)</td>';
+                        $totals_html .= '<td>£-' .$has_single5_discount. '</td>';
+                        $totals_html .= '</tr>';
+                    }
         
                     if($discount_code_value_new != 0){
                         $totals_html .= '<tr>';
@@ -766,7 +817,7 @@ try {
                         $totals_html .= '</tr>';
                     }
                     $totals_html .= '<tr>';
-                    $totals_html .= '<td><strong>Subtotal (ex. VAT)?</strong></td>';
+                    $totals_html .= '<td><strong>Subtotal (ex. VAT)</strong></td>';
                     $totals_html .= '<td><strong>£'.number_format($subtotal_display_2, 2).'</strong></td>';
                     $totals_html .= '</tr>';
         

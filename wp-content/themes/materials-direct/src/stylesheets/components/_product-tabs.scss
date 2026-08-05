@@ -3,20 +3,34 @@
 .woocommerce-tabs {
     position: relative;
     padding: 0 0 2.5rem 0;
+    z-index: 1;
     &::before {
         content: "";
         position: absolute;
-        left: 0;
-        right: 0;
-        background: #f1f0f0;
-        width: 100vw;
-        z-index: -1;
-        height: 100%;
+        top: 0;
+        bottom: 0;           /* Covers full height of the tabs */
         left: 50%;
-        overflow: hidden;
-        display: block;
-        transform: translateX(-50%);
+        right: 50%;
+        margin-left: -50vw;
+        margin-right: -50vw;
+        background: #f1f0f0;
+        z-index: -1;
+        //width: 100vw;        /* Safe when combined with the negative margins */
     }
+    // &::before {
+    //     content: "";
+    //     position: absolute;
+    //     left: 0;
+    //     right: 0;
+    //     background: #f1f0f0;
+    //     width: 100vw;
+    //     z-index: -1;
+    //     height: 100%;
+    //     left: 50%;
+    //     overflow: hidden;
+    //     display: block;
+    //     transform: translateX(-50%);
+    // }
 }
 
 .woocommerce div.product .woocommerce-tabs ul.tabs li a {
@@ -348,3 +362,19 @@
         border-right: 1px solid #ddd;
     }
 }
+// .product-details-wrapper {
+//     position: relative;
+// }
+
+// #product_details::before {
+//     content: "";
+//     position: absolute;
+//     top: 0;
+//     bottom: 0;
+//     left: 50%;
+//     right: 50%;
+//     margin-left: -50vw;
+//     margin-right: -50vw;
+//     background: #f1f0f0;
+//     z-index: -1;
+// }

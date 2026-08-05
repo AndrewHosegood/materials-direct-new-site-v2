@@ -41,6 +41,7 @@ function _calendar(){
           $company = esc_js($row['company']);
           $date = esc_js($row['date']);
           $order_no = esc_js($row['order_no']);
+          $order_no_admin = esc_js($row['order_no_admin']);
           $notes = esc_js($row['notes']);
           $part_shape = esc_js($row['part_shape']);
           $part_shape_link = esc_js($row['pdf_part_shape_link']);
@@ -60,7 +61,7 @@ function _calendar(){
 
           $my_title = "#" . $order_no . "-" . $title;
 
-            $jsonEvents .= "{id: '$id', title: '$my_title', start: '$date', extendedProps: {custom: '$order_no', custom_title: '$title', part_shape: '$part_shape', part_shape_link: '$part_shape_link', dxf_part_shape_link: '$dxf_part_shape_link', width: '$width', length: '$length', radius: '$radius', rolls_value: '$rolls_value', rolls_length: '$rolls_length', dimension_type: '$dimension_type', qty: '$qty', status: '$status', schedule: '$schedule', schedule_qty: '$schedule_qty', pdf: '$pdf', dxf: '$dxf', firstname: '$firstname', lastname: '$lastname', company: '$company', date: '$date' }},";
+            $jsonEvents .= "{id: '$id', title: '$my_title', start: '$date', extendedProps: {custom: '$order_no', custom_admin: '$order_no_admin', custom_title: '$title', part_shape: '$part_shape', part_shape_link: '$part_shape_link', dxf_part_shape_link: '$dxf_part_shape_link', width: '$width', length: '$length', radius: '$radius', rolls_value: '$rolls_value', rolls_length: '$rolls_length', dimension_type: '$dimension_type', qty: '$qty', status: '$status', schedule: '$schedule', schedule_qty: '$schedule_qty', pdf: '$pdf', dxf: '$dxf', firstname: '$firstname', lastname: '$lastname', company: '$company', date: '$date' }},";
     
         }
 
@@ -189,7 +190,8 @@ function _calendar(){
               const modalOrderNo = document.getElementById('modalOrderNo');
               const linkOrderNo = document.getElementById('linkOrderNo');
               modalOrderNo.textContent = info.event.extendedProps.custom;
-              linkOrderNo.href = "https://<?php echo $domain; ?>/wp-admin/post.php?post=" + info.event.extendedProps.custom + "&action=edit";
+              //linkOrderNo.href = "https://<?php echo $domain; ?>/wp-admin/post.php?post=" + info.event.extendedProps.custom + "&action=edit";
+              linkOrderNo.href = "https://<?php echo $domain; ?>/wp-admin/post.php?post=" + info.event.extendedProps.custom_admin + "&action=edit";
 
               // const linkNotes = document.getElementById('linkNotes');
               // linkNotes.textContent = info.event.extendedProps.notes;

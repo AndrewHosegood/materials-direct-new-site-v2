@@ -93,6 +93,9 @@ function get_cart_capture_data() {
                 'shipments_count' => floatval($inputs['shipments_count'] ?? 1),
 
                 // === Address mapping ===
+                'Address-firstname' => sanitize_text_field($address['firstname'] ?? ''),
+                'Address-lastname' => sanitize_text_field($address['lastname'] ?? ''),
+                'Address-company' => sanitize_text_field($address['company'] ?? ''),
                 'Address-1' => sanitize_text_field($address['street_address'] ?? ''),
                 'Address-2' => sanitize_text_field($address['address_line2'] ?? ''),
                 'Address-3' => sanitize_text_field($address['city'] ?? ''),
@@ -308,6 +311,10 @@ function display_captured_carts_table() {
                             $allow_credit_v = !empty($cart_item['allow_credit']) ? esc_html($cart_item['allow_credit']) : 'N/A';
 
                             $roll_length_metres = !empty($cart_item['Roll Length (Metres)']) ? esc_html($cart_item['Roll Length (Metres)']) : 'N/A';
+
+                            $address_lastname = !empty($cart_item['Address-lastname']) ? esc_html($cart_item['Address-lastname']) : 'N/A';
+                            $address_firstname = !empty($cart_item['Address-firstname']) ? esc_html($cart_item['Address-firstname']) : 'N/A';             
+                            $address_company = !empty($cart_item['Address-company']) ? esc_html($cart_item['Address-company']) : 'N/A';                  
                             $address_1 = !empty($cart_item['Address-1']) ? esc_html($cart_item['Address-1']) : 'N/A';
                             $address_2 = !empty($cart_item['Address-2']) ? esc_html($cart_item['Address-2']) : 'N/A';
                             $address_3 = !empty($cart_item['Address-3']) ? esc_html($cart_item['Address-3']) : 'N/A';
@@ -390,7 +397,7 @@ function display_captured_carts_table() {
                                 </td>
 
                                 <td style="font-size: 11.5px;">
-                                    <?php echo $address_1; ?>, <?php echo $address_2; ?>, <?php echo $address_3; ?>, <?php echo $address_4; ?>, <?php echo $address_5; ?>, <?php echo $address_6; ?>
+                                    <?php echo $address_firstname; ?>, <?php echo $address_lastname; ?>, <?php echo $address_company; ?>, <?php echo $address_1; ?>, <?php echo $address_2; ?>, <?php echo $address_3; ?>, <?php echo $address_4; ?>, <?php echo $address_5; ?>, <?php echo $address_6; ?>
                                 </td>
 
 
@@ -621,6 +628,9 @@ function add_to_cart_from_capture() {
 
         // Restore address
         $address_fields = [
+            'firstname'        => $cart_item['Address-firstname'] ?? '',
+            'lastname'         => $cart_item['Address-lastname'] ?? '',
+            'company'          => $cart_item['Address-company'] ?? '',
             'street_address'   => $cart_item['Address-1'] ?? '',
             'address_line2'    => $cart_item['Address-2'] ?? '',
             'city'             => $cart_item['Address-3'] ?? '',
@@ -829,6 +839,9 @@ function send_restore_notification_email($cart_group_id, $customer_email) {
 
             // Prepare address
             $address_parts = array_filter([
+                $cart_item['Address-firstname'] ?? 'N/A',
+                $cart_item['Address-lastname'] ?? 'N/A',
+                $cart_item['Address-company'] ?? 'N/A',
                 $cart_item['Address-1'] ?? 'N/A',
                 $cart_item['Address-2'] ?? 'N/A',
                 $cart_item['Address-3'] ?? 'N/A',

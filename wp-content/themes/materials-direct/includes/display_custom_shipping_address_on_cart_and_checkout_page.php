@@ -46,6 +46,10 @@ function display_shipping_address_on_checkout() {
         echo '<div class="custom-shipping-address">';
         echo '<h3>Shipping Details</h3>';
         echo '<p><strong>Shipping Address: </strong>';
+
+        echo '' . esc_html($shipping_address['firstname']) . ' ';
+        echo '' . esc_html($shipping_address['lastname']) . ', ';
+        echo '' . esc_html($shipping_address['company']) . ', ';
         echo '' . esc_html($shipping_address['street_address']) . ', ';
         if (!empty($shipping_address['address_line2'])) {
             echo '' . esc_html($shipping_address['address_line2']) . ', ';
@@ -67,6 +71,9 @@ function display_global_shipping_address_cart() {
     echo '<div class="global-shipping-address" style="margin-top:20px;">';
     echo '<h3 class="global-shipping-address-title">Shipping Details</h3>';
     echo '<p><strong>Shipping Address: </strong><p class="global-shipping-address-list">';
+    echo esc_html($shipping_address['firstname']) . ' ';
+    echo esc_html($shipping_address['lastname']) . '<br>';
+    echo esc_html($shipping_address['company']) . '<br>';
     echo esc_html($shipping_address['street_address']) . '<br>';
     if (!empty($shipping_address['address_line2'])) {
         echo esc_html($shipping_address['address_line2']) . '<br>';

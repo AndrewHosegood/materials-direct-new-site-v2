@@ -517,6 +517,9 @@ function custom_price_input_fields_prefill() {
     }
     
     // Prefill shipping address fields from session
+    $firstname = !empty($shipping_address['firstname']) ? esc_attr($shipping_address['firstname']) : '';
+    $lastname = !empty($shipping_address['lastname']) ? esc_attr($shipping_address['lastname']) : '';
+    $company = !empty($shipping_address['company']) ? esc_attr($shipping_address['company']) : '';
     $street_address = !empty($shipping_address['street_address']) ? esc_attr($shipping_address['street_address']) : '';
     $address_line2 = !empty($shipping_address['address_line2']) ? esc_attr($shipping_address['address_line2']) : '';
     $city = !empty($shipping_address['city']) ? esc_attr($shipping_address['city']) : '';
@@ -537,6 +540,11 @@ function custom_price_input_fields_prefill() {
 
         echo '<h3 class="product-page__subheading">Item(s) shipping address<span class="gfield_required gfield_required_asterisk">*</span></h3>
             <p class="address-lookup__text" style="">Please ensure your shipping address is entered correctly here. Your order may be cancelled if an incorrect country has been entered. See our <a target="_blank" href="/terms-and-conditions/#shipping">terms and conditions</a> for more information.</p>
+            
+            <label class="custom-price-calc__label product-page__address-3"><input class="product-page__calc-input" type="text" id="input_firstname" name="custom_firstname" placeholder="First Name" value="' . $firstname . '" required></label>
+            <label class="custom-price-calc__label product-page__address-4"><input class="product-page__calc-input" type="text" id="input_lastname" name="custom_lastname" placeholder="Last Name" value="' . $lastname . '" required></label>
+            <label class="custom-price-calc__label product-page__address-1"><input class="product-page__calc-input" type="text" id="input_company" name="custom_company" placeholder="Company" value="' . $company . '" required></label>
+
             <label class="custom-price-calc__label product-page__address-1"><input class="product-page__calc-input" type="text" id="input_street_address" name="custom_street_address" placeholder="Street Address" value="' . $street_address . '" required></label>
             <label class="custom-price-calc__label product-page__address-2"><input class="product-page__calc-input" type="text" id="input_address_line2" name="custom_address_line2" placeholder="Address Line 2" value="' . $address_line2 . '"></label>
             <label class="custom-price-calc__label product-page__address-3"><input class="product-page__calc-input product-page__calc-input-small" type="text" id="input_city" name="custom_city" placeholder="City" value="' . $city . '" required></label>
@@ -567,8 +575,11 @@ function custom_price_input_fields_prefill() {
             if(WC()->session->get('custom_shipping_address')){
                 $address = WC()->session->get('custom_shipping_address');
                 echo '<div class="shipping-address-form__saved">';
-                echo '<h3 class="product-page__subheading">Item(s) shipping address?<span class="gfield_required gfield_required_asterisk">*</span></h3>';
+                echo '<h3 class="product-page__subheading">Item(s) shipping address<span class="gfield_required gfield_required_asterisk">*</span></h3>';
                 echo '<p class="shipping-address-form__saved-content">';
+                if($address['firstname']){ echo $address['firstname'] . " "; }
+                if($address['lastname']){ echo $address['lastname'] . "<br>"; }
+                if($address['company']){ echo $address['company'] . "<br>"; }
                 if($address['street_address']){ echo $address['street_address'] . "<br>"; }
                 if($address['address_line2']){ echo $address['address_line2'] . "<br>"; }
                 if($address['city']){ echo $address['city'] . "<br>"; }
@@ -601,6 +612,9 @@ function custom_price_input_fields_prefill() {
                             if (response.success) {
                                 $('input[type="hidden"][name="custom_country"]').remove();
                                 $('.shipping-address-form__saved').remove();
+                                $('#input_firstname').val('');
+                                $('#input_lastname').val('');
+                                $('#input_company').val('');
                                 $('#input_street_address').val('');
                                 $('#input_address_line2').val('');
                                 $('#input_city').val('');
@@ -955,6 +969,11 @@ function custom_price_input_fields_prefill() {
         echo '<input style="margin-top: 1rem;" name="address_lookup" id="address_lookup" type="text" value="" class="product-page__calc-input address-lookup__search-field" tabindex="41" placeholder="Start by entering your address details here..." aria-invalid="false" role="combobox" aria-describedby="pca-country-button-help-text pca-help-text" aria-autocomplete="list" aria-expanded="false" autocomplete="off">
             <h3 class="product-page__subheading">Item(s) shipping address<span class="gfield_required gfield_required_asterisk">*</span></h3>
             <p class="address-lookup__text" style="">Please ensure your shipping address is entered correctly here. Your order may be cancelled if an incorrect country has been entered. See our <a target="_blank" href="/terms-and-conditions/#shipping">terms and conditions</a> for more information.</p>
+
+            <label class="custom-price-calc__label product-page__address-3"><input class="product-page__calc-input" type="text" id="input_firstname" name="custom_firstname" placeholder="First Name" value="' . $firstname . '" required></label>
+            <label class="custom-price-calc__label product-page__address-4"><input class="product-page__calc-input" type="text" id="input_lastname" name="custom_lastname" placeholder="Last Name" value="' . $lastname . '" required></label>
+            <label class="custom-price-calc__label product-page__address-1"><input class="product-page__calc-input" type="text" id="input_company" name="custom_company" placeholder="Company" value="' . $company . '" required></label>
+
             <label class="custom-price-calc__label product-page__address-1"><input class="product-page__calc-input" type="text" id="input_street_address" name="custom_street_address" placeholder="Street Address" value="' . $street_address . '" required></label>
             <label class="custom-price-calc__label product-page__address-2"><input class="product-page__calc-input" type="text" id="input_address_line2" name="custom_address_line2" placeholder="Address Line 2" value="' . $address_line2 . '"></label>
             <label class="custom-price-calc__label product-page__address-3"><input class="product-page__calc-input product-page__calc-input-small" type="text" id="input_city" name="custom_city" placeholder="City" value="' . $city . '" required></label>
@@ -989,8 +1008,14 @@ function custom_price_input_fields_prefill() {
         if(WC()->session->get('custom_shipping_address')){
             $address = WC()->session->get('custom_shipping_address');
             echo '<div class="shipping-address-form__saved">';
-            echo '<h3 class="product-page__subheading">Item(s) shipping address?<span class="gfield_required gfield_required_asterisk">*</span></h3>';
+            echo '<h3 class="product-page__subheading">Item(s) shipping address<span class="gfield_required gfield_required_asterisk">*</span></h3>';
             echo '<p class="shipping-address-form__saved-content">';
+            $ah_firstname = $address['firstname'] ?? '';
+            $ah_lastname = $address['lastname'] ?? '';
+            $ah_company = $address['company'] ?? '';
+                if($ah_firstname){ echo $address['firstname'] . " "; }
+                if($ah_lastname){ echo $address['lastname'] . "<br>"; }
+                if($ah_company){ echo $address['company'] . "<br>"; }
                 if($address['street_address']){ echo $address['street_address'] . "<br>"; }
                 if($address['address_line2']){ echo $address['address_line2'] . "<br>"; }
                 if($address['city']){ echo $address['city'] . "<br>"; }
@@ -1026,6 +1051,9 @@ function custom_price_input_fields_prefill() {
                     if (response.success) {
                         $('input[type="hidden"][name="custom_country"]').remove();
                         $('.shipping-address-form__saved').remove();
+                        $('#input_firstname').val('');
+                        $('#input_lastname').val('');
+                        $('#input_company').val('');
                         $('#input_street_address').val('');
                         $('#input_address_line2').val('');
                         $('#input_city').val('');
@@ -1067,6 +1095,7 @@ add_action('wp_ajax_calculate_secure_price', 'calculate_secure_price');
 add_action('wp_ajax_nopriv_calculate_secure_price', 'calculate_secure_price');
 
 function calculate_secure_price() {
+
     check_ajax_referer('custom_price_nonce', 'nonce');
 
     $product_id = intval($_POST['product_id']);
@@ -1107,6 +1136,8 @@ function calculate_secure_price() {
 
     // Save custom_qty to session
     WC()->session->set('custom_qty', $qty);
+    error_log('AFTER SET custom_qty = ' . WC()->session->get('custom_qty'));
+
 
     // Clear any existing shipments to reset for new calculation
     WC()->session->set('custom_shipments', []);
@@ -1299,18 +1330,74 @@ function calculate_scheduled_price_func() {
     $sheet_width_mm = $product->get_width() * 10;
     $stock_quantity = $product->get_stock_quantity();
     $border_around = function_exists('get_field') ? floatval(get_field('border_around', $product_id) ?: 0.2) : 0.2;
-
+    
+     /* THIS CODE NO LONGER REQUIRED */
+    /*
     if (!empty($_POST['street_address'])) {
+
         $shipping_address = [
-            'street_address' => sanitize_text_field($_POST['street_address']),
-            'address_line2' => sanitize_text_field($_POST['address_line2']),
-            'city'          => sanitize_text_field($_POST['city']),
-            'county_state'  => sanitize_text_field($_POST['county_state']),
-            'zip_postal'    => sanitize_text_field($_POST['zip_postal']),
-            'country'       => sanitize_text_field($_POST['country']),
+            'firstname'        => sanitize_text_field($_POST['firstname']),
+            'lastname'         => sanitize_text_field($_POST['lastname']),
+            'company'          => sanitize_text_field($_POST['company']),
+            'street_address'   => sanitize_text_field($_POST['street_address']),
+            'address_line2'    => sanitize_text_field($_POST['address_line2']),
+            'city'             => sanitize_text_field($_POST['city']),
+            'county_state'     => sanitize_text_field($_POST['county_state']),
+            'zip_postal'       => sanitize_text_field($_POST['zip_postal']),
+            'country'          => sanitize_text_field($_POST['country']),
         ];
+
         WC()->session->set('custom_shipping_address', $shipping_address);
     }
+    */
+   
+    /*
+    // Required fields
+    $required_fields = [
+        'firstname',
+        'lastname',
+        'company',
+        'street_address',
+        'city',
+        'county_state',
+        'zip_postal',
+        'country',
+    ];
+
+    $all_fields_present = true;
+
+    foreach ($required_fields as $field) {
+        if (empty(trim($_POST[$field] ?? ''))) {
+            $all_fields_present = false;
+            break;
+        }
+    }
+
+    if ($all_fields_present) {
+
+        $shipping_address = [
+            'firstname'      => sanitize_text_field($_POST['firstname']),
+            'lastname'       => sanitize_text_field($_POST['lastname']),
+            'company'        => sanitize_text_field($_POST['company']),
+            'street_address' => sanitize_text_field($_POST['street_address']),
+            'address_line2'  => sanitize_text_field($_POST['address_line2'] ?? ''),
+            'city'           => sanitize_text_field($_POST['city']),
+            'county_state'   => sanitize_text_field($_POST['county_state']),
+            'zip_postal'     => sanitize_text_field($_POST['zip_postal']),
+            'country'        => sanitize_text_field($_POST['country']),
+        ];
+
+        WC()->session->set('custom_shipping_address', $shipping_address);
+        error_log("CUSTOM SHIPPING ADDRESS SAVED");
+
+    } else {
+
+        // Don't leave an incomplete address in the session.
+        WC()->session->__unset('custom_shipping_address');
+        error_log("CUSTOM SHIPPING ADDRESS NOT SAVED");
+    }
+    */
+    /* THIS CODE NO LONGER REQUIRED */
 
     $sheet_result = calculate_sheets_required($sheet_width_mm, $sheet_length_mm, $width, $length, $qty, $shape_type, $product_id);
     $sheets_required = $sheet_result['sheets_required'];
@@ -1355,12 +1442,13 @@ function save_single_product_shipping() {
     // Validate and save shipping address to session
     if (!empty($_POST['street_address']) && !empty($_POST['city']) && !empty($_POST['county_state']) && !empty($_POST['zip_postal']) && !empty($_POST['country'])) {
         $shipping_address = [
+            'company'        => sanitize_text_field($_POST['company']),
             'street_address' => sanitize_text_field($_POST['street_address']),
-            'address_line2' => sanitize_text_field($_POST['address_line2']),
-            'city'          => sanitize_text_field($_POST['city']),
-            'county_state'  => sanitize_text_field($_POST['county_state']),
-            'zip_postal'    => sanitize_text_field($_POST['zip_postal']),
-            'country'       => sanitize_text_field($_POST['country']),
+            'address_line2'  => sanitize_text_field($_POST['address_line2']),
+            'city'           => sanitize_text_field($_POST['city']),
+            'county_state'   => sanitize_text_field($_POST['county_state']),
+            'zip_postal'     => sanitize_text_field($_POST['zip_postal']),
+            'country'        => sanitize_text_field($_POST['country']),
         ];
         WC()->session->set('custom_shipping_address', $shipping_address);
         wp_send_json_success(['message' => 'Shipping address saved successfully.']);
@@ -2049,6 +2137,9 @@ function add_custom_price_cart_item_data_secure($cart_item_data, $product_id) {
         $country = is_valid_country($raw_country) ? $raw_country : 'United Kingdom';
 
         $cart_item_data['custom_inputs']['shipping_address'] = [
+            'firstname' => sanitize_text_field($_POST['custom_firstname']),
+            'lastname' => sanitize_text_field($_POST['custom_lastname']),
+            'company' => sanitize_text_field($_POST['custom_company']),
             'street_address' => sanitize_text_field($_POST['custom_street_address']),
             'address_line2' => sanitize_text_field($_POST['custom_address_line2']),
             'city' => sanitize_text_field($_POST['custom_city']),
@@ -2235,7 +2326,7 @@ function add_custom_price_cart_item_data_secure($cart_item_data, $product_id) {
     $shipments_count = count($shipments_session);
     $is_scheduled = $allow_credit && !empty($shipments_session) && array_sum(array_column($shipments_session, 'parts')) == $quantity;
 
-    $despatch_string = ''; // thurdsay retrieve discount rate
+    $despatch_string = '';
     $despatch_notes = '';
     $backorder_data = [];
     $is_backorder = false;
@@ -2597,6 +2688,56 @@ function add_custom_price_cart_item_data_secure($cart_item_data, $product_id) {
 
     // Collect the dates from scheduled orders v2
 
+
+    // NEW CODE FIX FRIDAY
+
+    /*
+    |--------------------------------------------------------------------------
+    | Build despatch_string for NON scheduled items
+    |--------------------------------------------------------------------------
+    */
+
+    if (!$is_scheduled) {
+
+        $feeLabels = [
+            'add_manufacturers_COFC' => 'Manufacturers COFC',
+            'add_fair' => 'First Article Inspection Report',
+            'add_materials_direct_COFC' => 'Materials Direct COFC'
+        ];
+
+        $feeParts = [];
+
+        foreach ($feeLabels as $field => $label) {
+            if (isset($_POST[$field]) && floatval($_POST[$field]) > 0) {
+                $feeParts[] = $label . ' £' . number_format(floatval($_POST[$field]), 2);
+            }
+        }
+
+        $shipment_date='';
+
+        if (is_array($shipments)) {
+            $shipment_date = reset($shipments);
+        }
+        else {
+            $shipment_date = trim($shipments);
+        }
+
+        $despatch_string = number_format($quantity) .", " .$shipment_date .", " .$discount_rate .", ";
+
+        if (!empty($feeParts)) {
+            $despatch_string .= implode(', ', $feeParts);
+            $despatch_string .= ', ';
+        }
+
+
+    }
+    // NEW CODE FIX FRIDAY
+
+
+
+
+
+
     $cart_item_data['custom_inputs'] = array_merge($cart_item_data['custom_inputs'], [
         'width' => floatval($_POST['custom_width']),
         'width_inches' => floatval($_POST['custom_width_inches']),
@@ -2922,9 +3063,10 @@ function add_custom_shipping_to_order($order, $data) {
 
 
     if ($shipping_address && is_array($shipping_address)) {
-        $order->set_shipping_first_name(isset($data['billing_first_name']) ? $data['billing_first_name'] : '');
-        $order->set_shipping_last_name(isset($data['billing_last_name']) ? $data['billing_last_name'] : '');
-        $order->set_shipping_company(isset($data['billing_company']) ? $data['billing_company'] : '');
+
+        $order->set_shipping_first_name($shipping_address['firstname']);
+        $order->set_shipping_last_name($shipping_address['lastname']);
+        $order->set_shipping_company($shipping_address['company']);
         $order->set_shipping_address_1($shipping_address['street_address']);
         $order->set_shipping_address_2(!empty($shipping_address['address_line2']) ? $shipping_address['address_line2'] : '');
         $order->set_shipping_city($shipping_address['city']);
@@ -3362,14 +3504,13 @@ function save_custom_address_to_order($order, $data) {
 
 
 // CLEAR SESSION AFTER ORDER IS PLACED
-
+// We are specifically not clearing the 'custom_shipping_address' and this session will remain when the customer next places an order
+// The 'custom_shipping_address' session value will remain active based on php ini settings
 add_action('woocommerce_checkout_order_processed', 'clear_custom_shipping_session', 10, 1);
 function clear_custom_shipping_session($order_id) {
-    //WC()->session->set('custom_shipping_address', null);
     WC()->session->set('custom_qty', null); 
     WC()->session->set('custom_shipments', null); 
 }
-
 // CLEAR SESSION AFTER ORDER IS PLACED
 
 
@@ -3597,7 +3738,9 @@ function set_custom_shipping_country_for_tax_calculation() {
                 //If valid country code found
                 if ($country_code) {
                     WC()->customer->set_shipping_country($country_code);
-
+                    WC()->customer->set_shipping_address($shipping_address['firstname']);
+                    WC()->customer->set_shipping_address($shipping_address['lastname']);
+                    WC()->customer->set_shipping_address($shipping_address['company']);
                     WC()->customer->set_shipping_address($shipping_address['street_address']);
                     WC()->customer->set_shipping_address_2($shipping_address['address_line2']);
                     WC()->customer->set_shipping_city($shipping_address['city']);
@@ -3946,6 +4089,7 @@ function get_shipment_lead_time_discount( $despatch_ymd ) {
 }
 // Delivery Options Discount helper
 
+
 // Make sure scheduled delivery 'custom_shipment' session is destroyed after 15 minutes
 add_action('init', 'cleanup_expired_custom_shipments');
 
@@ -3988,6 +4132,7 @@ add_action('wp_ajax_get_current_shipments', 'get_current_shipments_callback');
 add_action('wp_ajax_nopriv_get_current_shipments', 'get_current_shipments_callback');
 
 function get_current_shipments_callback() {
+    error_log('BEFORE READ custom_qty = ' . WC()->session->get('custom_qty'));
     check_ajax_referer('custom_price_nonce', 'nonce');
 
     $shipments   = WC()->session->get('custom_shipments', []);

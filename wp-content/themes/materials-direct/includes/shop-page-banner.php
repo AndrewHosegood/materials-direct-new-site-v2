@@ -14,7 +14,7 @@
             </li>
             <li class="shop-banner__statement-list">
                 <h5 class="shop-banner__statement-title">Credit Account Application</h5>
-                <p class="shop-banner__statement-text">The best option for when you choose 'Split & Schedule' orders. Apply for a cfredit account <a class="shop-banner__statement-text-link" href="/credit-account-application/">HERE</a></p>
+                <p class="shop-banner__statement-text">The best option for when you choose 'Split & Schedule' orders. Apply for a credit account <a class="shop-banner__statement-text-link" href="/credit-account-application/">HERE</a></p>
             </li>
         </ul>
     </div>

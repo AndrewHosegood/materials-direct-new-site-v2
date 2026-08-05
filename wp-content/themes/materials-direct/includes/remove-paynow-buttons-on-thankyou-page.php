@@ -1,9 +1,19 @@
 <?php
 /**
- * Remove the 'Actions' row (pay/cancel buttons) on the Thank You page.
+ * Remove the 'Actions' row (pay) on the Thank You page.
  */
-add_filter( 'woocommerce_my_account_my_orders_actions', '__return_empty_array' );
+add_filter( 'woocommerce_my_account_my_orders_actions', function( $actions, $order ) {
 
-add_filter( 'woocommerce_available_order_actions', function( $actions ) {
-    return array(); // Remove all actions (pay, cancel, view, etc.)
-});
+    // Remove the Pay action
+    if ( isset( $actions['pay'] ) ) {
+        unset( $actions['pay'] );
+    }
+
+    // Remove the Cancel action
+    if ( isset( $actions['cancel'] ) ) {
+        unset( $actions['cancel'] );
+    }
+
+    return $actions;
+
+}, 10, 2 );

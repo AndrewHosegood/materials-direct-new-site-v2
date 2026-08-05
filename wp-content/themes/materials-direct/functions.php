@@ -249,7 +249,7 @@ require_once('includes/acf_global_options.php');
 // Generate and display PPP for testing
 
 // **** THEME ALGORITHM AND CORE FUNCTIONALITY ****
-require_once('includes/algorithm_and_core_functionality.php');
+require_once('includes/algorithm_and_core_functionality_inc_fix_for_singles.php');
 //require_once('includes/fix-for-woocommerce-rounding-errors.php');
 // **** THEME ALGORITHM AND CORE FUNCTIONALITY ****
 
@@ -456,6 +456,10 @@ require_once('includes/email-template-css-styling.php');
 require_once('includes/remove-get-the-app-from-emails.php');
 /* Remove get the app from emails */
 
+// Filter 'TM' symbols from emails
+require_once('includes/filter_tm_symbols_from_emails.php');
+// Filter 'TM' symbols from emails
+
 // Popular Products Carousel
 require_once('includes/popular-products-carousel.php');
 // Popular Products Carousel
@@ -569,6 +573,10 @@ require_once('includes/custom_oversize_surcharge_notice.php');
 require_once('includes/newsletter-signup-modal.php');
 // Home page technical bulletin newsletter signup
 
+// Display Company Name on checkout page
+require_once('includes/display_company_name_on_checkout.php');
+// Display Company Name on checkout page
+
 // force woocommerce to display the country on the thankyou page and orders page when country is UK
 add_filter( 'woocommerce_formatted_address_force_country_display', '__return_true');
 // force woocommerce to display the country on the thankyou page and orders page when country is UK
@@ -603,9 +611,49 @@ add_filter( 'wpo_wcpdf_hidden_order_itemmeta', function( $hidden_meta ) {
 
 });
 
+/* Force emails to use sequential order number */
+add_filter( 'woocommerce_email_order_number', function( $order_number, $order ) {
+    if ( is_a( $order, 'WC_Order' ) ) {
+        return $order->get_order_number();
+    }
+    return $order_number;
+}, 10, 2 );
+/* Force emails to use sequential order number */
+
+/* remove the 'Mine' drilldowb filter from Admin/Orders */
+add_filter( 'views_edit-shop_order', function( $views ) {
+    unset( $views['mine'] );
+    return $views;
+} );
+/* remove the 'Mine' drilldowb filter from Admin/Orders */
 
 
 
+// Temp function to inject a #ccp hidden field into the single product only
+
+/* This will make single products cost_per_part value work with the calender */
+
+add_action('woocommerce_before_add_to_cart_button', 'add_custom_price_hidden_field', 25);
+
+function add_custom_price_hidden_field() {
+    global $product;
+    
+    if (!$product || !is_a($product, 'WC_Product')) {
+        return;
+    }
+    
+    $show_hidden_field = get_field('is_product_single', $product->get_id());
+    
+    if (!$show_hidden_field) {
+        return;
+    }
+    
+    $price = $product->get_price(); 
+    
+    echo '<input type="hidden" id="cpp_single" name="cost_per_part" value="' . esc_attr($price) . '">';
+}
+
+// Temp function to inject a #ccp hidden field into the single product only
 
 
 
@@ -619,7 +667,6 @@ add_filter( 'wpo_wcpdf_hidden_order_itemmeta', function( $hidden_meta ) {
 require_once('includes/add_split_schedule_status_to_woocommerce_orders.php');
 require_once('includes/split_schedule_calendar.php');
 require_once('includes/split_schedule_admin.php');
-//require_once('includes/admin-email-split-schedule-data.php'); // for displaying the split schedule breakdown on the emails
 require_once('includes/admin-email-split-schedule-data-v4.php');
 require_once('includes/enqueue-ajax-for-calendar-admin.php'); // Enqueue ajax for calendar admin *
 require_once('includes/ajax-for-calendar-admin-new.php'); // Enqueue ajax for calendar admin *
@@ -671,6 +718,26 @@ add_action('init', function() {
 
 
 
+/*
+add_action('woocommerce_thankyou', 'show_order_object_on_thankyou_page', 20);
+
+function show_order_object_on_thankyou_page($order_id) {
+    if (!$order_id) {
+        return;
+    }
+
+    $order = wc_get_order($order_id);
+
+    if (!$order) {
+        return;
+    }
+
+    echo '<h2>Order Object Debug</h2>';
+    echo '<pre>';
+    print_r($order);
+    echo '</pre>';
+}
+*/
 
 
 
@@ -719,5 +786,22 @@ function save_session_shipping_to_user_profile($order_id, $posted_data, $order) 
     update_user_meta($user_id, 'shipping_state', sanitize_text_field($shipping['county_state']));
     update_user_meta($user_id, 'shipping_postcode', sanitize_text_field($shipping['zip_postal']));
     update_user_meta($user_id, 'shipping_country', $country_code);
+}
+*/
+
+/*
+function md_get_gravity_form_field($serialized_data, $field_id) {
+
+    if (empty($serialized_data)) {
+        return '';
+    }
+
+    $data = maybe_unserialize($serialized_data);
+
+    if ( !is_array($data) || empty($data['_gravity_form_lead']) || !is_array($data['_gravity_form_lead']) ) {
+        return '';
+    }
+
+    return isset($data['_gravity_form_lead'][$field_id]) ? $data['_gravity_form_lead'][$field_id] : '';
 }
 */

@@ -21,8 +21,10 @@ function inject_custom_jquery_for_product_dimensions() {
     $allowed_border = $item_border * 2;
 
     // Get product dimensions (in cm), convert to mm
-    $sheet_length_mm = $product->get_length() * 10;
-    $sheet_width_mm  = $product->get_width() * 10;
+    //$sheet_length_mm = $product->get_length() * 10;
+    //$sheet_width_mm  = $product->get_width() * 10;
+    $sheet_length_mm = floatval( $product->get_length() ) * 10;
+    $sheet_width_mm  = floatval( $product->get_width() ) * 10;
 
     // Allowed values
     $allowed_length = $sheet_length_mm - $allowed_border;
