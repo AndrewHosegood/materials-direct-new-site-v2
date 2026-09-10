@@ -108,17 +108,12 @@
         flex-wrap: wrap;
         margin-right: 2.5rem;
         justify-content: space-between;
+        align-items: center;
     }
     &__pay-options-logo {
         width: 100%;
         margin-bottom: 2.5rem;
         margin-top: 2rem;
-    }
-    &__iso-logo {
-        width: 50%;
-    }
-    &__cyber-logo {
-        width: 30%;
     }
     &__link {
         color: variables.$primary-color;

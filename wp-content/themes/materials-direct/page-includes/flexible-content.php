@@ -251,7 +251,7 @@
                 <?php $product_3 = get_sub_field('product_id_3'); ?>
                 <?php //$product_1 = 2004; ?>
                 <?php //$product_2 = 4807; ?>
-                <?php //$product_3 = 4236; ?>
+                <?php //$prosduct_3 = 4236; ?>
                 <?php
                 // Query the first 3 products (by newest date) under the "Electrical Insulators" category
                 $args = array(

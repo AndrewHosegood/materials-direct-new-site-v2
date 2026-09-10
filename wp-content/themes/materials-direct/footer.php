@@ -23,7 +23,8 @@
 				<a class="footer__link" href="https://universal-science.com">www.universal-science.com</a>
 				<div class="footer__logos">
 					<img src="/wp-content/uploads/2025/09/pay-options.svg" alt="Pay Options" class="footer__pay-options-logo">
-					<img src="/wp-content/uploads/2025/09/NQA_ISO9001_BW_UKAS.svg" alt="ISO9001" class="footer__iso-logo">
+					<img src="/wp-content/uploads/2026/09/NQA-ISO9001-logo.png" alt="ISO9001" class="footer__iso-logo">
+					<img src="/wp-content/uploads/2026/09/JOSCAR-logo-2.png" alt="Joscar Logo" class="footer__joscar-logo">
 					<img src="/wp-content/uploads/2025/09/cyber-essentials-logo.png" alt="Cyber Essentials" class="footer__cyber-logo">
 				</div>
 			</div>

@@ -113,6 +113,7 @@ function override_tax_location_with_session($location, $tax_class) {
 }
 
 // Enqueue JavaScript on checkout page to override browser auto-fill and trigger update
+
 add_action('wp_enqueue_scripts', 'enqueue_checkout_override_script');
 function enqueue_checkout_override_script() {
     if (is_checkout()) {
@@ -120,94 +121,7 @@ function enqueue_checkout_override_script() {
         $shipping_address = WC()->session->get('custom_shipping_address');
         $country_code = '';
         if ($shipping_address && isset($shipping_address['country'])) {
-            /*
-            $country_codes = [
-                'United Kingdom' => 'GB',
-                'Albania' => 'AL',
-                'Andorra' => 'AD',
-                'Angola' => 'AO',
-                'Australia' => 'AU',
-                'Austria' => 'AT',
-                'Bahrain' => 'BH',
-                'Bangladesh' => 'BD',
-                'Belgium' => 'BE',
-                'Bhutan' => 'BT',
-                'Brunei' => 'BN',
-                'Bosnia & Herzegovina' => 'BA',
-                'Bulgaria' => 'BG',
-                'Canada' => 'CA',
-                'Cambodia' => 'KH',
-                'China' => 'CN',
-                'Croatia' => 'HR',
-                'Cyprus' => 'CY',
-                'Czechia' => 'CZ',
-                'Denmark' => 'DK',
-                'Estonia' => 'EE',
-                'Faroe Islands' => 'FO',     
-                'Finland' => 'FI',  
-                'France' => 'FR',
-                'Germany' => 'DE', 
-                'Gibraltar' => 'GI',
-                'Greece' => 'GR',
-                'Greenland' => 'GL',
-                'Guernsey' => 'GG',
-                'Hungary' => 'HU',
-                'Hong Kong SAR China' => 'HK',
-                'Iceland' => 'IS',
-                'India' => 'IN',
-                'Indonesia' => 'ID',
-                'Ireland' => 'IE',
-                'Israel' => 'IL',
-                'Italy' => 'IT',
-                'Japan' => 'JP',
-                'Jersey' => 'JE',
-                'Jordan' => 'JO',
-                'Kuwait' => 'KW',
-                'Laos' => 'LA',
-                'Latvia' => 'LV',
-                'Liechtenstein' => 'LI',
-                'Lithuania' => 'LT',
-                'Luxembourg' => 'LU',
-                'Malaysia' => 'MY',
-                'Malta' => 'MT',
-                'Mexico' => 'MX',
-                'Monaco' => 'MC',
-                'Montenegro' => 'ME',
-                'Myanmar (Burma)' => 'MM',
-                'Nepal' => 'NP',
-                'Netherlands' => 'NL',
-                'New Zealand' => 'NZ',
-                'North Macedonia' => 'MK',
-                'Norway' => 'NO',
-                'Oman' => 'OM',
-                'Pakistan' => 'PK',
-                'Philippines' => 'PH',
-                'Poland' => 'PL',
-                'Portugal' => 'PT',
-                'Qatar'   => 'QA',    
-                'Romania' => 'RO',      
-                'San Marino' => 'SM',
-                'Saudi Arabia' => 'SA',
-                'Serbia' => 'RS',
-                'Singapore' => 'SG',
-                'Slovakia' => 'SK',     
-                'Slovenia' => 'SI',
-                'South Africa'   => 'ZA',
-                'South Korea'   => 'KR',
-                'Spain' => 'ES',
-                'Sri Lanka' => 'LK',
-                'Sweden' => 'SE',
-                'Switzerland' => 'CH',
-                'Taiwan' => 'TW',
-                'Thailand' => 'TH',
-                'Turkey' => 'TR',
-                'United Arab Emirates' => 'AE',
-                'United States' => 'US',
-                'Vatican City' => 'VA',
-                'Vietnam' => 'VN',
-                'Zimbabwe' => 'ZW'
-            ];
-            */
+  
             $country_data = get_country_data();
 
             $country_codes = [];

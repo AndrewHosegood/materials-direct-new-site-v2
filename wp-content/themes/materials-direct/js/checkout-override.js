@@ -7,7 +7,7 @@ jQuery(document).ready(function($) {
         // Optional delay to handle any timing issues with browser auto-fill
         setTimeout(function() {
             $('#shipping_country').val(checkout_override_data.shipping_country).trigger('change');
-            $(document.body).trigger('update_checkout');
+            //$(document.body).trigger('update_checkout');
         }, 500);
     }
 });

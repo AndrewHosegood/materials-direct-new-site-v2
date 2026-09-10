@@ -236,3 +236,66 @@
     margin-bottom: 0.5rem !important;
 }
 /* shop/category filter */
+
+// Recaptcha Badge
+.grecaptcha-badge {
+    width: 70px !important;
+    overflow: hidden !important;
+    left: 10px !important;
+    right: auto !important;
+    bottom: 10px !important;
+    transition: all 0.3s ease !important;
+	z-index:999;
+}
+
+.grecaptcha-badge:hover {
+    width: 256px !important;
+}
+// Recaptcha Badge
+
+#mega-sub-menu-335 {
+    overflow: scroll !important;
+    height: 453px !important;
+}
+
+.footer {
+        &__iso-logo {
+        width: auto;
+        max-width: 33% !important;
+        height: 74px !important;
+        @include breakpoints.laptop {
+            max-width: 33% !important;
+            height: 75px !important;
+        }
+        @include breakpoints.desktop {
+            max-width: 33% !important;
+            height: 83px !important;
+        }
+    }
+    &__cyber-logo {
+        width: auto;
+        max-width: 26% !important;
+        height: 69px !important;
+        @include breakpoints.laptop {
+            max-width: 26% !important;
+            height: 70px !important;
+        }
+        @include breakpoints.desktop {
+            max-width: 26% !important;
+            height: 78px !important;
+        }
+    }
+    &__joscar-logo {
+        width: auto;
+        height: 66px !important;
+        max-width: 36% !important;
+        @include breakpoints.laptop {
+            height: 67px !important;
+            max-width: 36% !important;
+        }
+        @include breakpoints.desktop {
+            height: 75px !important;
+            max-width: 36% !important;
+        }
+    }
+}

@@ -514,6 +514,7 @@ function view_admin_content() {
                                 <input type="hidden" name="id" value="'.$row->id.'">
                                 <input type="hidden" name="status" value="'.$row->status.'">
                                 <input type="hidden" name="order_no" value="'.$row->order_no.'">
+                                <input type="hidden" name="order_no_admin" value="'.$row->order_no_admin.'">
                                 <input type="hidden" name="date" value="'.$row->date.'">
                                 <input type="hidden" name="is_merged" value="'.$row->is_merged.'">
                                 </form>

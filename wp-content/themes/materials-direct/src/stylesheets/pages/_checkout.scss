@@ -23,7 +23,22 @@
         padding: 0;
         line-height: 2rem;
     }
-    
+    & .product-name .variation .variation-DiameterMM {
+        line-height: 1.7rem;
+    }
+    & .product-name .variation .variation-DiameterMM p {
+        display: inline-block;
+        padding: 0;
+        line-height: 2rem;
+    }
+    & .product-name .variation .variation-DiameterINCHES {
+        line-height: 1.7rem;
+    }
+    & .product-name .variation .variation-DiameterINCHES p {
+        display: inline-block;
+        padding: 0;
+        line-height: 1.8rem;
+    }
     & .product-name .variation .variation-LengthMM {
         line-height: 1.7rem;
     }
@@ -244,6 +259,14 @@
     & .woocommerce table.shop_table {
         font-size: 0.87rem;
         margin: 0 -1px 12px 0;
+    }
+    & .woocommerce table.shop_table .cart-item-metadata {
+        float: left;
+        width: 100%;
+    }
+    & .woocommerce table.shop_table .variation {
+        float: left;
+        width: 100%;
     }
     & .woocommerce-checkout .product-name .variation .variation-DespatchNotes p {
         line-height: 0.9rem;

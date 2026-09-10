@@ -63,9 +63,9 @@ get_header();
 <section class="company-history">
 <h2 class="company-history__heading"><?php the_field('our_history_heading'); ?></h2>
 <div class="company-history__container container">
-        <div class="company-history__left"><?php the_field('our_history_conetnt_left'); ?></div>
+        <div class="company-history__left"><?php the_field('our_history_content_left'); ?></div>
         <div class="company-history__right">
-                <?php the_field('our_history_conetnt_right'); ?>
+                <?php the_field('our_history_content_right'); ?>
         </div>
 </div>
 </section>

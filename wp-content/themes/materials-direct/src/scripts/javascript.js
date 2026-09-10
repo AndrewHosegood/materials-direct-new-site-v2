@@ -209,7 +209,13 @@ jQuery(document).ready(function($){
         $('#cont_length_inches').hide();
         $('#cont_radius_inches').hide();
         $('#choose_inches_radius').hide();
-        //$('#cont_length_mm .rollsLengthInput').remove();
+
+        //trigger hunspot chat onclick
+        jQuery(document).on('click', 'li.user-guide-chat a', function(event) {
+            console.log("here");
+            event.preventDefault();
+            //window.HubSpotConversations.widget.open();
+        });
         
         // hide/show file uploads when square rectangle/circle radius is clicked
         $("#rolls").click(function(){
@@ -362,6 +368,7 @@ jQuery(document).ready(function($){
 	    });
         // force users to enter 3 or more in width and length field
 
+
         // add width and length values based on circle radius input
         $('#input_radius').on('blur', function() {
             let $input = $(this);
@@ -391,11 +398,11 @@ jQuery(document).ready(function($){
             }
 
             // Enforce minimum value
-            if (num < 1.5) {
-                if (num > 0) {
-                    alert("Please add a radius of 1.5 mm or greater");
-                }
+            if (num < 3) {
+                alert("Please add a diameter of 3 mm or greater");
                 $input.val('');
+                $("#input_length").val('');
+                $("#input_width").val('');
                 $("#generate_price").prop("disabled", true);
                 return;
             }
@@ -404,7 +411,7 @@ jQuery(document).ready(function($){
             const decimalPart = val.split('.')[1];
             if (decimalPart && decimalPart.length > 2) {
                 num = Math.round(num * 100) / 100;
-                alert("Radius has been rounded to 2 decimal places");
+                alert("Diameter has been rounded to 2 decimal places");
             }
 
             // Format nicely (max 2 decimals, remove unnecessary trailing zeros)
@@ -412,7 +419,7 @@ jQuery(document).ready(function($){
             $input.val(formatted);
 
             // Apply radius logic
-            var keyup_value = num * 2;
+            var keyup_value = num;
             
             $("#input_length").val(keyup_value);
             $("#input_width").val(keyup_value);
@@ -498,20 +505,73 @@ jQuery(document).ready(function($){
         });
         // add inch values to length field
 
-        // add inch values to length field
-        $('#input_radius_inches').on('keyup', function() {
-            var value = $(this).val().trim(); // remove accidental spaces
-            var inch_radius_keyup_value = '';
-            if (value !== '') {
-                inch_radius_keyup_value = value * 25.4 * 2;
-            } else {
-                return; // stop here if empty
+
+
+        // add inch values to radius field
+        $('#input_radius_inches').on('blur', function() {
+            var $input = $(this);
+            var value = $input.val().trim();
+
+            if (value === '') {
+                return;
             }
+
+            // Remove any non-numeric characters except decimal point
+            value = value.replace(/[^0-9.]/g, '');
+
+            if (value === '') {
+                $input.val('');
+                $("#generate_price").prop("disabled", true);
+                return;
+            }
+
+            var radius = parseFloat(value);
+
+            // Check if it's a valid number
+            if (isNaN(radius)) {
+                alert("Please enter a valid number");
+                $input.val('');
+                $("#generate_price").prop("disabled", true);
+                return;
+            }
+
+            // Enforce minimum value
+            if (radius < 0.11811) {
+                alert("Please add a diameter of 0.11811 inches or greater");
+
+                $input.val('');
+
+                $("#input_length").val('');
+                $("#input_width").val('');
+
+                $("#generate_price").prop("disabled", true);
+
+                return;
+            }
+
+            // === Force maximum 3 decimal places ===
+            var decimalPart = value.split('.')[1];
+
+            if (decimalPart && decimalPart.length > 3) {
+                radius = Math.round(radius * 1000) / 1000;
+                alert("Diameter has been rounded to 3 decimal places");
+            }
+
+            // Format nicely (maximum 3 decimals, remove unnecessary trailing zeros)
+            var formatted = radius.toFixed(3).replace(/\.?0+$/, '');
+            $input.val(formatted);
+
+            // Convert inches to mm
+            var inch_radius_keyup_value = radius * 25.4;
+
             $("#input_length").val(inch_radius_keyup_value);
             $("#input_width").val(inch_radius_keyup_value);
+
+            // Enable generate price button
             $("#generate_price").prop("disabled", false);
         });
-        // add inch values to length field
+        // add inch values to radius field
+        
 
         // add quantity value based on rolls quantity input
         var rollLength = parseFloat($('#tabs_status_message_3').text());

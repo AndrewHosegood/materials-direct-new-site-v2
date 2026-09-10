@@ -27,9 +27,10 @@ function display_exchange_rates_shortcode() {
 
         $gbp_usd_display = $gbp_usd * 1.1;
         $gbp_eur_display = $gbp_eur * 1.1;
+
         // $gbp_usd_display = $gbp_usd * 10;
         // $gbp_eur_display = $gbp_eur * 10;
-        if($domain === 'newbuild.staging-materials-direct.co.uk'){
+        if($domain === 'materials-direct.com'){
             update_field('currency_rate_to_gbp', $gbp_usd_display, 1350); //add 10% [multiply base value by 1.1]
             update_field('currency_rate_to_gbp', $gbp_eur_display, 1348); //add 10% [multiply base value by 1.1]
         } else {

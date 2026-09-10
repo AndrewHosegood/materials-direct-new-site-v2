@@ -199,6 +199,7 @@ function save_voucher_discount_to_order($order_id) {
 
 
 // Add voucher discount to emails
+
 add_filter('woocommerce_email_order_meta_fields', 'add_voucher_discount_to_email_meta', 10, 3);
 function add_voucher_discount_to_email_meta($fields, $sent_to_admin, $order) {
     $discount = get_post_meta($order->get_id(), '_voucher_discount', true);
@@ -210,6 +211,7 @@ function add_voucher_discount_to_email_meta($fields, $sent_to_admin, $order) {
     }
     return $fields;
 }
+
 // Add voucher discount to emails
 
 

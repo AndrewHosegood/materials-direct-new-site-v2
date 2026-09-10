@@ -14,7 +14,7 @@ get_header();
 
 		<section class="error-404 not-found text-center">
 			<header class="page-header">
-				<h1 class="page-title error-404__title"><?php esc_html_e( 'Oops! That page can&rsquo;t be found.', 'materials-direct' ); ?></h1>
+				<h1 style="background-image: url(https://materials-direct.com/wp-content/uploads/2025/11/header-place-holder-image.webp);" class="page-title error-404__title"><?php esc_html_e( 'Oops! That page can&rsquo;t be found.', 'materials-direct' ); ?></h1>
 			</header><!-- .page-header -->
 
 			<div class="page-content error-404__page-content">

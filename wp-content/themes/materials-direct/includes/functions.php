@@ -240,6 +240,12 @@ add_action( 'wp_enqueue_scripts', function() {
 
 /* BEGIN CUSTOM FUNCTIONS */
 
+function md_reduce_heartbeat_frequency( $settings ) {
+    $settings['interval'] = 60;
+    return $settings;
+}
+add_filter( 'heartbeat_settings', 'md_reduce_heartbeat_frequency' );
+
 // DYNAMICALLY CREATE A 'COST PER CM' VALUE IN THE PRODUCT PAGE BACKEND
 require_once('includes/dynamically-create-cost-per-cm.php');
 // DYNAMICALLY CREATE A 'COST PER CM' VALUE IN THE PRODUCT PAGE BACKEND
@@ -253,7 +259,7 @@ require_once('includes/acf_global_options.php');
 // Generate and display PPP for testing
 
 // **** THEME ALGORITHM AND CORE FUNCTIONALITY ****
-require_once('includes/algorithm_and_core_functionality_inc_fix_for_singles.php');
+require_once('includes/algorithm_and_core_functionality_inc_fix_for_singles_new.php');
 //require_once('includes/fix-for-woocommerce-rounding-errors.php');
 // **** THEME ALGORITHM AND CORE FUNCTIONALITY ****
 
@@ -586,12 +592,8 @@ add_filter( 'woocommerce_formatted_address_force_country_display', '__return_tru
 // force woocommerce to display the country on the thankyou page and orders page when country is UK
 
 // Diagnotic results for failed price generation
-require_once('includes/md-price-error-diagnostics.php');
+//require_once('includes/md-price-error-diagnostics.php');
 // Diagnotic results for failed price generation
-
-/* TEMPORARILY REMOVE LOAD TEXTDOMAIN WARNING THAT ARE FLOODING MY LOGS */
-//require_once('includes/remove_load_textdomain_logs.php');
-/* TEMPORARILY REMOVE LOAD TEXTDOMAIN WARNING THAT ARE FLOODING MY LOGS */
 
 
 // change price in schema.org json file 
@@ -600,12 +602,6 @@ require_once('includes/md-price-error-diagnostics.php');
 // change price in schema.org json file 
 
 
-
-// Tell Bing and Google NOT to index my staging site
-add_action('send_headers', function () {
-    header('X-Robots-Tag: noindex, nofollow, noarchive', true);
-});
-// Tell Bing and Google NOT to index my staging site
 
 
 
@@ -754,13 +750,13 @@ function show_order_object_on_thankyou_page($order_id) {
 
 /* TEMPORARY FUNCTIONS */
 
-//Display order object on thankyou page
-require_once('includes/display-order-object-on-thankyou-page.php');
-//Display order object on thankyou page
+// Display order object on thankyou page
+// require_once('includes/display-order-object-on-thankyou-page.php');
+// Display order object on thankyou page
 
-//Temporary - display acf is_single_product on product page
+// Temporary - display acf is_single_product on product page
 //require_once('includes/display-is-single-product-on-product-page.php');
-//Temporary - display acf is_single_product on product page
+// Temporary - display acf is_single_product on product page
 
 /* TEMPORARY FUNCTIONS */
 

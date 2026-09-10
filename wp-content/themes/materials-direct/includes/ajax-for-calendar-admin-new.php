@@ -310,7 +310,7 @@ function update_order_status() {
                     $order_details_added = false;
 
                     foreach ($results as $row) {
-
+                        $title = $row['title'];
                         $schedule_qty = str_replace(',', '', $row['schedule_qty']);
                         $cost_per_part_raw = $row['cost_per_part_raw'];
                         $discount_rate = $row['discount_rate'];
@@ -322,12 +322,21 @@ function update_order_status() {
                         $has_single5_discount = !empty($row['has_single5_discount']) ? (float) $row['has_single5_discount'] : 0;
                         $md_value = $row['md_value'];
                         $part_shape = $row['part_shape'];
+
                         $width = $row['width'];
                         $length = $row['length'];
+                        $radius = $row['radius'];
+                        $diameter_inch = $row['radius_inch'];
+                        $diameter = $row['radius'];
+                        $width_inch = $row['width_inch'];
+                        $length_inch = $row['length_inch'];
+
                         $voucher_code = $row['voucher_code'];
-                        $voucher_percent = $row['voucher_percent'];
+                        //$voucher_percent = $row['voucher_percent'];
+                        $voucher_percent = (float) ($row['voucher_percent'] ?? 0);
                         $shipping_weights = $row['shipping_weights'];
-                        $total_shipping_duplicates = $row['shipping_duplicates'];
+                        //$total_shipping_duplicates = $row['shipping_duplicates'];
+                        $total_shipping_duplicates = (int) ($row['shipping_duplicates'] ?: 0);
                         $meta_qty = $row['meta_shipping_qty'];
                         $meta_shipping_total = $row['meta_shipping_total'];
                         $last = $row['last']; 
@@ -336,6 +345,8 @@ function update_order_status() {
                         $shipment_tracking_url = $row['shipment_tracking_url'];
                         $firstname = $row['firstname'];
                         $pdf_despatch_date = $row['pdf_despatch_date']; // new code monday
+                        $dimension_type = $row['dimension_type'];
+                        $dimension_type = strtoupper($dimension_type);
                         if($pdf_despatch_date){
                             $pdf_date = date('jS F Y', strtotime($pdf_despatch_date));
                         } else {
@@ -383,10 +394,55 @@ function update_order_status() {
                             $order_details_added = true;
                         }
 
+                        $ps = "<br>Part shape: ".$part_shape;
+
+                        if (empty($row['width_inch']) || $row['width_inch'] === '0') {
+                            $wdti = "";
+                            $wdt = "<br>Width (MM): ".$width;
+                        } else {
+                            $wdti = "<br>Width (INCHES): ".$width_inch;
+                        }
+
+                        if (empty($row['length_inch']) || $row['length_inch'] === '0') {
+                            $lgti = "";
+                            $lgt = "<br>Length (MM): ".$length;
+                        } else {
+                            $lgti = "<br>Length (INCHES): ".$length_inch;
+                        }
+
+                        if ($part_shape === 'circle-radius' || $part_shape === 'Simple Circle') {
+                            if (empty($row['radius_inch']) || $row['radius_inch'] === '0') {
+                                $radi = "";
+                                $rad = "<br>Diameter (MM): ".$diameter;
+                            } else {
+                                $radi = "<br>Diameter (INCHES): ".$diameter_inch;
+                                $rad = "";
+                            }
+                        }
+
+                        // if ($part_shape === 'circle-radius' || $part_shape === 'Simple Circle') {
+                        //     $rad = "<br>Diameter (".$dimension_type."): ".$diameter;
+                        // } else {
+                        //     $rad = "";
+                        // }
+
+                        /* Hide width and length for circles */
+                        if ($part_shape === 'circle-radius' || $part_shape === 'Simple Circle') {
+                            $wdt  = "";
+                            $wdti = "";
+                            $lgt  = "";
+                            $lgti = "";
+                        }
+
+                        if($part_shape === 'rolls'){
+                            $lgt  = "";
+                            $lgti = "";
+                        }
+
                         // Invoice Details (Second Table) $duplicate_date_count
                         $invoice_details_html .= '<tr style="height: 500px;">';
                         $invoice_details_html .= '<td style="vertical-align:top;">' . $row['sku'] . '</td>';
-                        $invoice_details_html .= '<td style="vertical-align:top;">' . $row['title'] . '<br>Part shape: ' . $part_shape  . '<br>Width (MM): ' . $width . '<br>Length (MM): ' . $length . '<br><br>Schedule: ' .$row['schedule'] . $complete .  '</td>';
+                        $invoice_details_html .= '<td style="vertical-align:top;">' . $title . $ps . $wdt . $wdti . $lgt . $lgti . $rad . $radi . '<br><br>Schedule: ' .$row['schedule'] . $complete .  '</td>';
                         $invoice_details_html .= '<td style="vertical-align:top;">' . $row['schedule_qty'] . '</td>';
                         $invoice_details_html .= '</tr>';
 
@@ -569,14 +625,21 @@ function update_order_status() {
                         $has_single5_discount = !empty($row['has_single5_discount']) ? (float) $row['has_single5_discount'] : 0;
                         $md_value = $row['md_value'];
                         $part_shape = $row['part_shape'];
+
                         $width = $row['width'];
                         $length = $row['length'];
+                        $radius = $row['radius'];
+                        $diameter_inch = $row['radius_inch'];
+                        $diameter = $row['radius'];
                         $width_inch = $row['width_inch'];
                         $length_inch = $row['length_inch'];
+
                         $voucher_code = $row['voucher_code'];
-                        $voucher_percent = $row['voucher_percent'];
+                        //$voucher_percent = $row['voucher_percent'];
+                        $voucher_percent = (float) ($row['voucher_percent'] ?? 0);
                         $shipping_weights = $row['shipping_weights'];
-                        $total_shipping_duplicates = $row['shipping_duplicates'];
+                        //$total_shipping_duplicates = $row['shipping_duplicates'];
+                        $total_shipping_duplicates = (int) ($row['shipping_duplicates'] ?: 0);
                         $meta_qty = $row['meta_shipping_qty'];
                         $meta_shipping_total = $row['meta_shipping_total'];
             
@@ -807,24 +870,47 @@ function update_order_status() {
                         //collect the values for product Description
                         $ps = "<br>Part shape: ".$part_shape;
                         
-                        if($row['width_inch'] == 0){
+                        if (empty($row['width_inch']) || $row['width_inch'] === '0') {
                             $wdti = "";
                             $wdt = "<br>Width (MM): ".$width;
                         } else {
                             $wdti = "<br>Width (INCHES): ".$width_inch;
                         }
 
-                        if($row['length_inch'] == 0){
+                        if (empty($row['length_inch']) || $row['length_inch'] === '0') {
                             $lgti = "";
                             $lgt = "<br>Length (MM): ".$length;
                         } else {
                             $lgti = "<br>Length (INCHES): ".$length_inch;
                         }
 
-                        if( $row['radius'] == 0 ){
-                            $rad = "";
-                        } else {
-                            $rad = "<br>Radius (".$dimension_type."): ".$radius;
+                        if ($part_shape === 'circle-radius' || $part_shape === 'Simple Circle') {
+                            if (empty($row['radius_inch']) || $row['radius_inch'] === '0') {
+                                $radi = "";
+                                $rad = "<br>Diameter (MM): ".$diameter;
+                            } else {
+                                $radi = "<br>Diameter (INCHES): ".$diameter_inch;
+                                $rad = "";
+                            }
+                        }
+
+                        // if ($part_shape === 'circle-radius' || $part_shape === 'Simple Circle') {
+                        //     $rad = "<br>Diameter (".$dimension_type."): ".$diameter;
+                        // } else {
+                        //     $rad = "";
+                        // }
+
+                        /* Hide width and length for circles */
+                        if ($part_shape === 'circle-radius' || $part_shape === 'Simple Circle') {
+                            $wdt  = "";
+                            $wdti = "";
+                            $lgt  = "";
+                            $lgti = "";
+                        }
+
+                        if($part_shape === 'rolls'){
+                            $lgt  = "";
+                            $lgti = "";
                         }
 
                         if(empty($row['pdf'])){
@@ -940,7 +1026,7 @@ function update_order_status() {
                         $invoice_details_html .= '<td>' . $row['sku'] . '</td>';
                         //$invoice_details_html .= '<td>' . $title . $ps . $dra . $dxf . $wdt . $wdti . $lgt . $lgti . $rad . "<br>" . $mcofc_fair_formatted . $sch . $str . '</td>';
                         //$invoice_details_html .= '<td>' . $title . $ps . $dra . $dxf . $wdt . $lgt . $wdti . $lgti . $rad . "<br>" . $mcofc_fair_formatted . $sch . $str . "<br>Scheduled Qty: " . $schedule_qty . "<br> cost_per_part_raw: " . $cost_per_part_raw . "<br>discount_rate: " . $discount_rate . "<br>total_1: " .$total_1. "<br>cpp " .$cpp. "<br>cppnew: " .$cppnew. "<br>Rolls Length: " .$rolls_length. "<br>My Shipping Response: " .$my_shipping_response. "<br>Meta Quantity" .$meta_qty. "<br>Flag: " .$flag. '</td>'; 
-                        $invoice_details_html .= '<td>' . $title . $ps . $dra . $dxf . $wdt . $wdti . $lgt . $lgti . $rad . "<br>" . $mcofc_fair_formatted . $scd . $sch . $str . '</td>';
+                        $invoice_details_html .= '<td>' . $title . $ps . $dra . $dxf . $wdt . $wdti . $lgt . $lgti . $rad . $radi . "<br>" . $mcofc_fair_formatted . $scd . $sch . $str . '</td>';
                         //$invoice_details_html .= '<td>' . $row['title'] . '<br>Part shape: ' . $part_shape  . '<br>Width (MM): ' . $width . '<br>Length (MM): ' . $length . '<br><br>Schedule: ' .$row['schedule'] . '</td>';
 
                         $invoice_details_html .= '<td>' . $row['schedule_qty'] . '</td>';
@@ -1194,6 +1280,9 @@ function update_order_status() {
                             $dxf = $row['dxf'];
                             $width = $row['width'];
                             $length = $row['length'];
+                            $radius = $row['radius'];
+                            $diameter_inch = $row['radius_inch'];
+                            $diameter = $row['radius'];
                             $width_inch = $row['width_inch'];
                             $length_inch = $row['length_inch'];
                             $dimension_type = $row['dimension_type'];
@@ -1227,23 +1316,39 @@ function update_order_status() {
                             $message .= '<ul class="wc-item-meta" style="list-style-type: none; padding-left: 0;">';
                             $message .= '<strong class="wc-item-meta-label" style="padding-right: 10px; float: left; margin-right: .25em; clear: both;">Part shape</strong> <p>'.$part_shape.'</p>';
                             if(!empty($row['pdf_part_shape_link'])){
-                                $message .= '<strong class="wc-item-meta-label" style="padding-right: 10px; float: left; margin-right: .25em; clear: both;">Upload .PDF Drawing</strong> <p><a href="'.$pdf_part_shape_link.'">'.$pdf.'</a></p>';
+                                $message .= '<strong class="wc-item-meta-label" style="padding-right: 10px; float: left; margin-right: .25em; clear: both;">Upload .PDF Drawing</strong> <p><a href="'.$domain.'/wp-content/uploads'.$pdf_part_shape_link.'">'.$pdf.'</a></p>';
                             }
                             if(!empty($row['dxf_part_shape_link'])){
-                                $message .= '<strong class="wc-item-meta-label" style="padding-right: 10px; float: left; margin-right: .25em; clear: both;">Upload .DXF Drawing</strong> <p><a href="'.$dxf_part_shape_link.'">'.$dxf.'</a></p>';
+                                $message .= '<strong class="wc-item-meta-label" style="padding-right: 10px; float: left; margin-right: .25em; clear: both;">Upload .DXF Drawing</strong> <p><a href="'.$domain.'/wp-content/uploads'.$dxf_part_shape_link.'">'.$dxf.'</a></p>';
                             }
-                            if($row['dimension_type'] == "mm"){
+                            //$message .= 'Part Shape: ' . $part_shape;
+                            //$message .= 'Diameter: ' . $diameter;
+                            //$message .= 'Width Inch: ' . $width_inch;
+                            if ($part_shape === 'circle-radius' || $part_shape === 'Simple Circle') {
+                                if($diameter != 0){
+                                    $message .= '<strong class="wc-item-meta-label" style="padding-right: 10px; float: left; margin-right: .25em; clear: both;">Diameter ('.$dimension_type.')</strong> <p>'.$diameter.'</p>';
+                                }
+                                if($diameter_inch != 0){
+                                    $message .= '<strong class="wc-item-meta-label" style="padding-right: 10px; float: left; margin-right: .25em; clear: both;">Diameter (INCHES)</strong> <p>'.$diameter_inch.'</p>';
+                                }
+                            } elseif($part_shape === 'rolls'){
                                 $message .= '<strong class="wc-item-meta-label" style="padding-right: 10px; float: left; margin-right: .25em; clear: both;">Width ('.$dimension_type.')</strong> <p>'.$width.'</p>';
-                                $message .= '<strong class="wc-item-meta-label" style="padding-right: 10px; float: left; margin-right: .25em; clear: both;">Length ('.$dimension_type.')</strong> <p>'.$length.'</p>';
-                            } else {
-                                $message .= '<strong class="wc-item-meta-label" style="padding-right: 10px; float: left; margin-right: .25em; clear: both;">Width ('.$dimension_type.')</strong> <p>'.$width_inch.'</p>';
-                                $message .= '<strong class="wc-item-meta-label" style="padding-right: 10px; float: left; margin-right: .25em; clear: both;">Length ('.$dimension_type.')</strong> <p>'.$length_inch.'</p>';
                             }
+                            else {
+                                if($width_inch != 0){
+                                    if($row['dimension_type'] == "mm"){
+                                        $message .= '<strong class="wc-item-meta-label" style="padding-right: 10px; float: left; margin-right: .25em; clear: both;">Width (INCHES)</strong> <p>'.$width_inch.'</p>';
+                                        $message .= '<strong class="wc-item-meta-label" style="padding-right: 10px; float: left; margin-right: .25em; clear: both;">Length (INCHES)</strong> <p>'.$length_inch.'</p>';
+                                    }
+                                } else {
+                                    $message .= '<strong class="wc-item-meta-label" style="padding-right: 10px; float: left; margin-right: .25em; clear: both;">Width ('.$dimension_type.')</strong> <p>'.$width.'</p>';
+                                    $message .= '<strong class="wc-item-meta-label" style="padding-right: 10px; float: left; margin-right: .25em; clear: both;">Length ('.$dimension_type.')</strong> <p>'.$length.'</p>';
+                                }
+                            }
+  
                             
                             
-                            if($radius != 0){
-                                $message .= '<strong class="wc-item-meta-label" style="padding-right: 10px; float: left; margin-right: .25em; clear: both;">Radius ('.$dimension_type.')</strong> <p>'.$radius.'</p>';
-                            }
+   
                             $message .= '<strong class="wc-item-meta-label" style="padding-right: 10px; float: left; margin-right: .25em; clear: both;">Total number of parts</strong> <p>'.$schedule_qty.'</p>';
 
                             $message .= '<strong class="wc-item-meta-label aaa" style="width: 100%; padding-right: 10px; float: left; margin-right: .25em; margin-bottom: 0.25em; clear: both;">Scheduled Deliveries</strong>';

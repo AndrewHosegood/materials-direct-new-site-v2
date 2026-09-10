@@ -7,7 +7,8 @@ function custom_pdf_dxf_formatted_meta( $formatted_meta, $item ) {
         
         if ( $meta->key === 'pdf_path' ) {
             $filename = basename( $meta->value );
-            $full_url = '/wp-content/uploads' . $meta->value;
+            //$full_url = '/wp-content/uploads' . $meta->value;
+            $full_url = home_url( '/wp-content/uploads' . $meta->value );
             
             $formatted_meta[$meta_id]->display_key   = 'Upload .PDF Drawing';
             $formatted_meta[$meta_id]->display_value = '<a href="' . esc_url($full_url) . '" target="_blank" rel="noopener">' . esc_html($filename) . '</a>';
@@ -15,8 +16,9 @@ function custom_pdf_dxf_formatted_meta( $formatted_meta, $item ) {
         
         if ( $meta->key === 'dxf_path' ) {
             $filename = basename( $meta->value );
-            $full_url = '/wp-content/uploads' . $meta->value;
-            
+            //$full_url = '/wp-content/uploads' . $meta->value;
+            $full_url = home_url( '/wp-content/uploads' . $meta->value );
+
             $formatted_meta[$meta_id]->display_key   = 'Upload .DXF Drawing';
             $formatted_meta[$meta_id]->display_value = '<a href="' . esc_url($full_url) . '" target="_blank" rel="noopener">' . esc_html($filename) . '</a>';
         }
@@ -57,4 +59,33 @@ add_action( 'woocommerce_order_item_meta_end', function( $item_id, $item, $order
               </li></ul>';
     }
 }, 10, 3 );
+
+*/
+
+/*
+add_filter( 'woocommerce_order_item_get_formatted_meta_data', 'custom_pdf_dxf_formatted_meta', 15, 2 );
+
+function custom_pdf_dxf_formatted_meta( $formatted_meta, $item ) {
+    
+    foreach ( $formatted_meta as $meta_id => $meta ) {
+        
+        if ( $meta->key === 'pdf_path' ) {
+            $filename = basename( $meta->value );
+            $full_url = '/wp-content/uploads' . $meta->value;
+            
+            $formatted_meta[$meta_id]->display_key   = 'Upload .PDF Drawing';
+            $formatted_meta[$meta_id]->display_value = '<a href="' . esc_url($full_url) . '" target="_blank" rel="noopener">' . esc_html($filename) . '</a>';
+        }
+        
+        if ( $meta->key === 'dxf_path' ) {
+            $filename = basename( $meta->value );
+            $full_url = '/wp-content/uploads' . $meta->value;
+            
+            $formatted_meta[$meta_id]->display_key   = 'Upload .DXF Drawing';
+            $formatted_meta[$meta_id]->display_value = '<a href="' . esc_url($full_url) . '" target="_blank" rel="noopener">' . esc_html($filename) . '</a>';
+        }
+    }
+    
+    return $formatted_meta;
+}
 */

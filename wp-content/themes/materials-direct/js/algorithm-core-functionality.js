@@ -516,8 +516,6 @@ function updateDatepickerMinDate() {
     $('#add_shipments').on('click', function(e) {
         e.preventDefault();
 
-        alert('Triggered!!');
-
         $('.product-page__tabs .product-page__tabs-list').hide(); 
         
         var shipmentId = $(this).data('id');
@@ -537,15 +535,11 @@ function updateDatepickerMinDate() {
                 nonce: ajax_params.nonce
             },
             success: function(response) {
-                console.log(response);
                 $('#price-spinner-overlay').fadeOut(200);
 
                 if (response.success) {
                     const data = response.data;
 
-                    alert(response.data)
-
-                    alert(data.remaining_parts);
 
                     // Update remaining parts
                     $('#remaining-parts').text(data.remaining_parts);
@@ -762,6 +756,8 @@ function updateDatepickerMinDate() {
 
         $('#generate_price').on('click', function() {
 
+            console.log("TRIGGERED");
+
             const selectedTab = $('input[name="tabs_input"]:checked').val();
 
             if (selectedTab === 'custom-shape-drawing') {
@@ -827,6 +823,7 @@ function updateDatepickerMinDate() {
                     $('#price-spinner-overlay').fadeOut(200);
 
                     if (response.success) {
+                        console.log("success triggered");
                         const price = response.data.price;
                         const adjustedPrice = response.data.per_part;
                         const sheetsRequired = response.data.sheets_required || 1;
@@ -885,10 +882,6 @@ function updateDatepickerMinDate() {
                         else {
                             discount_display = "35 Days (working day) (5% Discount)";
                         }
-
-
-
-
 
 
                         // Initialize variables for partial backorder
@@ -1008,53 +1001,6 @@ function updateDatepickerMinDate() {
                                 priceHtml = '<div class="product-page__display-price-outer"><div><h4 class="product-page__display-price-heading">Here is your instant quote</h4></div><div class="product-page__display-price-inner"><div class="product-page__display-price">Cost per part: <span class="product-page__display-price-text">' + currency_symbol + '' + (adjustedPrice * currency_rate).toFixed(2) + '</span></div><div class="product-page__display-price">Total part costs: <span class="product-page__display-price-text">' + currency_symbol + "" + (price * currency_rate).toFixed(2) + '</span></div></div></div>';
                             }
                         }
-                        
-
-
-
-
-                        /*
-                        if (isBackorder && stock_quantity > 0) {
-
-                            if (parts_per_sheet <= 0) {
-                                $('#custom_price_display').html('Error: Invalid sheet calculation. Part does not fit on sheet.');
-                                return;
-                            }
-                            const selectedTab = $('input[name="tabs_input"]:checked').val();
-                            sheets_backorder = sheetsRequired - stock_quantity;
-                            total_parts_d = qty;
-                            parts_from_stock = stock_quantity * parts_per_sheet;
-                            able_to_dispatch = Math.min(parts_from_stock, total_parts_d);
-                            parts_backorder = total_parts_d - able_to_dispatch
-                            backorder_adjustedPriceDisplay = adjustedPrice - backorder_adjustedPrice;
-                            calcPartialbackorderdiscount_1 = able_to_dispatch * adjustedPrice;
-                            calcPartialbackorderdiscount_2 = parts_backorder * backorder_adjustedPriceDisplay;
-                            calcPartialbackorderFinal = (calcPartialbackorderdiscount_1 + calcPartialbackorderdiscount_2).toFixed(2);
-                            cart_price = calcPartialbackorderFinal / sheetsRequired; 
-                            
-                            priceHtml = '<div class="product-page__display-price-outer"><div><h4 class="product-page__display-price-heading">Here is your instant quote</h4></div><div class="product-page__display-price-inner"><div class="product-page__display-price">Cost per part: <span class="product-page__display-price-text">£' + (adjustedPrice * currency_rate).toFixed(2) + '<span style="font-size: 0.82rem; font-weight: 400;"> (' + currency_symbol + "" + (backorder_adjustedPriceDisplay * currency_rate).toFixed(2) + ' for backorder parts)</span></span></div><div class="product-page__display-price">Total part costs: <span class="product-page__display-price-text">' + currency_symbol + "" + (calcPartialbackorderFinal * currency_rate).toFixed(2) + '</span></div></div></div>';
-                        
-                            if(selectedTab === 'rolls'){
-                                priceHtml += '<div class="product-page__backorder-message"><p class="product-page__backorder-message-text"><strong>Notice:</strong> This order exceeds current stock, it requires an additional ' + sheets_backorder + ' rolls to be back ordered. We are able to despatch: ' + able_to_dispatch + ' rolls within ' + discount_display + '. Please allow 35 Days to complete the back ordered items. A 5% discount will apply to these parts.</p></div>';
-                            } else {
-                                priceHtml += '<div class="product-page__backorder-message"><p class="product-page__backorder-message-text"><strong>Notice:</strong> This order exceeds current stock, it requires an additional ' + sheets_backorder + ' sheets (' + parts_backorder + ' parts) to be back ordered. We are able to despatch: ' + able_to_dispatch + ' parts within ' + discount_display + '. Please allow 35 Days to complete the back ordered items. A 5% discount will apply to these parts.</p></div>';
-                            }
-                        } else if (isBackorder && stock_quantity <= 0) {
-                            priceHtml = '<div class="product-page__display-price-outer"><div><h4 class="product-page__display-price-heading">Here is your instant quote</h4></div><div class="product-page__display-price-inner"><div class="product-page__display-price">Cost per part: <span class="product-page__display-price-text">' + currency_symbol + '' + (adjustedPrice * currency_rate).toFixed(2) + '</span></div><div class="product-page__display-price">Total part costs: <span class="product-page__display-price-text">' + currency_symbol + "" + (price * currency_rate).toFixed(2) + '</span></div></div></div>';
-                            priceHtml += '<div class="product-page__backorder-message"><p class="product-page__backorder-message-text"><strong>Notice:</strong> This order is currently on backorder only. Please allow 35 Days for complete order fulfillment with a 5% discount applied to the total order.</p></div>';
-                        } else {
-                            if(selectedTab === 'rolls'){
-                                priceHtml = '<div class="product-page__display-price-outer"><div><h4 class="product-page__display-price-heading">Here is your instant quote</h4></div><div class="product-page__display-price-inner"><div class="product-page__display-price">Cost per metre: <span class="product-page__display-price-text">' + currency_symbol + '' + (adjustedPrice / roll_length * currency_rate).toFixed(2) + '</span></div><div class="product-page__display-price">Total roll costs: <span class="product-page__display-price-text">' + currency_symbol + "" + (price * currency_rate).toFixed(2) + '</span></div></div></div>';
-                            } else {
-                                priceHtml = '<div class="product-page__display-price-outer"><div><h4 class="product-page__display-price-heading">Here is your instant quote</h4></div><div class="product-page__display-price-inner"><div class="product-page__display-price">Cost per part: <span class="product-page__display-price-text">' + currency_symbol + '' + (adjustedPrice * currency_rate).toFixed(2) + '</span></div><div class="product-page__display-price">Total part costs: <span class="product-page__display-price-text">' + currency_symbol + "" + (price * currency_rate).toFixed(2) + '</span></div></div></div>';
-                            }
-                        }
-                        
-                        */
-                        
-
-
-
 
 
                         // DISPLAY PRICE AND PART COST ON PRODUCT PAGE AFTER CLICKING 'CALCULATE PRICE'
@@ -1064,9 +1010,6 @@ function updateDatepickerMinDate() {
                         $('#custom_price').val(cart_price);
                         $('#shipments_display').fadeToggle();
                         $('#parts_remaining').text(qty);
-
-
-                        
 
 
                         if(allowCredit){
@@ -1134,10 +1077,109 @@ function updateDatepickerMinDate() {
                         $('#custom_price_display').html('<span class="product-page__backorder-message"><p class="product-page__backorder-message-text">Error: ' + (response.data.message || 'Unable to calculate price.') + '</p></span>');
                     }
                 },
-                error: function() {
+                error: function(xhr, textStatus, errorThrown) {
+
+                    // Always hide the price spinner immediately
                     $('#price-spinner-overlay').fadeOut(200);
-                    $('#custom_price_display').html('<span class="product-page__backorder-message"><p class="product-page__backorder-message-text">Error: Server error.</p></span>');
+
+                    const incidentReference = 'PRICE-' +
+                        new Date().toISOString().replace(/[-:TZ.]/g, '').substring(0, 14) +
+                        '-' +
+                        Math.floor(1000 + Math.random() * 9000);
+
+
+                    const diagnosticData = {
+                        incident_reference: incidentReference,
+                        http_status: xhr.status || 0,
+                        http_status_text: xhr.statusText || '',
+                        jquery_status: textStatus || '',
+                        error_thrown: errorThrown || '',
+                        ajax_action: 'calculate_secure_price',
+                        ajax_url: ajax_params.ajax_url,
+                        product_id: ajax_params.product_id,
+                        width: width,
+                        length: length,
+                        qty: qty,
+                        discount_rate: discount_rate,
+                        shape_type: selectedTab
+                    };
+
+
+                    if (ajax_params.diagnostic_url) {
+
+                        fetch(ajax_params.diagnostic_url, {
+                            method: 'POST',
+
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+
+                            body: JSON.stringify(diagnosticData),
+
+                            keepalive: true
+
+                        }).then(function(response) {
+
+                            if (!response.ok) {
+                                console.warn(
+                                    'Price diagnostic server response:',
+                                    incidentReference,
+                                    response.status,
+                                    response.statusText
+                                );
+                            } else {
+                                console.log(
+                                    'Price generation diagnostic recorded:',
+                                    incidentReference
+                                );
+                            }
+
+                        }).catch(function(error) {
+
+                            console.warn(
+                                'Unable to record price generation diagnostic:',
+                                incidentReference,
+                                error
+                            );
+
+                        });
+                    }
+
+                    $('#custom_price_display').html(
+                        '<span class="product-page__backorder-message">' +
+                            '<p class="product-page__backorder-message-text">' +
+                                'We were unable to generate the price. ' +
+                                'Please contact Materials Direct on 01908 221222 ' +
+                                'and quote reference <strong>' +
+                                incidentReference +
+                                '</strong>.' +
+                            '</p>' +
+                        '</span>'
+                    );
+
+                    console.error('========================================');
+                    console.error('PRICE GENERATION AJAX ERROR');
+                    console.error('========================================');
+                    console.error('Incident Reference:', incidentReference);
+                    console.error('HTTP Status:', xhr.status);
+                    console.error('HTTP Status Text:', xhr.statusText);
+                    console.error('jQuery Status:', textStatus);
+                    console.error('Error Thrown:', errorThrown);
+                    console.error('AJAX URL:', ajax_params.ajax_url);
+                    console.error('AJAX Action:', 'calculate_secure_price');
+                    console.error('Product ID:', ajax_params.product_id);
+                    console.error('Width:', width);
+                    console.error('Length:', length);
+                    console.error('Quantity:', qty);
+                    console.error('Discount Rate:', discount_rate);
+                    console.error('Shape Type:', selectedTab);
+                    console.error('========================================');
                 }
+
+                //error: function() {
+                    //$('#price-spinner-overlay').fadeOut(200);
+                    //$('#custom_price_display').html('<span class="product-page__backorder-message"><p class="product-page__backorder-message-text">Error: Server error.</p></span>');
+                //}
             });
         });
 

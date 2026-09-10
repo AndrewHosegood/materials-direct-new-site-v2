@@ -276,7 +276,8 @@ function _calendar(){
 
 
               const partRadius = document.getElementById('partRadius');
-              partRadius.innerHTML = info.event.extendedProps.radius;
+              //partRadius.innerHTML = info.event.extendedProps.radius;
+              partRadius.innerHTML = parseFloat(info.event.extendedProps.radius) * 2;
 
               const partTotal = document.getElementById('partTotal');
               partTotal.innerHTML = info.event.extendedProps.qty;
@@ -410,7 +411,7 @@ function _calendar(){
                       </span>
                   </p>
 
-                  <p id="radiusRow"><span><strong>Radius:</strong> <span id="partRadius">Radius</span><small class="modal__part-mm">mm</small></span></p>
+                  <p id="radiusRow"><span><strong>Diameter:</strong> <span id="partRadius">Diameter</span><small class="modal__part-mm">mm</small></span></p>
                   <p> <strong>Total number of parts:</strong> <span id="partTotal">Total number of parts</span></p>
                   <br>
                   <p><strong>Scheduled Deliveries (<span id="batchStatus">Batch Status</span>):</strong></p>
@@ -422,29 +423,7 @@ function _calendar(){
 
 
                   <p><strong>Delivery Status:</strong> <span id="status">Status</span></p>
-                  
-
-                  <!-- <p class="">
-                    <span class="modal__part-dimensions">
-                      
-                      <span>
-                      <strong>Width:</strong> <span id="partWidth">Width</span>
-                      <small class="modal__part-mm">mm</small>
-                      </span>
-                      
-                      <span>
-                      <strong>Length:</strong> <span id="partLength">Length</span>
-                      <small class="modal__part-mm">mm</small>
-                      </span>
-
-                      </span>
-
-                  </p> -->
-                  <!-- <p class="modal__notes"><span id="linkNotes">Notes</span></p> -->
-
-                  
-
-                  
+                                    
 
                   </div>
 

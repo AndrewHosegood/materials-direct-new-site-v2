@@ -27,6 +27,7 @@ function custom_order_item_meta_logic( $formatted_meta, $item ) {
         '_Shipping Total',
     ];
 
+    /*
     $shape_type_is_rolls = false;
 
     foreach ( $formatted_meta as $meta ) {
@@ -35,15 +36,37 @@ function custom_order_item_meta_logic( $formatted_meta, $item ) {
             break;
         }
     }
+    */
+
+    $shape_type_is_rolls = false;
+    $shape_type_is_circle_radius = false;
+
+    foreach ( $formatted_meta as $meta ) {
+
+        if ( $meta->key === 'shape_type' ) {
+
+            $shape_type = strtolower( trim( $meta->value ) );
+
+            if ( $shape_type === 'rolls' ) {
+                $shape_type_is_rolls = true;
+            }
+            if ( $shape_type === 'circle-radius' || $shape_type === 'circle radius' ) {
+                $shape_type_is_circle_radius = true;
+            }
+        }
+    }
 
     foreach ( $formatted_meta as $meta_id => $meta ) {
 
         $raw_key = $meta->key;
         $display_key = $meta->display_key;
 
-        $value = isset( $meta->value ) && is_numeric( $meta->value )
-            ? (float) $meta->value
-            : null;
+        if ($shape_type_is_circle_radius && in_array( $raw_key, array( 'width', 'length', 'Width (MM)', 'Length (MM)' ), true )) {
+            unset( $formatted_meta[ $meta_id ] );
+            continue;
+        }
+
+        $value = isset( $meta->value ) && is_numeric( $meta->value ) ? (float) $meta->value : null;
         
         /*
          * ---- FRONTEND HIDING (Restored Capture carts) ----
@@ -56,7 +79,6 @@ function custom_order_item_meta_logic( $formatted_meta, $item ) {
         /*
          * ---- FRONTEND HIDING (Regular carts) ----
          */
-        
         if ( $raw_key === 'cost_per_part' ) {
             unset( $formatted_meta[ $meta_id ] );
             continue;
@@ -89,8 +111,14 @@ function custom_order_item_meta_logic( $formatted_meta, $item ) {
         switch ( $raw_key ) {
 
             case 'custom_radius':
-                $formatted_meta[ $meta_id ]->display_key = 'Radius (MM)';
+                $radius = (float) $meta->value;
+                $circumference = $radius * 2;
+
+                $formatted_meta[ $meta_id ]->display_key = 'Circumference (MM)';
+                $formatted_meta[ $meta_id ]->display_value = $circumference;
                 break;
+                //$formatted_meta[ $meta_id ]->display_key = 'Radius (MM)';
+                //break;
 
             case 'custom_radius_inches':
                 $formatted_meta[ $meta_id ]->display_key = 'Radius (INCHES)';

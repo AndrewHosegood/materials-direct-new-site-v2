@@ -18,8 +18,8 @@
 
 	<meta property="og:title" content="Materials Direct" />
 	<meta property="og:type" content="website" />
-	<meta property="og:url" content="https://kiranr2.sg-host.com/" />
-	<meta property="og:image" content="https://kiranr2.sg-host.com/wp-content/uploads/2026/06/og-image-new.jpg" />
+	<meta property="og:url" content="https://materials-direct.com/" />
+	<meta property="og:image" content="https://materials-direct.com/wp-content/uploads/2026/06/og-image-new.jpg" />
 	<meta property="og:description" content="Materials Direct provides custom materials conversion with instant pricing, all manufactured within 24 hours and built to your requirements." />
 	<meta property="og:site_name" content="Materials Direct" />
 	<meta property="og:logo" content="Materials Direct" />
@@ -101,7 +101,7 @@
 					
 					<div id="custom-search-container" class="header__search-result-container">
 						<i class="fa-solid fa-magnifying-glass header__search-result-icon"></i>
-						<img class="header__custom-search-results-spinner" style="display:none;" alt="searching" src="https://materials-direct.com/wp-content/plugins/add-search-to-menu-premium/public/images/spinner.gif"> 
+						<img class="header__custom-search-results-spinner" style="display:none;" alt="searching" src="/wp-content/themes/materials-direct/images/spinner.gif"> 
 						<input type="text" id="custom-product-search-input" class="header__search-bar" placeholder="Search products..." autocomplete="off">
 						<div id="custom-search-results" class="header__search-result" style="display:none;"></div>
 					</div>

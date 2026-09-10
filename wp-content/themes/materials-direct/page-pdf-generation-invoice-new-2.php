@@ -20,6 +20,16 @@ $pdf_title = isset($_GET['pdf_title']) ? sanitize_text_field($_GET['pdf_title'])
 
 $order = wc_get_order($order_no_admin);
 
+if (!$order) {
+    wp_die(
+        'The requested order no longer exists or has been deleted.',
+        'Order Not Found',
+        [
+            'response' => 404,
+        ]
+    );
+}
+
 $v_order = wc_get_order($id);
 
 $totals_html = '';
@@ -239,7 +249,9 @@ try {
             $part_shape = $row['part_shape'];
             $width = $row['width'];
             $length = $row['length'];
-          	$radius = $row['radius'];
+          	$diameter = $row['radius'];
+            $diameter_inch = $row['radius_inch'];
+            //$diameter = $row['radius'] * 2;
             $width_inch = $row['width_inch'];
             $length_inch = $row['length_inch'];
             $voucher_code = $row['voucher_code'];
@@ -541,6 +553,7 @@ try {
 
             //collect the values for product Description
             $ps = "<br>Part shape: ".$part_shape;
+
             
             if (empty($row['width_inch']) || $row['width_inch'] === '0') {
                  $wdti = "";
@@ -549,32 +562,40 @@ try {
                  $wdti = "<br>Width (INCHES): ".$width_inch;
              }
 
+
+
              if (empty($row['length_inch']) || $row['length_inch'] === '0') {
                  $lgti = "";
                  $lgt = "<br>Length (MM): ".$length;
              } else {
                  $lgti = "<br>Length (INCHES): ".$length_inch;
              }
-			
-          	
+
+
             if ($part_shape === 'circle-radius' || $part_shape === 'Simple Circle') {
-                $rad = "<br>Radius (".$dimension_type."): ".$radius;
-            } else {
-                $rad = "";
+                if (empty($row['radius_inch']) || $row['radius_inch'] === '0') {
+                    $radi = "";
+                    $rad = "<br>Diameter (MM): ".$diameter;
+                } else {
+                    $radi = "<br>Diameter (INCHES): ".$diameter_inch;
+                }
             }
 
+			
+          	
+            // if ($part_shape === 'circle-radius' || $part_shape === 'Simple Circle') {
+            //     $rad = "<br>Diameter (".$dimension_type."): ".$diameter;
+            // } else {
+            //     $rad = "";
+            // }
 
-            //if(empty($row['pdf'])){
-                //$dra = "";
-            //} else {
-                //$dra = "<br>PDF Drawing: ".$row['pdf'];
-            //}
-
-            //if(empty($row['dxf'])){
-                //$dxf = "";
-            //} else {
-                //$dxf = "<br>DXF Drawing: ".$row['dxf'];
-            //}
+            /* Hide width and length for circles */
+            if ($part_shape === 'circle-radius' || $part_shape === 'Simple Circle') {
+                $wdt  = "";
+                $wdti = "";
+                $lgt  = "";
+                $lgti = "";
+            }
 
 
 
@@ -692,7 +713,7 @@ try {
             // Invoice Details (Second Table)
             $invoice_details_html .= '<tr>';
             $invoice_details_html .= '<td>' . $row['sku'] . '</td>';
-             $invoice_details_html .= '<td>' . $title . $ps . $dra . $dxf . $wdt . $wdti . $lgt . $lgti . $rad . "<br>" . $mcofc_fair_formatted . $scd . $sch . $str . '</td>';
+             $invoice_details_html .= '<td>' . $title . $ps . $dra . $dxf . $wdt . $wdti . $lgt . $lgti . $rad . $radi . "<br>" . $mcofc_fair_formatted . $scd . $sch . $str . '</td>';
             //$invoice_details_html .= '<td>' . $title . $ps . $dra . $dxf . $wdt . $wdti . $lgt . $lgti . $rad . "<br>" . $mcofc_fair_formatted . $scd . $sch . $str . '<br>Flag' .$flag. '<br>Part Shape' .$part_shape. '<br>Shipping Display New' .$shipping_display_new. '<br>Meta Quantity: ' .$meta_qty. '</td>';
             //$invoice_details_html .= '<td>' . $title . $ps . $dra . $dxf . $wdt . $wdti . $lgt . $lgti . $rad . "<br>" . $mcofc_fair_formatted . $scd . $sch . $str .'New Total: '. $newtotal . '<br>cppnew: ' .$cppnew. '<br>My Shipping Response: ' .$my_shipping_response. '<br>Vat Display: ' .$vat_display. '<br>tf_3: ' .$tf_3. '<br>md_value: ' .$md_value. '<br>mcofc_fair_value_display: ' .$mcofc_fair_value_display. '<br>mcf_v: ' .$mcf_v. '<br>MCOFC Fair Value: ' .$mcofc_fair_value. '<br>Discount Code Value New: ' . $discount_code_value_new .  '</td>';
             //$invoice_details_html .= '<td>' . $title . $ps . $dra . $dxf . $wdt . $wdti . $lgt . $lgti . $rad . $mcf . $scd . $sch . $str . "<br>MCOFC Fair: " . $mcofc_fair_string . '</td>';

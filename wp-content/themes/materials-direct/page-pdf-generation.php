@@ -15,10 +15,19 @@ $order_no_admin = isset($_GET['order_no_admin']) ? intval($_GET['order_no_admin'
 $new_date = isset($_GET['date']) ? sanitize_text_field($_GET['date']) : '';
 $is_merged = isset($_GET['is_merged']) ? sanitize_text_field($_GET['is_merged']) : '';
 
-// $id = $_GET['id'];
-// $order_no = $_GET['order_no'];
-// $new_date = $_GET['date'];
 $order = wc_get_order($order_no_admin);
+
+if (!$order) {
+    wp_die(
+        'The requested order no longer exists or has been deleted.',
+        'Order Not Found',
+        [
+            'response' => 404,
+        ]
+    );
+}
+
+
 $totals_html = '';
 
 
@@ -187,6 +196,9 @@ try {
             $part_shape = $row['part_shape'];
             $width = $row['width'];
             $length = $row['length'];
+            $radius = $row['radius'];
+            $diameter_inch = $row['radius_inch'];
+            $diameter = $row['radius'];
             $width_inch = $row['width_inch'];
             $length_inch = $row['length_inch'];
             $voucher_code = $row['voucher_code'];
@@ -197,6 +209,8 @@ try {
             $meta_shipping_total = $row['meta_shipping_total'];
             $last = $row['last']; 
             $date = $row['date'];
+            $dimension_type = $row['dimension_type'];
+            $dimension_type = strtoupper($dimension_type);
 
             if($last == "1"){
                 $complete = "<br><br>Order is complete";
@@ -213,18 +227,42 @@ try {
             //collect the values for the invoice numbers on merged dates
 
 
-            if($row['width_inch'] == 0){
+            if (empty($row['width_inch']) || $row['width_inch'] === '0') {
                  $wdti = "";
                  $wdt = "<br>Width (MM): ".$width;
             } else {
                  $wdti = "<br>Width (INCHES): ".$width_inch;
             }
 
-            if($row['length_inch'] == 0){
+            if (empty($row['length_inch']) || $row['length_inch'] === '0') {
                  $lgti = "";
                  $lgt = "<br>Length (MM): ".$length;
             } else {
                  $lgti = "<br>Length (INCHES): ".$length_inch;
+            }
+
+            if ($part_shape === 'circle-radius' || $part_shape === 'Simple Circle') {
+                if (empty($row['radius_inch']) || $row['radius_inch'] === '0') {
+                    $radi = "";
+                    $rad = "<br>Diameter (MM): ".$diameter;
+                } else {
+                    $radi = "<br>Diameter (INCHES): ".$diameter_inch;
+                    $rad = "";
+                }
+            }
+
+            // if ($part_shape === 'circle-radius' || $part_shape === 'Simple Circle') {
+            //     $rad = "<br>Diameter (".$dimension_type."): ".$diameter;
+            // } else {
+            //     $rad = "";
+            // }
+
+            /* Hide width and length for circles */
+            if ($part_shape === 'circle-radius' || $part_shape === 'Simple Circle') {
+                $wdt  = "";
+                $wdti = "";
+                $lgt  = "";
+                $lgti = "";
             }
           
 			/*
@@ -257,7 +295,7 @@ try {
             // Invoice Details (Second Table) $duplicate_date_count
             $invoice_details_html .= '<tr style="height: 500px;">';
             $invoice_details_html .= '<td style="vertical-align:top;">' . $row['sku'] . '</td>';
-            $invoice_details_html .= '<td style="vertical-align:top;">' . $row['title'] . '<br>Part shape: ' . $part_shape  . $wdt . $lgt . $wdti  . $lgti . '<br><br>Schedule: ' .$row['schedule'] . $complete . '</td>';
+            $invoice_details_html .= '<td style="vertical-align:top;">' . $row['title'] . '<br>Part shape: ' . $part_shape  . $wdt .  $lgt . $wdti  . $lgti . $rad . $radi . '<br><br>Schedule: ' .$row['schedule'] . $complete . '</td>';
             $invoice_details_html .= '<td style="vertical-align:top;">' . $row['schedule_qty'] . '</td>';
             $invoice_details_html .= '</tr>';
 

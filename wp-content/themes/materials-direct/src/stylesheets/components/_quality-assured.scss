@@ -65,9 +65,9 @@
         font-size: 0.95rem;
     }
     &__logo {
-        width: 110px;
+        width: 70px;
         @include breakpoints.iphone {
-            width: 130px;
+            width: 90px;
         }
         display: block;
         margin-left: auto;

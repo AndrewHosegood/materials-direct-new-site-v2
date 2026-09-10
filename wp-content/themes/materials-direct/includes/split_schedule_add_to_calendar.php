@@ -157,14 +157,12 @@ function split_schedule_insert_data($order_id) {
             $invoice_no   = 50101 + intval($order_number) . "-" . $scheduled_item_index;
 
             // Dimensions
-            //$width        = $item->get_meta('width') ?: 0;
-            //$length       = $item->get_meta('length') ?: 0;
             $width = $item->get_meta('width') ?: $item->get_meta('Width (MM)') ?: 0;
             $length = $item->get_meta('length') ?: $item->get_meta('Length (MM)') ?: 0;
-            $width_in     = $width / 25.4;
-            $length_in    = $length / 25.4;
-            $radius       = $width / 2;
-            $radius_in    = $radius / 25.4;
+            $width_in     = $item->get_meta('width_inches') ?: 0;
+            $length_in     = $item->get_meta('length_inches') ?: 0;
+            $radius       = $item->get_meta('custom_radius') ?: 0;;
+            $radius_in    = $item->get_meta('custom_radius_inches') ?: 0;
 
             // Files
             $pdf_url      = $item->get_meta('pdf_path') ?: '';
@@ -342,10 +340,10 @@ function split_schedule_insert_data($order_id) {
                         'dimension_type'        => 'mm',
                         'width'                 => $width,
                         'length'                => $length,
-                        'width_inch'            => 0,
-                        'length_inch'           => 0,
-                        'radius'                => $length / 2,
-                        'radius_inch'           => 0,
+                        'width_inch'            => $width_in,
+                        'length_inch'           => $length_in,
+                        'radius'                => $radius,
+                        'radius_inch'           => $radius_in,
                         'qty'                   => $item->get_meta('qty'),
                         'mm'                    => 0,
                         'currency'              => '',
@@ -367,9 +365,9 @@ function split_schedule_insert_data($order_id) {
                 ];
 
 
-                // echo '<pre style="color:red;">';
-                // print_r( $data  );
-                // echo '</pre>';
+                echo '<pre style="color:red;">';
+                print_r( $data  );
+                echo '</pre>';
 
                 // Insert into database
                 $result = $wpdb->insert($table_name, $data);
@@ -918,7 +916,8 @@ function split_schedule_insert_data($order_id) {
         $subject_3 = 'Order Acknowledgement[#' .$order_number. ']'; 
 
         // Retrieve the ACF field email addresses from backend
-        $admin_email = get_field('delivery_options_order_acknowledgement_admin_email', 'option') ?: 'andrewh@materials-direct.com';
+        $admin_email = get_field('delivery_options_order_acknowledgement_admin_email', 'option') ?: 'pauls@materials-direct.com';
+        $shop_manager_email = get_field('delivery_options_order_acknowledgement_shop_manager_email', 'option') ?: 'renatam@universal-science.com';
         $bcc_email   = get_field('delivery_options_order_acknowledgement_bcc_email', 'option') ?: 'andrewh@materials-direct.com';
 
 
@@ -927,7 +926,7 @@ function split_schedule_insert_data($order_id) {
 
         $headers_3 = array(
             'Content-Type: text/html; charset=UTF-8',
-            'Bcc: ' . $bcc_email
+            'Bcc: ' . $bcc_email . ', ' . $shop_manager_email
         );
 
         $mail_sent_3 = wp_mail( $to_new, $subject_3, $message_3, $headers_3);

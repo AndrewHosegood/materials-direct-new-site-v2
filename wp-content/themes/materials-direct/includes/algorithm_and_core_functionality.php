@@ -1095,7 +1095,6 @@ add_action('wp_ajax_calculate_secure_price', 'calculate_secure_price');
 add_action('wp_ajax_nopriv_calculate_secure_price', 'calculate_secure_price');
 
 function calculate_secure_price() {
-
     check_ajax_referer('custom_price_nonce', 'nonce');
 
     $product_id = intval($_POST['product_id']);
@@ -1136,8 +1135,6 @@ function calculate_secure_price() {
 
     // Save custom_qty to session
     WC()->session->set('custom_qty', $qty);
-    error_log('AFTER SET custom_qty = ' . WC()->session->get('custom_qty'));
-
 
     // Clear any existing shipments to reset for new calculation
     WC()->session->set('custom_shipments', []);
@@ -1960,7 +1957,7 @@ function calculate_shipping_cost($total_del_weight, $country) {
             [299, PHP_INT_MAX, 3203.34],
         ],
         'asia' => [ // Shared tiers for Australasia etc
-            [0, 0.5, 62.88],
+            [0, 0.5, 61.88],
             [0.5, 1, 67.39],
             [1, 1.5, 72.89],
             [1.5, 2, 78.42],
@@ -3101,6 +3098,15 @@ function add_custom_shipping_to_order($order, $data) {
 add_action('woocommerce_checkout_create_order_line_item', 'save_sheets_required_to_order_item', 10, 4);
 
 function save_sheets_required_to_order_item($item, $cart_item_key, $values, $order) {
+
+    error_log('========== ORDER ITEM CUSTOM INPUTS DEBUG ==========');
+    error_log('Cart Item Key: ' . $cart_item_key);
+    error_log('Restored From Capture: ' . print_r($values['restored_from_capture'] ?? 'NOT SET', true));
+    error_log('Full $values array: ' . print_r($values, true));
+    error_log('custom_inputs: ' . print_r($values['custom_inputs'] ?? 'NOT SET', true));
+    error_log('custom_radius: ' . print_r($values['custom_inputs']['custom_radius'] ?? 'NOT SET', true));
+    error_log('========== END ORDER ITEM CUSTOM INPUTS DEBUG ==========');
+
     if (isset($values['custom_inputs']['sheets_required'])) {
         $item->add_meta_data('sheets_required', $values['custom_inputs']['sheets_required'], true);
     }
@@ -4132,7 +4138,6 @@ add_action('wp_ajax_get_current_shipments', 'get_current_shipments_callback');
 add_action('wp_ajax_nopriv_get_current_shipments', 'get_current_shipments_callback');
 
 function get_current_shipments_callback() {
-    error_log('BEFORE READ custom_qty = ' . WC()->session->get('custom_qty'));
     check_ajax_referer('custom_price_nonce', 'nonce');
 
     $shipments   = WC()->session->get('custom_shipments', []);

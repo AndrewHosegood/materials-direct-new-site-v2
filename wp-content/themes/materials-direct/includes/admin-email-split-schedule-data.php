@@ -1,12 +1,6 @@
 <?php
 add_action('woocommerce_order_item_meta_end', 'add_order_number_to_admin_email_table', 10, 4);
 function add_order_number_to_admin_email_table($item_id, $item, $order, $plain_text) {
-
-    // Get the voucher discount rate
-    $voucher_discount = (float) $order->get_meta('_voucher_discount'); // Retrieve the meta value
-    echo "Voucher Discount: " . $voucher_discount . "<br><br>";
-    // Get the voucher discount rate
-
     $order_items = $order->get_items();
     foreach ($order_items as $order_item) {
         $despatch_string = null;
@@ -31,9 +25,6 @@ function add_order_number_to_admin_email_table($item_id, $item, $order, $plain_t
             }
             if ($meta_data->key === 'cost_per_part') {
                 $cost_per_part = floatval(wp_kses_post($meta_data->value));
-            }
-            if ($meta_data->key === 'stock_quantity') {
-                $stock_quantity = floatval(wp_kses_post($meta_data->value));
             }
 
             if ($meta_data->key === '_advanced_woo_discount_item_total_discount') {
@@ -111,17 +102,6 @@ function add_order_number_to_admin_email_table($item_id, $item, $order, $plain_t
                 $discount = $match[3];
                 $desc = trim($match[4]);
 
-                preg_match_all('/£\s*([\d]+(?:\.\d{1,2})?)/', $desc, $price_matches);
-
-                $cofc_total = 0.0;
-
-                foreach ($price_matches[1] as $price) {
-                    $cofc_total += (float) $price;
-                }
-
-                echo number_format($cofc_total, 2) . "<br>";
-
-
                 $date = DateTime::createFromFormat('d/m/Y', $date_str);
                 $formatted_date = $date ? $date->format('jS F Y') : $date_str;
 
@@ -136,38 +116,24 @@ function add_order_number_to_admin_email_table($item_id, $item, $order, $plain_t
 
                 // Calculate subtotal
                 $subtotal = $cost_per_part * $qty;
-                $total_1 = $cost_per_part * $qty; // temporary delete
-
                 $discount_amount = ($discount_raw / 100) * $subtotal;
+                $total_after_discount = $subtotal - $discount_amount;
 
-                if($stock_quantity <= 0){
-                    $subtotal_after_discount = $subtotal;
-                } else {
-                    $subtotal_after_discount = $subtotal - $discount_amount;
-                }
-                
-
-                $vat_total = $total_after_discount + $cart_discount_price + $shipping_total; // delete?
-                $vat_amount = $vat_total * 0.2; // delete?
+                $vat_total = $total_after_discount + $cart_discount_price + $shipping_total;
+                $vat_amount = $vat_total * 0.2;
                 // Calculate subtotal
 
                 // Calculate the cart discount based on percent
-                $cart_discount_amount = ($subtotal_after_discount * $cart_discount_percent) / 100; //** 
+                $cart_discount_amount = ($subtotal * $cart_discount_percent) / 100;
                 $tf_3 = round($cart_discount_amount, 2);
                 // Calculate the cart discount based on percent
 
-                // Calculate the voucher discount
-                $voucher_percent = $subtotal_after_discount * $voucher_discount;
-                // Calculate the voucher discount
-
-                
-
                 // Calculate VAT
-                $total_vat = $subtotal_after_discount - $tf_3 + $shipping_calc + $cofc_total - $voucher_percent; //** 
+                $total_vat = $subtotal - $tf_3 + $shipping_calc;
                 $total_vat_display = $total_vat * 0.2;
 
                 // Calculate Final Total
-                $final_total = $subtotal_after_discount - $tf_3 + $shipping_calc + $total_vat_display + $cofc_total - $voucher_percent; //** 
+                $final_total = $subtotal - $tf_3 + $shipping_calc + $total_vat_display;
 
                 echo "<br>";
                 echo '<li class="delivery-options-list__li">Qty: ' . $qty . '</li>';
@@ -185,24 +151,21 @@ function add_order_number_to_admin_email_table($item_id, $item, $order, $plain_t
                 if (!empty($desc)) {
                     echo '<li class="delivery-options-list__li">' . $desc . '</li>';
                 }
-                echo '<li style="font-weight:bold; color:orange;" class="delivery-options-list__li">Products Purchased Subtotal: £' . number_format($subtotal_after_discount, 2) . '</li>'; //** 
+                echo '<li style="font-weight:bold; color:orange;" class="delivery-options-list__li">Products Purchased Subtotal: £' . number_format($subtotal, 2) . '</li>';
                 echo '<li style="font-weight:bold;" class="delivery-options-list__li">Total Price: £' . number_format($final_total, 2) . '</li>';
 
 
 
 
 
-
+                //echo '<li style="font-weight:bold; color:orange;" class="delivery-options-list__li">Total After Discout: ' . $total_after_discount . '</li>';
                 echo '<li style="font-weight:bold; color:orange;" class="delivery-options-list__li">subtotal: ' . $subtotal . '</li>';
-                echo '<li style="font-weight:bold; color:orange;" class="delivery-options-list__li">total_1: ' . $total_1 . '</li>';
+                //echo '<li style="font-weight:bold; color:orange;" class="delivery-options-list__li">discount_amount: ' . $discount_amount . '</li>';
                 echo '<li style="font-weight:bold; color:orange;" class="delivery-options-list__li">tf_3: ' . $tf_3 . '</li>';
                 echo '<li style="font-weight:bold; color:orange;" class="delivery-options-list__li">shipping_calc: ' . $shipping_calc . '</li>';
                 echo '<li style="font-weight:bold; color:orange;" class="delivery-options-list__li">VAT: ' . $total_vat_display . '</li>';
-                echo '<li style="font-weight:bold; color:orange;" class="delivery-options-list__li">FAIRS: ' . number_format($cofc_total, 2) . '</li>';
-                echo '<li style="font-weight:bold; color:orange;" class="delivery-options-list__li">Vouchers: ' . $voucher_percent . '</li>';
-                echo '<li style="font-weight:bold; color:orange;" class="delivery-options-list__li">Vouchers: ' . $voucher_discount . '</li>';
-                echo '<li style="font-weight:bold; color:orange;" class="delivery-options-list__li">Cost Per Part: ' . $cost_per_part . '</li>';
-                echo '<li style="font-weight:bold; color:orange;" class="delivery-options-list__li">Qty: ' . $qty . '</li>';
+                //echo '<li style="font-weight:bold; color:orange;" class="delivery-options-list__li">SUBTOTAL: ' . $subtotal . '</li><br><br>';
+                //echo '<li style="font-weight:bold; color:orange;" class="delivery-options-list__li">SUBTOTAL: ' . $my_shipping_response . '</li><br><br>';
 
 
 
@@ -212,9 +175,14 @@ function add_order_number_to_admin_email_table($item_id, $item, $order, $plain_t
 
 
 
-
-
-
+                // echo '<li style="font-weight:bold; color:orange;" class="delivery-options-list__li">DISCOUNT PERCENT: ' . $cart_discount_percent . '</li>';
+                // echo '<li style="font-weight:bold; color:orange;" class="delivery-options-list__li">VALUE: ' . $cart_discount_amount . '</li>';
+                
+                
+                
+                
+                
+                // echo '<li style="font-weight:bold; color:orange;" class="delivery-options-list__li">COST PER PART: ' . $cost_per_part . '</li>';
 
 
 

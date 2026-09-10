@@ -90,6 +90,16 @@
         padding: 0;
         line-height: 2.1rem;
     }
+    & .cart .product-name .variation .variation-DiameterMM p {
+        display: inline;
+        padding: 0;
+        line-height: 2.1rem;
+    }
+    & .cart .product-name .variation .variation-DiameterINCHES p {
+        display: inline;
+        padding: 0;
+        line-height: 2.1rem;
+    }
     & .cart .product-name .variation .variation-RadiusMM p {
         display: inline;
         padding: 0;
@@ -195,6 +205,9 @@
             font-size: 0.88rem;
         }
     }
+    // & .woocommerce table.shop_table td.product-name .variation-DiameterINCHES {
+    //     display: none;
+    // }
     & .site-main {
         padding: 3rem 0rem;
     }
