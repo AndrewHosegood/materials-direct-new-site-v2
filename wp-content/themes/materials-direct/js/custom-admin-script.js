@@ -401,7 +401,77 @@ jQuery(document).ready(function($) {
         });
 
 
+        $('.calendar__form-item-delete').on('submit', function(e) {
 
+                e.preventDefault();
+
+                const $form = $(this);
+                const $row = $form.closest('tr');
+
+                const id = $form.find('input[name="id"]').val();
+
+                if (!id) {
+                    alert('No row ID found.');
+                    return;
+                }
+
+                var confirmDelete = confirm(
+                    "Are you sure you want to delete this shipment?\n\nThis action cannot be undone."
+                );
+
+                if (!confirmDelete) {
+                    return;
+                }
+
+                const loadingImage = $('<img src="/wp-content/uploads/2024/03/loading7_gray.gif" class="calendar__loading-image">');
+
+                $form.append(loadingImage);
+
+                $.ajax({
+                    type: 'POST',
+                    url: ajax_object.ajax_url,
+                    data: {
+                        action: 'delete_split_schedule_order',
+                        id: id
+                    },
+
+                    beforeSend: function() {
+                        loadingImage.show();
+                    },
+
+                    success: function(response) {
+
+                        console.log(response);
+
+                        if (response.success) {
+
+                            $row.fadeOut(300, function() {
+                                $(this).remove();
+                            });
+
+                        } else {
+
+                            alert(response.data || 'Delete failed');
+
+                        }
+                    },
+
+                    error: function(xhr, status, error) {
+
+                        console.error(xhr.responseText);
+
+                        alert('Server error while deleting.');
+
+                    },
+
+                    complete: function() {
+
+                        loadingImage.remove();
+
+                    }
+                });
+
+        });
 
 
         $('.pdf-despatch-date-input').on('keyup change', function() {

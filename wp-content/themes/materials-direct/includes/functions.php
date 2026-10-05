@@ -672,7 +672,7 @@ require_once('includes/send-admin-confirmation-email-for-credit-account-order.ph
 require_once('includes/add_split_schedule_status_to_woocommerce_orders.php');
 require_once('includes/split_schedule_calendar.php');
 require_once('includes/split_schedule_admin.php');
-require_once('includes/admin-email-split-schedule-data-v4.php');
+require_once('includes/admin-email-split-schedule-data-v5.php');
 require_once('includes/enqueue-ajax-for-calendar-admin.php'); // Enqueue ajax for calendar admin *
 require_once('includes/ajax-for-calendar-admin-new.php'); // Enqueue ajax for calendar admin *
 require_once('includes/ajax-for-calendar-admin-merged-dates.php'); // Enqueue ajax for calendar admin *

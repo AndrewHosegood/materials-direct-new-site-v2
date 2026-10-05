@@ -26,7 +26,7 @@
 	padding: 0 !important;
 }
 .popup-feedback {
-	margin-top:4.2rem !important;
+	margin-top:3.2rem !important;
     @include breakpoints.iphone {
         margin-top:3.1rem !important;
     }
@@ -67,6 +67,10 @@
     top: 0 !important;
     padding: 0.8rem;
 	width: 100%;
+    font-size:16px;
+    @include breakpoints.iphone {
+        font-size:18px;
+    }
 }
 #popmake-5934 {
 	width: 95%;
@@ -121,6 +125,127 @@
         right: 0;
         bottom: 3px;
     }
+    & input[name="checkbox-133[]"] {
+        position: absolute;
+        opacity: 0;
+        z-index: 1;
+        padding: 4px;
+        margin-top: 8px;
+    }
+    & input[name="checkbox-133[]"] + .wpcf7-list-item-label {
+        position: relative;
+        cursor: pointer;
+        padding: 0;
+        font-weight: 600;
+    }
+    & input[name="checkbox-133[]"] + .wpcf7-list-item-label:before {
+        content: '';
+        margin-right: 5px;
+        display: inline-block;
+        vertical-align: text-top;
+        width: 18px;
+        height: 18px;
+        @include breakpoints.tablet {
+            width: 16px;
+            height: 16px;
+        }
+        background: white;
+        margin-top: 1px;
+        box-shadow: 0 0 2px rgba(0, 0, 0, 0.3);
+        margin-left: 5px;
+    }
+    & input[name="checkbox-133[]"]:hover + .wpcf7-list-item-label:before {
+        background: #eee;
+    }
+    & input[name="checkbox-133[]"]:focus + .wpcf7-list-item-label:before {
+        box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.12);
+    }
+    & input[name="checkbox-133[]"]:checked + .wpcf7-list-item-label:before {
+        background: #ef9003;
+    }
+    & input[name="checkbox-133[]"]:checked + .wpcf7-list-item-label:after {
+        content: '';
+        position: absolute;
+        left: 11px;
+        top: 5px;
+        @include breakpoints.tablet {
+            left: 10px;
+            top: 4px;
+        }
+        width: 5px;
+        height: 8px;
+        border: solid white;
+        border-width: 0 2px 2px 0;
+        transform: rotate(45deg);
+    }
+    & input[name="checkbox-133[]"]:disabled + .wpcf7-list-item-label {
+        color: #b8b8b8;
+        cursor: auto;
+    }
+    & input[name="checkbox-133[]"]:disabled + .wpcf7-list-item-label:before {
+        box-shadow: none;
+        background: white;
+    }
+    & input[name="complete-everything-you-needed"] {
+        position: absolute;
+        opacity: 0;
+        z-index: 1;
+        padding: 4px;
+        margin-top: 8px;
+    }
+    & input[name="complete-everything-you-needed"] + .wpcf7-list-item-label {
+        position: relative;
+        cursor: pointer;
+        padding: 0;
+        font-weight: 600;
+    }
+    & input[name="complete-everything-you-needed"] + .wpcf7-list-item-label:before {
+        content: '';
+        margin-right: 5px;
+        display: inline-block;
+        vertical-align: text-top;
+        width: 17px;
+        height: 17px;
+        @include breakpoints.tablet {
+            width: 15px;
+            height: 15px;
+        }
+        background: white;
+        border-radius: 50%;
+        margin-top: 1px;
+        box-shadow: 0 0 2px rgba(0, 0, 0, 0.3);
+    }
+    & input[name="complete-everything-you-needed"]:hover + .wpcf7-list-item-label:before {
+        background: #eee;
+    }
+    & input[name="complete-everything-you-needed"]:focus + .wpcf7-list-item-label:before {
+        box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.12);
+    }
+    & input[name="complete-everything-you-needed"]:checked + .wpcf7-list-item-label:before {
+        background: #ef9003;
+    }
+    & input[name="complete-everything-you-needed"]:checked + .wpcf7-list-item-label:after {
+        content: '';
+        position: absolute;
+        left: 4px;
+        top: 5px;
+        @include breakpoints.tablet {
+            left: 3px;
+            top: 4px;
+        }
+        width: 9px;
+        height: 9px;
+        background: white;
+        border-radius: 50%;
+    }
+    & input[name="complete-everything-you-needed"]:disabled + .wpcf7-list-item-label {
+        color: #b8b8b8;
+        cursor: auto;
+    }
+    & input[name="complete-everything-you-needed"]:disabled + .wpcf7-list-item-label:before {
+        box-shadow: none;
+        background: white;
+    }
 }
 
 .suggested-improvements-yes, .suggested-improvements-no {
@@ -138,17 +263,7 @@
 .hidden-radios p .wpcf7-form-control-wrap .wpcf7-form-control {
 	display: none;
 }
-// .hidden-radios p .wpcf7-form-control-wrap:nth-child(1) .wpcf7-not-valid-tip {
-//     position: absolute;
-//     top: 155px;
-// }
-// .hidden-radios p .wpcf7-form-control-wrap:nth-child(2) .wpcf7-not-valid-tip {
-//     position: absolute;
-//     top: 259px;
-// }
-// .wpcf7-form-control-wrap {
-//     position: unset;
-// }
+
 .rating {
   margin-top: 0px;
   border: none;
@@ -206,3 +321,143 @@
         margin-top: 1rem;
 }
 /* Popup Maker */
+
+// #popmake-5934 input[name="checkbox-133[]"] {
+//     position: absolute;
+//     opacity: 0;
+//     z-index: 1;
+//     padding: 4px;
+//     margin-top: 8px;
+// }
+
+// #popmake-5934 input[name="checkbox-133[]"] + .wpcf7-list-item-label {
+//     position: relative;
+//     cursor: pointer;
+//     padding: 0;
+//     font-weight: 600;
+// }
+
+// #popmake-5934 input[name="checkbox-133[]"] + .wpcf7-list-item-label:before {
+//     content: '';
+//     margin-right: 5px;
+//     display: inline-block;
+//     vertical-align: text-top;
+//     width: 18px;
+//     height: 18px;
+//     @include breakpoints.tablet {
+//         width: 16px;
+//         height: 16px;
+//     }
+//     background: white;
+//     margin-top: 1px;
+//     box-shadow: 0 0 2px rgba(0, 0, 0, 0.3);
+//     margin-left: 5px;
+// }
+
+// #popmake-5934 input[name="checkbox-133[]"]:hover + .wpcf7-list-item-label:before {
+//     background: #eee;
+// }
+
+// #popmake-5934 input[name="checkbox-133[]"]:focus + .wpcf7-list-item-label:before {
+//     box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.12);
+// }
+
+// #popmake-5934 input[name="checkbox-133[]"]:checked + .wpcf7-list-item-label:before {
+//     background: #ef9003;
+// }
+
+// #popmake-5934 input[name="checkbox-133[]"]:checked + .wpcf7-list-item-label:after {
+//     content: '';
+//     position: absolute;
+//     left: 11px;
+//     top: 5px;
+//     @include breakpoints.tablet {
+//         left: 10px;
+//         top: 4px;
+//     }
+//     width: 5px;
+//     height: 8px;
+//     border: solid white;
+//     border-width: 0 2px 2px 0;
+//     transform: rotate(45deg);
+// }
+
+// #popmake-5934 input[name="checkbox-133[]"]:disabled + .wpcf7-list-item-label {
+//     color: #b8b8b8;
+//     cursor: auto;
+// }
+
+// #popmake-5934 input[name="checkbox-133[]"]:disabled + .wpcf7-list-item-label:before {
+//     box-shadow: none;
+//     background: white;
+// }
+
+
+// #popmake-5934 input[name="complete-everything-you-needed"] {
+//     position: absolute;
+//     opacity: 0;
+//     z-index: 1;
+//     padding: 4px;
+//     margin-top: 8px;
+// }
+
+// #popmake-5934 input[name="complete-everything-you-needed"] + .wpcf7-list-item-label {
+//     position: relative;
+//     cursor: pointer;
+//     padding: 0;
+//     font-weight: 600;
+// }
+
+// #popmake-5934 input[name="complete-everything-you-needed"] + .wpcf7-list-item-label:before {
+//     content: '';
+//     margin-right: 5px;
+//     display: inline-block;
+//     vertical-align: text-top;
+//     width: 17px;
+//     height: 17px;
+//     @include breakpoints.tablet {
+//         width: 15px;
+//         height: 15px;
+//     }
+//     background: white;
+//     border-radius: 50%;
+//     margin-top: 1px;
+//     box-shadow: 0 0 2px rgba(0, 0, 0, 0.3);
+// }
+
+// #popmake-5934 input[name="complete-everything-you-needed"]:hover + .wpcf7-list-item-label:before {
+//     background: #eee;
+// }
+
+// #popmake-5934 input[name="complete-everything-you-needed"]:focus + .wpcf7-list-item-label:before {
+//     box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.12);
+// }
+
+// #popmake-5934 input[name="complete-everything-you-needed"]:checked + .wpcf7-list-item-label:before {
+//     background: #ef9003;
+// }
+
+// #popmake-5934 input[name="complete-everything-you-needed"]:checked + .wpcf7-list-item-label:after {
+//     content: '';
+//     position: absolute;
+//     left: 4px;
+//     top: 5px;
+//     @include breakpoints.tablet {
+//         left: 3px;
+//         top: 4px;
+//     }
+//     width: 9px;
+//     height: 9px;
+//     background: white;
+//     border-radius: 50%;
+// }
+
+// #popmake-5934 input[name="complete-everything-you-needed"]:disabled + .wpcf7-list-item-label {
+//     color: #b8b8b8;
+//     cursor: auto;
+// }
+
+// #popmake-5934 input[name="complete-everything-you-needed"]:disabled + .wpcf7-list-item-label:before {
+//     box-shadow: none;
+//     background: white;
+// }

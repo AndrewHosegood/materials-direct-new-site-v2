@@ -13,14 +13,11 @@ function add_order_number_to_admin_email_table($item_id, $item, $order, $plain_t
     $voucher_discount = (float) $order->get_meta('_voucher_discount');
 
     // Get the shipping address
-    //$address = WC()->session->get('custom_shipping_address');
     $address = $order->get_meta('_custom_shipping_address');
 
     if (!is_array($address)) {
         $address = [];
     }
-
-    //print_r($address);
 
     // Get despatch data from THIS item only
     $despatch_string = $item->get_meta('despatch_string', true);
@@ -98,10 +95,6 @@ function add_order_number_to_admin_email_table($item_id, $item, $order, $plain_t
         ? round($shipping_total / $total_delivery_count, 3) 
         : 0;
 
-    // Debug (remove or comment out after testing)
-    //echo '<pre>Total deliveries in order: ' . $total_delivery_count . '<br>';
-    //echo 'Total shipping: £' . $shipping_total . '<br>';
-    //echo 'Average shipping per delivery: £' . number_format($average_shipping, 3) . '</pre>';
     // ====================== END NEW LOGIC ======================
 
 
@@ -132,6 +125,7 @@ function add_order_number_to_admin_email_table($item_id, $item, $order, $plain_t
         $discount = $match[3];
         $desc     = trim($match[4]);
 
+
         $meta_qty = $shipment_qty_map[$date_str] ?? 1;
 
         // Extract COFC costs from description
@@ -156,13 +150,13 @@ function add_order_number_to_admin_email_table($item_id, $item, $order, $plain_t
         $subtotal = $cost_per_part * $qty;
         $discount_amount = ($discount_raw / 100) * $subtotal;
 
-        $subtotal_after_discount = ($stock_quantity <= 0)
-            ? $subtotal
-            : $subtotal - $discount_amount;
+        $subtotal_after_discount = ($stock_quantity <= 0) ? $subtotal : $subtotal - $discount_amount;
 
         // Cart discount
         $cart_discount_amount = ($subtotal_after_discount * $cart_discount_percent) / 100;
+        $cart_discount_amount_sp = ($subtotal * $cart_discount_percent) / 100;
         $tf_3 = round($cart_discount_amount, 2);
+        $tf_3_sp = round($cart_discount_amount_sp, 2); /* Add special price logic */
 
         // Voucher discount
         $voucher_percent = $subtotal_after_discount * $voucher_discount;
@@ -178,11 +172,20 @@ function add_order_number_to_admin_email_table($item_id, $item, $order, $plain_t
 
         // VAT (UK only)
         $total_vat = $subtotal_after_discount - $tf_3 + $my_shipping_response + $cofc_total - $voucher_percent;
+        $total_vat_sp = $subtotal - $tf_3_sp + $my_shipping_response + $cofc_total - $voucher_percent; /* Add special price logic */
+
+
         $country = $address['country'] ?? '';
+
         $total_vat_display = ($country === "United Kingdom") ? $total_vat * 0.2 : 0;
+        $total_vat_display_sp = ($country === "United Kingdom") ? $total_vat_sp * 0.2 : 0; /* Add special price logic */
 
         // Final total
         $final_total = $subtotal_after_discount - $tf_3 + $my_shipping_response + $total_vat_display + $cofc_total - $voucher_percent;
+
+        $final_total_sp = $subtotal - $tf_3_sp + $my_shipping_response + $total_vat_display_sp + $cofc_total - $voucher_percent; /* Add special price logic */
+
+
 
         // Output
         echo '<li class="delivery-options-list__li">Qty: ' . esc_html($qty) . '</li>';
@@ -202,15 +205,20 @@ function add_order_number_to_admin_email_table($item_id, $item, $order, $plain_t
             echo '<li class="delivery-options-list__li">' . $desc . '</li>';
         }
 
-        echo '<li style="font-weight:bold; color:orange;" class="delivery-options-list__li">Products Purchased Subtotal: £' . number_format($subtotal_after_discount, 2) . '</li>';
-        echo '<li style="font-weight:bold;" class="delivery-options-list__li">Total Price: £' . number_format($final_total, 2) . '</li><br>';
+        $session_special_price = WC()->session->get( 'special_price' );
+        $current_user = wp_get_current_user();
+        $is_authorised_special_price_user = (is_user_logged_in() && in_array( 'administrator', (array) $current_user->roles, true ));
 
-        // echo '<li class="delivery-options-list__li">1. subtotal_after_discount: ' . esc_html($subtotal_after_discount) . '</li>';
-        // echo '<li class="delivery-options-list__li">2. tf_3: ' . esc_html($tf_3) . '</li>';
-        // echo '<li class="delivery-options-list__li">3. my_shipping_response: ' . esc_html($my_shipping_response) . '</li>';
-        // echo '<li class="delivery-options-list__li">4. total_vat_display: ' . esc_html($total_vat_display) . '</li>';
-        // echo '<li class="delivery-options-list__li">5. cofc_total: ' . esc_html($cofc_total) . '</li>';
-        // echo '<li class="delivery-options-list__li">6. voucher_percent: ' . esc_html($voucher_percent) . '</li><br>';
+        /* Add special price logic */
+        if ($is_authorised_special_price_user && is_numeric( $session_special_price ) && (float) $session_special_price > 0) {
+            echo '<li style="font-weight:bold; color:orange;" class="delivery-options-list__li">Products Purchased Subtotal: £' . number_format($subtotal, 2) . '</li>';
+            echo '<li style="font-weight:bold;" class="delivery-options-list__li">Total Price: £' . number_format($final_total_sp, 2) . '</li><br>';
+        } else {
+            echo '<li style="font-weight:bold; color:orange;" class="delivery-options-list__li">Products Purchased Subtotal: £' . number_format($subtotal_after_discount, 2) . '</li>';
+            echo '<li style="font-weight:bold;" class="delivery-options-list__li">Total Price: £' . number_format($final_total, 2) . '</li><br>';
+        }
+        /* Add special price logic */
+
     }
 
     echo '</ul>';

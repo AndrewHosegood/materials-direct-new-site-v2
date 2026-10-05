@@ -23,6 +23,16 @@ function split_schedule_insert_data($order_id) {
     $voucher_discount = (float) $order->get_meta('_voucher_discount'); // Retrieve the meta value
     // Get the voucher discount rate
 
+    // Get the special price data if it exists
+    /* Add special price logic */
+    if(WC()->session->get( 'special_price' )){
+        $special_price = 1;
+    } else {
+        $special_price = 0;
+    }
+    /* Add special price logic */
+    // Get the special price data if it exists
+
     // Get the tax rates
     $tax_rates = [];
     foreach ($order->get_tax_totals() as $tax) {
@@ -138,6 +148,7 @@ function split_schedule_insert_data($order_id) {
                 continue;
             }
 
+
             // === SINGLE5 DISCOUNT LOGIC - PER ITEM ===
             // apply the '_has_single5_discount' per line item only
             $single5_discount = 0;
@@ -224,7 +235,6 @@ function split_schedule_insert_data($order_id) {
             $delivery_count = count($matches);
             $stock_quantity = $item->get_meta('stock_quantity');
 
-            //echo "Stock Quantity: " . $stock_quantity;
 
             if($stock_quantity <= 0){
                 $my_backorder = 1;
@@ -232,15 +242,23 @@ function split_schedule_insert_data($order_id) {
                 $my_backorder = 0;
             }
 
-            //echo "My Backorder: " . $my_backorder;
 
             foreach ($matches as $index => $match) {
                 $schedule_qty  = (int) str_replace(',', '', $match[1]);
                 $schedule = "part " . ($index + 1) . " of " . $delivery_count;
                 $my_date       = trim($match[2]);
                 $discount_rate = (float) $match[3];
-                $discount_rate_v = $discount_rate * 100;
-                $fees_section  = trim($match[4]); // May contain multiple fees separated by commas
+                echo "sp= " . $special_price;
+
+                /* Add special price logic */
+                if($special_price == 1){
+                    $discount_rate_v = 0;
+                } else {
+                    $discount_rate_v = $discount_rate * 100;
+                }
+                /* Add special price logic */
+                
+                $fees_section  = trim($match[4]); 
                 
 
                 // lets extract the meta shipping values
@@ -365,9 +383,9 @@ function split_schedule_insert_data($order_id) {
                 ];
 
 
-                echo '<pre style="color:red;">';
-                print_r( $data  );
-                echo '</pre>';
+                // echo '<pre style="color:red;">';
+                // print_r( $data  );
+                // echo '</pre>';
 
                 // Insert into database
                 $result = $wpdb->insert($table_name, $data);
@@ -382,7 +400,7 @@ function split_schedule_insert_data($order_id) {
                     error_log('Last query: ' . $wpdb->last_query);
                     echo "Error inserting data into the database.";
                     $db_error = $wpdb->last_error;
-                    echo "Error inserting data into the database: " . $db_error;
+                    echo "dbi=0.: " . $db_error;
                     $to = $email;
                     $message_error = 'There was a database error for Order No' . $order_id . '<br>Please contact the website administrator <a href="mailto:andrewh@materials-direct.com">here</a>';
                     $headers = array('Content-Type: text/html; charset=UTF-8');
@@ -392,7 +410,7 @@ function split_schedule_insert_data($order_id) {
                         //$add_custom_meta_condition = false;
                     }
                 } else {
-                    echo "Data inserted successfully into the database.";
+                    echo "dbi=1.";
                     $has_inserted = true;
                     $requiredDate = date("F d Y", strtotime($formattedDateNew));
 
@@ -428,10 +446,10 @@ function split_schedule_insert_data($order_id) {
                     $headers = array('Content-Type: text/html; charset=UTF-8'); // Email headers
                     $mail_sent = wp_mail($to, $subject, $message, $headers);
                     if ($mail_sent) {
-                        echo "Email to Paul sent successfully.";
+                        echo "etp=1.";
 
                     } else {
-                        echo "Error sending email to Paul.";
+                        echo "etp=0.";
                     }
                     // Send email to Paul
                 }
@@ -456,6 +474,8 @@ function split_schedule_insert_data($order_id) {
 
 
     if ($has_inserted) {
+
+        error_log('[ORDER ACK] Order ' . $order_number . ' - acknowledgement generation START');
 
         $order = wc_get_order($order_id);
         
@@ -526,10 +546,10 @@ function split_schedule_insert_data($order_id) {
             $message_3 .= '<p>'.$shape_type.'</p>';
 
             if(!empty($row['pdf_part_shape_link'])){
-                $message_3 .= '<strong class="wc-item-meta-label" style="padding-right: 10px; float: left; margin-right: .25em; clear: both;">Upload .PDF Drawing</strong> <p><a href="'.$pdf_url.'">'.$pdf_file_name.'</a></p>';
+                $message_3 .= '<strong class="wc-item-meta-label" style="padding-right: 10px; float: left; margin-right: .25em; clear: both;">Upload .PDF Drawing</strong> <p><a href="'.$domain.'/wp-content/uploads'.$pdf_url.'">'.$pdf_file_name.'</a></p>';
             }
             if(!empty($row['dxf_part_shape_link'])){
-                $message_3 .= '<strong class="wc-item-meta-label" style="padding-right: 10px; float: left; margin-right: .25em; clear: both;">Upload .DXF Drawing</strong> <p><a href="'.$dxf_url.'">'.$dxf_file_name.'</a></p>';
+                $message_3 .= '<strong class="wc-item-meta-label" style="padding-right: 10px; float: left; margin-right: .25em; clear: both;">Upload .DXF Drawing</strong> <p><a href="'.$domain.'/wp-content/uploads'.$dxf_url.'">'.$dxf_file_name.'</a></p>';
             }
 
             $message_3 .= '<strong class="wc-item-meta-label" style="padding-right: 10px; float: left; margin-right: .25em; clear: both;">Width (mm)</strong>';
@@ -575,6 +595,7 @@ function split_schedule_insert_data($order_id) {
 
         try {
             $results = $wpdb->get_results($sql, ARRAY_A);
+            error_log('[ORDER ACK] Order ' . $order_number . ' - split rows retrieved: ' . count($results));
             $shipping_display_new_calc = 0;
             $mcofc_fair_numeric_display = 0;
             $tf_3_calc = 0;
@@ -696,12 +717,12 @@ function split_schedule_insert_data($order_id) {
                 
                 // Get the fair values
                 $prices = [
-                    'Manufacturers COFC'                          => 10,
+                    'Manufacturers COFC'                          => 45,
                     'Materials Direct COFC'                       => 12.50,
                     'First Article Inspection Report'             => 95,
-                    'Manufacturers COFC, First Article Inspection Report' => 105,
-                    'Manufacturers COFC, First Article Inspection Report, Materials Direct COFC' => 117.5,
-                    'Manufacturers COFC, Materials Direct COFC' => 22.5,
+                    'Manufacturers COFC, First Article Inspection Report' => 140,
+                    'Manufacturers COFC, First Article Inspection Report, Materials Direct COFC' => 152.5,
+                    'Manufacturers COFC, Materials Direct COFC' => 57.5,
                     'First Article Inspection Report, Materials Direct COFC' => 107.5,
                 ];
 
@@ -711,12 +732,14 @@ function split_schedule_insert_data($order_id) {
 
                 $mcofc_fair_numeric = $prices[$lookup_key] ?? 0;
 
+
                 
                 /* NEW CODE */
 
                 // Get the fair values
 
                 $vat_amount = $cppnew + $my_shipping_response - $tf_3 + $md_value_final + $mcofc_fair_numeric - $voucher_percent - $has_single5_discount; 
+
 
                 $vat_percent = 20;
 
@@ -726,12 +749,14 @@ function split_schedule_insert_data($order_id) {
                     $vat_display = 0;
                 }
 
+
                 $mcofc_fair_numeric_display += $mcofc_fair_numeric;
 
                 $subtotal = $cppnew;
                 //$total_final = $subtotal + $shipping_display_new + $vat_display - $tf_3 + $md_value_final - $discount_code_value_new + $mcofc_fair_numeric;
                 $total_final = $subtotal + $my_shipping_response + $vat_display - $tf_3 + $md_value_final + $mcofc_fair_numeric - $voucher_percent - $has_single5_discount; 
                 $newtotal = floor($total_final * 100) / 100;
+
 
                 // Generate the PDF link for my-account
                 $custom_link = add_query_arg(array(
@@ -761,12 +786,16 @@ function split_schedule_insert_data($order_id) {
 
 
                 /* NEW CODE */
-                if($mcofc_fair_numeric == "10.00"){
+                if($mcofc_fair_numeric == "45.00"){
                     $mcofc_fair_numeric_title = "Manufacturers COFC";
-                } elseif($mcofc_fair_numeric == "95.00"){
+                } 
+                elseif($mcofc_fair_numeric == "95.00"){
                     $mcofc_fair_numeric_title = "First Article Inspection Report";
-                } else {
-                    $mcofc_fair_numeric_title = "Materials Direct COFC";
+                }
+                elseif($mcofc_fair_numeric == "12.50"){
+                }
+                else {
+                    $mcofc_fair_numeric_title = "COFCs & FAIRs";
                 }  
                 /* NEW CODE */
 
@@ -784,7 +813,7 @@ function split_schedule_insert_data($order_id) {
             echo "Error: " . $e->getMessage();
         } 
 
-
+        error_log('[ORDER ACK] Order ' . $order_number . ' - message generation COMPLETE');
         // save the PDF links as meta data
         if (!empty($pdf_links)) {
             $order->update_meta_data('_custom_pdf_links', $pdf_links); // save as array
@@ -929,18 +958,33 @@ function split_schedule_insert_data($order_id) {
             'Bcc: ' . $bcc_email . ', ' . $shop_manager_email
         );
 
+        error_log(
+            '[ORDER ACK] Order ' . $order_number .
+            ' - wp_mail START | To: ' . $to_new .
+            ' | Subject: ' . $subject_3
+        );
+
         $mail_sent_3 = wp_mail( $to_new, $subject_3, $message_3, $headers_3);
 
+        error_log(
+            '[ORDER ACK] Order ' . $order_number .
+            ' - wp_mail RESULT: ' . ($mail_sent_3 ? 'TRUE' : 'FALSE')
+        );
+
         if ($mail_sent_3) {
-            echo "Email with invoice sent successfully.";
+            echo "ewi=1.";
             // generate pdf link for admail
 
         } else {
-            echo "Error sending invoice email.";
+            echo "ewi=0.";
         }
+
+        error_log('[ORDER ACK] Order ' . $order_number . ' - acknowledgement process END');
     } //end if has inserted            
     // EMAIL GENERATION CODE GOES IN HERE
 
+        // destroy the special price session
+    WC()->session->__unset( 'special_price' );
 
     // Mark as processed to prevent duplicates
     $order->update_meta_data('_split_schedules_processed', 'yes');

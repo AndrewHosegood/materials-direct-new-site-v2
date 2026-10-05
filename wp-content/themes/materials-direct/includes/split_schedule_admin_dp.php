@@ -92,6 +92,7 @@ function view_admin_content() {
                     <?php if (in_array(get_current_user_id(), array(1, 2236), true)) : ?>
                         <th>Delete</th>
                     <?php endif; ?>
+                    <th>More Info</th>
                 </tr>
             </thead>
             <tbody>
@@ -413,6 +414,11 @@ function view_admin_content() {
                                     </form>
                             </td>
                         <?php endif; ?>
+                        <td class="calendar__btn-bg calender__column-flex" <?php echo $status_bg; ?>>
+                            <a href="<?php echo esc_url(admin_url('admin.php?page=shipment_details&id=' . $id)); ?>">
+                                Click Here
+                            </a>
+                        </td>
                         </tr>
                     <?php
                     } // end foreach

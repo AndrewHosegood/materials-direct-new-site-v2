@@ -95,7 +95,7 @@ function update_order_status() {
                     $date = new DateTime($date);
                     $formatted_date_pdf = $date->format('jS F Y');
 
-                    $admin_email = "andrewh@materials-direct.com";
+                    $admin_email = "pauls@universal-science.com, andrewh@materials-direct.com";
 
                     $subject = 'Reminder - Delivery Options Order ('.$schedule.')';
                     $message = '<h2 style="display: block; font-family: &quot;Helvetica Neue&quot;, Helvetica, Roboto, Arial, sans-serif; font-weight: bold; line-height: 130%; margin: 0 0 18px; text-align: left; font-size: 26px; color: #000000;">Reminder for order #'.$order_no.'</h2>';
@@ -653,7 +653,7 @@ function update_order_status() {
 
                             $mcofc_fair_array = array_map(function($value) {
                                 if($value == "Manufacturers COFC"){
-                                    return '(' . $value . ' - £10)';
+                                    return '(' . $value . ' - £45)';
                                 }
                                 elseif($value == "FAIR"){
                                     return '(' . $value . ' - £95)';
@@ -844,13 +844,13 @@ function update_order_status() {
                                 
                             } 
                             elseif($row['mcofc_fair'] == "MCOFC"){
-                                $mcf = "\n".$mcofc_fair.": £10";
-                                $mcf_v = 10;
+                                $mcf = "\n".$mcofc_fair.": £45";
+                                $mcf_v = 45;
                                 $mcf_v = (float) $mcf_v;
                             }
                             elseif($row['mcofc_fair'] == "Materials Direct COFC"){
-                                $mcf = "\n".$mcofc_fair.": £20";
-                                $mcf_v = 20;
+                                $mcf = "\n".$mcofc_fair.": £12.50";
+                                $mcf_v = 12.5;
                                 $mcf_v = (float) $mcf_v;
                             }
                             elseif($row['mcofc_fair'] == "Unknown"){
@@ -960,13 +960,13 @@ function update_order_status() {
                                 
                             } 
                             elseif($row['mcofc_fair'] == "Manufacturers COFC"){
-                                $mcf = "<br>".$mcofc_fair.": £10";
-                                $mcf_v = 10;
+                                $mcf = "<br>".$mcofc_fair.": £45";
+                                $mcf_v = 45;
                                 $mcf_v = (float) $mcf_v;
                             }
                             elseif($row['mcofc_fair'] == "Materials Direct COFC"){
                                 $mcf = "<br>".$mcofc_fair.": £12.50";
-                                $mcf_v = 20;
+                                $mcf_v = 12.5;
                                 $mcf_v = (float) $mcf_v;
                             }
                             elseif($row['mcofc_fair'] == "Unknown"){
@@ -1443,7 +1443,7 @@ function update_order_status() {
 
 
                     // send an email to patrice once the schedule is marked as despatch
-                    $to = "andrewh@materials-direct.com";
+                    $to = "patrices@universal-science.com, andrewh@materials-direct.com";
                     $subject = 'Order part '.$schedule.' for #'.$order_no.' has now been marked ready for despatch';
                     $message = 'Hi Patrice. For your information, '.$schedule.' for #'.$order_no.' has now been marked ready for despatch';
                     $headers = array('Content-Type: text/html; charset=UTF-8');

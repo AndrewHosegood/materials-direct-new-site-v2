@@ -211,6 +211,7 @@ try {
             $date = $row['date'];
             $dimension_type = $row['dimension_type'];
             $dimension_type = strtoupper($dimension_type);
+            $pdf_despatch_date = $row['pdf_despatch_date'];
 
             if($last == "1"){
                 $complete = "<br><br>Order is complete";
@@ -271,6 +272,12 @@ try {
             $wdt = "<br>Width (MM): ".$width;
             $wdti = "<br>Width (INCHES): ".$width_inch;
 			*/
+
+            if($pdf_despatch_date){
+                $pdf_date = date('jS F Y', strtotime($pdf_despatch_date));
+            } else {
+                $pdf_date = date('jS F Y');
+            }
 
             // Order Details (First Table)
             if (!$order_details_added) {

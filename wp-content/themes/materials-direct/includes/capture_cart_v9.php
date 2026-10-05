@@ -51,8 +51,8 @@ function get_cart_capture_data() {
                 'Price' => wc_format_decimal($price, 2),
                 'Total Price' => $total_price,
                 'Quantity' => $quantity,
+                'is_special_price_order' => !empty($cart_item['is_special_price_order']),
 
-                // === Meta mapping (NEW SITE → OLD STRUCTURE) ===
                 'Part shape' => sanitize_text_field($inputs['shape_type'] ?? ''),
                 'Width' => floatval($inputs['width'] ?? 0),
                 'Length' => floatval($inputs['length'] ?? 0),
@@ -220,40 +220,41 @@ function display_captured_carts_table() {
         <form id="bulk-delete-captured-carts-form" method="post">
             <?php wp_nonce_field('captured_carts_nonce', 'bulk_delete_carts_nonce_field'); ?>
             <div style="min-width:100%; overflow:scroll; min-height: 330px;">
-            <table style="min-width: 1750px;" class="capture-cart-list-table wp-list-table widefat fixed striped">
+            <table style="min-width: 1950px;" class="capture-cart-list-table wp-list-table widefat fixed striped">
                 <thead>
                     <tr>
-                        <th style="font-size: 11.5px;"><strong>Image</strong></th>
-                        <th style="font-size: 11.5px;"><strong>Cart Group ID</strong></th>
-                        <th style="font-size: 11.5px;"><strong>Capture Date</strong></th>
-                      	<th style="font-size: 11.5px;"><strong>Shipping Fee</strong></th>
-                        <th style="font-size: 11.5px;"><strong>Customer Shipping Weights</strong></th>
-                        <th style="font-size: 11.5px;"><strong>Product</strong></th>
-                        <th style="font-size: 11.5px;"><strong>Part Shape</strong></th> 
-                        <th style="font-size: 11.5px;"><strong>Width</strong></th>
-                        <th style="font-size: 11.5px;"><strong>Length</strong></th>
-                        <!-- <th style="font-size: 11.5px;"><strong>Width (Inch)</strong></th>
-                        <th style="font-size: 11.5px;"><strong>Length (Inch)</strong></th> -->
-                        <th style="font-size: 11.5px;"><strong>Diameter</strong></th>
-                        <th style="font-size: 11.5px; width: 120px;"><strong>Notes</strong></th>
-                        <th style="font-size: 11.5px;"><strong>Manufacturers COFC</strong></th>
-                        <th style="font-size: 11.5px;"><strong>Materials Direct COFC</strong></th>
-                        <th style="font-size: 11.5px;"><strong>First Article Inspection Report</strong></th>
-                        <!-- <th style="font-size: 11.5px;"><strong>PDF Drawing</strong></th>
-                        <th style="font-size: 11.5px;"><strong>DXF Drawing</strong></th> -->
-                        <!--<th style="font-size: 11.5px;"><strong>Is Scheduled</strong></th>-->
-                        <!--<th style="font-size: 11.5px;"><strong>Stock Quantity</strong></th>
-                        <th style="font-size: 11.5px;"><strong>Despatch String</strong></th>
-                        <th style="font-size: 11.5px;"><strong>Shipments Count</strong></th> -->
-                        <!-- <th style="font-size: 11.5px;"><strong>Allow Credit</strong></th> -->
-                        <th style="font-size: 11.5px;"><strong>Total Parts</strong></th>
-                        <th style="font-size: 11.5px;"><strong>Subtotal</strong></th>
-                        <th style="font-size: 11.5px;"><strong>Is This A Delivery Option Order?</strong></th>
-                        <th style="font-size: 11.5px;"><strong>Does The Customer Have Credit Account?</strong></th>
-                        <th style="font-size: 11.5px; width: 180px;"><strong>Customer Email</strong></th>
-                        <th style="font-size: 11.5px; width: 85px;"><strong>Send Email</strong></th>
-                        <th style="font-size: 11.5px;"><strong>Address</strong></th>
-                        <th style="font-size: 11.5px;"><strong><input style="margin: 0;" type="checkbox" id="select-all-carts"> Delete</strong></th>
+                        <th style="font-size: 10.5px;"><strong>Image</strong></th>
+                        <th style="font-size: 10.5px;"><strong>Cart Group ID</strong></th>
+                        <th style="font-size: 10.5px;"><strong>Capture Date</strong></th>
+                      	<th style="font-size: 10.5px;"><strong>Shipping Fee</strong></th>
+                        <th style="font-size: 10.5px;"><strong>Customer Shipping Weights</strong></th>
+                        <th style="font-size: 10.5px;"><strong>Product</strong></th>
+                        <th style="font-size: 10.5px;"><strong>Part Shape</strong></th> 
+                        <th style="font-size: 10.5px;"><strong>Width</strong></th>
+                        <th style="font-size: 10.5px;"><strong>Length</strong></th>
+                        <!-- <th style="font-size: 10.5px;"><strong>Width (Inch)</strong></th>
+                        <th style="font-size: 10.5px;"><strong>Length (Inch)</strong></th> -->
+                        <th style="font-size: 10.5px;"><strong>Diameter</strong></th>
+                        <th style="font-size: 10.5px; width: 110px;"><strong>Notes</strong></th>
+                        <th style="font-size: 10.5px;"><strong>Manufacturers COFC</strong></th>
+                        <th style="font-size: 10.5px;"><strong>Materials Direct COFC</strong></th>
+                        <th style="font-size: 10.5px;"><strong>First Article Inspection Report</strong></th>
+                        <!-- <th style="font-size: 10.5px;"><strong>PDF Drawing</strong></th>
+                        <th style="font-size: 10.5px;"><strong>DXF Drawing</strong></th> -->
+                        <!--<th style="font-size: 10.5px;"><strong>Is Scheduled</strong></th>-->
+                        <!--<th style="font-size: 10.5px;"><strong>Stock Quantity</strong></th>
+                        <th style="font-size: 10.5px;"><strong>Despatch String</strong></th>
+                        <th style="font-size: 10.5px;"><strong>Shipments Count</strong></th> -->
+                        <!-- <th style="font-size: 10.5px;"><strong>Allow Credit</strong></th> -->
+                        <th style="font-size: 10.5px;"><strong>Total Parts</strong></th>
+                        <th style="font-size: 10.5px;"><strong>Subtotal</strong></th>
+                        <th style="font-size: 10.5px;"><strong>Is This A Delivery Option Order?</strong></th>
+                        <th style="font-size: 10.5px;"><strong>Does The Customer Have Credit Account?</strong></th>
+                        <th style="font-size: 10.5px; width: 110px;"><strong>PO Number</strong></th>
+                        <th style="font-size: 10.5px; width: 170px;"><strong>Customer Email</strong></th>
+                        <th style="font-size: 10.5px; width: 80px;"><strong>Send Email</strong></th>
+                        <th style="font-size: 10.5px; width: 110px;"><strong>Address</strong></th>
+                        <th style="font-size: 10.5px;"><strong><input style="margin: 0;" type="checkbox" id="select-all-carts"> Delete</strong></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -329,10 +330,10 @@ function display_captured_carts_table() {
                             ?>
                             <tr data-post-id="<?php echo esc_attr($post_id); ?>">
 
-                                <td style="font-size: 11.5px;"><img src="<?php echo esc_url($thumb_image); ?>" alt="<?php echo esc_attr($product_name); ?>" style="width: 50px; height: 50px; object-fit: cover;" /></td>
-                                <td style="font-size: 11.5px;"><?php echo esc_html($cart_group_id); ?></td>
-                                <td style="font-size: 11.5px;"><?php echo esc_html($capture_date); ?></td>
-                                <td style="font-size: 11.5px;">
+                                <td style="font-size: 10.5px;"><img src="<?php echo esc_url($thumb_image); ?>" alt="<?php echo esc_attr($product_name); ?>" style="width: 50px; height: 50px; object-fit: cover;" /></td>
+                                <td style="font-size: 10.5px;"><?php echo esc_html($cart_group_id); ?></td>
+                                <td style="font-size: 10.5px;"><?php echo esc_html($capture_date); ?></td>
+                                <td style="font-size: 10.5px;">
                                     <?php 
                                         //echo esc_html($shipping_total); 
                                     ?>
@@ -361,49 +362,52 @@ function display_captured_carts_table() {
                                         }
                                         ?>
                                 </td>
-                                <td style="font-size: 11.5px;"><?php echo esc_html($cpp); ?></td>
-                                <td style="font-size: 11.5px;"><?php echo esc_html($product_name); ?></td>
-                                <td style="font-size: 11.5px;"><?php echo esc_html($part_shape); ?></td>
-                                <td style="font-size: 11.5px;"><?php echo esc_html($width); ?></td>
-                                <td style="font-size: 11.5px;"><?php echo esc_html($length); ?></td>
-                                <!-- <td style="font-size: 11.5px;"><?php //echo esc_html($width_inch); ?></td>
-                                <td style="font-size: 11.5px;"><?php //echo esc_html($length_inch); ?></td> -->
-                                <td style="font-size: 11.5px;"><?php echo esc_html($diameter); ?></td>
-                                <td style="font-size: 11.5px;"><?php echo esc_html($notes); ?></td>
-                                <!-- <td style="font-size: 11.5px;"><?php //echo esc_html($allow_credit_v); ?></td> -->
-                                <td style="font-size: 11.5px;"><?php echo esc_html($add_manufacturers_COFC); ?></td>
-                                <td style="font-size: 11.5px;"><?php echo esc_html($add_materials_direct_COFC); ?></td>
-                                <td style="font-size: 11.5px;"><?php echo esc_html($add_fair); ?></td>
-                                <!-- <td style="font-size: 11.5px;"><?php //echo esc_html($pdf); ?></td>
-                                <td style="font-size: 11.5px;"><?php //echo esc_html($dxf); ?></td> -->
-                                <!--<td style="font-size: 11.5px;"><?php echo esc_html($is_scheduled); ?></td>-->
-                                <!--<td style="font-size: 11.5px;"><?php //echo esc_html($stock_quantity); ?></td>
-                                <td style="font-size: 11.5px;"><?php //echo esc_html($despatch_string); ?></td>
-                                <td style="font-size: 11.5px;"><?php //echo esc_html($shipments_count); ?></td> -->
-                                <td style="font-size: 11.5px;"><?php echo esc_html($total_number_of_parts); ?></td>
-                                <td style="font-size: 11.5px;"><?php echo wc_price($total_price); ?></td>
-                                <td style="font-size: 11.5px;"><?php if($is_scheduled == 1){ echo "YES"; } else { echo "NO"; } ?></td>
-                                <td style="font-size: 11.5px;"><?php if($allow_credit == 1){ echo "YES"; } else { echo "NO"; } ?></td>
+                                <td style="font-size: 10.5px;"><?php echo esc_html($cpp); ?></td>
+                                <td style="font-size: 10.5px;"><?php echo esc_html($product_name); ?></td>
+                                <td style="font-size: 10.5px;"><?php echo esc_html($part_shape); ?></td>
+                                <td style="font-size: 10.5px;"><?php echo esc_html($width); ?></td>
+                                <td style="font-size: 10.5px;"><?php echo esc_html($length); ?></td>
+                                <!-- <td style="font-size: 10.5px;"><?php //echo esc_html($width_inch); ?></td>
+                                <td style="font-size: 10.5px;"><?php //echo esc_html($length_inch); ?></td> -->
+                                <td style="font-size: 10.5px;"><?php echo esc_html($diameter); ?></td>
+                                <td style="font-size: 10.5px;"><?php echo esc_html($notes); ?></td>
+                                <!-- <td style="font-size: 10.5px;"><?php //echo esc_html($allow_credit_v); ?></td> -->
+                                <td style="font-size: 10.5px;"><?php echo esc_html($add_manufacturers_COFC); ?></td>
+                                <td style="font-size: 10.5px;"><?php echo esc_html($add_materials_direct_COFC); ?></td>
+                                <td style="font-size: 10.5px;"><?php echo esc_html($add_fair); ?></td>
+                                <!-- <td style="font-size: 10.5px;"><?php //echo esc_html($pdf); ?></td>
+                                <td style="font-size: 10.5px;"><?php //echo esc_html($dxf); ?></td> -->
+                                <!--<td style="font-size: 10.5px;"><?php echo esc_html($is_scheduled); ?></td>-->
+                                <!--<td style="font-size: 10.5px;"><?php //echo esc_html($stock_quantity); ?></td>
+                                <td style="font-size: 10.5px;"><?php //echo esc_html($despatch_string); ?></td>
+                                <td style="font-size: 10.5px;"><?php //echo esc_html($shipments_count); ?></td> -->
+                                <td style="font-size: 10.5px;"><?php echo esc_html($total_number_of_parts); ?></td>
+                                <td style="font-size: 10.5px;"><?php echo wc_price($total_price); ?></td>
+                                <td style="font-size: 10.5px;"><?php if($is_scheduled == 1){ echo "YES"; } else { echo "NO"; } ?></td>
+                                <td style="font-size: 10.5px;"><?php if($allow_credit == 1){ echo "YES"; } else { echo "NO"; } ?></td>
+                                <td>
+                                    <input type="text" class="po-number-input" data-post-id="<?php echo esc_attr($post_id); ?>" data-cart-group-id="<?php echo esc_attr(get_post_meta($post_id, 'cart_group_id', true)); ?>" value="<?php echo esc_attr(get_post_meta($post_id, 'po_number', true)); ?>" placeholder="Add PO Number" style="width: 100%;">
+                                </td>
    
 
-                                <td style="font-size: 11.5px; position: relative;">
+                                <td style="font-size: 10.5px; position: relative;">
                                     <input type="text" class="customer-email-input" data-post-id="<?php echo esc_attr($post_id); ?>" value="<?php echo esc_attr($email); ?>" placeholder="Search email..." style="width: 100%;">
                                     <div class="email-suggestions" style="position: absolute; z-index: 9; width: 100%; max-height: 150px; overflow-y: auto; background: white; border: 1px solid #ccc; display: none;"></div>
                                 </td>
 
 
-                                <td style="font-size: 11.5px;">
+                                <td style="font-size: 10.5px;">
                                     <button class="button send-email" data-post-id="<?php echo esc_attr($post_id); ?>" <?php echo empty($email) ? 'disabled' : ''; ?>>
                                         Send
                                     </button>
                                 </td>
 
-                                <td style="font-size: 11.5px;">
+                                <td style="font-size: 10.5px;">
                                     <?php echo $address_firstname; ?>, <?php echo $address_lastname; ?>, <?php echo $address_company; ?>, <?php echo $address_1; ?>, <?php echo $address_2; ?>, <?php echo $address_3; ?>, <?php echo $address_4; ?>, <?php echo $address_5; ?>, <?php echo $address_6; ?>
                                 </td>
 
 
-                                <td style="font-size: 11.5px;">
+                                <td style="font-size: 10.5px;">
                                     <input type="checkbox" name="delete_cart_ids[]" value="<?php echo esc_attr($post_id); ?>">
                                 </td>
 
@@ -413,7 +417,7 @@ function display_captured_carts_table() {
                     } else {
                         ?>
                         <tr>
-                            <td colspan="19">No captured carts found.</td>
+                            <td colspan="23">No captured carts found.</td>
                         </tr>
                         <?php
                     }
@@ -498,9 +502,13 @@ function add_to_cart_from_capture() {
 
 
         $cart_item = get_post_meta($post_id, 'cart_item', true);
+
         if (empty($cart_item) || !is_array($cart_item)) {
             wp_send_json_error(['message' => 'No cart item data found.'], 400);
         }
+
+        // Retrieve PO Number saved against this captured cart
+        $captured_po_number = get_post_meta($post_id, 'po_number', true);
 
         if (!function_exists('WC') || !WC()->cart) {
             wp_send_json_error(['message' => 'WooCommerce cart not available.'], 500);
@@ -523,99 +531,101 @@ function add_to_cart_from_capture() {
             wp_send_json_error(['message' => 'Invalid product ID.'], 400);
         }
 
-// Recreate the original custom_radius value used by normal orders.
-// Capture Cart stores the Diameter, whereas the normal cart stores the Radius.
-$captured_diameter = null;
+        // Recreate the original custom_radius value used by normal orders.
+        // Capture Cart stores the Diameter, whereas the normal cart stores the Radius.
+        $captured_diameter = null;
 
-if (
-    isset($cart_item['Diameter']) &&
-    is_numeric($cart_item['Diameter'])
-) {
-    $captured_diameter = (float) $cart_item['Diameter'];
+        if (
+            isset($cart_item['Diameter']) &&
+            is_numeric($cart_item['Diameter'])
+        ) {
+            $captured_diameter = (float) $cart_item['Diameter'];
 
-} elseif (
-    isset($cart_item['Diameter (MM)']) &&
-    is_numeric($cart_item['Diameter (MM)'])
-) {
-    $captured_diameter = (float) $cart_item['Diameter (MM)'];
-}
+        } elseif (
+            isset($cart_item['Diameter (MM)']) &&
+            is_numeric($cart_item['Diameter (MM)'])
+        ) {
+            $captured_diameter = (float) $cart_item['Diameter (MM)'];
+        }
 
-$captured_radius = ($captured_diameter !== null) ? $captured_diameter : null;
-
-
-// Recreate the original custom_radius_inches value.
-// For Capture Cart orders, the original inch diameter is stored
-// separately from the MM diameter.
-//
-// We check both possible field names to make the restoration
-// compatible with existing/older captured carts.
-$captured_radius_inches = null;
-
-if (isset($cart_item['Diameter (Inch)']) && is_numeric($cart_item['Diameter (Inch)'])) {
-    $captured_radius_inches = (float) $cart_item['Diameter (Inch)'];
-
-} elseif (isset($cart_item['Diameter (INCHES)']) && is_numeric($cart_item['Diameter (INCHES)'])) {
-    $captured_radius_inches = (float) $cart_item['Diameter (INCHES)'];
-}
+        $captured_radius = ($captured_diameter !== null) ? $captured_diameter : null;
 
 
-    $cart_item_data = [
-        'restored_from_capture' => true,
-
-        'custom_inputs' => [
-            'custom_radius' => $captured_radius,
-            'custom_radius_inches' => $captured_radius_inches,
-            'pdf_path' => isset($cart_item['Upload .PDF Drawing']) ? sanitize_text_field($cart_item['Upload .PDF Drawing']): '',
-            'dxf_path' => isset($cart_item['Upload .DXF Drawing']) ? sanitize_text_field($cart_item['Upload .DXF Drawing']): '',
-            'width_inches' => isset($cart_item['Width (Inch)']) ? sanitize_text_field($cart_item['Width (Inch)']): '',
-            'length_inches' => isset($cart_item['Length (Inch)']) ? sanitize_text_field($cart_item['Length (Inch)']): '',
-        ],
-
+        // Recreate the original custom_radius_inches value.
+        // For Capture Cart orders, the original inch diameter is stored
+        // separately from the MM diameter.
         //
+        // We check both possible field names to make the restoration
+        // compatible with existing/older captured carts.
+        $captured_radius_inches = null;
 
-        'cart_metadata' => [
-                //'Upload .DXF Drawing' => isset($cart_item['Upload .DXF Drawing']) ? $cart_item['Upload .DXF Drawing'] : 'N/A',
-                //'Upload .PDF Drawing' => isset($cart_item['Upload .PDF Drawing']) ? $cart_item['Upload .PDF Drawing'] : 'N/A',
-                'is_scheduled' => isset($cart_item['is_scheduled']) ? $cart_item['is_scheduled'] : 'N/A',
-                'stock_quantity' => isset($cart_item['stock_quantity']) ? $cart_item['stock_quantity'] : 'N/A',
-                'despatch_string' => isset($cart_item['despatch_string']) ? $cart_item['despatch_string'] : 'N/A',
-                'Width (MM)' => isset($cart_item['Width']) ? $cart_item['Width'] : 'N/A',
-                //'width_inch'    => isset($cart_item['Width (Inch)']) ? $cart_item['Width (Inch)'] : 'N/A',
-                'Length (MM)' => isset($cart_item['Length']) ? $cart_item['Length'] : 'N/A',
-                //'length_inch'   => isset($cart_item['Length (Inch)']) ? $cart_item['Length (Inch)'] : 'N/A',
-                'Diameter (MM)' => isset($cart_item['Diameter']) ? floatval($cart_item['Diameter']) : (isset($cart_item['Diameter (MM)']) ? floatval($cart_item['Diameter (MM)']) : 'N/A'),
-                //'Diameter (Inch)'   => isset($cart_item['Diameter (Inch)']) ? $cart_item['Diameter (Inch)'] : 'N/A',
-                'Roll Length (Metres)' => isset($cart_item['Roll Length']) ? $cart_item['Roll Length'] : 'N/A', 
-                'Total number of parts' => isset($cart_item['Total number of parts']) ? $cart_item['Total number of parts'] : 'N/A',
-                'despatch_notes' => isset($cart_item['Notes']) ? $cart_item['Notes'] : 'N/A',  
-                'Cost Per Part' => isset($cart_item['Cost Per Part']) ? $cart_item['Cost Per Part'] : 'N/A',
-                'total_del_weight' => isset($cart_item['Customer Shipping Weights']) ? $cart_item['Customer Shipping Weights'] : 'N/A', 
-                'Sheets Required' => isset($cart_item['Sheets Required']) ? $cart_item['Sheets Required'] : 'N/A',
-                'shipping_total_raw' => isset($cart_item['shipping_total_raw']) ? $cart_item['shipping_total_raw'] : 'N/A',
-                'rolls_value' => isset($cart_item['rolls_value']) ? $cart_item['rolls_value'] : 'N/A',
-                'currency_rate' => isset($cart_item['currency_rate']) ? $cart_item['currency_rate'] : 'N/A',
-                'mcofc_fair_values' => isset($cart_item['mcofc_fair_values']) ? $cart_item['mcofc_fair_values'] : 'N/A',
-                'on_backorder' => isset($cart_item['on_backorder']) ? $cart_item['on_backorder'] : 'N/A',
-                'delivery_count' => isset($cart_item['delivery_count']) ? $cart_item['delivery_count'] : 'N/A',
-                'raw_date' => isset($cart_item['raw_date']) ? $cart_item['raw_date'] : 'N/A',
-                'discount_raw_new' => isset($cart_item['discount_raw_new']) ? $cart_item['discount_raw_new'] : 'N/A',
-                'cost_per_part' => isset($cart_item['cost_per_part_raw']) ? $cart_item['cost_per_part_raw'] : 'N/A', 
-                '_is_split_schedule' => isset($cart_item['_is_split_schedule']) ? $cart_item['_is_split_schedule'] : 'N/A',
-                'mcofc_fair_final_hidden' => isset($cart_item['mcofc_fair_final_hidden']) ? $cart_item['mcofc_fair_final_hidden'] : 'N/A',
-                'country_value' => isset($cart_item['country_value']) ? $cart_item['country_value'] : 'N/A',
-                'Part shape' => isset($cart_item['Part shape']) ? $cart_item['Part shape'] : 'N/A',
-                '_Currently Showing' => isset($cart_item['_Currently Showing']) ? $cart_item['_Currently Showing'] : 'N/A',
-                '_Untitled' => isset($cart_item['_Untitled']) ? $cart_item['_Untitled'] : 'N/A',
-                '_Shipping Total' => isset($cart_item['_Shipping Total']) ? $cart_item['_Shipping Total'] : 'N/A',
-                'form_id' => isset($cart_item['form_id']) ? $cart_item['form_id'] : 'N/A', 
-                'captured_optional_fees'     => floatval($cart_item['captured_optional_fees'] ?? 0),
-                'Manufacturers COFC'          => floatval($cart_item['Manufacturers COFC'] ?? 0),
-                'Materials Direct COFC'       => floatval($cart_item['Materials Direct COFC'] ?? 0),
-                'First Article Inspection Report' => floatval($cart_item['First Article Inspection Report'] ?? 0),
-                'shipments_count' => floatval($cart_item['shipments_count'] ?? 0),
-                'allow_credit' => floatval($cart_item['allow_credit'] ?? 0),
+        if (isset($cart_item['Diameter (Inch)']) && is_numeric($cart_item['Diameter (Inch)'])) {
+            $captured_radius_inches = (float) $cart_item['Diameter (Inch)'];
+
+        } elseif (isset($cart_item['Diameter (INCHES)']) && is_numeric($cart_item['Diameter (INCHES)'])) {
+            $captured_radius_inches = (float) $cart_item['Diameter (INCHES)'];
+        }
+        
+
+        $cart_item_data = [
+            'restored_from_capture' => true,
+            'is_special_price_order' => !empty($cart_item['is_special_price_order']),
+
+            'custom_inputs' => [
+                'custom_radius' => $captured_radius,
+                'custom_radius_inches' => $captured_radius_inches,
+                'pdf_path' => isset($cart_item['Upload .PDF Drawing']) ? sanitize_text_field($cart_item['Upload .PDF Drawing']): '',
+                'dxf_path' => isset($cart_item['Upload .DXF Drawing']) ? sanitize_text_field($cart_item['Upload .DXF Drawing']): '',
+                'width_inches' => isset($cart_item['Width (Inch)']) ? sanitize_text_field($cart_item['Width (Inch)']): '',
+                'length_inches' => isset($cart_item['Length (Inch)']) ? sanitize_text_field($cart_item['Length (Inch)']): '',
             ],
-    ];
+
+            //
+
+            'cart_metadata' => [
+                    //'Upload .DXF Drawing' => isset($cart_item['Upload .DXF Drawing']) ? $cart_item['Upload .DXF Drawing'] : 'N/A',
+                    //'Upload .PDF Drawing' => isset($cart_item['Upload .PDF Drawing']) ? $cart_item['Upload .PDF Drawing'] : 'N/A',
+                    'PO Number' => $captured_po_number,
+                    'is_scheduled' => isset($cart_item['is_scheduled']) ? $cart_item['is_scheduled'] : 'N/A',
+                    'stock_quantity' => isset($cart_item['stock_quantity']) ? $cart_item['stock_quantity'] : 'N/A',
+                    'despatch_string' => isset($cart_item['despatch_string']) ? $cart_item['despatch_string'] : 'N/A',
+                    'Width (MM)' => isset($cart_item['Width']) ? $cart_item['Width'] : 'N/A',
+                    //'width_inch'    => isset($cart_item['Width (Inch)']) ? $cart_item['Width (Inch)'] : 'N/A',
+                    'Length (MM)' => isset($cart_item['Length']) ? $cart_item['Length'] : 'N/A',
+                    //'length_inch'   => isset($cart_item['Length (Inch)']) ? $cart_item['Length (Inch)'] : 'N/A',
+                    'Diameter (MM)' => isset($cart_item['Diameter']) ? floatval($cart_item['Diameter']) : (isset($cart_item['Diameter (MM)']) ? floatval($cart_item['Diameter (MM)']) : 'N/A'),
+                    //'Diameter (Inch)'   => isset($cart_item['Diameter (Inch)']) ? $cart_item['Diameter (Inch)'] : 'N/A',
+                    'Roll Length (Metres)' => isset($cart_item['Roll Length']) ? $cart_item['Roll Length'] : 'N/A', 
+                    'Total number of parts' => isset($cart_item['Total number of parts']) ? $cart_item['Total number of parts'] : 'N/A',
+                    'despatch_notes' => isset($cart_item['Notes']) ? $cart_item['Notes'] : 'N/A',  
+                    'Cost Per Part' => isset($cart_item['Cost Per Part']) ? $cart_item['Cost Per Part'] : 'N/A',
+                    'total_del_weight' => isset($cart_item['Customer Shipping Weights']) ? $cart_item['Customer Shipping Weights'] : 'N/A', 
+                    'Sheets Required' => isset($cart_item['Sheets Required']) ? $cart_item['Sheets Required'] : 'N/A',
+                    'shipping_total_raw' => isset($cart_item['shipping_total_raw']) ? $cart_item['shipping_total_raw'] : 'N/A',
+                    'rolls_value' => isset($cart_item['rolls_value']) ? $cart_item['rolls_value'] : 'N/A',
+                    'currency_rate' => isset($cart_item['currency_rate']) ? $cart_item['currency_rate'] : 'N/A',
+                    'mcofc_fair_values' => isset($cart_item['mcofc_fair_values']) ? $cart_item['mcofc_fair_values'] : 'N/A',
+                    'on_backorder' => isset($cart_item['on_backorder']) ? $cart_item['on_backorder'] : 'N/A',
+                    'delivery_count' => isset($cart_item['delivery_count']) ? $cart_item['delivery_count'] : 'N/A',
+                    'raw_date' => isset($cart_item['raw_date']) ? $cart_item['raw_date'] : 'N/A',
+                    'discount_raw_new' => isset($cart_item['discount_raw_new']) ? $cart_item['discount_raw_new'] : 'N/A',
+                    'cost_per_part' => isset($cart_item['cost_per_part_raw']) ? $cart_item['cost_per_part_raw'] : 'N/A', 
+                    '_is_split_schedule' => isset($cart_item['_is_split_schedule']) ? $cart_item['_is_split_schedule'] : 'N/A',
+                    'mcofc_fair_final_hidden' => isset($cart_item['mcofc_fair_final_hidden']) ? $cart_item['mcofc_fair_final_hidden'] : 'N/A',
+                    'country_value' => isset($cart_item['country_value']) ? $cart_item['country_value'] : 'N/A',
+                    'Part shape' => isset($cart_item['Part shape']) ? $cart_item['Part shape'] : 'N/A',
+                    '_Currently Showing' => isset($cart_item['_Currently Showing']) ? $cart_item['_Currently Showing'] : 'N/A',
+                    '_Untitled' => isset($cart_item['_Untitled']) ? $cart_item['_Untitled'] : 'N/A',
+                    '_Shipping Total' => isset($cart_item['_Shipping Total']) ? $cart_item['_Shipping Total'] : 'N/A',
+                    'form_id' => isset($cart_item['form_id']) ? $cart_item['form_id'] : 'N/A', 
+                    'captured_optional_fees'     => floatval($cart_item['captured_optional_fees'] ?? 0),
+                    'Manufacturers COFC'          => floatval($cart_item['Manufacturers COFC'] ?? 0),
+                    'Materials Direct COFC'       => floatval($cart_item['Materials Direct COFC'] ?? 0),
+                    'First Article Inspection Report' => floatval($cart_item['First Article Inspection Report'] ?? 0),
+                    'shipments_count' => floatval($cart_item['shipments_count'] ?? 0),
+                    'allow_credit' => floatval($cart_item['allow_credit'] ?? 0),
+                ],
+        ];
 
         // Set custom price with validation
         if (isset($cart_item['Total Price']) && is_numeric($cart_item['Total Price']) && floatval($cart_item['Total Price']) > 0 && $quantity > 0) {
@@ -666,8 +676,9 @@ if (isset($cart_item['Diameter (Inch)']) && is_numeric($cart_item['Diameter (Inc
 
         // Force-set important flags/values after add (prevents loss)
         WC()->cart->cart_contents[$cart_item_key]['restored_from_capture'] = true;
-        WC()->cart->cart_contents[$cart_item_key]['cart_metadata']['captured_optional_fees'] = 
-            floatval($cart_item['captured_optional_fees'] ?? 0);
+        WC()->cart->cart_contents[$cart_item_key]['is_special_price_order'] = !empty($cart_item['is_special_price_order']);
+
+        WC()->cart->cart_contents[$cart_item_key]['cart_metadata']['captured_optional_fees'] = floatval($cart_item['captured_optional_fees'] ?? 0);
 
 
         // Mark as restored
@@ -2067,6 +2078,93 @@ add_action('wp_ajax_save_customer_email', 'save_customer_email');
 // END HANDLE SAVE CUSTOMER EMAIL
 
 
+
+
+
+
+// SAVE PO NUMBER FOR ALL CAPTURED CARTS IN THE SAME CART GROUP
+
+function save_po_number() {
+
+    // Security check
+    check_ajax_referer('captured_carts_nonce', 'nonce');
+
+    // Permission check
+    if (!current_user_can('edit_posts')) {
+        wp_send_json_error('You do not have permission to do this.');
+    }
+
+    // Get and validate the capture cart post ID
+    $post_id = isset($_POST['post_id']) ? absint($_POST['post_id']) : 0;
+
+    if (!$post_id) {
+        wp_send_json_error('Invalid post ID.');
+    }
+
+    // Make sure this is a captured cart
+    if (get_post_type($post_id) !== 'capture_cart') {
+        wp_send_json_error('Invalid capture cart.');
+    }
+
+    // Make sure the capture cart is published
+    if (get_post_status($post_id) !== 'publish') {
+        wp_send_json_error('Invalid capture cart status.');
+    }
+
+    // Get the cart group ID
+    $cart_group_id = get_post_meta($post_id, 'cart_group_id', true);
+
+    if (empty($cart_group_id)) {
+        wp_send_json_error('No cart group ID found.');
+    }
+
+    // Get the PO Number
+    $po_number = isset($_POST['po_number'])
+        ? sanitize_text_field(wp_unslash($_POST['po_number']))
+        : '';
+
+    // Find every captured cart belonging to this group
+    $group_posts = get_posts([
+        'post_type'      => 'capture_cart',
+        'post_status'    => 'publish',
+        'posts_per_page' => -1,
+        'fields'         => 'ids',
+        'meta_query'     => [
+            [
+                'key'   => 'cart_group_id',
+                'value' => $cart_group_id,
+            ],
+        ],
+    ]);
+
+    // Save the PO Number to every post in the group
+    foreach ($group_posts as $group_post_id) {
+
+        if ($po_number !== '') {
+            update_post_meta(
+                $group_post_id,
+                'po_number',
+                $po_number
+            );
+        } else {
+            // If the field is cleared, remove the PO Number
+            delete_post_meta(
+                $group_post_id,
+                'po_number'
+            );
+        }
+    }
+
+    wp_send_json_success([
+        'po_number'    => $po_number,
+        'cart_group_id' => $cart_group_id,
+        'updated_posts' => count($group_posts),
+    ]);
+}
+
+add_action('wp_ajax_save_po_number', 'save_po_number');
+
+// SAVE PO NUMBER FOR ALL CAPTURED CARTS IN THE SAME CART GROUP
 
 
 

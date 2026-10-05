@@ -77,8 +77,8 @@ function add_modal_to_product_page_footer() {
                                 }
                             ?>
 
-                            <input type="checkbox" name="add_manufacturers_COFC_ss" value="10" id="add_manufacturers_COFC_ss" class="styled-checkbox-cofc" <?php echo $cofc_disabled_attr_ss; ?>>
-                            <label style="display: block;" for="add_manufacturers_COFC_ss" class="product-page__checkbox-heading">Manufacturers COFC <span class="product-page__checkbox-price">£10</span>
+                            <input type="checkbox" name="add_manufacturers_COFC_ss" value="45" id="add_manufacturers_COFC_ss" class="styled-checkbox-cofc" <?php echo $cofc_disabled_attr_ss; ?>>
+                            <label style="display: block;" for="add_manufacturers_COFC_ss" class="product-page__checkbox-heading">Manufacturers COFC <span class="product-page__checkbox-price">£45</span>
                                 <span class="cfc__tooltip" data-tooltip="A Manufacturers Certificate of Conformity (MCOFC) is a document that manufacturers issue to confirm that a product has been made to a specific standard and meets quality and regulatory requirements.">?</span>
                             </label>
                         </div><br>

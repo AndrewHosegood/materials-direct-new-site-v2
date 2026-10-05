@@ -67,27 +67,6 @@ function custom_order_item_meta_logic( $formatted_meta, $item ) {
      */
 
 
-    /*
-    $shape_type_is_rolls = false;
-    $shape_type_is_circle_radius = false;
-
-    foreach ( $formatted_meta as $meta ) {
-
-        if ( $meta->key === 'shape_type' ) {
-
-            $shape_type = strtolower( trim( $meta->value ) );
-
-            if ( $shape_type === 'rolls' ) {
-                $shape_type_is_rolls = true;
-            }
-
-            if ($shape_type === 'circle-radius' || $shape_type === 'circle radius') {
-                $shape_type_is_circle_radius = true;
-            }
-        }
-    }
-    */
-
     $shape_type_is_rolls = false;
     $shape_type_is_circle_radius = false;
 

@@ -253,9 +253,14 @@ require_once('includes/acf_global_options.php');
 // Generate and display PPP for testing
 
 // **** THEME ALGORITHM AND CORE FUNCTIONALITY ****
-require_once('includes/algorithm_and_core_functionality_inc_fix_for_singles.php');
-//require_once('includes/fix-for-woocommerce-rounding-errors.php');
+require_once('includes/generate_nonce_value.php'); // generate cache busting nonce value 
+require_once('includes/algorithm_and_core_functionality_v3.php'); // the good stuff (the core logic)
 // **** THEME ALGORITHM AND CORE FUNCTIONALITY ****
+
+// Add special price button for internal salesman
+require_once('includes/product-page-special-price-button.php');
+require_once('includes/special-price-hide-flycart-discount.php');
+// Add special price button for internal salesman
 
 // Display the Custom Shipping Address on the cart and checkout pages
 require_once('includes/display_custom_shipping_address_on_cart_and_checkout_page.php');
@@ -525,7 +530,7 @@ require_once('includes/convert_shipping_currency_on_cart_checkout.php');
 // Helper function to convert currency shipping totals on cart/checkout
 
 // Display ajax stock quantity on product page
-require_once('includes/display-ajax-stock-quantity-on-product-page.php');
+//require_once('includes/display-ajax-stock-quantity-on-product-page.php');
 // Display ajax stock quantity on product page
 
 // Move and fix mobile menu position when user is logged in as administrator
@@ -672,11 +677,24 @@ function add_custom_price_hidden_field() {
 /* END CUSTOM FUNCTIONS */
 
 /* DELIVERY OPTIONS FUNCTIONS */
+
+add_action('wp_mail_failed', function($wp_error) {
+
+    error_log(
+        '[ORDER ACK] wp_mail_failed: ' .
+        $wp_error->get_error_message() .
+        ' | Data: ' .
+        print_r($wp_error->get_error_data(), true)
+    );
+
+});
+
 require_once('includes/send-admin-confirmation-email-for-credit-account-order.php');
 require_once('includes/add_split_schedule_status_to_woocommerce_orders.php');
-require_once('includes/split_schedule_calendar.php');
-require_once('includes/split_schedule_admin.php');
-require_once('includes/admin-email-split-schedule-data-v4.php');
+require_once('includes/split_schedule_calendar_dp.php');
+require_once('includes/split_schedule_admin_dp.php');
+require_once('includes/split_schedule_admin_detail_dp.php');
+require_once('includes/admin-email-split-schedule-data-v5.php');
 require_once('includes/enqueue-ajax-for-calendar-admin.php'); // Enqueue ajax for calendar admin *
 require_once('includes/ajax-for-calendar-admin-new.php'); // Enqueue ajax for calendar admin *
 require_once('includes/ajax-for-calendar-admin-merged-dates.php'); // Enqueue ajax for calendar admin *
@@ -686,8 +704,9 @@ require_once('includes/ajax-for-calendar-admin-select-shipments.php'); // Enqueu
 require_once('includes/ajax-for-calendar-admin-tracking-number.php'); // Enqueue ajax for calendar admin *
 require_once('includes/ajax-for-calendar-admin-tracking-url.php'); // Enqueue ajax for calendar admin *
 require_once('includes/ajax-for-calendar-admin-pdf-date.php'); // Enqueue ajax for pdf date *
+require_once('includes/ajax-for-calendar-admin-item-delete.php'); // Enqueue ajax for calendar item delete *
 require_once('includes/show-final-dispatch-action.php'); // Enqueue ajax for calendar admin *
-require_once('includes/split_schedule_add_to_calendar.php');
+require_once('includes/split_schedule_add_to_calendar_v2.php');
 require_once('includes/payment-gateway-disable-items-for-credit-account-v2.php'); // disable payment gateway options if logged in as credit account user
 require_once('includes/add-credit-account-fund-status-to-product-page.php'); // display credit account fund details on product page
 require_once('includes/send-credit-arrears-emails.php'); // send an email if the customers runs out of credit

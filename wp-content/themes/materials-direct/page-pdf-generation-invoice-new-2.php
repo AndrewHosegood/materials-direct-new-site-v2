@@ -279,7 +279,7 @@ try {
             
                 $mcofc_fair_array = array_map(function ($value) {
                     if ($value === "Manufacturers COFC") {
-                        return '(' . $value . ' - £10)';
+                        return '(' . $value . ' - £45)';
                     } elseif ($value === "First Article Inspection Report") {
                         return '(' . $value . ' - £95)';
                     } else {
@@ -713,7 +713,7 @@ try {
             // Invoice Details (Second Table)
             $invoice_details_html .= '<tr>';
             $invoice_details_html .= '<td>' . $row['sku'] . '</td>';
-             $invoice_details_html .= '<td>' . $title . $ps . $dra . $dxf . $wdt . $wdti . $lgt . $lgti . $rad . $radi . "<br>" . $mcofc_fair_formatted . $scd . $sch . $str . '</td>';
+            $invoice_details_html .= '<td>' . $title . $ps . $dra . $dxf . $wdt . $wdti . $lgt . $lgti . $rad . $radi . "<br>" . $mcofc_fair_formatted . $scd . $sch . $str . '</td>';
             //$invoice_details_html .= '<td>' . $title . $ps . $dra . $dxf . $wdt . $wdti . $lgt . $lgti . $rad . "<br>" . $mcofc_fair_formatted . $scd . $sch . $str . '<br>Flag' .$flag. '<br>Part Shape' .$part_shape. '<br>Shipping Display New' .$shipping_display_new. '<br>Meta Quantity: ' .$meta_qty. '</td>';
             //$invoice_details_html .= '<td>' . $title . $ps . $dra . $dxf . $wdt . $wdti . $lgt . $lgti . $rad . "<br>" . $mcofc_fair_formatted . $scd . $sch . $str .'New Total: '. $newtotal . '<br>cppnew: ' .$cppnew. '<br>My Shipping Response: ' .$my_shipping_response. '<br>Vat Display: ' .$vat_display. '<br>tf_3: ' .$tf_3. '<br>md_value: ' .$md_value. '<br>mcofc_fair_value_display: ' .$mcofc_fair_value_display. '<br>mcf_v: ' .$mcf_v. '<br>MCOFC Fair Value: ' .$mcofc_fair_value. '<br>Discount Code Value New: ' . $discount_code_value_new .  '</td>';
             //$invoice_details_html .= '<td>' . $title . $ps . $dra . $dxf . $wdt . $wdti . $lgt . $lgti . $rad . $mcf . $scd . $sch . $str . "<br>MCOFC Fair: " . $mcofc_fair_string . '</td>';

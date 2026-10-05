@@ -359,4 +359,65 @@ jQuery(document).ready(function($) {
 
 
 
+    $('.po-number-input').on('change', function() {
+
+            var $input = $(this);
+
+            var postId = $input.data('post-id');
+            var poNumber = $input.val();
+
+            $.ajax({
+                url: capturedCartsAjax.ajax_url,
+                type: 'POST',
+                data: {
+                    action: 'save_po_number',
+                    nonce: capturedCartsAjax.nonce,
+                    post_id: postId,
+                    po_number: poNumber
+                },
+                success: function(response) {
+
+                    if (response.success) {
+
+                        var cartGroupId = response.data.cart_group_id;
+
+                        // Update all PO fields belonging to this cart group
+                        $('.po-number-input').each(function() {
+
+                            var $otherInput = $(this);
+
+                            if ($otherInput.data('cart-group-id') == cartGroupId) {
+                                $otherInput.val(poNumber);
+                            }
+
+                        });
+
+                        // Show saved indication
+                        $input.css('border', '2px solid green');
+
+                        setTimeout(function() {
+                            $input.css('border', '');
+                        }, 1000);
+
+                    } else {
+
+                        alert('Error saving PO Number: ' + response.data);
+                    }
+                },
+                error: function(xhr) {
+
+                    alert('Error saving PO Number.');
+                    console.log('PO Number AJAX error:', xhr);
+                }
+            });
+
+    });
+
+
+
 });
+
+
+
+
+
